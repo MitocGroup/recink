@@ -1,0 +1,61 @@
+{
+  "name": "deepstiny",
+  "version": "0.0.1",
+  "description": "Optimized and customizable test runner integrated with Travis",
+  "keywords": [
+    "End2End",
+    "Testing",
+    "Unit",
+    "Development",
+    "Tools"
+  ],
+  "homepage": "https://github.com/MitocGroup/deepstiny",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/deepstiny/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "http://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "bin": {
+    "deepstiny": "./bin/cli.js",
+    "dps": "./bin/cli.js"
+  },
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/deepstiny.git"
+  },
+  "scripts": {
+    
+  },
+  "dependencies": {
+    "yaml-js": "^0.1.5",
+    "pify": "^2.3.0",
+    "aws-sdk": "^2.49.0",
+    "dot-object": "^1.5.4",
+    "chalk": "^1.1.3",
+    "caporal": "^0.5.0",
+    "travis-lint": "^1.0.0",
+    
+    "travis-encrypt": "^2.1.1",
+    "github": "^9.2.0",
+    "mocha-parallel-tests": "^1.2.9",
+    "mocha": "^3.3.0",
+    "istanbul": "^0.4.5",
+    "merge": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=6.0 <7.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

@@ -1,0 +1,23 @@
+--- 
+$:
+  # cache:
+  #   driver: 's3'
+  #   options:
+  #     accessKey: 'process.env.DPS_AWS_ACCESS_KEY'
+  #     secretKey: 'process.env.DPS_AWS_SECRET_KEY'
+  #     path: 'process.env.DPS_S3_CACHE_PATH'
+  emit:
+    pattern:
+      - /.+\.js$/i
+    ignore:
+      - /^(.*\/)?node_modules\//i
+  test:
+    pattern:
+      - /.+\.spec\.js$/i  
+  # coverage:
+  #   ignore:
+  #     - /.+\.spec\.js$/i
+main:
+  root: '.'
+  dependencies:
+    deep-framework: '*'

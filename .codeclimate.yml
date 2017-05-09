@@ -1,0 +1,18 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        javascript:
+          mass_threshold: 650
+    exclude_paths:
+      - '**/tests'
+  eslint:
+    enabled: true
+    channel: eslint-2
+  fixme:
+    enabled: true
+ratings:
+  paths:
+    - 'bin/**.js'
+    - 'lib/**.js'
