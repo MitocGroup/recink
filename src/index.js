@@ -25,7 +25,7 @@ class Deepstiny extends EventEmitter {
   _registerDebugers() {
     this.on(events.config.load, (container, configFile) => {
       logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);
-      logger.debug(JSON.stringify(container.raw, null, '  '));
+      logger.debug(container.dump());
     });
     
     this.on(events.components.load, (...components) => {
@@ -90,7 +90,7 @@ class Deepstiny extends EventEmitter {
     }
     
     return Promise.all(components.map(component => {
-      if (!component instanceof AbstractComponent) {
+      if (!(component instanceof AbstractComponent)) {
         return Promise.reject(new Error(
           `Component ${ component.constructor.name } should be an instance of AbstractComponent`
         ));

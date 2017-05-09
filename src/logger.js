@@ -168,6 +168,8 @@ class Logger {
       fire: '🔥 ',
       diamond: '💎 ',
       gift: '🎁 ',
+      poop: '💩 ',
+      magic: '✨ ',
     };
   }
   

@@ -10,7 +10,7 @@ $:
     pattern:
       - /.+\.js$/i
     ignore:
-      - /^(.*\/)?node_modules\//i
+      - /^(.*\/)?node_modules(\/?$)?/i
   test:
     pattern:
       - /.+\.spec\.js$/i  
@@ -21,3 +21,4 @@ main:
   root: '.'
   dependencies:
     deep-framework: '*'
+    # sample: 'file:./sample-module'

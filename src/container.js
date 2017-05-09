@@ -1,6 +1,8 @@
 'use strict';
 
+const print = require('print');
 const dot = require('dot-object');
+dot.overwrite = true;
 
 class Container {
   /**
@@ -64,10 +66,21 @@ class Container {
   }
   
   /**
+   * @returns {string}
+   */
+  dump() {
+    return print(this.raw, {
+      showArrayIndices: true,
+      showArrayLength: true,
+      sortProps: false,
+    }).replace(/\t/g, '   ');
+  }
+  
+  /**
    * @returns {*}
    */
   get raw() {
-    return this._config
+    return this._config;
   }
 }
 

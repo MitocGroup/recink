@@ -26,7 +26,7 @@ class Factory {
     const ConfigImplementation = require(`./${ name }-config`);
     const config = new ConfigImplementation(...args);
     
-    if (!config instanceof AbstractConfig) {
+    if (!(config instanceof AbstractConfig)) {
       throw new Error(`${ name } config should be an implementation of AbstractConfig`);
     }
     

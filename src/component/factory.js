@@ -13,7 +13,7 @@ class Factory {
     const ComponentImplementation = require(`./${ name }-component`);
     const component = new ComponentImplementation(...args);
     
-    if (!component instanceof AbstractComponent) {
+    if (!(component instanceof AbstractComponent)) {
       throw new Error(`${ name } config should be an implementation of AbstractComponent`);
     }
     

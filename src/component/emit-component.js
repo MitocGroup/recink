@@ -1,8 +1,11 @@
 'use strict';
 
+const print = require('print');
+const path = require('path');
 const ConfigBasedComponent = require('./config-based-component');
 const EmitModule = require('./emit/emit-module');
 const events = require('./emit/events');
+const ContainerTransformer = require('./helper/container-transformer');
 
 class EmitComponent extends ConfigBasedComponent {
   /**
@@ -23,47 +26,13 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {EventEmitter|*} emitter
-   * @param {string} path
-   *
-   * @returns {Promise|*}
-   */
-  waitConfig(emitter) {
-    return super.waitConfig(emitter)
-      .then(container => {
-        const emitModules = [];
-        
-        emitter.container.listKeys()
-          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY)
-          .map(moduleKey => {
-            const emitModule = new EmitModule(
-              moduleKey, 
-              emitter.container.get(moduleKey),
-              emitter,
-              this.logger
-            );
-            
-            emitModules.push(moduleKey);
-            this._modules.push(emitModule);
-          });
-        
-        if (emitModules.length > 0) {
-          this.logger.info(
-            this.logger.emoji.gift,
-            `Modules to emit - ${ emitModules.join(', ') }`
-          );
-        }
-        
-        return Promise.resolve(container);
-      });
-  }
-  
-  /**
-   * @param {EventEmitter|*} emitter
    * 
    * @returns {Promise|*}
    */
   run(emitter) {
     this._registerDebugers(emitter);
+    
+    emitter.emit(events.modules.process.start, this._modules, this.container);
     
     return Promise.all(this._modules.map(module => {
       emitter.emit(events.module.process.start, module, this.container);
@@ -72,26 +41,91 @@ class EmitComponent extends ConfigBasedComponent {
         .then(() => {
           emitter.emit(events.module.process.end, module);
         });
-    }));
+    })).then(() => {
+      emitter.emit(events.modules.process.end, this._modules, this.container);
+    });
+  }
+  
+  /**
+   * @param {EventEmitter|*} emitter
+   * @param {string} path
+   *
+   * @returns {Promise|*}
+   */
+  waitConfig(emitter) {
+    return super.waitConfig(emitter)
+      .then(container => {
+        const moduleKeys = emitter.container.listKeys()
+          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);
+        
+        if (moduleKeys.length <= 0) {
+          return Promise.resolve(container);
+        }
+        
+        return Promise.all(moduleKeys.map(moduleKey => {
+          return this.prepareModuleConfig(
+            emitter.container.get(moduleKey),
+            container
+          ).then(moduleContainer => {
+            const emitModule = new EmitModule(
+              moduleKey, 
+              moduleContainer,
+              emitter,
+              this.logger
+            );
+            
+            this._modules.push(emitModule);
+          });
+        })).then(() => {
+          this.logger.info(
+            this.logger.emoji.gift,
+            `Modules to emit - ${ moduleKeys.join(', ') }`
+          );
+          
+          return Promise.resolve(container);
+        });
+      });
   }
   
   /**
    * @param {*} config
+   * @param {string} configFile
    *
    * @returns {Container|*}
    */
-  prepareConfig(config) {
-    const container = super.prepareConfig(config);
+  prepareConfig(config, configFile) {
+    return super.prepareConfig(config, configFile)
+      .then(container => {
+        return (new ContainerTransformer(container))
+          .addPattern('pattern')
+          .addPattern('ignore')
+          .transform();
+      });
+  }
+  
+  /**
+   * @param {*} moduleConfig
+   * @param {Container|*} mainContainer
+   *
+   * @returns {Container|*}
+   */
+  prepareModuleConfig(moduleConfig, mainContainer) {
+    const container = this.createContainer(moduleConfig);
     
-    if (container.has('pattern')) {
-      const patterns = Array.isArray(container.get('pattern')) 
-        ? container.get('pattern') 
-        : [ container.get('pattern') ];
-        
-      container.has('pattern');
-    }
-    
-    return container;
+    return (new ContainerTransformer(container))
+      .add({
+        path: 'root',
+        transformer: value => {
+          if (path.isAbsolute(value)) {
+            return Promise.resolve(value);
+          }
+          
+          return Promise.resolve(
+            path.join(mainContainer.get('__dir'), value)
+          );
+        },
+      })
+      .transform();
   }
   
   /**
@@ -100,20 +134,30 @@ class EmitComponent extends ConfigBasedComponent {
    * @private
    */
   _registerDebugers(emitter) {
-    emitter.on(events.module.process.start, (module, container) => {
+    emitter.on(events.modules.process.start, (modules, container) => {
       this.logger.info(
         this.logger.emoji.diamond, 
-        `Start processing module ${ module.name }`
+        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`
       );
-      this.logger.debug(JSON.stringify(container.raw, null, '  '));
+
+      this.logger.debug(container.dump());
+    });
+    
+    emitter.on(events.modules.process.end, modules => {
+      this.logger.info(
+        this.logger.emoji.magic, 
+        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`
+      );
+    });
+    
+    emitter.on(events.module.process.start, module => {
+      this.logger.debug(`Start processing module ${ module.name }`);
+      this.logger.debug(module.container.dump());
     });
     
     emitter.on(events.module.process.end, module => {
-      this.logger.info(
-        this.logger.emoji.diamond, 
-        `End processing module ${ module.name }`
-      );
-      this.logger.debug(JSON.stringify(module.stats, null, '  '));
+      this.logger.debug(`Finish processing module ${ module.name }`);
+      this.logger.debug(module.dumpStats());
     });
   }
 }

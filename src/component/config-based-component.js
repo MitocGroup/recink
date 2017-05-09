@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const Container = require('../container');
 const AbstractComponent = require('./abstract-component');
 
@@ -58,15 +59,17 @@ class ConfigBasedComponent extends AbstractComponent {
    * @returns {Promise|*}
    */
   waitConfig(emitter) {
-    return new Promise(resolve => {
-      emitter.on(this.events.config.load, container => {
+    return new Promise((resolve, reject) => {
+      emitter.on(this.events.config.load, (container, configFile) => {
         if (container.has(this.configPath)) {
-          return this.prepareConfig(container.get(this.configPath, {}))
-            .then(container => {
-              this.setActive(true);
-              
-              resolve(container);
-            });
+          return this.prepareConfig(
+            container.get(this.configPath, {}),
+            configFile
+          ).then(container => {
+            this.setActive(true);
+            
+            resolve(container);
+          }).catch(error => reject(error));
         }
         
         resolve(null);
@@ -76,11 +79,28 @@ class ConfigBasedComponent extends AbstractComponent {
   
   /**
    * @param {*} config
+   * @param {string} configFile
    *
    * @returns {Container|*}
    */
-  prepareConfig(config) {
-    return Promise.resolve(new Container(config));
+  prepareConfig(config, configFile) {
+    const configFileRealPath = path.resolve(configFile);
+    
+    return Promise.resolve(this.createContainer(
+      Object.assign({
+        __file: configFileRealPath,
+        __dir: path.dirname(configFileRealPath),
+      }, config)
+    ));
+  }
+  
+  /**
+   * @param {*} config
+   *
+   * @returns {Container|*}
+   */
+  createContainer(config) {
+    return new Container(config);
   }
   
   /**
