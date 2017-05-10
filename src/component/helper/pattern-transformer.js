@@ -12,12 +12,24 @@ module.exports = (value => {
     }));
 });
 
+/**
+ * @param {string} value
+ *
+ * @returns {RegExp|*}
+ */
 function toRegexp(value) {
   const matches = value.match(/^\/(.+)\/([gmiyu])*$/);
   
-  return new RegExp(matches[1], matches[2]);
+  const [ , regex, modifiers ] = matches;
+  
+  return new RegExp(regex, modifiers);
 }
 
+/**
+ * @param {string} value
+ *
+ * @returns {boolean}
+ */
 function isRegexp(value) {
   return /\/.+\/[a-z]*/i.test(value);
 }

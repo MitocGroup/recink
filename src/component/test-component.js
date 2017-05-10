@@ -1,10 +1,12 @@
 'use strict';
 
 const ConfigBasedComponent = require('./config-based-component');
-const events = require('./emit/events');
+const emitEvents = require('./emit/events');
+const events = require('./test/events');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const TestAsset = require('./test/test-asset');
+const Mocha = require('mocha');
 
 class TestComponent extends ConfigBasedComponent {
   constructor(...args) {
@@ -31,19 +33,22 @@ class TestComponent extends ConfigBasedComponent {
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
-      emitter.onBlocking(events.module.emit.asset, payload => {
+      emitter.onBlocking(emitEvents.module.emit.asset, payload => {
         if (!this._match(payload)) {
           return Promise.resolve();
         }
         
-        this.logger.info(this.logger.emoji.fist, `Test ${ payload.fileAbs }`);
-        
-        const { file, fileAbs, root } = payload;
-        const testAsset = new TestAsset(root, file);
+        const { file, fileAbs, module } = payload;
         
         this.addProcessing();
+        this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);
         
-        return testAsset.test()
+        const testAsset = new TestAsset(file, fileAbs, module);
+        const mocha = new Mocha(this.container.get('mocha.options', {}));
+        
+        return emitter.emitBlocking(events.asset.test.start, testAsset)
+          .then(() => testAsset.test(mocha))
+          .then(() => emitter.emitBlocking(events.asset.test.end, testAsset))
           .then(() => {
             this.removeProcessing();
             return Promise.resolve();
@@ -54,15 +59,18 @@ class TestComponent extends ConfigBasedComponent {
           });
       }, TestComponent.DEFAULT_PRIORITY);
       
-      emitter.on(events.module.emit.end, () => {
-        this.waitProcessing().then(() => {
-          this.logger.info(
-            this.logger.emoji.hat, 
-            `Finished processing ${ this.stats.processed } test assets`
-          );
-          this.logger.debug(this.dumpStats());
-          resolve();
-        });
+      emitter.on(emitEvents.module.emit.end, () => {
+        this.waitProcessing()
+          .then(() => emitter.emitBlocking(events.assets.test.end, this))
+          .then(() => {
+            this.logger.info(
+              this.logger.emoji.hat, 
+              `Finished processing ${ this.stats.processed } test assets`
+            );
+            this.logger.debug(this.dumpStats());
+            resolve();
+          })
+          .catch(error => reject(error));
       });
     });
   }

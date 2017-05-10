@@ -63,7 +63,7 @@ class EmitModule {
                   const payload = {
                     file: filePath,
                     fileAbs: path.join(moduleRoot, filePath),
-                    root: moduleRoot,
+                    module: this,
                   };
                   
                   this.logger.debug(`Emit ${ filePath } asset`);
@@ -75,6 +75,7 @@ class EmitModule {
                       processing--;
                       
                       if (processing <= 0 && ended) {
+                        this.emitter.emit(events.module.emit.end);
                         resolve();
                       }
                     })
@@ -85,9 +86,9 @@ class EmitModule {
                 })
                 .on('end', () => {
                   ended = true;
-                  this.emitter.emit(events.module.emit.end);
                   
                   if (processing <= 0) {
+                    this.emitter.emit(events.module.emit.end);
                     resolve();
                   }
                 })
@@ -214,6 +215,8 @@ class EmitModule {
   
   /**
    * @returns {number}
+   *
+   * @todo make it configurable for specific use cases
    */
   static get MAX_PARALLEL_ASSETS_EMIT() {
     return 1;

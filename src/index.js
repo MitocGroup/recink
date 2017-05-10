@@ -51,7 +51,7 @@ class Deepstiny extends Emitter {
       components.map(component => {
         logger.info(
           component.isActive ? logger.emoji.check : logger.emoji.cross,
-          `${ component.name } component`
+          `${ component.name.toUpperCase() } component`
         );
       });
     });

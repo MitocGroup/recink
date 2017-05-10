@@ -1,13 +1,46 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
+const pify = require('pify');
+
 class TestAsset {
   /**
-   * @param {string} pwd
    * @param {string} file
+   * @param {string} fileAbs
+   * @param {EmitModule|*} module
    */
-  constructor(pwd, file) {
-    this._pwd = pwd;
+  constructor(file, fileAbs, module) {
     this._file = file;
+    this._fileAbs = fileAbs;
+    this._module = module;
+  }
+  
+  /**
+   * @param {Mocha|*} mocha
+   * 
+   * @returns {Promise|*}
+   */
+  test(mocha) {
+    return new Promise((resolve, reject) => {
+      mocha.addFile(this.fileAbs);
+      mocha.run(failures => {
+        if (failures > 0) {
+          return reject(new Error(
+            `Test failed in ${ this.fileAbs } with ${ failures } failures`
+          ));
+        }
+        
+        resolve();
+      });
+    });
+  }
+  
+  /**
+   * @returns {Promise|*}
+   */
+  get fileContent() {
+    return pify(fs.readFile)(this.fileAbs);
   }
   
   /**
@@ -20,15 +53,15 @@ class TestAsset {
   /**
    * @returns {string}
    */
-  get pwd() {
-    return this._pwd;
+  get fileAbs() {
+    return this._fileAbs;
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {EmitModule|*}
    */
-  test() {
-    return Promise.resolve();
+  get module() {
+    return this._module;
   }
 }
 

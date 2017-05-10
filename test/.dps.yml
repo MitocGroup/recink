@@ -12,6 +12,9 @@ $:
     ignore:
       - /^(.*\/)?node_modules(\/?$)?/i
   test:
+    mocha:
+      options:
+        - { ui: 'bdd' }
     pattern:
       - /.+\.spec\.js$/i
   # coverage:
@@ -20,5 +23,5 @@ $:
 main:
   root: '.'
   dependencies:
-    deep-framework: '*'
-    # sample: 'file:./sample-module'
+    chai: '*'
+    # local-sample: 'file:./sample-module'
