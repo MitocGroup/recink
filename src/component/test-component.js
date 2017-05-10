@@ -43,6 +43,7 @@ class TestComponent extends ConfigBasedComponent {
           setTimeout(() => {//@todo remove
             this.removeProcessing();
             resolve();
+            //reject(new Error('Test reject asset error...'));
           }, 300 * (this.processing + 1));
         });
       }, TestComponent.DEFAULT_PRIORITY);

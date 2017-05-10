@@ -45,27 +45,57 @@ class EmitModule {
           ));
         }
         
-        const options = {
-          deep: this._deepFilter(container).bind(this),
-          filter: this._filter(container).bind(this),
-        };
-        
-        readdir.stream(moduleRoot, options)
-          .on('data', filePath => {
-            const payload = {
-              file: filePath,
-              fileAbs: path.join(moduleRoot, filePath),
-              root: moduleRoot,
+        this.emitter.emitBlocking(events.module.emit.start, this)
+          .then(() => {
+            const options = {
+              deep: this._deepFilter(container).bind(this),
+              filter: this._filter(container).bind(this),
             };
             
-            this.logger.debug(this.logger.emoji.poop, `emit ${ filePath }`);
-            this.emitter.emitBlocking(events.module.emit.asset, payload);
+            return new Promise((resolve, reject) => {
+              let ended = false;
+              let processing = 0;
+              
+              readdir.stream(moduleRoot, options)
+                .on('data', filePath => {
+                  processing++;
+                  
+                  const payload = {
+                    file: filePath,
+                    fileAbs: path.join(moduleRoot, filePath),
+                    root: moduleRoot,
+                  };
+                  
+                  this.logger.debug(this.logger.emoji.smiley, `emit ${ filePath } asset`);
+                  this.emitter.emitBlocking(events.module.emit.asset, payload)
+                    .then(() => {
+                      processing--;
+                      
+                      if (processing <= 0 && ended) {
+                        resolve();
+                      }
+                    })
+                    .catch(error => {
+                      this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);
+                      reject(error);
+                    });
+                })
+                .on('end', () => {
+                  ended = true;
+                  this.emitter.emit(events.module.emit.end);
+                  
+                  if (processing <= 0) {
+                    resolve();
+                  }
+                })
+                .on('error', error => reject(error));
+            });
           })
-          .on('end', () => {
-            this.emitter.emit(events.module.emit.end);
-            resolve();
-          })
-          .on('error', error => reject(error));
+          .then(() => resolve())
+          .catch(error => {
+            this.logger.warn(this.logger.emoji.poop, `failed dispatching module ${ this.name }`);
+            reject(error);
+          });
       });
     });
   }

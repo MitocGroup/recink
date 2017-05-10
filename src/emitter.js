@@ -13,22 +13,19 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {*} args
    *
-   * @returns {Emitter|*}
+   * @returns {Promise|*}
    */
   emitBlocking(event, ...args) {
-    this._dispatch(event, args)
+    return this._dispatch(event, args)
       .then(() => {
         this._cleanupListeners(event);
         this.emit(event, ...args);
+        return Promise.resolve();
       })
       .catch(error => {
         this._cleanupListeners(event);
-        process.nextTick(() => {
-          throw error;
-        });
+        return Promise.reject(error);
       });
-  
-    return this;
   }
   
   /**
