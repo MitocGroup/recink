@@ -171,6 +171,8 @@ class Logger {
       poop: '💩 ',
       magic: '✨ ',
       hat: '🎩 ',
+      new: '🆕 ',
+      fist: '👊 ',
     };
   }
   

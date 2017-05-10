@@ -4,6 +4,7 @@ const ConfigBasedComponent = require('./config-based-component');
 const events = require('./emit/events');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
+const TestAsset = require('./test/test-asset');
 
 class TestComponent extends ConfigBasedComponent {
   constructor(...args) {
@@ -35,23 +36,28 @@ class TestComponent extends ConfigBasedComponent {
           return Promise.resolve();
         }
         
-        this.logger.info(this.logger.emoji.hat, `Test ${ payload.fileAbs }`);
+        this.logger.info(this.logger.emoji.fist, `Test ${ payload.fileAbs }`);
         
-        return new Promise((resolve, reject) => {
-          this.addProcessing();
-
-          setTimeout(() => {//@todo remove
+        const { file, fileAbs, root } = payload;
+        const testAsset = new TestAsset(root, file);
+        
+        this.addProcessing();
+        
+        return testAsset.test()
+          .then(() => {
             this.removeProcessing();
-            resolve();
-            //reject(new Error('Test reject asset error...'));
-          }, 300 * (this.processing + 1));
-        });
+            return Promise.resolve();
+          })
+          .catch(error => {
+            this.removeProcessing();
+            return Promise.reject(error);
+          });
       }, TestComponent.DEFAULT_PRIORITY);
       
       emitter.on(events.module.emit.end, () => {
         this.waitProcessing().then(() => {
           this.logger.info(
-            this.logger.emoji.smiley, 
+            this.logger.emoji.hat, 
             `Finished processing ${ this.stats.processed } test assets`
           );
           this.logger.debug(this.dumpStats());

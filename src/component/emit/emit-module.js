@@ -66,8 +66,11 @@ class EmitModule {
                     root: moduleRoot,
                   };
                   
-                  this.logger.debug(this.logger.emoji.smiley, `emit ${ filePath } asset`);
-                  this.emitter.emitBlocking(events.module.emit.asset, payload)
+                  this.logger.debug(`Emit ${ filePath } asset`);
+                  
+                  this.emitter
+                    .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
+                    .emitBlocking(events.module.emit.asset, payload)
                     .then(() => {
                       processing--;
                       
@@ -207,6 +210,13 @@ class EmitModule {
       showArrayLength: true,
       sortProps: false,
     }).replace(/\t/g, '   ')
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get MAX_PARALLEL_ASSETS_EMIT() {
+    return 1;
   }
 }
 

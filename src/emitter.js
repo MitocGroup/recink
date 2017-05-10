@@ -7,6 +7,20 @@ class Emitter extends EventEmitter {
     super(...args);
     
     this._blockingListeners = {};
+    this._processing = {};
+    this._parallel = {};
+  }
+  
+  /**
+   * @param {string} event
+   * @param {number} count
+   *
+   * @returns {Emitter|*}
+   */
+  maxParallel(event, count) {
+    this._parallel[event] = count;
+    
+    return this;
   }
   
   /**
@@ -16,14 +30,21 @@ class Emitter extends EventEmitter {
    * @returns {Promise|*}
    */
   emitBlocking(event, ...args) {
-    return this._dispatch(event, args)
+    return this._waitAllowParallel(event)
+      .then(() => this._dispatch(event, args))
       .then(() => {
-        this._cleanupListeners(event);
-        this.emit(event, ...args);
+        this
+          ._cleanupListeners(event)
+          ._removeParallel(event)
+          .emit(event, ...args);
+        
         return Promise.resolve();
       })
       .catch(error => {
-        this._cleanupListeners(event);
+        this
+          ._cleanupListeners(event)
+          ._removeParallel(event);
+        
         return Promise.reject(error);
       });
   }
@@ -52,6 +73,75 @@ class Emitter extends EventEmitter {
   
   /**
    * @param {string} event
+   *
+   * @returns {Emitter|*}
+   *
+   * @private
+   */
+  _removeParallel(event) {
+    if (!this._processing.hasOwnProperty(event)) {
+      return this;
+    }
+    
+    this._processing[event]--;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {Emitter|*}
+   *
+   * @private
+   */
+  _addParallel(event) {
+    this._processing[event] = this._processing[event] || 0;
+    this._processing[event]++;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _allowParallel(event) {
+    return !this._parallel.hasOwnProperty(event)
+      || !this._processing.hasOwnProperty(event)
+      || this._processing[event] < this._parallel[event];
+  }
+  
+  /**
+   * @param {string} event
+   * @param {number} interval
+   *
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _waitAllowParallel(event, interval = 100) {
+    if (this._allowParallel(event)) {
+      this._addParallel(event);
+      return Promise.resolve();
+    }
+    
+    return new Promise(resolve => {
+      const id = setInterval(() => {
+        if (this._allowParallel(event)) {
+          this._addParallel(event);
+          clearInterval(id);
+          resolve();
+        }
+      }, interval);
+    });
+  }
+  
+  /**
+   * @param {string} event
    * @param {function} listener
    * @param {number} priority
    * @param {string} method
@@ -72,15 +162,19 @@ class Emitter extends EventEmitter {
   
   /**
    * @param {string} event
+   *
+   * @returns {Emitter|*}
    * 
    * @private
    */
   _cleanupListeners(event) {
     if (!this._blockingListeners.hasOwnProperty(event) ) {
-      return;
+      return this;
     }
     
     this._blockingListeners[event] = this._blockingListeners[event].filter(l => !!l);
+    
+    return this;
   }
   
   /**
