@@ -1,14 +1,14 @@
 'use strict';
 
 const path = require('path');
-const EventEmitter = require('events');
+const Emitter = require('./emitter');
 const events = require('./events');
 const configFactory = require('./config/factory');
 const Container = require('./container');
 const AbstractComponent = require('./component/abstract-component');
 const logger = require('./logger');
 
-class Deepstiny extends EventEmitter {
+class Deepstiny extends Emitter {
   constructor() {
     super();
     

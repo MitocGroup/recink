@@ -170,6 +170,7 @@ class Logger {
       gift: '🎁 ',
       poop: '💩 ',
       magic: '✨ ',
+      hat: '🎩 ',
     };
   }
   

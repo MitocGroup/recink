@@ -11,7 +11,7 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
    */

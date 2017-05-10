@@ -11,7 +11,7 @@ class CoverageComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
    */

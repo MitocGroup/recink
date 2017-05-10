@@ -32,7 +32,7 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    *
    * @returns {Promise|*}
    */
@@ -53,7 +53,7 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * @param {string} path
    *
    * @returns {Promise|*}

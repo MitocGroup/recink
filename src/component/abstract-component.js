@@ -6,6 +6,59 @@ class AbstractComponent {
   constructor() {
     this._logger = console;
     this._active = false;
+    this._processing = 0;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  get processing() {
+    return this._processing;
+  }
+  
+  /**
+   * @param {number} interval
+   *
+   * @returns {Promise|*}
+   */
+  waitProcessing(interval = 200) {
+    return new Promise(resolve => {
+      if (!this.isProcessing) {
+        return process.nextTick(() => resolve());
+      }
+      
+      const id = setInterval(() => {
+        if (!this.isProcessing) {
+          clearInterval(id);
+          process.nextTick(() => resolve());
+        }
+      }, interval);
+    });
+  }
+  
+  /**
+   * @returns {AbstractComponent|*}
+   */
+  removeProcessing() {
+    this._processing--;
+    
+    return this;
+  }
+  
+  /**
+   * @returns {AbstractComponent|*}
+   */
+  addProcessing() {
+    this._processing++;
+    
+    return this;
+  }
+  
+  /**
+   * @returns {boolean}
+   */
+  get isProcessing() {
+    return this.processing > 0;
   }
   
   /**
@@ -59,7 +112,7 @@ class AbstractComponent {
   }
 
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
    */
@@ -68,7 +121,7 @@ class AbstractComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
    */

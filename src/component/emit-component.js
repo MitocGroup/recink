@@ -25,7 +25,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
    */
@@ -47,7 +47,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * @param {string} path
    *
    * @returns {Promise|*}
@@ -129,7 +129,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * 
    * @private
    */

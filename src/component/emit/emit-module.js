@@ -11,7 +11,7 @@ class EmitModule {
   /**
    * @param {string} name
    * @param {Container|*} container
-   * @param {EventEmitter|*} emitter
+   * @param {Emitter|*} emitter
    * @param {*} logger
    */
   constructor(name, container, emitter, logger) {
@@ -58,8 +58,8 @@ class EmitModule {
               root: moduleRoot,
             };
             
-            this.logger.debug(`Emit ${ filePath }`);
-            this.emitter.emit(events.module.emit.asset, payload);
+            this.logger.debug(this.logger.emoji.poop, `emit ${ filePath }`);
+            this.emitter.emitBlocking(events.module.emit.asset, payload);
           })
           .on('end', () => {
             this.emitter.emit(events.module.emit.end);
@@ -141,7 +141,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {EventEmitter|*}
+   * @returns {Emitter|*}
    */
   get emitter() {
     return this._emitter;
