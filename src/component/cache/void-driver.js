@@ -5,15 +5,19 @@ const AbstractDriver = require('./abstract-driver');
 class VoidDriver extends AbstractDriver {
   /**
    * @returns {Promise|*}
+   *
+   * @private
    */
-  upload() {
+  _upload() {
     return Promise.resolve();
   }
   
   /**
    * @returns {Promise|*}
+   *
+   * @private
    */
-  download() {
+  _download() {
     return Promise.resolve();
   }
 }

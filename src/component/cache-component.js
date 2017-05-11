@@ -1,9 +1,10 @@
 'use strict';
 
 const npmEvents = require('./npm/events');
-const emitEvents = require('./emit/events');
+const testEvents = require('./test/events');
 const cacheFactory = require('./cache/factory');
 const ConfigBasedComponent = require('./config-based-component');
+const Spinner = require('./helper/spinner');
 
 class CacheComponent extends ConfigBasedComponent {
   /**
@@ -55,28 +56,34 @@ class CacheComponent extends ConfigBasedComponent {
     return new Promise(resolve => {
       const cacheDriver = this.container.get('driver');
       
-      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {
-        this.logger.info(
-          this.logger.emoji.bicycle, 
+      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {        
+        return (new Spinner(
           `Downloading caches from #${ cacheDriver }`
-        );
-        
-        return this._initCache(cacheDriver, cacheDir)
-          .cache.download();
+        )).then(
+          'Caches downloaded.'
+        ).catch(
+          'Caches failed to download!'
+        ).promise(
+          this._initCache(cacheDriver, cacheDir)
+            .cache.download()
+        )
       });
       
-      emitter.on(emitEvents.modules.process.end, () => {
+      emitter.onBlocking(testEvents.assets.test.end, () => {
         if (!this.cache) {
-          return process.nextTick(() => resolve());
+          resolve();
+          return Promise.resolve();
         }
         
-        this.logger.info(
-          this.logger.emoji.star, 
+        return (new Spinner(
           `Uploading caches to #${ cacheDriver }`
-        );
-        
-        this.cache.upload()
-          .then(() => resolve());
+        )).then(
+          'Caches uploaded.'
+        ).catch(
+          'Caches failed to upload!'
+        ).promise(
+          this.cache.upload()
+        ).then(() => resolve());
       });
     });
   }

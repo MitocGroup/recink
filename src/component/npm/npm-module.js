@@ -3,7 +3,7 @@
 const packageHash = require('package-hash');
 const path = require('path');
 const fse = require('fs-extra');
-const ora = require('ora');
+const Spinner = require('../helper/spinner');
 const spawn = require('child_process').spawn;
 const md5Hex = require('md5-hex');
 
@@ -111,9 +111,15 @@ class NpmModule {
    * @private
    */
   _doInstall(deps = []) {
-    return new Promise((resolve, reject) => {
-      const depsDebug = deps.length > 0 ? deps.join(', ') : 'MAIN';
-      const spinner = ora(`Installing dependencies in ${ this.rootDir } (${ depsDebug })`).start();
+    const depsDebug = deps.length > 0 ? deps.join(', ') : 'MAIN';
+    
+    return (new Spinner(
+      `Installing dependencies in ${ this.rootDir } (${ depsDebug })`
+    )).then(
+      `Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`
+    ).catch(
+      `Dependencies installation failed in ${ this.rootDir } (${ depsDebug })`
+    ).promise(new Promise((resolve, reject) => {
       const options = {
         cwd: this.rootDir, 
         stdio: 'ignore',
@@ -121,23 +127,17 @@ class NpmModule {
       
       const npmInstall = spawn('npm', [ 'install' ].concat(deps), options);
       
-      npmInstall.on('close', (code) => {
-        if (code !== 0) {
-          spinner.fail(
-            `Dependencies installation failed with code ${ code } in ${ this.rootDir } (${ depsDebug })`
-          );
-          
+      npmInstall.on('close', code => {
+        if (code !== 0) {          
           return reject(new Error(
             `Failed to install dependencies in ${ this.rootDir }.\n` +
             `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`
           ));
         }
         
-        spinner.succeed(`Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`);
-        
         resolve();
       });
-    });
+    }));
   }
   
   /**
