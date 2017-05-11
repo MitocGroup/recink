@@ -15,9 +15,6 @@ class S3Driver extends AbstractDriver {
     this._path = path;
     this._options = options;
     this._client = new S3(this.options);
-    
-    console.log('path', path);//@todo remove
-    console.log('this.options', options);//@todo remove
   }
   
   /**
