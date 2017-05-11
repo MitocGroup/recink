@@ -1,9 +1,9 @@
 --- 
 $:
   preprocess:
-    '$.cache.options[0]': 'eval'
-    '$.cache.options[1].credentials.accessKeyId': 'eval'
-    '$.cache.options[1].credentials.secretAccessKey': 'eval'
+    '$.cache.options.0': 'eval'
+    '$.cache.options.1.credentials.accessKeyId': 'eval'
+    '$.cache.options.1.credentials.secretAccessKey': 'eval'
   cache:
     # driver: 'void'
     driver: 's3'

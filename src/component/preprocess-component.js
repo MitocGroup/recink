@@ -58,8 +58,6 @@ class PreprocessComponent extends AbstractComponent {
         });
       }
       
-      console.log(container.dump());//@todo remove
-      
       return Promise.resolve();
     }, PreprocessComponent.DEFAULT_PRIORITY);
     
