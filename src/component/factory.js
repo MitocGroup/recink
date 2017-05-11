@@ -14,7 +14,7 @@ class Factory {
     const component = new ComponentImplementation(...args);
     
     if (!(component instanceof AbstractComponent)) {
-      throw new Error(`${ name } config should be an implementation of AbstractComponent`);
+      throw new Error(`${ name } component should be an implementation of AbstractComponent`);
     }
     
     return component;
@@ -63,6 +63,15 @@ class Factory {
    */
   static npm(...args) {
     return this.create('npm', ...args);
+  }
+  
+  /**
+   * @param {*} args
+   *
+   * @returns {PreprocessComponent|*}
+   */
+  static preprocess(...args) {
+    return this.create('preprocess', ...args);
   }
 }
 

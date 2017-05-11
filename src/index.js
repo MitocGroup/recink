@@ -131,10 +131,13 @@ class Deepstiny extends Emitter {
    * @private
    */
   _configLoad(config, configFile) {
-    this._config = config;
-    this._container.reload(this._config);
-    
-    this.emit(events.config.load, this.container, configFile);
+    this.emitBlocking(events.config.preprocess, config)
+      .then(() => {
+        this._config = config;
+        this._container.reload(this._config);
+        
+        this.emit(events.config.load, this.container, configFile);
+      });
   }
   
   /**

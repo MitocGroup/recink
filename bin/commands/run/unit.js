@@ -9,7 +9,8 @@ module.exports = (args, options, logger) => {
 
   return Promise.all([
     dps.components(
-      components.test(), 
+      components.preprocess(),
+      components.test(),
       components.coverage(),
       components.cache(),
       components.emit(),

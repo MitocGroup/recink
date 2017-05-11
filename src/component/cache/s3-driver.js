@@ -1,17 +1,30 @@
 'use strict';
 
 const AbstractDriver = require('./abstract-driver');
+const S3 = require('aws-sdk/clients/s3');
 
 class S3Driver extends AbstractDriver {
   /**
    * @param {string} cacheDir
+   * @param {string} path
    * @param {*} options
    */
-  constructor(cacheDir, options) {
+  constructor(cacheDir, path, options) {
     super(cacheDir);
     
+    this._path = path;
     this._options = options;
-    this._client = null;
+    this._client = new S3(this.options);
+    
+    console.log('path', path);//@todo remove
+    console.log('this.options', options);//@todo remove
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get path() {
+    return this._path;
   }
   
   /**
@@ -19,21 +32,6 @@ class S3Driver extends AbstractDriver {
    */
   get client() {    
     return this._client;
-  }
-  
-  /**
-   * @returns {*}
-   */
-  get realOptions() {
-    const result = {};
-    
-    // @todo find a smarter way to transform options
-    Object.keys(this._options)
-      .map(key => {
-        result[key] = eval(this._options[key]);
-      });
-    
-    return result;
   }
   
   /**

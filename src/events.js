@@ -4,6 +4,7 @@ const dot = require('dot-object');
 const events = {};
 
 events.$ = [
+  'config.preprocess',
   'config.load',
   'components.load',
   'components.run',

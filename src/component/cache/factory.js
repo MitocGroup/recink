@@ -14,7 +14,7 @@ class Factory {
     const driver = new DriverImplementation(...args);
     
     if (!(driver instanceof AbstractDriver)) {
-      throw new Error(`${ name } config should be an implementation of AbstractDriver`);
+      throw new Error(`${ name } driver should be an implementation of AbstractDriver`);
     }
     
     return driver;
