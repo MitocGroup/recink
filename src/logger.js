@@ -173,6 +173,7 @@ class Logger {
       hat: '🎩 ',
       new: '🆕 ',
       fist: '👊 ',
+      beer: '🍺 ',
     };
   }
   

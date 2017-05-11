@@ -6,6 +6,8 @@ $:
   #     accessKey: 'process.env.DPS_AWS_ACCESS_KEY'
   #     secretKey: 'process.env.DPS_AWS_SECRET_KEY'
   #     path: 'process.env.DPS_S3_CACHE_PATH'
+  npm:
+    installPackageDependencies: true
   emit:
     pattern:
       - /.+\.js$/i
@@ -23,5 +25,5 @@ $:
 main:
   root: '.'
   dependencies:
-    chai: '*'
+    chai: '^3.5.0'
     # local-sample: 'file:./sample-module'

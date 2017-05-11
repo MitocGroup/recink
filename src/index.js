@@ -14,7 +14,7 @@ class Deepstiny extends Emitter {
     
     this._config = {};
     this._components = [];
-    this._container = new Container(this._config);
+    this._container = new Container();
     
     this._registerDebugers();
   }
@@ -121,12 +121,36 @@ class Deepstiny extends Emitter {
   configure(configFile = Deepstiny.CONFIG_FILE) {
     return configFactory.guess(configFile)
       .load()
-      .then(config => {
-        this._config = config;
-        this._container.reload(this._config);
-        
-        this.emit(events.config.load, this.container, configFile);
-      });
+      .then(config => this._configLoad(config, configFile));
+  }
+  
+  /**
+   * @param {*} config
+   * @param {string} configFile
+   * 
+   * @private
+   */
+  _configLoad(config, configFile) {
+    this._config = config;
+    this._container.reload(this._config);
+    
+    this.emit(events.config.load, this.container, configFile);
+  }
+  
+  /**
+   * @param {string} name
+   *
+   * @returns {AbstractComponent|*}
+   */
+  component(name) {
+    return this._components.filter(c => c.name === name)[0];
+  }
+  
+  /**
+   * @returns {AbstractComponent[]|*}
+   */
+  listComponents() {
+    return this._components;
   }
   
   /**

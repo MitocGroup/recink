@@ -12,7 +12,8 @@ module.exports = (args, options, logger) => {
       components.test(), 
       components.coverage(),
       components.cache(),
-      components.emit()
+      components.emit(),
+      components.npm()
     ),
     dps.configure(path.join(args.path, Deepstiny.CONFIG_FILE_NAME))
   ]).then(() => dps.run());

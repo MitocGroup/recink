@@ -55,6 +55,15 @@ class Factory {
   static test(...args) {
     return this.create('test', ...args);
   }
+  
+  /**
+   * @param {*} args
+   *
+   * @returns {NpmComponent|*}
+   */
+  static npm(...args) {
+    return this.create('npm', ...args);
+  }
 }
 
 module.exports = Factory;

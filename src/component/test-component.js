@@ -64,7 +64,7 @@ class TestComponent extends ConfigBasedComponent {
           .then(() => emitter.emitBlocking(events.assets.test.end, this))
           .then(() => {
             this.logger.info(
-              this.logger.emoji.hat, 
+              this.logger.emoji.beer, 
               `Finished processing ${ this.stats.processed } test assets`
             );
             this.logger.debug(this.dumpStats());
