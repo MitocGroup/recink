@@ -45,7 +45,7 @@ class AbstractConfig {
    * @returns {Promise|*}
    */
   decode(rawConfig) {
-    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemente!`));
+    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));
   }
   
   /**
@@ -54,7 +54,7 @@ class AbstractConfig {
    * @returns {Promise|*}
    */
   encode(config) {
-    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemente!`));
+    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));
   }
 }
 

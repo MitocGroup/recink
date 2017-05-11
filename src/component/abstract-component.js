@@ -101,7 +101,7 @@ class AbstractComponent {
    * @returns {string}
    */
   get name() {
-    throw new Error(`${ this.constructor.name }.name not implemente!`);
+    throw new Error(`${ this.constructor.name }.name not implemented!`);
   }
   
   /**

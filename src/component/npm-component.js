@@ -73,7 +73,7 @@ class NpmComponent extends ConfigBasedComponent {
    * @returns {Promise|*}
    */
   run(emitter) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       emitter.onBlocking(emitEvents.module.emit.start, emitModule => {
         return this.cache(emitter, emitModule.name)
           .then(cache => {
@@ -90,7 +90,11 @@ class NpmComponent extends ConfigBasedComponent {
             emitter.emit(events.npm.dependencies.install, npmModule, emitModule);
             
             return npmModule.install(
-              emitModule.container.get('dependencies', {}),
+              Object.assign(
+                {}, 
+                this.container.get('dependencies', {}), 
+                emitModule.container.get('dependencies', {})
+              ),
               this.container.get('installPackageDependencies', false)
             );
           });

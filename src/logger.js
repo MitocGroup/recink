@@ -174,6 +174,8 @@ class Logger {
       new: '🆕 ',
       fist: '👊 ',
       beer: '🍺 ',
+      bicycle: '🚲 ',
+      star: '⭐️ ',
     };
   }
   

@@ -1,11 +1,13 @@
 --- 
 $:
   cache:
+    # driver: 'void'
     driver: 's3'
     options:
-      accessKey: 'process.env.DPS_AWS_ACCESS_KEY'
-      secretKey: 'process.env.DPS_AWS_SECRET_KEY'
-      path: 'process.env.DPS_S3_CACHE_PATH'
+      -
+        accessKey: 'process.env.DPS_AWS_ACCESS_KEY'
+        secretKey: 'process.env.DPS_AWS_SECRET_KEY'
+        path: 'process.env.DPS_S3_CACHE_PATH'
   npm:
     installPackageDependencies: true
     dependencies:
@@ -18,7 +20,8 @@ $:
   test:
     mocha:
       options:
-        - { ui: 'bdd' }
+        ui: 'bdd'
+        reporter: 'spec'
     pattern:
       - /.+\.spec\.js$/i
   # coverage:
@@ -26,6 +29,5 @@ $:
   #     - /.+\.spec\.js$/i
 main:
   root: '.'
-  dependencies:
-    sinon: '*'
+  dependencies: ~
     # local-sample: 'file:./sample-module'
