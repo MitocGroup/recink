@@ -53,22 +53,6 @@ class NpmComponent extends ConfigBasedComponent {
    * @param {Emitter|*} emitter
    * 
    * @returns {Promise|*}
-   *
-   * @private
-   */
-  _cachePurge(emitter) {
-    if (!this._cacheDir) {
-      return Promise.resolve();
-    }
-    
-    return emitter.emitBlocking(events.npm.cache.purge, this._cacheDir)
-      .then(() => fse.remove(this._cacheDir));
-  }
-  
-  /**
-   * @param {Emitter|*} emitter
-   * 
-   * @returns {Promise|*}
    */
   cache(emitter, name) {
     if (this._cache) {
@@ -113,7 +97,7 @@ class NpmComponent extends ConfigBasedComponent {
       });
       
       emitter.on(emitEvents.modules.process.end, () => {
-        this._cachePurge(emitter).then(() => resolve());
+        process.nextTick(() => resolve());
       });
     });
   }

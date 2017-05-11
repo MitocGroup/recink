@@ -6,7 +6,6 @@ const events = {};
 events.$ = [
   'npm.dependencies.install',
   'npm.cache.init',
-  'npm.cache.purge',
 ].map(eventPath => {
   dot.str(eventPath, eventPath, events);
   
