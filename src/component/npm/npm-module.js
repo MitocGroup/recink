@@ -5,6 +5,7 @@ const path = require('path');
 const fse = require('fs-extra');
 const ora = require('ora');
 const spawn = require('child_process').spawn;
+const md5Hex = require('md5-hex');
 
 class NpmModule {
   /**
@@ -51,7 +52,7 @@ class NpmModule {
     const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
     
     return fse.ensureDir(modulesDir)
-      .then(() => this._packageHash(packageFile))
+      .then(() => this._packageHash(packageFile, deps))
       .then(hash => {
         cacheKey = hash;
         
@@ -68,9 +69,11 @@ class NpmModule {
         
         return this._install(packageFile, deps)
           .then(() => {
-            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);
+            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey } (flush=true)`);
             
-            return this.cache.save(cacheKey, modulesDir);
+            // @todo find a smarter way to invalidate caches
+            return this.cache.flush()
+              .then(() => this.cache.save(cacheKey, modulesDir));
           });
       });
   }
@@ -93,7 +96,7 @@ class NpmModule {
           .map(depName => {
             return `${ depName }@${ additionalDeps[depName] }`;
           });
-        
+    
         return depsVector.length > 0 
           ? this._doInstall(depsVector) 
           : Promise.resolve();
@@ -121,15 +124,16 @@ class NpmModule {
       npmInstall.on('close', (code) => {
         if (code !== 0) {
           spinner.fail(
-            `Dependencies installation failed with code ${ code } in ${ this.rootDir }`
+            `Dependencies installation failed with code ${ code } in ${ this.rootDir } (${ depsDebug })`
           );
           
           return reject(new Error(
-            `Failed to install dependencies in ${ this.rootDir }`
+            `Failed to install dependencies in ${ this.rootDir }.\n` +
+            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`
           ));
         }
         
-        spinner.succeed(`Dependencies installation succeed in ${ this.rootDir }`);
+        spinner.succeed(`Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`);
         
         resolve();
       });
@@ -138,14 +142,16 @@ class NpmModule {
   
   /**
    * @param {string} packageFile
+   * @param {*} deps
    *
    * @returns {Promise|*}
    *
    * @private
    */
-  _packageHash(packageFile) {
+  _packageHash(packageFile, deps) {
     return fse.pathExists(packageFile)
       .then(hasPackageFile => {
+        const depsHash = this._depsHash(deps);
         const packageDebug = hasPackageFile ? 'exists' : 'missing';
         
         this.logger.debug(
@@ -153,18 +159,45 @@ class NpmModule {
         );
         
         if (!hasPackageFile) {
-          return Promise.resolve(NpmModule.DEFAULT_HASH);
+          return Promise.resolve(`${ depsHash }-${ NpmModule.DEFAULT_HASH }`);
         }
         
-        return packageHash(packageFile);
+        return packageHash(packageFile)
+          .then(hash => {
+            return Promise.resolve(`${ depsHash }-${ hash }`);
+          });
       });
+  }
+  
+  /**
+   * @param {*} deps
+   *
+   * @returns {string}
+   *
+   * @private
+   */
+  _depsHash(deps) {
+    const normalizedDeps = {};
+    
+    Object.keys(deps).sort().map(key => {
+      normalizedDeps[key] = deps[key];
+    });
+    
+    return md5Hex(JSON.stringify(normalizedDeps));
   }
   
   /**
    * @returns {string}
    */
   static get DEFAULT_HASH() {
-    return '_no_package';
+    return 'x'.repeat(32);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get NPM_DEBUG_FILE() {
+    return 'npm-debug.log';
   }
   
   /**
