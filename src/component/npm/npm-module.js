@@ -6,6 +6,7 @@ const fse = require('fs-extra');
 const Spinner = require('../helper/spinner');
 const spawn = require('child_process').spawn;
 const md5Hex = require('md5-hex');
+const SequentialPromise = require('../helper/sequential-promise');
 
 class NpmModule {
   /**
@@ -42,11 +43,12 @@ class NpmModule {
   
   /**
    * @param {*} deps
+   * @param {array} scripts
    * @param {boolean} includePackageDeps
    *
    * @returns {Promise|*}
    */
-  install(deps = {}, includePackageDeps = false) {
+  install(deps = {}, scripts = [], includePackageDeps = false) {
     let cacheKey;
     const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);
     const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
@@ -62,12 +64,14 @@ class NpmModule {
         if (inCache) {
           this.logger.debug(`Restore ${ this.rootDir } cache from #${ cacheKey }`);
           
-          return this.cache.restore(cacheKey, modulesDir);
+          return this.cache.restore(cacheKey, modulesDir)
+            .then(() => this._runScripts(scripts));
         }
         
         this.logger.debug(`Install dependencies in ${ this.rootDir }`);
         
         return this._install(packageFile, deps)
+          .then(() => this._runScripts(scripts))
           .then(() => {
             this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey } (flush=true)`);
             
@@ -76,6 +80,58 @@ class NpmModule {
               .then(() => this.cache.save(cacheKey, modulesDir));
           });
       });
+  }
+  
+  /**
+   * @param {array} scripts
+   * 
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _runScripts(scripts) {
+    if (scripts.length <= 0) {
+      return Promise.resolve();
+    }
+    
+    return SequentialPromise.all(scripts.map(script => {
+      return this._runScript(script);
+    }));
+  }
+  
+  /**
+   * @param {string} script
+   * 
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _runScript(script) {
+    return (new Spinner(
+      `Running ${ script } script in ${ this.rootDir }`
+    )).then(
+      `Script ${ script } execution succeed in ${ this.rootDir }`
+    ).catch(
+      `Script ${ script } execution failed in ${ this.rootDir }`
+    ).promise(new Promise((resolve, reject) => {
+      const options = {
+        cwd: this.rootDir, 
+        stdio: 'ignore',
+      };
+
+      const npmInstall = spawn('npm', [ 'run', script ], options);
+      
+      npmInstall.on('close', code => {
+        if (code !== 0) {          
+          return reject(new Error(
+            `Failed to run script ${ script } in ${ this.rootDir }.\n` +
+            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`
+          ));
+        }
+        
+        resolve();
+      });
+    }));
   }
   
   /**
@@ -125,6 +181,11 @@ class NpmModule {
         stdio: 'ignore',
       };
       
+      // ignore running 'npm install' scripts
+      if (deps.length <= 0) {
+        deps = [ '--ignore-scripts' ];
+      }
+
       const npmInstall = spawn('npm', [ 'install' ].concat(deps), options);
       
       npmInstall.on('close', code => {

@@ -4,13 +4,19 @@ const jag = require('jag');
 const path = require('path');
 const fse = require('fs-extra');
 const pify = require('pify');
+const EventEmitter = require('events');
+const events = require('./events');
+const fs = require('fs');
 
-class AbstractDriver {
+class AbstractDriver extends EventEmitter {
   /**
    * @returns {string}
    */
   constructor(cacheDir) {
+    super();
+    
     this._cacheDir = cacheDir;
+    this._progressType = null;
   }
   
   /**
@@ -24,20 +30,65 @@ class AbstractDriver {
    * @returns {Promise|*}
    */
   upload() {
-    return this._removePackageFile()
+    return this._switchProgressType('upload')
+      ._removePackageFile()
       .then(() => this._pack())
       .then(() => this._upload())
-      .then(() => this._removePackageFile());
+      .then(() => this._resetOperation());
   }
   
   /**
    * @returns {Promise|*}
    */
   download() {
-    return this._removePackageFile()
+    return this._switchProgressType('download')
+      ._removePackageFile()
       .then(() => this._download())
       .then(() => this._unpack())
-      .then(() => this._removePackageFile());
+      .then(() => this._resetOperation());
+  }
+  
+  /**
+   * @param {string} type
+   *
+   * @returns {AbstractDriver|*}
+   *
+   * @private
+   */
+  _switchProgressType(type) {
+    this._progressType = type;
+    
+    return this;
+  }
+  
+  /**
+   * @param {number} total
+   * @param {number} amount
+   *
+   * @returns {AbstractDriver|*}
+   *
+   * @private
+   */
+  _progress(total, amount) {
+    const payload = {
+      amount, total, remaining: total - amount,
+    };
+    
+    this.emit(events.cache.progress, payload);
+    this.emit(events.cache[this._progressType].progress, payload);
+    
+    return this;
+  }
+  
+  /**
+   * @returns {Promise|*}
+   * 
+   * @private
+   */
+  _resetOperation() {
+    this._progressType = null;
+    
+    return this._removePackageFile();
   }
   
   /**

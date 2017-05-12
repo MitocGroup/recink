@@ -95,6 +95,10 @@ class NpmComponent extends ConfigBasedComponent {
                 this.container.get('dependencies', {}), 
                 emitModule.container.get('dependencies', {})
               ),
+              [].concat(
+                this.container.get('scripts', []),
+                emitModule.container.get('scripts', [])
+              ),
               this.container.get('installPackageDependencies', false)
             );
           });

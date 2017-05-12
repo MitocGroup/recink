@@ -10,6 +10,40 @@ class Spinner {
     this._main = msg;
     this._then = msg;
     this._catch = msg;
+    this._spinner = null;
+  }
+  
+  /**
+   * @param {string} text
+   *
+   * @returns {ora|*}
+   */
+  prepend(text) {
+    this.spinner.text = `${ text } ${ this._main }`;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} text
+   *
+   * @returns {ora|*}
+   */
+  append(text) {
+    this.spinner.text = `${ this._main } ${ text }`;
+    
+    return this;
+  }
+  
+  /**
+   * @returns {ora|*}
+   */
+  get spinner() {
+    if (!this._spinner) {
+      this._spinner = ora(this._main);
+    }
+    
+    return this._spinner;
   }
   
   /**
@@ -18,16 +52,16 @@ class Spinner {
    * @returns {Promise|*}
    */
   promise(promiseToWrap) {
-    const spinner = ora(this._main).start();
+    this.spinner.start();
     
     return promiseToWrap
       .then(result => {
-        spinner.succeed(this.thenText);
+        this.spinner.succeed(this.thenText);
         
         return Promise.resolve(result);
       })
       .catch(error => {
-        spinner.fail(this.catchText);
+        this.spinner.fail(this.catchText);
         
         return Promise.reject(error);
       });

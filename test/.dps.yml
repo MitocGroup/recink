@@ -1,14 +1,13 @@
 --- 
 $:
   preprocess:
-    '$.cache.options.0': 'eval'
     '$.cache.options.1.credentials.accessKeyId': 'eval'
     '$.cache.options.1.credentials.secretAccessKey': 'eval'
   cache:
     # driver: 'void'
     driver: 's3'
     options:
-      - 'process.env.DPS_S3_CACHE_PATH'
+      - 's3://travis-metadata/cache'
       -
         region: 'us-east-1'
         credentials:
@@ -16,9 +15,10 @@ $:
           secretAccessKey: 'process.env.DPS_AWS_SECRET_ACCESS_KEY'
   npm:
     installPackageDependencies: true
+    scripts:
+      - 'compile'
     dependencies:
       chai: '^3.5.0'
-      sinon: '*'
   emit:
     pattern:
       - /.+\.js$/i
@@ -36,5 +36,5 @@ $:
   #     - /.+\.spec\.js$/i
 main:
   root: '.'
-  dependencies: ~
-    # local-sample: 'file:./sample-module'
+  dependencies:
+    sinon: '*'
