@@ -32,7 +32,7 @@ prog
     .command('run e2e', 'Run end to end tests')
       .action(cmd('./commands/run/e2e'))
     .command('configure dps', 'Configure Deepstiny') 
-      .action(cmd('./commands/configure/dps'))      
+      .action(cmd('./commands/configure/dps'))   
     .command('configure travis', 'Configure Travis') 
       .action(cmd('./commands/configure/travis'))
     .command('lint travis', 'Lint Travis configuration') 

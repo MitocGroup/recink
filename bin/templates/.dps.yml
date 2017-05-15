@@ -15,8 +15,8 @@ $:
   npm:
     scripts: ~                                                              # Scripts to run after installing dependencies
       # - 'compile'
-    dependencies: ~                                                         # Dependencies to add/overwrite
-      # chai: '^3.5.0'
+    dependencies:                                                           # Dependencies to add/overwrite
+      chai: '^3.5.0'
   emit:
     pattern:                                                                # Files to include
       - /.+\.js$/i
