@@ -26,6 +26,7 @@ prog
   .version(pkg.version)
   .description(pkg.description)
     .command('run unit', 'Run unit tests') 
+      .option('-s <component>', 'Skip component', prog.REPEATABLE)
       .argument('[path]', 'Path to tests', /.+/, process.cwd())
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')

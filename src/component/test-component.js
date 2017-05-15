@@ -9,6 +9,9 @@ const TestAsset = require('./test/test-asset');
 const Mocha = require('mocha');
 
 class TestComponent extends ConfigBasedComponent {
+  /**
+   * @param {*} args
+   */
   constructor(...args) {
     super(...args);
     
@@ -46,9 +49,9 @@ class TestComponent extends ConfigBasedComponent {
         const testAsset = new TestAsset(file, fileAbs, module);
         const mocha = new Mocha(this.container.get('mocha.options', {}));
         
-        return emitter.emitBlocking(events.asset.test.start, testAsset)
+        return emitter.emitBlocking(events.asset.test.start, testAsset, mocha)
           .then(() => testAsset.test(mocha))
-          .then(() => emitter.emitBlocking(events.asset.test.end, testAsset))
+          .then(() => emitter.emitBlocking(events.asset.test.end, testAsset, mocha))
           .then(() => {
             this.removeProcessing();
             return Promise.resolve();

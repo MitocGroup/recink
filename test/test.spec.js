@@ -7,4 +7,11 @@ describe('Suite for Test', () => {
   it('testMethod()', () => {
     chai.expect(instance.testMethod()).to.be.equal(true);
   });
+  
+  it('testStaticGetter', done => {
+    setTimeout(() => {
+      chai.expect(Test.testStaticGetter).to.be.equal(true);
+      done();
+    }, 300);
+  });
 });

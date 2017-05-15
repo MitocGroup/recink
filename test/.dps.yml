@@ -30,9 +30,14 @@ $:
         reporter: 'spec'
     pattern:
       - /.+\.spec\.js$/i
-  # coverage:
-  #   ignore:
-  #     - /.+\.spec\.js$/i
+  coverage:
+    pattern:
+      - /.+\.js$/i
+    ignore:
+      - /.+\.spec\.js$/i
+      - /^(.*\/)?node_modules(\/?$)?/i
+    reporters:
+      text-summary: ~
 main:
   root: '.'
   dependencies:

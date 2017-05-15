@@ -111,7 +111,6 @@ class S3Driver extends AbstractDriver {
   _download() {
     return new Promise((resolve, reject) => {
       const { Bucket, Key } = this._parseS3Path(this.path);
-
       const packageStream = fs.createWriteStream(this._packagePath);
       const remoteStream = this.client
         .getObject({ Bucket, Key, }).createReadStream();
