@@ -1,8 +1,8 @@
 --- 
 $:
   preprocess:
-    '$.cache.options.1.credentials.accessKeyId': 'eval'
-    '$.cache.options.1.credentials.secretAccessKey': 'eval'
+    '$.cache.options.1.accessKeyId': 'eval'
+    '$.cache.options.1.secretAccessKey': 'eval'
   cache:
     # driver: 'void'
     driver: 's3'
@@ -10,9 +10,8 @@ $:
       - 's3://travis-metadata/cache'
       -
         region: 'us-east-1'
-        credentials:
-          accessKeyId: 'process.env.DPS_AWS_ACCESS_KEY_ID'
-          secretAccessKey: 'process.env.DPS_AWS_SECRET_ACCESS_KEY'
+        accessKeyId: 'process.env.DPS_AWS_ACCESS_KEY_ID'
+        secretAccessKey: 'process.env.DPS_AWS_SECRET_ACCESS_KEY'
   npm:
     installPackageDependencies: true
     scripts:

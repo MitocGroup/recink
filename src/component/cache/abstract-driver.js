@@ -108,7 +108,7 @@ class AbstractDriver extends EventEmitter {
   get _packagePath() {
     return path.join(
       path.dirname(this.cacheDir),
-      (path.basename(this.cacheDir) || 'dps_package') + '.tar.gz'
+      (path.basename(this.cacheDir) || AbstractDriver.DEFAULT_NS) + '.tar.gz'
     );
   }
   
@@ -156,12 +156,29 @@ class AbstractDriver extends EventEmitter {
         if (!result) {
           return Promise.resolve();
         }
-        
-        return fse.ensureDir(this.cacheDir)
-          .then(() => {
-            return pify(jag.unpack)(this._packagePath, this.cacheDir);
+
+        return this._packageSize
+          .then(packageSize => {            
+            if (packageSize <= 0) {
+              return Promise.resolve();
+            }
+            
+            return fse.ensureDir(this.cacheDir)
+              .then(() => {
+                return pify(jag.unpack)(this._packagePath, this.cacheDir);
+              });
           });
       });
+  }
+  
+  /**
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  get _packageSize() {
+    return pify(fs.stat)(this._packagePath)
+      .then(stat => Promise.resolve(stat.size));
   }
   
   /**
@@ -184,6 +201,13 @@ class AbstractDriver extends EventEmitter {
     return Promise.reject(new Error(
       `${ this.constructor.name }._download() not implemented!`
     ));
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get DEFAULT_NS() {
+    return 'dps_package';
   }
 }
 
