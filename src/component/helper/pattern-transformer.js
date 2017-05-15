@@ -2,7 +2,7 @@
 
 module.exports = (value => {  
   return Promise.resolve((Array.isArray(value) ? value : [ value ])
-    .filter(pattern => !!(pattern.trim()))
+    .filter(pattern => !!((pattern || '').trim()))
     .map(pattern => {
       if (isRegexp(pattern)) {
         return toRegexp(pattern);

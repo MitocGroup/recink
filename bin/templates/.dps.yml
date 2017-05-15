@@ -1,0 +1,45 @@
+--- 
+$:
+  ### Uncomment to be able to use NPM cache stored in S3
+  # preprocess:
+  #   '$.cache.options.1.accessKeyId': 'eval'
+  #   '$.cache.options.1.secretAccessKey': 'eval'
+  # cache:
+  #   driver: 's3'                                                          # Available drivers: void
+  #   options:
+  #     - 's3://travis-metadata/cache'                                      # S3 cache directory
+  #     -                                                                   # S3 client options
+  #       region: 'us-east-1'
+  #       accessKeyId: 'process.env.DPS_AWS_ACCESS_KEY_ID'
+  #       secretAccessKey: 'process.env.DPS_AWS_SECRET_ACCESS_KEY'
+  npm:
+    scripts: ~                                                              # Scripts to run after installing dependencies
+      # - 'compile'
+    dependencies: ~                                                         # Dependencies to add/overwrite
+      # chai: '^3.5.0'
+  emit:
+    pattern:                                                                # Files to include
+      - /.+\.js$/i
+    ignore:                                                                 # Files to exclude
+      - /^(.*\/)?node_modules(\/?$)?/i
+  test:
+    mocha:
+      options:                                                              # Mocha options
+        ui: 'bdd'
+        reporter: 'spec'
+    pattern:                                                                # Files to include
+      - /.+\.spec\.js$/i
+    ignore: ~                                                               # Files to exclude
+  coverage:
+    pattern:                                                                # Files to include
+      - /.+\.js$/i
+    ignore:                                                                 # Files to exclude
+      - /.+\.spec\.js$/i
+      - /^(.*\/)?node_modules(\/?$)?/i
+    reporters:                                                              # Istanbul reporters
+      text-summary: ~
+main:                                                                       # Main module definition
+  root: '.'                                                                 # Root package directory (containing package.json and tests)
+  dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)
+
+### Add other modules here...

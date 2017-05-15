@@ -30,6 +30,7 @@ $:
         reporter: 'spec'
     pattern:
       - /.+\.spec\.js$/i
+    ignore: ~
   coverage:
     pattern:
       - /.+\.js$/i
@@ -40,5 +41,4 @@ $:
       text-summary: ~
 main:
   root: '.'
-  dependencies:
-    sinon: '*'
+  dependencies: ~

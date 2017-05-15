@@ -44,11 +44,10 @@ class NpmModule {
   /**
    * @param {*} deps
    * @param {array} scripts
-   * @param {boolean} includePackageDeps
    *
    * @returns {Promise|*}
    */
-  install(deps = {}, scripts = [], includePackageDeps = false) {
+  install(deps = {}, scripts = []) {
     let cacheKey;
     const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);
     const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
