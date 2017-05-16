@@ -30,7 +30,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {*}
+   * @returns {S3}
    */
   get client() {    
     return this._client;

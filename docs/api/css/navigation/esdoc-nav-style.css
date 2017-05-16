@@ -1,0 +1,117 @@
+.navigation
+{
+   margin-top: 0;
+   padding-left: 0;
+}
+
+.navigation .nav-accordion-menu
+{
+   min-width: 250px;
+}
+
+.navigation .nav-is-alias
+{
+   font-style: italic;
+}
+
+.navigation .nav-dir-path
+{
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 25px;
+   line-height: 25px;
+   font-size: 0.9rem;
+   color: #272f8f;
+}
+
+.navigation .nav-dir-path
+{
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 25px;
+   line-height: 25px;
+   font-size: 0.9rem;
+   color: #272f8f;
+}
+
+.navigation .nav-file
+{
+   background: rgb(252,252,252); /* Old browsers */
+   background: -moz-linear-gradient(left, rgba(252,252,252,1) 70%, rgba(245,245,245,1) 96%); /* FF3.6-15 */
+   background: -webkit-linear-gradient(left, rgba(252,252,252,1) 70%,rgba(245,245,245,1) 96%); /* Chrome10-25,Safari5.1-6 */
+   background: linear-gradient(to right, rgba(252,252,252,1) 70%,rgba(245,245,245,1) 96%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#f5f5f5',GradientType=1 ); /* IE6-9 */   font-size: 0.9rem;
+   color: #272f8f;
+}
+
+.navigation .nav-package
+{
+   background: rgb(253,242,213); /* Old browsers */
+   background: -moz-linear-gradient(top, rgba(253,242,213,1) 0%, rgba(253,223,141,1) 50%, rgba(255,210,87,1) 51%, rgba(252,235,186,1) 100%); /* FF3.6-15 */
+   background: -webkit-linear-gradient(top, rgba(253,242,213,1) 0%,rgba(253,223,141,1) 50%,rgba(255,210,87,1) 51%,rgba(252,235,186,1) 100%); /* Chrome10-25,Safari5.1-6 */
+   background: linear-gradient(to bottom, rgba(253,242,213,1) 0%,rgba(253,223,141,1) 50%,rgba(255,210,87,1) 51%,rgba(252,235,186,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdf2d5', endColorstr='#fcebba',GradientType=0 ); /* IE6-9 */
+
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 25px;
+   line-height: 25px;
+   font-size: 0.9rem;
+   color: #272f8f;
+}
+
+.navigation .nav-package-npm
+{
+   background: rgb(248,238,239); /* Old browsers */
+   background: -moz-linear-gradient(top, rgba(248,238,239,1) 0%, rgba(240,182,187,1) 50%, rgba(237,151,158,1) 51%, rgba(252,218,221,1) 100%); /* FF3.6-15 */
+   background: -webkit-linear-gradient(top, rgba(248,238,239,1) 0%,rgba(240,182,187,1) 50%,rgba(237,151,158,1) 51%,rgba(252,218,221,1) 100%); /* Chrome10-25,Safari5.1-6 */
+   background: linear-gradient(to bottom, rgba(248,238,239,1) 0%,rgba(240,182,187,1) 50%,rgba(237,151,158,1) 51%,rgba(252,218,221,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8eeef', endColorstr='#fcdadd',GradientType=0 ); /* IE6-9 */
+
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 25px;
+   line-height: 25px;
+   font-size: 0.9rem;
+   color: #272f8f;
+}
+
+.navigation .nav-header
+{
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 30px;
+   line-height: 30px;
+   font-size: 1.2rem;
+   color: #272f8f;
+}
+
+.navigation .nav-kind-class a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat 0 0;
+}
+
+.navigation .nav-kind-interface a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -16px 0;
+}
+
+.navigation .nav-kind-function a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -32px 0;
+}
+
+.navigation .nav-kind-variable a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -48px 0;
+}
+
+.navigation .nav-kind-typedef a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -64px 0;
+}
+
+.navigation .nav-kind-external a::after
+{
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -80px 0;
+}

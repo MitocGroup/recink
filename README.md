@@ -6,6 +6,14 @@
 suitable for running tests on big/hybrid/complex projects by adding a simply `.dps.yml`
 configuration to rule them all.
 
+# Motivation
+
+Finding an higly configurable test runner that suits more than a basic js app
+is as hard as writing high quality tests. The main reason is getting test runned as fast as possible
+with minimal headache possible and extending the runner via components with simple and documented api.
+
+Also Travis integration and caching out of the box ;)
+
 # Prerequisites
 
 - [ ] Ensure `Node.js 6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
