@@ -2,6 +2,23 @@
   "source": "./src", 
   "destination": "./docs/api",
   "plugins": [
-    { "name": "esdoc-es7-plugin" }
-  ]
+    { "name": "esdoc-node" }
+  ],
+  "experimentalProposal": {
+    "classProperties": true,
+    "objectRestSpread": true,
+    "decorators": true,
+    "doExpressions": true,
+    "functionBind": true,
+    "asyncGenerators": true,
+    "exportExtensions": true,
+    "dynamicImport": true
+  },
+  "lint": true,
+  "package": "./package.json",
+  "title": "Deepstiny - highly opinionated and extremely optimized test runner",
+  "manual": {
+    "globalIndex": true,
+    "index": "./README.md"
+  }
 }

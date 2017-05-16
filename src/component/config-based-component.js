@@ -54,7 +54,6 @@ class ConfigBasedComponent extends AbstractComponent {
   
   /**
    * @param {Emitter|*} emitter
-   * @param {string} path
    *
    * @returns {Promise|*}
    */

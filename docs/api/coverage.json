@@ -1,6 +1,273 @@
 {
-  "coverage": "0%",
-  "expectCount": 0,
-  "actualCount": 0,
-  "files": {}
+  "coverage": "80.18%",
+  "expectCount": 222,
+  "actualCount": 178,
+  "files": {
+    "src/logger.js": {
+      "expectCount": 16,
+      "actualCount": 15,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/abstract-component.js": {
+      "expectCount": 16,
+      "actualCount": 14,
+      "undocumentLines": [
+        5,
+        6
+      ]
+    },
+    "src/index.js": {
+      "expectCount": 12,
+      "actualCount": 9,
+      "undocumentLines": [
+        8,
+        11,
+        12
+      ]
+    },
+    "src/config/abstract-config.js": {
+      "expectCount": 7,
+      "actualCount": 6,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "src/component/cache/abstract-driver.js": {
+      "expectCount": 7,
+      "actualCount": 5,
+      "undocumentLines": [
+        11,
+        7
+      ]
+    },
+    "src/component/preprocess/abstract-transformer.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "src/component/npm/cache.js": {
+      "expectCount": 9,
+      "actualCount": 8,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "src/component/cache-component.js": {
+      "expectCount": 6,
+      "actualCount": 4,
+      "undocumentLines": [
+        11,
+        6
+      ]
+    },
+    "src/component/config-based-component.js": {
+      "expectCount": 10,
+      "actualCount": 9,
+      "undocumentLines": [
+        7
+      ]
+    },
+    "src/container.js": {
+      "expectCount": 9,
+      "actualCount": 8,
+      "undocumentLines": [
+        7
+      ]
+    },
+    "src/component/helper/container-transformer.js": {
+      "expectCount": 8,
+      "actualCount": 7,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "src/component/coverage-component.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        12
+      ]
+    },
+    "src/component/npm/npm-module.js": {
+      "expectCount": 10,
+      "actualCount": 9,
+      "undocumentLines": [
+        11
+      ]
+    },
+    "src/component/test-component.js": {
+      "expectCount": 8,
+      "actualCount": 7,
+      "undocumentLines": [
+        11
+      ]
+    },
+    "src/emitter.js": {
+      "expectCount": 7,
+      "actualCount": 5,
+      "undocumentLines": [
+        5,
+        6
+      ]
+    },
+    "src/component/preprocess-component.js": {
+      "expectCount": 6,
+      "actualCount": 4,
+      "undocumentLines": [
+        8,
+        9
+      ]
+    },
+    "src/component/emit-component.js": {
+      "expectCount": 7,
+      "actualCount": 6,
+      "undocumentLines": [
+        10
+      ]
+    },
+    "src/component/emit/emit-module.js": {
+      "expectCount": 10,
+      "actualCount": 9,
+      "undocumentLines": [
+        10
+      ]
+    },
+    "src/component/preprocess/eval-transformer.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/config/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/preprocess/factory.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/factory.js": {
+      "expectCount": 8,
+      "actualCount": 7,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/cache/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/npm-component.js": {
+      "expectCount": 6,
+      "actualCount": 5,
+      "undocumentLines": [
+        13
+      ]
+    },
+    "src/component/cache/s3-driver.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        11
+      ]
+    },
+    "src/component/helper/sequential-promise.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "src/component/helper/spinner.js": {
+      "expectCount": 11,
+      "actualCount": 10,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/test/test-asset.js": {
+      "expectCount": 7,
+      "actualCount": 6,
+      "undocumentLines": [
+        7
+      ]
+    },
+    "src/component/helper/transformer.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "src/component/cache/void-driver.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/config/yaml-config.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "src/component/emit/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/component/cache/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/component/npm/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/component/test/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/component/helper/pattern-transformer.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        3
+      ]
+    }
+  }
 }

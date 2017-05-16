@@ -1,7 +1,7 @@
 {
   "name": "deepstiny",
   "version": "0.0.1",
-  "description": "Optimized and customizable test runner integrated with Travis",
+  "description": "Highly opinionated and extremely optimized test runner",
   "keywords": [
     "End2End",
     "Testing",
@@ -34,8 +34,8 @@
     "url": "https://github.com/MitocGroup/deepstiny.git"
   },
   "scripts": {
-    "api-docs": "node node_modules/.bin/esdoc",
-    "prepublish": "npm run docs"
+    "docs": "npm run docs:api",
+    "docs:api": "node node_modules/.bin/esdoc"
   },
   "dependencies": {
     "yaml-js": "^0.1.5",
@@ -59,8 +59,9 @@
     "require-hacker": "^3.0.0",
     "travis-encrypt": "^2.1.1"
   },
-  "depDependencies": {
-    "esdoc": "^0.5.2"
+  "devDependencies": {
+    "esdoc": "^0.5.2",
+    "esdoc-node": "^1.0.2"
   },
   "engines": {
     "node": ">=6.0 <7.0",

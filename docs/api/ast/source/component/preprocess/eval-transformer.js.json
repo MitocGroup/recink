@@ -1,7 +1,7 @@
 {
   "type": "File",
   "start": 0,
-  "end": 275,
+  "end": 273,
   "loc": {
     "start": {
       "line": 1,
@@ -15,7 +15,7 @@
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 275,
+    "end": 273,
     "loc": {
       "start": {
         "line": 1,
@@ -133,7 +133,7 @@
         "kind": "const"
       },
       {
-        "type": "ClassDeclaration",
+        "type": "Identifier",
         "start": 79,
         "end": 239,
         "loc": {
@@ -357,12 +357,15 @@
               ]
             }
           ]
-        }
+        },
+        "name": "_",
+        "leadingComments": [],
+        "trailingComments": []
       },
       {
-        "type": "ExpressionStatement",
+        "type": "Identifier",
         "start": 241,
-        "end": 274,
+        "end": 272,
         "loc": {
           "start": {
             "line": 16,
@@ -370,92 +373,275 @@
           },
           "end": {
             "line": 16,
-            "column": 33
+            "column": 31
           }
         },
-        "expression": {
-          "type": "AssignmentExpression",
-          "start": 241,
-          "end": 273,
+        "declaration": {
+          "type": "Identifier",
+          "start": 256,
+          "end": 271,
           "loc": {
             "start": {
               "line": 16,
-              "column": 0
+              "column": 15
             },
             "end": {
               "line": 16,
-              "column": 32
+              "column": 30
+            },
+            "identifierName": "EvalTransformer"
+          },
+          "name": "EvalTransformer"
+        },
+        "name": "_",
+        "leadingComments": [],
+        "trailingComments": []
+      },
+      {
+        "type": "ExportDefaultDeclaration",
+        "start": 241,
+        "end": 272,
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 0
+          },
+          "end": {
+            "line": 16,
+            "column": 31
+          }
+        },
+        "declaration": {
+          "type": "ClassDeclaration",
+          "start": 79,
+          "end": 239,
+          "loc": {
+            "start": {
+              "line": 5,
+              "column": 0
+            },
+            "end": {
+              "line": 14,
+              "column": 1
             }
           },
-          "operator": "=",
-          "left": {
-            "type": "MemberExpression",
-            "start": 241,
-            "end": 255,
-            "loc": {
-              "start": {
-                "line": 16,
-                "column": 0
-              },
-              "end": {
-                "line": 16,
-                "column": 14
-              }
-            },
-            "object": {
-              "type": "Identifier",
-              "start": 241,
-              "end": 247,
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 0
-                },
-                "end": {
-                  "line": 16,
-                  "column": 6
-                },
-                "identifierName": "module"
-              },
-              "name": "module"
-            },
-            "property": {
-              "type": "Identifier",
-              "start": 248,
-              "end": 255,
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 7
-                },
-                "end": {
-                  "line": 16,
-                  "column": 14
-                },
-                "identifierName": "exports"
-              },
-              "name": "exports"
-            },
-            "computed": false
-          },
-          "right": {
+          "id": {
             "type": "Identifier",
-            "start": 258,
-            "end": 273,
+            "start": 85,
+            "end": 100,
             "loc": {
               "start": {
-                "line": 16,
-                "column": 17
+                "line": 5,
+                "column": 6
               },
               "end": {
-                "line": 16,
-                "column": 32
+                "line": 5,
+                "column": 21
               },
               "identifierName": "EvalTransformer"
             },
             "name": "EvalTransformer"
-          }
-        }
+          },
+          "superClass": {
+            "type": "Identifier",
+            "start": 109,
+            "end": 128,
+            "loc": {
+              "start": {
+                "line": 5,
+                "column": 30
+              },
+              "end": {
+                "line": 5,
+                "column": 49
+              },
+              "identifierName": "AbstractTransformer"
+            },
+            "name": "AbstractTransformer"
+          },
+          "body": {
+            "type": "ClassBody",
+            "start": 129,
+            "end": 239,
+            "loc": {
+              "start": {
+                "line": 5,
+                "column": 50
+              },
+              "end": {
+                "line": 14,
+                "column": 1
+              }
+            },
+            "body": [
+              {
+                "type": "ClassMethod",
+                "start": 191,
+                "end": 237,
+                "loc": {
+                  "start": {
+                    "line": 11,
+                    "column": 2
+                  },
+                  "end": {
+                    "line": 13,
+                    "column": 3
+                  }
+                },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 191,
+                  "end": 200,
+                  "loc": {
+                    "start": {
+                      "line": 11,
+                      "column": 2
+                    },
+                    "end": {
+                      "line": 11,
+                      "column": 11
+                    },
+                    "identifierName": "transform"
+                  },
+                  "name": "transform",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 201,
+                    "end": 206,
+                    "loc": {
+                      "start": {
+                        "line": 11,
+                        "column": 12
+                      },
+                      "end": {
+                        "line": 11,
+                        "column": 17
+                      },
+                      "identifierName": "value"
+                    },
+                    "name": "value"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 208,
+                  "end": 237,
+                  "loc": {
+                    "start": {
+                      "line": 11,
+                      "column": 19
+                    },
+                    "end": {
+                      "line": 13,
+                      "column": 3
+                    }
+                  },
+                  "body": [
+                    {
+                      "type": "ReturnStatement",
+                      "start": 214,
+                      "end": 233,
+                      "loc": {
+                        "start": {
+                          "line": 12,
+                          "column": 4
+                        },
+                        "end": {
+                          "line": 12,
+                          "column": 23
+                        }
+                      },
+                      "argument": {
+                        "type": "CallExpression",
+                        "start": 221,
+                        "end": 232,
+                        "loc": {
+                          "start": {
+                            "line": 12,
+                            "column": 11
+                          },
+                          "end": {
+                            "line": 12,
+                            "column": 22
+                          }
+                        },
+                        "callee": {
+                          "type": "Identifier",
+                          "start": 221,
+                          "end": 225,
+                          "loc": {
+                            "start": {
+                              "line": 12,
+                              "column": 11
+                            },
+                            "end": {
+                              "line": 12,
+                              "column": 15
+                            },
+                            "identifierName": "eval"
+                          },
+                          "name": "eval"
+                        },
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "start": 226,
+                            "end": 231,
+                            "loc": {
+                              "start": {
+                                "line": 12,
+                                "column": 16
+                              },
+                              "end": {
+                                "line": 12,
+                                "column": 21
+                              },
+                              "identifierName": "value"
+                            },
+                            "name": "value"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "directives": []
+                },
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
+                    "start": 133,
+                    "end": 188,
+                    "loc": {
+                      "start": {
+                        "line": 6,
+                        "column": 2
+                      },
+                      "end": {
+                        "line": 10,
+                        "column": 5
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "__PseudoExport__": false,
+          "leadingComments": [],
+          "trailingComments": []
+        },
+        "leadingComments": null
       }
     ],
     "directives": [
@@ -1262,17 +1448,19 @@
     },
     {
       "type": {
-        "label": "name",
+        "label": "export",
+        "keyword": "export",
         "beforeExpr": false,
-        "startsExpr": true,
+        "startsExpr": false,
         "rightAssociative": false,
         "isLoop": false,
         "isAssign": false,
         "prefix": false,
         "postfix": false,
-        "binop": null
+        "binop": null,
+        "updateContext": null
       },
-      "value": "module",
+      "value": "export",
       "start": 241,
       "end": 247,
       "loc": {
@@ -1288,8 +1476,9 @@
     },
     {
       "type": {
-        "label": ".",
-        "beforeExpr": false,
+        "label": "default",
+        "keyword": "default",
+        "beforeExpr": true,
         "startsExpr": false,
         "rightAssociative": false,
         "isLoop": false,
@@ -1299,32 +1488,7 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 247,
-      "end": 248,
-      "loc": {
-        "start": {
-          "line": 16,
-          "column": 6
-        },
-        "end": {
-          "line": 16,
-          "column": 7
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "name",
-        "beforeExpr": false,
-        "startsExpr": true,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null
-      },
-      "value": "exports",
+      "value": "default",
       "start": 248,
       "end": 255,
       "loc": {
@@ -1335,33 +1499,6 @@
         "end": {
           "line": 16,
           "column": 14
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "=",
-        "beforeExpr": true,
-        "startsExpr": false,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": true,
-        "prefix": false,
-        "postfix": false,
-        "binop": null,
-        "updateContext": null
-      },
-      "value": "=",
-      "start": 256,
-      "end": 257,
-      "loc": {
-        "start": {
-          "line": 16,
-          "column": 15
-        },
-        "end": {
-          "line": 16,
-          "column": 16
         }
       }
     },
@@ -1378,16 +1515,16 @@
         "binop": null
       },
       "value": "EvalTransformer",
-      "start": 258,
-      "end": 273,
+      "start": 256,
+      "end": 271,
       "loc": {
         "start": {
           "line": 16,
-          "column": 17
+          "column": 15
         },
         "end": {
           "line": 16,
-          "column": 32
+          "column": 30
         }
       }
     },
@@ -1404,16 +1541,16 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 273,
-      "end": 274,
+      "start": 271,
+      "end": 272,
       "loc": {
         "start": {
           "line": 16,
-          "column": 32
+          "column": 30
         },
         "end": {
           "line": 16,
-          "column": 33
+          "column": 31
         }
       }
     },
@@ -1430,8 +1567,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 275,
-      "end": 275,
+      "start": 273,
+      "end": 273,
       "loc": {
         "start": {
           "line": 17,

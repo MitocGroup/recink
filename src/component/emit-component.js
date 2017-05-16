@@ -48,7 +48,6 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter|*} emitter
-   * @param {string} path
    *
    * @returns {Promise|*}
    */

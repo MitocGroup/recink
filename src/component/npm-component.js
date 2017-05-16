@@ -51,6 +51,7 @@ class NpmComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter|*} emitter
+   * @param {string} name
    * 
    * @returns {Promise|*}
    */

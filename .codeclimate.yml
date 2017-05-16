@@ -6,7 +6,9 @@ engines:
         javascript:
           mass_threshold: 650
     exclude_paths:
-      - '**/tests'
+      - 'test/'
+      - 'docs/'
+      - 'node_modules/'
   eslint:
     enabled: true
     channel: eslint-2
@@ -15,4 +17,4 @@ engines:
 ratings:
   paths:
     - 'bin/**.js'
-    - 'lib/**.js'
+    - 'src/**.js'
