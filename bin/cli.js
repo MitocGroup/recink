@@ -29,6 +29,7 @@ prog
     .command('run unit', 'Run unit tests') 
       .argument('[path]', 'Path to tests', /.+/, process.cwd())
       .option('-s <component>', 'Skip component', prog.REPEATABLE)
+      .complete(() => require('./run/unit/components'))
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')
       .action(cmd('./commands/run/e2e'))

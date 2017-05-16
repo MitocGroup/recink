@@ -23,6 +23,10 @@ Also Travis integration and caching out of the box ;)
 
 `npm install -g deepstiny`
 
+# Configuration
+
+Check out [User Guide](https://mitocgroup.github.io/deepstiny/guide.md)
+
 # Usage
 
 `dps --help` Show help
@@ -33,7 +37,7 @@ Also Travis integration and caching out of the box ;)
 
 # Documentation
 
-- [ ] User Guide
+- [x] User Guide - https://mitocgroup.github.io/deepstiny/guide.md
 - [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/
 - [ ] Dependencies Diagram
 

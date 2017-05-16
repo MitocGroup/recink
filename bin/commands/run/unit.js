@@ -3,11 +3,12 @@
 const Deepstiny = require('../../../src/index').Deepstiny;
 const componentsFactory = require('../../../src/component/factory');
 const path = require('path');
+const availableComponents = require('./unit/components');
 
 module.exports = (args, options, logger) => {
   const dps = new Deepstiny();
   
-  const components = [ 'preprocess', 'test', 'coverage', 'cache', 'emit', 'npm', ]
+  const components = availableComponents
     .filter(c => (options.s || []).indexOf(c) === -1)
     .map(c => componentsFactory[c]());
 
