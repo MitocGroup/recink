@@ -3,7 +3,7 @@
 [![Api Docs](https://mitocgroup.github.io/deepstiny/api/badge.svg)](https://mitocgroup.github.io/deepstiny/api/)
 
 `Deepstiny` (aka `dps`) is a highly optinionated and extremely optimized test runner
-suitable for running tests on big/hybrid/complex projects by adding a simply `.dps.yml`
+suitable for running tests on big/hybrid/complex projects by adding a simple `.dps.yml`
 configuration to rule them all.
 
 # Motivation
@@ -42,6 +42,13 @@ To configure your project check out [User Guide](https://github.com/MitocGroup/d
 - [x] Quick Start Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
 - [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
 - [ ] Dependencies Diagram
+
+# Roadmap
+
+- [ ] Add support for fully automated `Travis` configuration 
+- [ ] Add support for external components
+- [ ] Add more docs
+- [ ] Add support for End-to-End tests
 
 # Sponsors
 
