@@ -8,6 +8,10 @@ class Test {
   testMethod() {
     return true;
   }
+  
+  notTestedMethod() {
+    return false;
+  }
 }
 
 module.exports = Test;

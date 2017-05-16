@@ -158,7 +158,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {string} s3Path
+   * @param {string} s3Path
    *
    * @returns {*}
    *

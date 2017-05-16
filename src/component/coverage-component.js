@@ -8,6 +8,7 @@ const md5Hex = require('md5-hex');
 const path = require('path');
 const fs = require('fs');
 const requireHacker = require('require-hacker');
+const storageFactory = require('./coverage/factory');
 
 class CoverageComponent extends ConfigBasedComponent {
   /**
@@ -15,6 +16,8 @@ class CoverageComponent extends ConfigBasedComponent {
    */
   constructor(...args) {
     super(...args);
+    
+    this._storage = null;
   }
   
   /**
@@ -22,6 +25,129 @@ class CoverageComponent extends ConfigBasedComponent {
    */
   get name() {
     return 'coverage';
+  }
+  
+  /**
+   * @returns {AbstractDriver}
+   *
+   * @private
+   */
+  get _comparatorStorage() {
+    if (this._storage) {
+      return this._storage;
+    }
+    
+    const driver = this.container.get('compare.storage.driver', 'volatile');
+    const options = this.container.get('compare.storage.options', []);
+    
+    this._storage = storageFactory[driver](...options);
+    
+    return this._storage;
+  }
+  
+  /**
+   * @param {istanbul.Collector} collector
+   *
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _doCompare(collector) {
+    const allowedDelta = Math.abs(parseFloat(
+      this.container.get('compare.negative-delta', 100)
+    ));
+    
+    if (!allowedDelta || allowedDelta >= 100) {
+      return Promise.resolve();
+    }
+    
+    const storage = this._comparatorStorage;
+    
+    if (storage.constructor.name === 'VolatileDriver') {
+      this.logger.debug(
+        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`
+      );
+    }
+    
+    return storage.read(CoverageComponent.COVERAGE_FILE)
+      .then(coverage => {
+        const newCoverage = collector.getFinalCoverage();
+        
+        if (!coverage) {
+          this.logger.debug('No saved coverage info, saving the new one...');
+          
+          return storage.write(
+            CoverageComponent.COVERAGE_FILE, 
+            newCoverage
+          );
+        }
+        
+        const delta = this._calculateDelta(coverage, newCoverage);
+        
+        if (delta > allowedDelta) {          
+          return Promise.reject(new Error(
+            `Coverage delta decreased ${ delta.toFixed(2) } > ${ allowedDelta.toFixed(2) }`
+          ));
+        }
+        
+        this.logger.info(
+          this.logger.emoji.bicycle,
+          `Coverage delta checked ${ delta.toFixed(2) } >= ${ allowedDelta.toFixed(2) }`
+        );
+        
+        return storage.write(
+          CoverageComponent.COVERAGE_FILE, 
+          newCoverage
+        );
+      });
+  }
+  
+  /**
+   * @param {*} coverage
+   * @param {*} newCoverage
+   *
+   * @returns {number}
+   *
+   * @private
+   */
+  _calculateDelta(coverage, newCoverage) {
+    const summary = this._summarizeCoverage(coverage);
+    const newSummary = this._summarizeCoverage(newCoverage);
+    
+    return CoverageComponent.COVERAGE_KEYS
+      .reduce((accumulator, key) => {
+        return accumulator + 
+          parseFloat(summary[key]) - 
+          parseFloat((newSummary[key] || 0));
+      }, 0) / CoverageComponent.COVERAGE_KEYS.length;
+  }
+  
+  /**
+   * @param {*} coverage
+   *
+   * @returns {*}
+   *
+   * @private
+   */
+  _summarizeCoverage(coverage) {
+    const summary = {};
+    
+    const summaries = Object.keys(coverage)
+      .map(file => {
+        return istanbul.utils
+          .summarizeFileCoverage(coverage[file]);
+      });
+    
+    const summaryObj = istanbul.utils
+      .mergeSummaryObjects
+      .apply(null, summaries);
+    
+    Object.keys(summaryObj)
+      .map(key => {
+        summary[key] = summaryObj[key].pct;
+      });
+      
+    return summary;
   }
   
   /**
@@ -82,12 +208,18 @@ class CoverageComponent extends ConfigBasedComponent {
       });
       
       emitter.onBlocking(testEvents.assets.test.end, () => {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
           coverageVariables.map(coverageVariable => {
             collector.add(global[coverageVariable] || {});
           });
           
-          reporter.write(collector, false, () => resolve());
+          reporter.write(collector, false, () => {
+            process.stdout.write('\n\n');//indent output
+            
+            this._doCompare(collector)
+              .then(() => resolve())
+              .catch(error => reject(error));
+          });
         });
       });
       
@@ -153,6 +285,20 @@ class CoverageComponent extends ConfigBasedComponent {
           .addPattern('ignore')
           .transform();
       });
+  }
+  
+  /**
+   * @returns {Array}
+   */
+  static get COVERAGE_KEYS() {
+    return [ 'lines', 'statements', 'functions', 'branches' ];
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get COVERAGE_FILE() {
+    return 'coverage.json';
   }
 }
 
