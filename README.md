@@ -38,7 +38,7 @@ Check out [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/
 # Documentation
 
 - [x] User Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
-- [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/
+- [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
 - [ ] Dependencies Diagram
 
 # License
