@@ -54,6 +54,10 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-EventEmitter">EventEmitter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
@@ -87,6 +91,7 @@ const md5Hex = require(&apos;md5-hex&apos;);
 const path = require(&apos;path&apos;);
 const fs = require(&apos;fs&apos;);
 const requireHacker = require(&apos;require-hacker&apos;);
+const storageFactory = require(&apos;./coverage/factory&apos;);
 
 class CoverageComponent extends ConfigBasedComponent {
   /**
@@ -94,6 +99,8 @@ class CoverageComponent extends ConfigBasedComponent {
    */
   constructor(...args) {
     super(...args);
+    
+    this._storage = null;
   }
   
   /**
@@ -101,6 +108,129 @@ class CoverageComponent extends ConfigBasedComponent {
    */
   get name() {
     return &apos;coverage&apos;;
+  }
+  
+  /**
+   * @returns {AbstractDriver}
+   *
+   * @private
+   */
+  get _comparatorStorage() {
+    if (this._storage) {
+      return this._storage;
+    }
+    
+    const driver = this.container.get(&apos;compare.storage.driver&apos;, &apos;volatile&apos;);
+    const options = this.container.get(&apos;compare.storage.options&apos;, []);
+    
+    this._storage = storageFactory[driver](...options);
+    
+    return this._storage;
+  }
+  
+  /**
+   * @param {istanbul.Collector} collector
+   *
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _doCompare(collector) {
+    const allowedDelta = Math.abs(parseFloat(
+      this.container.get(&apos;compare.negative-delta&apos;, 100)
+    ));
+    
+    if (!allowedDelta || allowedDelta &gt;= 100) {
+      return Promise.resolve();
+    }
+    
+    const storage = this._comparatorStorage;
+    
+    if (storage.constructor.name === &apos;VolatileDriver&apos;) {
+      this.logger.debug(
+        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`
+      );
+    }
+    
+    return storage.read(CoverageComponent.COVERAGE_FILE)
+      .then(coverage =&gt; {
+        const newCoverage = collector.getFinalCoverage();
+        
+        if (!coverage) {
+          this.logger.debug(&apos;No saved coverage info, saving the new one...&apos;);
+          
+          return storage.write(
+            CoverageComponent.COVERAGE_FILE, 
+            newCoverage
+          );
+        }
+        
+        const delta = this._calculateDelta(coverage, newCoverage);
+        
+        if (delta &gt; allowedDelta) {          
+          return Promise.reject(new Error(
+            `Coverage delta decreased ${ delta.toFixed(2) } &gt; ${ allowedDelta.toFixed(2) }`
+          ));
+        }
+        
+        this.logger.info(
+          this.logger.emoji.bicycle,
+          `Coverage delta checked ${ delta.toFixed(2) } &gt;= ${ allowedDelta.toFixed(2) }`
+        );
+        
+        return storage.write(
+          CoverageComponent.COVERAGE_FILE, 
+          newCoverage
+        );
+      });
+  }
+  
+  /**
+   * @param {*} coverage
+   * @param {*} newCoverage
+   *
+   * @returns {number}
+   *
+   * @private
+   */
+  _calculateDelta(coverage, newCoverage) {
+    const summary = this._summarizeCoverage(coverage);
+    const newSummary = this._summarizeCoverage(newCoverage);
+    
+    return CoverageComponent.COVERAGE_KEYS
+      .reduce((accumulator, key) =&gt; {
+        return accumulator + 
+          parseFloat(summary[key]) - 
+          parseFloat((newSummary[key] || 0));
+      }, 0) / CoverageComponent.COVERAGE_KEYS.length;
+  }
+  
+  /**
+   * @param {*} coverage
+   *
+   * @returns {*}
+   *
+   * @private
+   */
+  _summarizeCoverage(coverage) {
+    const summary = {};
+    
+    const summaries = Object.keys(coverage)
+      .map(file =&gt; {
+        return istanbul.utils
+          .summarizeFileCoverage(coverage[file]);
+      });
+    
+    const summaryObj = istanbul.utils
+      .mergeSummaryObjects
+      .apply(null, summaries);
+    
+    Object.keys(summaryObj)
+      .map(key =&gt; {
+        summary[key] = summaryObj[key].pct;
+      });
+      
+    return summary;
   }
   
   /**
@@ -161,16 +291,35 @@ class CoverageComponent extends ConfigBasedComponent {
       });
       
       emitter.onBlocking(testEvents.assets.test.end, () =&gt; {
-        return new Promise(resolve =&gt; {
-          coverageVariables.map(coverageVariable =&gt; {
-            collector.add(global[coverageVariable] || {});
-          });
-          
-          reporter.write(collector, false, () =&gt; resolve());
+        coverageVariables.map(coverageVariable =&gt; {
+          collector.add(global[coverageVariable] || {});
         });
+        
+        return this._dumpCoverageStats(collector, reporter)
+          .then(() =&gt; this._doCompare(collector));
       });
       
       emitter.on(testEvents.assets.test.end, () =&gt; resolve());
+    });
+  }
+  
+  /**
+   * @param {istanbul.Collector} collector
+   * @param {istanbul.Reporter} reporter
+   *
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _dumpCoverageStats(collector, reporter) {
+    return new Promise(resolve =&gt; {
+      reporter.write(collector, false, () =&gt; {
+        
+        // @todo find a smarter way to indent the output (buffer it?)
+        process.stdout.write(&apos;\n\n&apos;);
+        
+        resolve();
+      });
     });
   }
   
@@ -232,6 +381,20 @@ class CoverageComponent extends ConfigBasedComponent {
           .addPattern(&apos;ignore&apos;)
           .transform();
       });
+  }
+  
+  /**
+   * @returns {Array}
+   */
+  static get COVERAGE_KEYS() {
+    return [ &apos;lines&apos;, &apos;statements&apos;, &apos;functions&apos;, &apos;branches&apos; ];
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get COVERAGE_FILE() {
+    return &apos;coverage.json&apos;;
   }
 }
 

@@ -24,6 +24,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "deepstiny/src/component/coverage/abstract-driver.js~abstractdriver",
+    "class/src/component/coverage/abstract-driver.js~AbstractDriver.html",
+    "<span>AbstractDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/abstract-driver.js</span>",
+    "class"
+  ],
+  [
     "deepstiny/src/component/preprocess/abstract-transformer.js~abstracttransformer",
     "class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html",
     "<span>AbstractTransformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/preprocess/abstract-transformer.js</span>",
@@ -114,6 +120,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "deepstiny/src/component/coverage/factory.js~factory",
+    "class/src/component/coverage/factory.js~Factory.html",
+    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/factory.js</span>",
+    "class"
+  ],
+  [
     "deepstiny/src/component/factory.js~factory",
     "class/src/component/factory.js~Factory.html",
     "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/factory.js</span>",
@@ -162,6 +174,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "deepstiny/src/component/coverage/s3-driver.js~s3driver",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html",
+    "<span>S3Driver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/s3-driver.js</span>",
+    "class"
+  ],
+  [
     "deepstiny/src/component/helper/sequential-promise.js~sequentialpromise",
     "class/src/component/helper/sequential-promise.js~SequentialPromise.html",
     "<span>SequentialPromise</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/sequential-promise.js</span>",
@@ -195,6 +213,12 @@ window.esdocSearchIndex = [
     "deepstiny/src/component/cache/void-driver.js~voiddriver",
     "class/src/component/cache/void-driver.js~VoidDriver.html",
     "<span>VoidDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/void-driver.js</span>",
+    "class"
+  ],
+  [
+    "deepstiny/src/component/coverage/volatile-driver.js~volatiledriver",
+    "class/src/component/coverage/volatile-driver.js~VolatileDriver.html",
+    "<span>VolatileDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/volatile-driver.js</span>",
     "class"
   ],
   [
@@ -886,6 +910,96 @@ window.esdocSearchIndex = [
     "class/src/component/coverage-component.js~CoverageComponent.html#instance-method-run",
     "src/component/coverage-component.js~CoverageComponent#run",
     "method"
+  ],
+  [
+    "src/component/coverage-component.js~coveragecomponent.coverage_file",
+    "class/src/component/coverage-component.js~CoverageComponent.html#static-get-COVERAGE_FILE",
+    "src/component/coverage-component.js~CoverageComponent.COVERAGE_FILE",
+    "member"
+  ],
+  [
+    "src/component/coverage-component.js~coveragecomponent.coverage_keys",
+    "class/src/component/coverage-component.js~CoverageComponent.html#static-get-COVERAGE_KEYS",
+    "src/component/coverage-component.js~CoverageComponent.COVERAGE_KEYS",
+    "member"
+  ],
+  [
+    "src/component/coverage/abstract-driver.js",
+    "file/src/component/coverage/abstract-driver.js.html",
+    "src/component/coverage/abstract-driver.js",
+    "file"
+  ],
+  [
+    "src/component/coverage/abstract-driver.js~abstractdriver#read",
+    "class/src/component/coverage/abstract-driver.js~AbstractDriver.html#instance-method-read",
+    "src/component/coverage/abstract-driver.js~AbstractDriver#read",
+    "method"
+  ],
+  [
+    "src/component/coverage/abstract-driver.js~abstractdriver#write",
+    "class/src/component/coverage/abstract-driver.js~AbstractDriver.html#instance-method-write",
+    "src/component/coverage/abstract-driver.js~AbstractDriver#write",
+    "method"
+  ],
+  [
+    "src/component/coverage/factory.js",
+    "file/src/component/coverage/factory.js.html",
+    "src/component/coverage/factory.js",
+    "file"
+  ],
+  [
+    "src/component/coverage/factory.js~factory.create",
+    "class/src/component/coverage/factory.js~Factory.html#static-method-create",
+    "src/component/coverage/factory.js~Factory.create",
+    "method"
+  ],
+  [
+    "src/component/coverage/factory.js~factory.s3",
+    "class/src/component/coverage/factory.js~Factory.html#static-method-s3",
+    "src/component/coverage/factory.js~Factory.s3",
+    "method"
+  ],
+  [
+    "src/component/coverage/factory.js~factory.volatile",
+    "class/src/component/coverage/factory.js~Factory.html#static-method-volatile",
+    "src/component/coverage/factory.js~Factory.volatile",
+    "method"
+  ],
+  [
+    "src/component/coverage/s3-driver.js",
+    "file/src/component/coverage/s3-driver.js.html",
+    "src/component/coverage/s3-driver.js",
+    "file"
+  ],
+  [
+    "src/component/coverage/s3-driver.js~s3driver#client",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-get-client",
+    "src/component/coverage/s3-driver.js~S3Driver#client",
+    "member"
+  ],
+  [
+    "src/component/coverage/s3-driver.js~s3driver#constructor",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-constructor-constructor",
+    "src/component/coverage/s3-driver.js~S3Driver#constructor",
+    "method"
+  ],
+  [
+    "src/component/coverage/s3-driver.js~s3driver#options",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-get-options",
+    "src/component/coverage/s3-driver.js~S3Driver#options",
+    "member"
+  ],
+  [
+    "src/component/coverage/s3-driver.js~s3driver#path",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-get-path",
+    "src/component/coverage/s3-driver.js~S3Driver#path",
+    "member"
+  ],
+  [
+    "src/component/coverage/volatile-driver.js",
+    "file/src/component/coverage/volatile-driver.js.html",
+    "src/component/coverage/volatile-driver.js",
+    "file"
   ],
   [
     "src/component/emit-component.js",

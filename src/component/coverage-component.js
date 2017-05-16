@@ -208,22 +208,35 @@ class CoverageComponent extends ConfigBasedComponent {
       });
       
       emitter.onBlocking(testEvents.assets.test.end, () => {
-        return new Promise((resolve, reject) => {
-          coverageVariables.map(coverageVariable => {
-            collector.add(global[coverageVariable] || {});
-          });
-          
-          reporter.write(collector, false, () => {
-            process.stdout.write('\n\n');//indent output
-            
-            this._doCompare(collector)
-              .then(() => resolve())
-              .catch(error => reject(error));
-          });
+        coverageVariables.map(coverageVariable => {
+          collector.add(global[coverageVariable] || {});
         });
+        
+        return this._dumpCoverageStats(collector, reporter)
+          .then(() => this._doCompare(collector));
       });
       
       emitter.on(testEvents.assets.test.end, () => resolve());
+    });
+  }
+  
+  /**
+   * @param {istanbul.Collector} collector
+   * @param {istanbul.Reporter} reporter
+   *
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _dumpCoverageStats(collector, reporter) {
+    return new Promise(resolve => {
+      reporter.write(collector, false, () => {
+        
+        // @todo find a smarter way to indent the output (buffer it?)
+        process.stdout.write('\n\n');
+        
+        resolve();
+      });
     });
   }
   

@@ -47,13 +47,16 @@
   <div class="manual-user-index" data-ice="manualUserIndex"><h1 id="deepstiny">Deepstiny</h1>
 <p><a href="https://mitocgroup.github.io/deepstiny/api/"><img src="https://mitocgroup.github.io/deepstiny/api/badge.svg" alt="Api Docs"></a></p>
 <p><code>Deepstiny</code> (aka <code>dps</code>) is a highly optinionated and extremely optimized test runner
-suitable for running tests on big/hybrid/complex projects by adding a simply <code>.dps.yml</code>
+suitable for running tests on big/hybrid/complex projects by adding a simple <code>.dps.yml</code>
 configuration to rule them all.</p>
 <h1 id="motivation">Motivation</h1>
 <p>Finding an higly configurable test runner that suits more than a basic js app
 is as hard as writing high quality tests. The main reason is getting test runned as fast as possible
 with minimal headache possible and extending the runner via components with simple and documented api.</p>
 <p>Also Travis integration and caching out of the box ;)</p>
+<blockquote>
+<p>The project was started to cover the needs of <a href="https://github.com/MitocGroup/deep-framework">Deep Ecosystem</a></p>
+</blockquote>
 <h1 id="prerequisites">Prerequisites</h1>
 <ul>
 <li>[ ] Ensure <code>Node.js 6.x</code> is installed (We recommend using <code>nvm</code> <a href="https://github.com/creationix/nvm#installation">https://github.com/creationix/nvm#installation</a>)</li>
@@ -62,16 +65,33 @@ with minimal headache possible and extending the runner via components with simp
 <h1 id="installation">Installation</h1>
 <p><code>npm install -g deepstiny</code></p>
 <h1 id="configuration">Configuration</h1>
-<p>Check out <a href="https://mitocgroup.github.io/deepstiny/guide.md">User Guide</a></p>
+<p>To configure your project check out <a href="https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository">User Guide</a></p>
 <h1 id="usage">Usage</h1>
 <p><code>dps --help</code> Show help</p>
 <p><code>dps configure dps</code> Configure Deepstiny</p>
 <p><code>dps run unit</code> Run unit tests</p>
 <h1 id="documentation">Documentation</h1>
 <ul>
-<li>[x] User Guide - <a href="https://mitocgroup.github.io/deepstiny/guide.md">https://mitocgroup.github.io/deepstiny/guide.md</a></li>
-<li>[x] Api Docs - <a href="https://mitocgroup.github.io/deepstiny/api/">https://mitocgroup.github.io/deepstiny/api/</a></li>
+<li>[x] Quick Start Guide - <a href="https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md">https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md</a></li>
+<li>[x] Api Docs - <a href="https://mitocgroup.github.io/deepstiny/api/identifiers.html">https://mitocgroup.github.io/deepstiny/api/identifiers.html</a></li>
 <li>[ ] Dependencies Diagram</li>
+</ul>
+<h1 id="components-inhouse-3-rd-party-">Components (inhouse + 3&apos;rd party)</h1>
+<blockquote>
+<p>TBD...</p>
+</blockquote>
+<h1 id="roadmap">Roadmap</h1>
+<ul>
+<li>[ ] Add support for fully automated <code>Travis</code> configuration </li>
+<li>[ ] Add support for external components</li>
+<li>[ ] Improve documentation</li>
+<li>[ ] Add support for End-to-End tests</li>
+</ul>
+<h1 id="sponsors">Sponsors</h1>
+<p>This repository is being sponsored by:</p>
+<ul>
+<li><a href="https://www.mitocgroup.com">Mitoc Group</a></li>
+<li><a href="https://www.adtechmedia.io">AdTechMedia</a></li>
 </ul>
 <h1 id="license">License</h1>
 <p>Deepstiny is released under the MIT license.</p>
@@ -173,6 +193,33 @@ SOFTWARE.</p>
           
           
           <span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span>
         </p>
       </div>
       <div>
@@ -523,33 +570,6 @@ SOFTWARE.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
           <span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span>
         </p>
       </div>
@@ -577,7 +597,61 @@ SOFTWARE.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span>
         </p>
       </div>
       <div>
@@ -766,6 +840,33 @@ SOFTWARE.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span>
         </p>
       </div>
@@ -902,6 +1003,33 @@ SOFTWARE.</p>
           
           
           <span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span>
         </p>
       </div>
       <div>
