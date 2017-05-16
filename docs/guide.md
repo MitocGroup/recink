@@ -3,13 +3,13 @@
 In order to get started you have to install `Deepstiny` (see [README.md](https://github.com/MitocGroup/deepstiny/blob/master/README.md))
 and configure your project.
 
-### To configure reposotory run:
+### Configure repository:
 
 `dps configure dps`
 
 > [Sample configuration](https://github.com/MitocGroup/deepstiny/blob/master/bin/templates/.dps.yml)
 
-### To run unit tests:
+### Run unit tests
 
 `dps run unit`
 
