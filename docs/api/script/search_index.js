@@ -570,18 +570,6 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/.external-nodejs.js",
-    "file/src/.external-nodejs.js.html",
-    "src/.external-nodejs.js",
-    "file"
-  ],
-  [
-    "src/.external-nodejs.js~http~clientrequest",
-    "https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_clientrequest",
-    "src/.external-nodejs.js~http~ClientRequest",
-    "external"
-  ],
-  [
     "src/component/abstract-component.js",
     "file/src/component/abstract-component.js.html",
     "src/component/abstract-component.js",
