@@ -1,6 +1,6 @@
 # Deepstiny
 
-[![Api Docs](docs/api/badge.svg)](https://mitocgroup.github.io/deepstiny/api/)
+[![Api Docs](https://mitocgroup.github.io/deepstiny/api/badge.svg)](https://mitocgroup.github.io/deepstiny/api/)
 
 `Deepstiny` (aka `dps`) is a highly optinionated and extremely optimized test runner
 suitable for running tests on big/hybrid/complex projects by adding a simply `.dps.yml`
