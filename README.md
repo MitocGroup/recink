@@ -8,7 +8,7 @@ configuration to rule them all.
 
 # Prerequisites
 
-- [ ] Ensure (`Node.js 6.x`)[https://github.com/creationix/nvm#installation] is installed
+- [ ] Ensure `Node.js 6.x` is installed (https://github.com/creationix/nvm#installation)
 - [ ] Profit?!
 
 # Installation
@@ -26,7 +26,7 @@ configuration to rule them all.
 # Documentation
 
 - [ ] User Guide
-- [x] (Api Docs)[https://mitocgroup.github.io/deepstiny/api/]
+- [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/
 - [ ] Dependencies Diagram
 
 # License
