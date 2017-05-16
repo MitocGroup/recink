@@ -47,7 +47,7 @@ To configure your project check out [User Guide](https://github.com/MitocGroup/d
 
 - [ ] Add support for fully automated `Travis` configuration 
 - [ ] Add support for external components
-- [ ] Add more docs
+- [ ] Improve documentation
 - [ ] Add support for End-to-End tests
 
 # Sponsors
