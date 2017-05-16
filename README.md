@@ -14,6 +14,8 @@ with minimal headache possible and extending the runner via components with simp
 
 Also Travis integration and caching out of the box ;)
 
+> The project was started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
+
 # Prerequisites
 
 - [ ] Ensure `Node.js 6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
@@ -40,6 +42,13 @@ To configure your project check out [User Guide](https://github.com/MitocGroup/d
 - [x] Quick Start Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
 - [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
 - [ ] Dependencies Diagram
+
+# Sponsors
+
+This repository is being sponsored by:
+
+- [Mitoc Group](https://www.mitocgroup.com)
+- [AdTechMedia](https://www.adtechmedia.io)
 
 # License
 
