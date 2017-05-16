@@ -32,9 +32,9 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   subscribe(emitter) {
     this._readyPromise = this.waitConfig(emitter)
@@ -46,16 +46,16 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   ready() {
     return this._readyPromise;
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   waitConfig(emitter) {
     return new Promise((resolve, reject) => {
@@ -80,7 +80,7 @@ class ConfigBasedComponent extends AbstractComponent {
    * @param {*} config
    * @param {string} configFile
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   prepareConfig(config, configFile) {
     const configFileRealPath = path.resolve(configFile);
@@ -96,7 +96,7 @@ class ConfigBasedComponent extends AbstractComponent {
   /**
    * @param {*} config
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   createContainer(config) {
     return new Container(config);

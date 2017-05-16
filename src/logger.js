@@ -6,7 +6,7 @@ class Logger {
   /**
    * @param {*} logger
    *
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static customLogger(logger) {
     this._customLogger = logger;
@@ -17,7 +17,7 @@ class Logger {
   /**
    * @param {number} level
    *
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static level(level) {
     this._dbgLevel = level;
@@ -28,7 +28,7 @@ class Logger {
   /**
    * @param {number} level
    *
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static addLevel(level) {
     this._dbgLevel = this._level | level;
@@ -39,7 +39,7 @@ class Logger {
   /**
    * @param {*} args
    * 
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static debug(...args) {
     return this._exec('debug', ...args);
@@ -48,7 +48,7 @@ class Logger {
   /**
    * @param {*} args
    * 
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static log(...args) {
     return this._exec('log', ...args);
@@ -57,7 +57,7 @@ class Logger {
   /**
    * @param {*} args
    * 
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static info(...args) {
     return this._exec('info', ...args);
@@ -66,7 +66,7 @@ class Logger {
   /**
    * @param {*} args
    * 
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static warn(...args) {
     return this._exec('warn', ...args);
@@ -75,7 +75,7 @@ class Logger {
   /**
    * @param {*} args
    * 
-   * @returns {Logger|*}
+   * @returns {Logger}
    */
   static error(...args) {
     return this._exec('error', ...args);
@@ -103,7 +103,7 @@ class Logger {
    * @param {string} method
    * @param {*} args
    *
-   * @returns {Logger|*}
+   * @returns {Logger}
    * 
    * @private
    */

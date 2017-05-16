@@ -16,7 +16,7 @@ class Spinner {
   /**
    * @param {string} text
    *
-   * @returns {ora|*}
+   * @returns {ora}
    */
   prepend(text) {
     this.spinner.text = `${ text } ${ this._main }`;
@@ -27,7 +27,7 @@ class Spinner {
   /**
    * @param {string} text
    *
-   * @returns {ora|*}
+   * @returns {ora}
    */
   append(text) {
     this.spinner.text = `${ this._main } ${ text }`;
@@ -36,7 +36,7 @@ class Spinner {
   }
   
   /**
-   * @returns {ora|*}
+   * @returns {ora}
    */
   get spinner() {
     if (!this._spinner) {
@@ -47,9 +47,9 @@ class Spinner {
   }
   
   /**
-   * @param {Promise|*} promiseToWrap
+   * @param {Promise} promiseToWrap
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   promise(promiseToWrap) {
     this.spinner.start();
@@ -70,7 +70,7 @@ class Spinner {
   /**
    * @param {string} msg
    *
-   * @returns {Spinner|*}
+   * @returns {Spinner}
    */
   then(msg) {
     this._then = msg;
@@ -81,7 +81,7 @@ class Spinner {
   /**
    * @param {string} msg
    *
-   * @returns {Spinner|*}
+   * @returns {Spinner}
    */
   catch(msg) {
     this._catch = msg;

@@ -30,9 +30,9 @@ class TestComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
@@ -82,7 +82,7 @@ class TestComponent extends ConfigBasedComponent {
    * @param {*} config
    * @param {string} configFile
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   prepareConfig(config, configFile) {
     return super.prepareConfig(config, configFile)

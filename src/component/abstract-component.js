@@ -19,7 +19,7 @@ class AbstractComponent {
   /**
    * @param {number} interval
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   waitProcessing(interval = 200) {
     return new Promise(resolve => {
@@ -37,7 +37,7 @@ class AbstractComponent {
   }
   
   /**
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   removeProcessing() {
     this._processing--;
@@ -46,7 +46,7 @@ class AbstractComponent {
   }
   
   /**
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   addProcessing() {
     this._processing++;
@@ -71,7 +71,7 @@ class AbstractComponent {
   /**
    * @param {*} logger
    *
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   setLogger(logger) {
     this._logger = logger;
@@ -82,7 +82,7 @@ class AbstractComponent {
   /**
    * @param {boolean} state
    *
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   setActive(state) {
     this._active = !!state;
@@ -112,25 +112,25 @@ class AbstractComponent {
   }
 
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     return Promise.resolve();
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   subscribe(emitter) {
     return Promise.resolve();
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   ready() {
     return Promise.resolve();

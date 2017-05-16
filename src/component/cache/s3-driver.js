@@ -44,7 +44,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -76,7 +76,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -104,7 +104,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -141,7 +141,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @param {ReadableStream|*} stream
+   * @param {ReadableStream} stream
    * @param {number} length
    * @param {number} time
    *

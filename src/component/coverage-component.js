@@ -25,9 +25,9 @@ class CoverageComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
@@ -143,7 +143,7 @@ class CoverageComponent extends ConfigBasedComponent {
    * @param {*} config
    * @param {string} configFile
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   prepareConfig(config, configFile) {
     return super.prepareConfig(config, configFile)

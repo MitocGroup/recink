@@ -2,9 +2,9 @@
 
 class SequentialPromise {
   /**
-   * @param {Promise[]|*} promises
+   * @param {Promise[]} promises
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   static all(promises) {
     const promisesCloned = [].concat(promises);
@@ -13,9 +13,9 @@ class SequentialPromise {
   }
   
   /**
-   * @param {Promise[]|*} promises
+   * @param {Promise[]} promises
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */

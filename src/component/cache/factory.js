@@ -7,7 +7,7 @@ class Factory {
    * @param {string} name
    * @param {*} args
    *
-   * @returns {AbstractDriver|*}
+   * @returns {AbstractDriver}
    */
   static create(name, ...args) {
     const DriverImplementation = require(`./${ name }-driver`);
@@ -23,7 +23,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {VoidDriver|*}
+   * @returns {VoidDriver}
    */
   static s3(...args) {
     return this.create('s3', ...args);
@@ -32,7 +32,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {VoidDriver|*}
+   * @returns {VoidDriver}
    */
   static void(...args) {
     return this.create('void', ...args);

@@ -18,7 +18,7 @@ class Dumper {
   /**
    * @param {boolean} overwrite
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   dump(overwrite = false) {
     return fse.pathExists(this.configPath)

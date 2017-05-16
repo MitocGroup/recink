@@ -19,7 +19,7 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {AbstractDriver|*}
+   * @returns {AbstractDriver}
    */
   get cache() {
     return this._cache;
@@ -36,7 +36,7 @@ class CacheComponent extends ConfigBasedComponent {
    * @param {string} cacheDriver
    * @param {string} cacheDir
    *
-   * @returns {CacheComponent|*}
+   * @returns {CacheComponent}
    *
    * @private
    */
@@ -50,9 +50,9 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise(resolve => {
@@ -93,10 +93,10 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {EventEmitter|*} emitter
-   * @param {ora|*} spinner
+   * @param {EventEmitter} emitter
+   * @param {ora} spinner
    *
-   * @returns {CacheComponent|*}
+   * @returns {CacheComponent}
    *
    * @private
    */

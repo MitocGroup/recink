@@ -4,7 +4,7 @@ const AbstractDriver = require('./abstract-driver');
 
 class VoidDriver extends AbstractDriver {
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -13,7 +13,7 @@ class VoidDriver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */

@@ -7,7 +7,7 @@ class Factory {
    * @param {string} name
    * @param {*} args
    *
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   static create(name, ...args) {
     const ComponentImplementation = require(`./${ name }-component`);
@@ -23,7 +23,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {EmitComponent|*}
+   * @returns {EmitComponent}
    */
   static emit(...args) {
     return this.create('emit', ...args);
@@ -32,7 +32,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {CacheComponent|*}
+   * @returns {CacheComponent}
    */
   static cache(...args) {
     return this.create('cache', ...args);
@@ -41,7 +41,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {CoverageComponent|*}
+   * @returns {CoverageComponent}
    */
   static coverage(...args) {
     return this.create('coverage', ...args);
@@ -50,7 +50,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {TestComponent|*}
+   * @returns {TestComponent}
    */
   static test(...args) {
     return this.create('test', ...args);
@@ -59,7 +59,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {NpmComponent|*}
+   * @returns {NpmComponent}
    */
   static npm(...args) {
     return this.create('npm', ...args);
@@ -68,7 +68,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {PreprocessComponent|*}
+   * @returns {PreprocessComponent}
    */
   static preprocess(...args) {
     return this.create('preprocess', ...args);

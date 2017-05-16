@@ -25,9 +25,9 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     this._registerDebugers(emitter);
@@ -47,9 +47,9 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   waitConfig(emitter) {
     return super.waitConfig(emitter)
@@ -90,7 +90,7 @@ class EmitComponent extends ConfigBasedComponent {
    * @param {*} config
    * @param {string} configFile
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   prepareConfig(config, configFile) {
     return super.prepareConfig(config, configFile)
@@ -104,9 +104,9 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {*} moduleConfig
-   * @param {Container|*} mainContainer
+   * @param {Container} mainContainer
    *
-   * @returns {Container|*}
+   * @returns {Container}
    */
   prepareModuleConfig(moduleConfig, mainContainer) {
     const container = this.createContainer(moduleConfig);
@@ -128,7 +128,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
    * @private
    */

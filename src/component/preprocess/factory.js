@@ -7,7 +7,7 @@ class Factory {
    * @param {string} name
    * @param {*} args
    *
-   * @returns {AbstractTransformer|*}
+   * @returns {AbstractTransformer}
    */
   static create(name, ...args) {
     const TransformerImplementation = require(`./${ name }-transformer`);
@@ -23,7 +23,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {VoidDriver|*}
+   * @returns {VoidDriver}
    */
   static eval(...args) {
     return this.create('eval', ...args);

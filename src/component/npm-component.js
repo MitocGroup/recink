@@ -29,9 +29,9 @@ class NpmComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   cacheDir(emitter) {
     if (this._cacheDir) {
@@ -50,10 +50,10 @@ class NpmComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * @param {string} name
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   cache(emitter, name) {
     if (this._cache) {
@@ -69,9 +69,9 @@ class NpmComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter|*} emitter
+   * @param {Emitter} emitter
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise(resolve => {

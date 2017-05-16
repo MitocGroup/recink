@@ -8,7 +8,7 @@ class TestAsset {
   /**
    * @param {string} file
    * @param {string} fileAbs
-   * @param {EmitModule|*} module
+   * @param {EmitModule} module
    */
   constructor(file, fileAbs, module) {
     this._file = file;
@@ -17,9 +17,9 @@ class TestAsset {
   }
   
   /**
-   * @param {Mocha|*} mocha
+   * @param {Mocha} mocha
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   test(mocha) {
     return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ class TestAsset {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   get fileContent() {
     return pify(fs.readFile)(this.fileAbs);
@@ -58,7 +58,7 @@ class TestAsset {
   }
   
   /**
-   * @returns {EmitModule|*}
+   * @returns {EmitModule}
    */
   get module() {
     return this._module;

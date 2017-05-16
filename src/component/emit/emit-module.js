@@ -10,8 +10,8 @@ const events = require('./events');
 class EmitModule {
   /**
    * @param {string} name
-   * @param {Container|*} container
-   * @param {Emitter|*} emitter
+   * @param {Container} container
+   * @param {Emitter} emitter
    * @param {*} logger
    */
   constructor(name, container, emitter, logger) {
@@ -28,7 +28,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   process(container) {
     if (!this.container.has('root')) {
@@ -105,7 +105,7 @@ class EmitModule {
   }
   
   /**
-   * @param {Container|*} container
+   * @param {Container} container
    *
    * @returns {function}
    *
@@ -137,7 +137,7 @@ class EmitModule {
   }
   
   /**
-   * @param {Container|*} container
+   * @param {Container} container
    *
    * @returns {function}
    *
@@ -175,7 +175,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    */
   get emitter() {
     return this._emitter;
@@ -189,7 +189,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {Container|*}
+   * @returns {Container}
    */
   get container() {
     return this._container;

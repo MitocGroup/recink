@@ -8,7 +8,7 @@ configuration to rule them all.
 
 # Prerequisites
 
-- [ ] Ensure `Node.js 6.x` is installed (https://github.com/creationix/nvm#installation)
+- [ ] Ensure `Node.js 6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
 - [ ] Profit?!
 
 # Installation

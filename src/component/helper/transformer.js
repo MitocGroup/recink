@@ -13,7 +13,7 @@ class Transformer {
   /**
    * @param {*} value
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   transform(value) {
     return this.transformer(value);

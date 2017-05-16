@@ -15,7 +15,7 @@ module.exports = (value => {
 /**
  * @param {string} value
  *
- * @returns {RegExp|*}
+ * @returns {RegExp}
  */
 function toRegexp(value) {
   const matches = value.match(/^\/(.+)\/([gmiyu])*$/);

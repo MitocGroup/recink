@@ -15,7 +15,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {number} count
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    */
   maxParallel(event, count) {
     this._parallel[event] = count;
@@ -27,7 +27,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {*} args
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   emitBlocking(event, ...args) {
     return this._waitAllowParallel(event)
@@ -54,7 +54,7 @@ class Emitter extends EventEmitter {
    * @param {function} listener
    * @param {number} priority
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    */
   onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {
     return this._pushListener(event, listener, priority, 'on');
@@ -65,7 +65,7 @@ class Emitter extends EventEmitter {
    * @param {function} listener
    * @param {number} priority
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    */
   onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {
     return this._pushListener(event, listener, priority, 'once');
@@ -74,7 +74,7 @@ class Emitter extends EventEmitter {
   /**
    * @param {string} event
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    *
    * @private
    */
@@ -91,7 +91,7 @@ class Emitter extends EventEmitter {
   /**
    * @param {string} event
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    *
    * @private
    */
@@ -119,7 +119,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {number} interval
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -146,7 +146,7 @@ class Emitter extends EventEmitter {
    * @param {number} priority
    * @param {string} method
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    *
    * @private
    */
@@ -163,7 +163,7 @@ class Emitter extends EventEmitter {
   /**
    * @param {string} event
    *
-   * @returns {Emitter|*}
+   * @returns {Emitter}
    * 
    * @private
    */
@@ -181,7 +181,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {*} args
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    * 
    * @private
    */

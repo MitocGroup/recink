@@ -11,7 +11,7 @@ const SequentialPromise = require('../helper/sequential-promise');
 class NpmModule {
   /**
    * @param {string} rootDir
-   * @param {Cache|*} cache
+   * @param {Cache} cache
    * @param {*} logger
    */
   constructor(rootDir, cache, logger) {
@@ -35,7 +35,7 @@ class NpmModule {
   }
   
   /**
-   * @param {Cache|*} cache
+   * @param {Cache} cache
    */
   get cache() {
     return this._cache;
@@ -45,7 +45,7 @@ class NpmModule {
    * @param {*} deps
    * @param {array} scripts
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   install(deps = {}, scripts = []) {
     let cacheKey;
@@ -84,7 +84,7 @@ class NpmModule {
   /**
    * @param {array} scripts
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -101,7 +101,7 @@ class NpmModule {
   /**
    * @param {string} script
    * 
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -137,7 +137,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} additionalDeps
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -161,7 +161,7 @@ class NpmModule {
   /**
    * @param {array} deps
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */
@@ -204,7 +204,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} deps
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    *
    * @private
    */

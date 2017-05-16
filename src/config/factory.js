@@ -6,7 +6,7 @@ class Factory {
   /**
    * @param {string} file
    *
-   * @returns {YamlConfig|*}
+   * @returns {YamlConfig}
    */
   static guess(file) {
     if (/\.ya?ml$/i.test(file)) {
@@ -20,7 +20,7 @@ class Factory {
    * @param {string} name
    * @param {*} args
    *
-   * @returns {AbstractConfig|*}
+   * @returns {AbstractConfig}
    */
   static create(name, ...args) {
     const ConfigImplementation = require(`./${ name }-config`);
@@ -36,7 +36,7 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {YamlConfig|*}
+   * @returns {YamlConfig}
    */
   static yaml(...args) {
     return this.create('yaml', ...args);

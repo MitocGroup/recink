@@ -58,7 +58,7 @@ class Deepstiny extends Emitter {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   run() {
     this.emit(events.components.run, ...this._components);
@@ -78,9 +78,9 @@ class Deepstiny extends Emitter {
   }
   
   /**
-   * @param {AbstractComponent[]|AbstractComponent|*} components
+   * @param {AbstractComponent[]|AbstractComponent} components
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   components(...components) {
     this.emit(events.components.load, ...components);
@@ -116,7 +116,7 @@ class Deepstiny extends Emitter {
   /**
    * @param {string} configFile
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   configure(configFile = Deepstiny.CONFIG_FILE) {
     return configFactory.guess(configFile)
@@ -143,28 +143,28 @@ class Deepstiny extends Emitter {
   /**
    * @param {string} name
    *
-   * @returns {AbstractComponent|*}
+   * @returns {AbstractComponent}
    */
   component(name) {
     return this._components.filter(c => c.name === name)[0];
   }
   
   /**
-   * @returns {AbstractComponent[]|*}
+   * @returns {AbstractComponent[]}
    */
   listComponents() {
     return this._components;
   }
   
   /**
-   * @returns {Container|*}
+   * @returns {Container}
    */
   get container() {
     return this._container;
   }
   
   /**
-   * @returns {AbstractConfig|*}
+   * @returns {AbstractConfig}
    */
   get config() {
     return this._config;

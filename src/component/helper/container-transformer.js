@@ -5,7 +5,7 @@ const patternTransformer = require('./pattern-transformer');
 
 class ContainerTransformer {
   /**
-   * @param {Container|*} container
+   * @param {Container} container
    */
   constructor(container) {
     this._container = container;
@@ -15,7 +15,7 @@ class ContainerTransformer {
   /**
    * @param {string} path
    *
-   * @returns {ContainerTransformer|*}
+   * @returns {ContainerTransformer}
    */
   addPattern(path) {
     return this.add({ path, transformer: patternTransformer });
@@ -25,16 +25,16 @@ class ContainerTransformer {
    * @param {string} path
    * @param {function} transformer
    *
-   * @returns {Transformer|*}
+   * @returns {Transformer}
    */
   create(path, transformer) {
     return new Transformer(path, transformer);
   }
   
   /**
-   * @param {Transformer|*} transformerInstance
+   * @param {Transformer} transformerInstance
    *
-   * @returns {ContainerTransformer|*}
+   * @returns {ContainerTransformer}
    */
   add(transformerInstance) {
     if (!(transformerInstance instanceof Transformer)) {
@@ -56,7 +56,7 @@ class ContainerTransformer {
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   transform() {
     return Promise.all(this.transformers.map(transformer => {
@@ -74,7 +74,7 @@ class ContainerTransformer {
   }
   
   /**
-   * @returns {Container|*}
+   * @returns {Container}
    */
   get container() {
     return this._container;

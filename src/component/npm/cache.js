@@ -30,7 +30,7 @@ class Cache {
   /**
    * @param {string} key
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   has(key) {
     return fse.pathExists(this._cacheKey(key));
@@ -40,7 +40,7 @@ class Cache {
    * @param {string} key
    * @param {string} src
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   save(key, src) {
     return fse.copy(src, this._cacheKey(key));
@@ -50,7 +50,7 @@ class Cache {
    * @param {string} key
    * @param {string} dest
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   restore(key, dest) {
     return fse.copy(this._cacheKey(key), dest);
@@ -59,14 +59,14 @@ class Cache {
   /**
    * @param {string} key
    *
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   invalidate(key) {
     return fse.remove(this._cacheKey(key));
   }
   
   /**
-   * @returns {Promise|*}
+   * @returns {Promise}
    */
   flush() {
     const cacheDir = path.join(this.cacheDir, this.prefix);
