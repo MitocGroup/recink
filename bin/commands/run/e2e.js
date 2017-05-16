@@ -1,7 +1,6 @@
 'use strict';
 
+// @todo implement
 module.exports = (args, options, logger) => {
-  logger.error(new Error('Not implemented'));
-  
-  return Promise.resolve(1);
+  return Promise.reject(new Error('End to end test runner is not implemented!'));
 };

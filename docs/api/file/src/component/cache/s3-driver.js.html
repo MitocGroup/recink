@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/cache/s3-driver.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/cache/s3-driver.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const AbstractDriver = require(&apos;./abstract-driver&apos;);
+const S3 = require(&apos;aws-sdk/clients/s3&apos;);
+const path = require(&apos;path&apos;);
+const fs = require(&apos;fs&apos;);
+const progress = require(&apos;progress-stream&apos;);
+const md5File = require(&apos;md5-file&apos;);
+const pify = require(&apos;pify&apos;);
+
+class S3Driver extends AbstractDriver {
+  /**
+   * @param {string} cacheDir
+   * @param {string} path
+   * @param {*} options
+   */
+  constructor(cacheDir, path, options) {
+    super(cacheDir);
+    
+    this._path = path;
+    this._options = options;
+    this._client = new S3(this.options);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get path() {
+    return this._path;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get client() {    
+    return this._client;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get options() {
+    return this._options;
+  }
+  
+  /**
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _upload() {
+    return this._packageSize
+      .then(ContentLength =&gt; {
+        if (ContentLength &lt;= 0) {
+          return Promise.resolve();
+        }
+        
+        return this._hasChanged
+          .then(hasChanged =&gt; {
+            if (!hasChanged) {
+              return Promise.resolve();
+            }
+            
+            const { Bucket, Key } = this._parseS3Path(this.path);
+            const packageStream = fs.createReadStream(this._packagePath);
+            
+            packageStream.on(&apos;error&apos;, error =&gt; reject(error));
+            
+            const Body = this._track(packageStream, ContentLength);
+
+            return this.client
+              .upload({ Bucket, Key, Body, })
+              .promise();
+          });
+      });
+  }
+  
+  /**
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  get _hasChanged() {
+    return pify(md5File)(this._packagePath)
+      .then(packageHash =&gt; {
+        const { Bucket, Key } = this._parseS3Path(this.path);
+        
+        return this.client
+          .headObject({ Bucket, Key, })
+          .promise()
+          .then(data =&gt; {
+            const remoteHash = data.ETag.replace(/&quot;/g, &apos;&apos;);
+            
+            return Promise.resolve(packageHash !== remoteHash);
+          })
+          .catch(error =&gt; {
+            if (this._isMissingObject(error)) {
+              return Promise.resolve(true);
+            }
+            
+            return Promise.reject(error);
+          });
+      });
+  }
+  
+  /**
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _download() {
+    return new Promise((resolve, reject) =&gt; {
+      const { Bucket, Key } = this._parseS3Path(this.path);
+      const packageStream = fs.createWriteStream(this._packagePath);
+      const remoteStream = this.client
+        .getObject({ Bucket, Key, }).createReadStream();
+      
+      remoteStream.on(&apos;end&apos;, () =&gt; resolve());
+      remoteStream.on(&apos;error&apos;, error =&gt; {
+        if (this._isMissingObject(error)) {
+          return resolve();
+        }
+        
+        reject(error);
+      });
+      packageStream.on(&apos;error&apos;, error =&gt; reject(error));
+      
+      this._track(remoteStream).pipe(packageStream);
+    });
+  }
+  
+  /**
+   * @param {*} error
+   *
+   * @returns {boolean}
+   * 
+   * @private
+   */
+  _isMissingObject(error) {
+    return [ &apos;NoSuchKey&apos;, &apos;NotFound&apos; ].indexOf(error.code) !== -1;
+  }
+  
+  /**
+   * @param {ReadableStream|*} stream
+   * @param {number} length
+   * @param {number} time
+   *
+   * @private
+   */
+  _track(stream, length = undefined, time = 50) {
+    const tracker = progress({ length, time, });
+        
+    tracker.on(&apos;progress&apos;, progress =&gt; {
+      this._progress(progress.length, progress.transferred);
+    });
+        
+    return stream.pipe(tracker);
+  }
+  
+  /**
+   * @returns {string} s3Path
+   *
+   * @returns {*}
+   *
+   * @private
+   */
+  _parseS3Path(s3Path) {
+    const matches = s3Path.match(
+      /^(?:s3:\/\/|\/)?([^\/]+)(?:\/(.*))?$/i
+    );
+    
+    if (matches.length === 2) {
+      matches.push(&apos;&apos;);
+    }
+    
+    const [ , Bucket, keyPrefix ] = matches;
+    
+    const Key = path.join(
+      keyPrefix || &apos;&apos;,
+      path.basename(this._packagePath)
+    );
+    
+    return { Bucket, Key };
+  }
+}
+
+module.exports = S3Driver;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

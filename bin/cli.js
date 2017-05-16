@@ -5,6 +5,7 @@
 const logger = require('../src/logger');
 const prog = require('caporal');
 const pkg = require('../package.json');
+const path = require('path');
 
 function cmd(path) {
   return (args, options, customLogger) => {
@@ -26,17 +27,21 @@ prog
   .version(pkg.version)
   .description(pkg.description)
     .command('run unit', 'Run unit tests') 
-      .option('-s <component>', 'Skip component', prog.REPEATABLE)
       .argument('[path]', 'Path to tests', /.+/, process.cwd())
+      .option('-s <component>', 'Skip component', prog.REPEATABLE)
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')
       .action(cmd('./commands/run/e2e'))
     .command('configure dps', 'Configure Deepstiny') 
+      .argument('[path]', 'Path to package root', /.+/, process.cwd())
+      .option('--overwrite', 'Overwrite existing configuration file')
       .action(cmd('./commands/configure/dps'))   
     .command('configure travis', 'Configure Travis') 
+      .argument('[path]', 'Path to package root', /.+/, process.cwd())
+      .option('--overwrite', 'Overwrite existing configuration file')
       .action(cmd('./commands/configure/travis'))
     .command('lint travis', 'Lint Travis configuration') 
-      .argument('<path>', 'Path to .travis.yml')
+      .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))
       .action(cmd('./commands/lint/travis'))
 ;
 

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/emitter.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/emitter.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const EventEmitter = require(&apos;events&apos;);
+
+class Emitter extends EventEmitter {
+  constructor(...args) {
+    super(...args);
+    
+    this._blockingListeners = {};
+    this._processing = {};
+    this._parallel = {};
+  }
+  
+  /**
+   * @param {string} event
+   * @param {number} count
+   *
+   * @returns {Emitter|*}
+   */
+  maxParallel(event, count) {
+    this._parallel[event] = count;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   * @param {*} args
+   *
+   * @returns {Promise|*}
+   */
+  emitBlocking(event, ...args) {
+    return this._waitAllowParallel(event)
+      .then(() =&gt; this._dispatch(event, args))
+      .then(() =&gt; {
+        this
+          ._cleanupListeners(event)
+          ._removeParallel(event)
+          .emit(event, ...args);
+        
+        return Promise.resolve();
+      })
+      .catch(error =&gt; {
+        this
+          ._cleanupListeners(event)
+          ._removeParallel(event);
+        
+        return Promise.reject(error);
+      });
+  }
+  
+  /**
+   * @param {string} event
+   * @param {function} listener
+   * @param {number} priority
+   *
+   * @returns {Emitter|*}
+   */
+  onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {
+    return this._pushListener(event, listener, priority, &apos;on&apos;);
+  }
+  
+  /**
+   * @param {string} event
+   * @param {function} listener
+   * @param {number} priority
+   *
+   * @returns {Emitter|*}
+   */
+  onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {
+    return this._pushListener(event, listener, priority, &apos;once&apos;);
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {Emitter|*}
+   *
+   * @private
+   */
+  _removeParallel(event) {
+    if (!this._processing.hasOwnProperty(event)) {
+      return this;
+    }
+    
+    this._processing[event]--;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {Emitter|*}
+   *
+   * @private
+   */
+  _addParallel(event) {
+    this._processing[event] = this._processing[event] || 0;
+    this._processing[event]++;
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _allowParallel(event) {
+    return !this._parallel.hasOwnProperty(event)
+      || !this._processing.hasOwnProperty(event)
+      || this._processing[event] &lt; this._parallel[event];
+  }
+  
+  /**
+   * @param {string} event
+   * @param {number} interval
+   *
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _waitAllowParallel(event, interval = 100) {
+    if (this._allowParallel(event)) {
+      this._addParallel(event);
+      return Promise.resolve();
+    }
+    
+    return new Promise(resolve =&gt; {
+      const id = setInterval(() =&gt; {
+        if (this._allowParallel(event)) {
+          this._addParallel(event);
+          clearInterval(id);
+          resolve();
+        }
+      }, interval);
+    });
+  }
+  
+  /**
+   * @param {string} event
+   * @param {function} listener
+   * @param {number} priority
+   * @param {string} method
+   *
+   * @returns {Emitter|*}
+   *
+   * @private
+   */
+  _pushListener(event, listener, priority, method) {
+    this._blockingListeners[event] = this._blockingListeners[event] || [];
+    this._blockingListeners[event].push({ listener, priority, method });
+    this._blockingListeners[event].sort((a, b) =&gt; {
+      return b.priority - a.priority;
+    });
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   *
+   * @returns {Emitter|*}
+   * 
+   * @private
+   */
+  _cleanupListeners(event) {
+    if (!this._blockingListeners.hasOwnProperty(event) ) {
+      return this;
+    }
+    
+    this._blockingListeners[event] = this._blockingListeners[event].filter(l =&gt; !!l);
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} event
+   * @param {*} args
+   * 
+   * @returns {Promise|*}
+   * 
+   * @private
+   */
+  _dispatch(event, args, _i = 0) {    
+    if (!this._blockingListeners.hasOwnProperty(event) 
+      || this._blockingListeners[event].length &lt; _i + 1) {
+      return Promise.resolve();
+    }
+    
+    const dispatcher = this._blockingListeners[event][_i];
+    const result = dispatcher.listener(...args);
+    
+    if (dispatcher.method === &apos;once&apos;) {
+      delete this._blockingListeners[event][_i];
+    }
+    
+    if (!result || typeof result !== &apos;object&apos; || !(result instanceof Promise)) {
+      return this._dispatch(event, args, _i + 1);
+    }
+    
+    return result.then(() =&gt; this._dispatch(event, args, _i + 1));
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEFAULT_PRIORITY() {
+    return 0;
+  }
+}
+
+module.exports = Emitter;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

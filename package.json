@@ -34,7 +34,8 @@
     "url": "https://github.com/MitocGroup/deepstiny.git"
   },
   "scripts": {
-    
+    "api-docs": "node node_modules/.bin/esdoc",
+    "prepublish": "npm run docs"
   },
   "dependencies": {
     "yaml-js": "^0.1.5",
@@ -57,6 +58,10 @@
     "istanbul": "^0.4.5",
     "require-hacker": "^3.0.0",
     "travis-encrypt": "^2.1.1"
+  },
+  "depDependencies": {
+    "esdoc": "^0.5.2",
+    "esdoc-es7-plugin": "^0.0.3"
   },
   "engines": {
     "node": ">=6.0 <7.0",

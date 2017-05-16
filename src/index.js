@@ -185,4 +185,4 @@ class Deepstiny extends Emitter {
   }
 }
 
-module.exports = { Deepstiny, events };
+module.exports = { Deepstiny, AbstractComponent, };

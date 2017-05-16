@@ -13,10 +13,10 @@ $:
   #       accessKeyId: 'process.env.DPS_AWS_ACCESS_KEY_ID'
   #       secretAccessKey: 'process.env.DPS_AWS_SECRET_ACCESS_KEY'
   npm:
-    scripts: ~                                                              # Scripts to run after installing dependencies
+    scripts: []                                                             # Scripts to run after installing dependencies
       # - 'compile'
     dependencies:                                                           # Dependencies to add/overwrite
-      chai: '^3.5.0'
+      chai: 'latest'
   emit:
     pattern:                                                                # Files to include
       - /.+\.js$/i

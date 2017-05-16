@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/logger.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/logger.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const chalk = require(&apos;chalk&apos;);
+
+class Logger {
+  /**
+   * @param {*} logger
+   *
+   * @returns {Logger|*}
+   */
+  static customLogger(logger) {
+    this._customLogger = logger;
+    
+    return this;
+  }
+  
+  /**
+   * @param {number} level
+   *
+   * @returns {Logger|*}
+   */
+  static level(level) {
+    this._dbgLevel = level;
+    
+    return this;
+  }
+  
+  /**
+   * @param {number} level
+   *
+   * @returns {Logger|*}
+   */
+  static addLevel(level) {
+    this._dbgLevel = this._level | level;
+    
+    return this;
+  }
+  
+  /**
+   * @param {*} args
+   * 
+   * @returns {Logger|*}
+   */
+  static debug(...args) {
+    return this._exec(&apos;debug&apos;, ...args);
+  }
+  
+  /**
+   * @param {*} args
+   * 
+   * @returns {Logger|*}
+   */
+  static log(...args) {
+    return this._exec(&apos;log&apos;, ...args);
+  }
+  
+  /**
+   * @param {*} args
+   * 
+   * @returns {Logger|*}
+   */
+  static info(...args) {
+    return this._exec(&apos;info&apos;, ...args);
+  }
+  
+  /**
+   * @param {*} args
+   * 
+   * @returns {Logger|*}
+   */
+  static warn(...args) {
+    return this._exec(&apos;warn&apos;, ...args);
+  }
+  
+  /**
+   * @param {*} args
+   * 
+   * @returns {Logger|*}
+   */
+  static error(...args) {
+    return this._exec(&apos;error&apos;, ...args);
+  }
+  
+  /**
+   * @returns {*}
+   *
+   * @private
+   */
+  static get _logger() {
+    return this._customLogger || console;
+  }
+  
+  /**
+   * @returns {number}
+   *
+   * @private
+   */
+  static get _level() {
+    return this._dbgLevel || (this.WARN | this.ERROR);
+  }
+  
+  /**
+   * @param {string} method
+   * @param {*} args
+   *
+   * @returns {Logger|*}
+   * 
+   * @private
+   */
+  static _exec(method, ...args) {
+    if (this._logger instanceof console.constructor) {
+      if (this._level &amp; this[method.toUpperCase()]) {
+        if (method === &apos;debug&apos;) {
+          method = &apos;log&apos;;
+        }
+        
+        this._logger[method](
+          this._color(method).open,
+          ...args,
+          this._color(method).close
+        );
+      }
+    } else { // rely on winston compatible logger
+      this._logger[method](...args);
+    }
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} method
+   * 
+   * @returns {string}
+   *
+   * @private
+   */
+  static _color(method) {
+    let color;
+    
+    switch (method) {
+      case &apos;info&apos;:
+        color = &apos;green&apos;;
+        break;  
+      case &apos;warn&apos;:
+        color = &apos;yellow&apos;;
+        break;   
+      case &apos;error&apos;:
+        color = &apos;red&apos;;
+        break;    
+      case &apos;log&apos;:
+      default:
+        color = &apos;white&apos;;
+        break;
+    }
+    
+    return chalk.styles[color];
+  }
+  
+  /**
+   * @returns {*}
+   */
+  static get emoji() {
+    return {
+      rocket: &apos;&#x1F680; &apos;,
+      cross: &apos;&#x274C; &apos;,
+      check: &apos;&#x2705; &apos;,
+      smiley: &apos;&#x1F603; &apos;,
+      fire: &apos;&#x1F525; &apos;,
+      diamond: &apos;&#x1F48E; &apos;,
+      gift: &apos;&#x1F381; &apos;,
+      poop: &apos;&#x1F4A9; &apos;,
+      magic: &apos;&#x2728; &apos;,
+      hat: &apos;&#x1F3A9; &apos;,
+      new: &apos;&#x1F195; &apos;,
+      fist: &apos;&#x1F44A; &apos;,
+      beer: &apos;&#x1F37A; &apos;,
+      bicycle: &apos;&#x1F6B2; &apos;,
+      star: &apos;&#x2B50;&#xFE0F; &apos;,
+    };
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get ALL() {
+    return this.LOG | this.DEBUG | this.INFO | this.WARN | this.ERROR;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get LOG() {
+    return 1;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEBUG() {
+    return 2;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get INFO() {
+    return 4;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get WARN() {
+    return 8;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get ERROR() {
+    return 16;
+  }
+}
+
+module.exports = Logger;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "name": "deepstiny",
+  "version": "0.0.1",
+  "description": "Optimized and customizable test runner integrated with Travis",
+  "keywords": [
+    "End2End",
+    "Testing",
+    "Unit",
+    "Development",
+    "Tools"
+  ],
+  "homepage": "https://github.com/MitocGroup/deepstiny",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/deepstiny/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "http://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "bin": {
+    "dps": "./bin/cli.js"
+  },
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/deepstiny.git"
+  },
+  "scripts": {
+    "api-docs": "node node_modules/.bin/esdoc",
+    "prepublish": "npm run docs"
+  },
+  "dependencies": {
+    "yaml-js": "^0.1.5",
+    "pify": "^2.3.0",
+    "dot-object": "^1.5.4",
+    "chalk": "^1.1.3",
+    "caporal": "^0.5.0",
+    "travis-lint": "^1.0.0",
+    "print": "^1.0.2",
+    "readdir-enhanced": "^1.5.2",
+    "mocha": "^3.3.0",
+    "fs-extra": "^3.0.1",
+    "package-hash": "^2.0.0",
+    "ora": "^1.2.0",
+    "md5-hex": "^2.0.0",
+    "jag": "^1.0.14",
+    "aws-sdk": "^2.49.0",
+    "progress-stream": "^2.0.0",
+    "pretty-bytes": "^4.0.2",
+    "istanbul": "^0.4.5",
+    "require-hacker": "^3.0.0",
+    "travis-encrypt": "^2.1.1"
+  },
+  "depDependencies": {
+    "esdoc": "^0.5.2"
+  },
+  "engines": {
+    "node": ">=6.0 <7.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

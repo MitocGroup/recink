@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/emit/emit-module.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/emit/emit-module.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const print = require(&apos;print&apos;);
+const path = require(&apos;path&apos;);
+const fs = require(&apos;fs&apos;);
+const pify = require(&apos;pify&apos;);
+const readdir = require(&apos;readdir-enhanced&apos;);
+const events = require(&apos;./events&apos;);
+
+class EmitModule {
+  /**
+   * @param {string} name
+   * @param {Container|*} container
+   * @param {Emitter|*} emitter
+   * @param {*} logger
+   */
+  constructor(name, container, emitter, logger) {
+    this._emitter = emitter;
+    this._logger = logger;
+    this._name = name;
+    this._container = container;
+    this._stats = {
+      total: 0,
+      emitted: 0,
+      ignored: 0,
+      dirs: 0,
+    };
+  }
+  
+  /**
+   * @returns {Promise|*}
+   */
+  process(container) {
+    if (!this.container.has(&apos;root&apos;)) {
+      return Promise.reject(new Error(`Missing root for module ${ this.name }`));
+    }
+    
+    const moduleRoot = this.container.get(&apos;root&apos;);
+
+    return new Promise((resolve, reject) =&gt; {
+      fs.exists(moduleRoot, exists =&gt; {
+        if (!exists) {
+          return reject(new Error(
+            `Module ${ this.name } root ${ moduleRoot } does not exists or wrong permissions set`
+          ));
+        }
+        
+        this.emitter.emitBlocking(events.module.emit.start, this)
+          .then(() =&gt; {
+            const options = {
+              deep: this._deepFilter(container).bind(this),
+              filter: this._filter(container).bind(this),
+            };
+            
+            return new Promise((resolve, reject) =&gt; {
+              let ended = false;
+              let processing = 0;
+              
+              readdir.stream(moduleRoot, options)
+                .on(&apos;data&apos;, filePath =&gt; {
+                  processing++;
+                  
+                  const payload = {
+                    file: filePath,
+                    fileAbs: path.join(moduleRoot, filePath),
+                    module: this,
+                  };
+                  
+                  this.logger.debug(`Emit ${ filePath } asset`);
+                  
+                  this.emitter
+                    .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
+                    .emitBlocking(events.module.emit.asset, payload)
+                    .then(() =&gt; {
+                      processing--;
+                      
+                      if (processing &lt;= 0 &amp;&amp; ended) {
+                        this.emitter.emit(events.module.emit.end);
+                        resolve();
+                      }
+                    })
+                    .catch(error =&gt; {
+                      this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);
+                      reject(error);
+                    });
+                })
+                .on(&apos;end&apos;, () =&gt; {
+                  ended = true;
+                  
+                  if (processing &lt;= 0) {
+                    this.emitter.emit(events.module.emit.end);
+                    resolve();
+                  }
+                })
+                .on(&apos;error&apos;, error =&gt; reject(error));
+            });
+          })
+          .then(() =&gt; resolve())
+          .catch(error =&gt; {
+            this.logger.warn(this.logger.emoji.poop, `failed dispatching module ${ this.name }`);
+            reject(error);
+          });
+      });
+    });
+  }
+  
+  /**
+   * @param {Container|*} container
+   *
+   * @returns {function}
+   *
+   * @private
+   */
+  _filter(container) {
+    const pattern = container.get(&apos;pattern&apos;, []);
+    const ignore = container.get(&apos;ignore&apos;, []);
+    
+    return stats =&gt; {
+      const result = stats.isFile() 
+        &amp;&amp; pattern.filter(p =&gt; this._test(p, stats.path)).length &gt; 0
+        &amp;&amp; ignore.filter(i =&gt; this._test(i, stats.path)).length &lt;= 0;
+      
+      if (stats.isFile()) {
+        if (result) {
+          this.stats.emitted++;
+        } else {
+          this.stats.ignored++;
+        }
+        
+        this.stats.total++;
+      } else if(stats.isDirectory()) {
+        this.stats.dirs++;
+      }
+        
+      return result;  
+    };
+  }
+  
+  /**
+   * @param {Container|*} container
+   *
+   * @returns {function}
+   *
+   * @private
+   */
+  _deepFilter(container) {
+    const ignore = container.get(&apos;ignore&apos;, []);
+    
+    return stats =&gt; {
+      return ignore.filter(i =&gt; this._test(i, stats.path)).length &lt;= 0;
+    };
+  }
+  
+  /**
+   * @param {string|RegExp} pattern
+   * @param {string} value
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _test(pattern, value) {
+    if (!(pattern instanceof RegExp)) {
+      return value.indexOf(pattern.toString()) !== -1;
+    }
+    
+    return pattern.test(value);
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get logger() {
+    return this._logger;
+  }
+  
+  /**
+   * @returns {Emitter|*}
+   */
+  get emitter() {
+    return this._emitter;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return this._name;
+  }
+  
+  /**
+   * @returns {Container|*}
+   */
+  get container() {
+    return this._container;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get stats() {
+    return this._stats;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  dumpStats() {
+    return print(this.stats, {
+      showArrayIndices: true,
+      showArrayLength: true,
+      sortProps: false,
+    }).replace(/\t/g, &apos;   &apos;)
+  }
+  
+  /**
+   * @returns {number}
+   *
+   * @todo make it configurable for specific use cases
+   */
+  static get MAX_PARALLEL_ASSETS_EMIT() {
+    return 1;
+  }
+}
+
+module.exports = EmitModule;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

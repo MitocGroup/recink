@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/index.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const path = require(&apos;path&apos;);
+const Emitter = require(&apos;./emitter&apos;);
+const events = require(&apos;./events&apos;);
+const configFactory = require(&apos;./config/factory&apos;);
+const Container = require(&apos;./container&apos;);
+const AbstractComponent = require(&apos;./component/abstract-component&apos;);
+const logger = require(&apos;./logger&apos;);
+
+class Deepstiny extends Emitter {
+  constructor() {
+    super();
+    
+    this._config = {};
+    this._components = [];
+    this._container = new Container();
+    
+    this._registerDebugers();
+  }
+  
+  /**
+   * @private
+   */
+  _registerDebugers() {
+    this.on(events.config.load, (container, configFile) =&gt; {
+      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);
+      logger.debug(container.dump());
+    });
+    
+    this.on(events.components.load, (...components) =&gt; {
+      logger.debug(
+        &apos;Loading components -&apos;,
+        components.map(c =&gt; c.name).join(&apos;, &apos;) || &apos;None&apos;
+      );
+    });
+    
+    this.on(events.component.load, component =&gt; {
+      logger.debug(`Load component ${ component.name }`);
+    });
+    
+    this.on(events.component.subscribe, component =&gt; {
+      logger.debug(`Component ${ component.name } is subscribed`);
+    });
+    
+    this.on(events.component.ready, component =&gt; {
+      logger.debug(`Component ${ component.name } is ready`);
+    });
+    
+    this.on(events.components.run, (...components) =&gt; {
+      components.map(component =&gt; {
+        logger.info(
+          component.isActive ? logger.emoji.check : logger.emoji.cross,
+          `${ component.name.toUpperCase() } component`
+        );
+      });
+    });
+  }
+  
+  /**
+   * @returns {Promise|*}
+   */
+  run() {
+    this.emit(events.components.run, ...this._components);
+    
+    const activeComponents = this._components
+      .filter(component =&gt; component.isActive);
+      
+    if (activeComponents.length &lt;= 0) {
+      return Promise.resolve();
+    }
+    
+    return Promise.all(activeComponents.map(component =&gt; {
+      this.emit(events.component.run, component);
+      
+      return component.run(this);
+    }));
+  }
+  
+  /**
+   * @param {AbstractComponent[]|AbstractComponent|*} components
+   *
+   * @returns {Promise|*}
+   */
+  components(...components) {
+    this.emit(events.components.load, ...components);
+    
+    if (components.length &lt;= 0) {
+      return Promise.resolve();
+    }
+    
+    return Promise.all(components.map(component =&gt; {
+      if (!(component instanceof AbstractComponent)) {
+        return Promise.reject(new Error(
+          `Component ${ component.constructor.name } should be an instance of AbstractComponent`
+        ));
+      }
+      
+      component.setLogger(logger);
+      this._components.push(component);
+      this.emit(events.component.load, component);
+      
+      return component.subscribe(this)
+        .then(() =&gt; {
+          this.emit(events.component.subscribe, component, this);
+        })
+        .then(() =&gt; component.ready())
+        .then(() =&gt; {
+          this.emit(events.component.ready, component);
+          
+          return Promise.resolve(component);
+        });
+    }));
+  }
+  
+  /**
+   * @param {string} configFile
+   *
+   * @returns {Promise|*}
+   */
+  configure(configFile = Deepstiny.CONFIG_FILE) {
+    return configFactory.guess(configFile)
+      .load()
+      .then(config =&gt; this._configLoad(config, configFile));
+  }
+  
+  /**
+   * @param {*} config
+   * @param {string} configFile
+   * 
+   * @private
+   */
+  _configLoad(config, configFile) {
+    this.emitBlocking(events.config.preprocess, config)
+      .then(() =&gt; {
+        this._config = config;
+        this._container.reload(this._config);
+        
+        this.emit(events.config.load, this.container, configFile);
+      });
+  }
+  
+  /**
+   * @param {string} name
+   *
+   * @returns {AbstractComponent|*}
+   */
+  component(name) {
+    return this._components.filter(c =&gt; c.name === name)[0];
+  }
+  
+  /**
+   * @returns {AbstractComponent[]|*}
+   */
+  listComponents() {
+    return this._components;
+  }
+  
+  /**
+   * @returns {Container|*}
+   */
+  get container() {
+    return this._container;
+  }
+  
+  /**
+   * @returns {AbstractConfig|*}
+   */
+  get config() {
+    return this._config;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get CONFIG_FILE() {
+    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get CONFIG_FILE_NAME() {
+    return &apos;.dps.yml&apos;;
+  }
+}
+
+module.exports = { Deepstiny, AbstractComponent, };
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

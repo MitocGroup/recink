@@ -1,7 +1,16 @@
 'use strict';
 
+const path = require('path');
+const Dumper = require('./helper/dumper');
+
 module.exports = (args, options, logger) => {
-  logger.error(new Error('Not implemented'));
   
-  return Promise.resolve(1);
+  // @todo configure it
+  const configFile = '.travis.yml';
+  
+  return (new Dumper(
+    path.join(__dirname, '../../templates', configFile),
+    path.join(args.path, configFile),
+    logger
+  )).dump(options.overwrite);
 };

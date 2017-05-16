@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/npm/npm-module.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/npm/npm-module.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const packageHash = require(&apos;package-hash&apos;);
+const path = require(&apos;path&apos;);
+const fse = require(&apos;fs-extra&apos;);
+const Spinner = require(&apos;../helper/spinner&apos;);
+const spawn = require(&apos;child_process&apos;).spawn;
+const md5Hex = require(&apos;md5-hex&apos;);
+const SequentialPromise = require(&apos;../helper/sequential-promise&apos;);
+
+class NpmModule {
+  /**
+   * @param {string} rootDir
+   * @param {Cache|*} cache
+   * @param {*} logger
+   */
+  constructor(rootDir, cache, logger) {
+    this._rootDir = rootDir;
+    this._cache = cache;
+    this._logger = logger;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get logger() {
+    return this._logger;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get rootDir() {
+    return this._rootDir;
+  }
+  
+  /**
+   * @param {Cache|*} cache
+   */
+  get cache() {
+    return this._cache;
+  }
+  
+  /**
+   * @param {*} deps
+   * @param {array} scripts
+   *
+   * @returns {Promise|*}
+   */
+  install(deps = {}, scripts = []) {
+    let cacheKey;
+    const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);
+    const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
+    
+    return fse.ensureDir(modulesDir)
+      .then(() =&gt; this._packageHash(packageFile, deps))
+      .then(hash =&gt; {
+        cacheKey = hash;
+        
+        return this.cache.has(hash);
+      })
+      .then(inCache =&gt; {
+        if (inCache) {
+          this.logger.debug(`Restore ${ this.rootDir } cache from #${ cacheKey }`);
+          
+          return this.cache.restore(cacheKey, modulesDir)
+            .then(() =&gt; this._runScripts(scripts));
+        }
+        
+        this.logger.debug(`Install dependencies in ${ this.rootDir }`);
+        
+        return this._install(packageFile, deps)
+          .then(() =&gt; this._runScripts(scripts))
+          .then(() =&gt; {
+            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey } (flush=true)`);
+            
+            // @todo find a smarter way to invalidate caches
+            return this.cache.flush()
+              .then(() =&gt; this.cache.save(cacheKey, modulesDir));
+          });
+      });
+  }
+  
+  /**
+   * @param {array} scripts
+   * 
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _runScripts(scripts) {
+    if (scripts.length &lt;= 0) {
+      return Promise.resolve();
+    }
+    
+    return SequentialPromise.all(scripts.map(script =&gt; {
+      return this._runScript(script);
+    }));
+  }
+  
+  /**
+   * @param {string} script
+   * 
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _runScript(script) {
+    return (new Spinner(
+      `Running ${ script } script in ${ this.rootDir }`
+    )).then(
+      `Script ${ script } execution succeed in ${ this.rootDir }`
+    ).catch(
+      `Script ${ script } execution failed in ${ this.rootDir }`
+    ).promise(new Promise((resolve, reject) =&gt; {
+      const options = {
+        cwd: this.rootDir, 
+        stdio: &apos;ignore&apos;,
+      };
+
+      const npmInstall = spawn(&apos;npm&apos;, [ &apos;run&apos;, script ], options);
+      
+      npmInstall.on(&apos;close&apos;, code =&gt; {
+        if (code !== 0) {          
+          return reject(new Error(
+            `Failed to run script ${ script } in ${ this.rootDir }.\n` +
+            `To open logs type: &apos;open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }&apos;`
+          ));
+        }
+        
+        resolve();
+      });
+    }));
+  }
+  
+  /**
+   * @param {string} packageFile
+   * @param {*} additionalDeps
+   *
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _install(packageFile, additionalDeps) {
+    return fse.pathExists(packageFile)
+      .then(hasPackageFile =&gt; {
+        return hasPackageFile ? this._doInstall() : Promise.resolve();
+      })
+      .then(() =&gt; {
+        const depsVector = Object.keys(additionalDeps)
+          .map(depName =&gt; {
+            return `${ depName }@${ additionalDeps[depName] }`;
+          });
+    
+        return depsVector.length &gt; 0 
+          ? this._doInstall(depsVector) 
+          : Promise.resolve();
+      });
+  }
+  
+  /**
+   * @param {array} deps
+   *
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _doInstall(deps = []) {
+    const depsDebug = deps.length &gt; 0 ? deps.join(&apos;, &apos;) : &apos;MAIN&apos;;
+    
+    return (new Spinner(
+      `Installing dependencies in ${ this.rootDir } (${ depsDebug })`
+    )).then(
+      `Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`
+    ).catch(
+      `Dependencies installation failed in ${ this.rootDir } (${ depsDebug })`
+    ).promise(new Promise((resolve, reject) =&gt; {
+      const options = {
+        cwd: this.rootDir, 
+        stdio: &apos;ignore&apos;,
+      };
+      
+      // ignore running &apos;npm install&apos; scripts
+      if (deps.length &lt;= 0) {
+        deps = [ &apos;--ignore-scripts&apos; ];
+      }
+
+      const npmInstall = spawn(&apos;npm&apos;, [ &apos;install&apos; ].concat(deps), options);
+      
+      npmInstall.on(&apos;close&apos;, code =&gt; {
+        if (code !== 0) {          
+          return reject(new Error(
+            `Failed to install dependencies in ${ this.rootDir }.\n` +
+            `To open logs type: &apos;open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }&apos;`
+          ));
+        }
+        
+        resolve();
+      });
+    }));
+  }
+  
+  /**
+   * @param {string} packageFile
+   * @param {*} deps
+   *
+   * @returns {Promise|*}
+   *
+   * @private
+   */
+  _packageHash(packageFile, deps) {
+    return fse.pathExists(packageFile)
+      .then(hasPackageFile =&gt; {
+        const depsHash = this._depsHash(deps);
+        const packageDebug = hasPackageFile ? &apos;exists&apos; : &apos;missing&apos;;
+        
+        this.logger.debug(
+          `File ${ NpmModule.PACKAGE_FILE } ${ packageDebug } in ${ this.rootDir }`
+        );
+        
+        if (!hasPackageFile) {
+          return Promise.resolve(`${ depsHash }-${ NpmModule.DEFAULT_HASH }`);
+        }
+        
+        return packageHash(packageFile)
+          .then(hash =&gt; {
+            return Promise.resolve(`${ depsHash }-${ hash }`);
+          });
+      });
+  }
+  
+  /**
+   * @param {*} deps
+   *
+   * @returns {string}
+   *
+   * @private
+   */
+  _depsHash(deps) {
+    const normalizedDeps = {};
+    
+    Object.keys(deps).sort().map(key =&gt; {
+      normalizedDeps[key] = deps[key];
+    });
+    
+    return md5Hex(JSON.stringify(normalizedDeps));
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get DEFAULT_HASH() {
+    return &apos;x&apos;.repeat(32);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get NPM_DEBUG_FILE() {
+    return &apos;npm-debug.log&apos;;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get PACKAGE_FILE() {
+    return &apos;package.json&apos;;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get MODULES_DIR() {
+    return &apos;node_modules&apos;;
+  }
+}
+
+module.exports = NpmModule;</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

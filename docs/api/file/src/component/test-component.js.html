@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/component/test-component.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/test-component.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
+const emitEvents = require(&apos;./emit/events&apos;);
+const events = require(&apos;./test/events&apos;);
+const print = require(&apos;print&apos;);
+const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
+const TestAsset = require(&apos;./test/test-asset&apos;);
+const Mocha = require(&apos;mocha&apos;);
+
+class TestComponent extends ConfigBasedComponent {
+  /**
+   * @param {*} args
+   */
+  constructor(...args) {
+    super(...args);
+    
+    this._stats = {
+      total: 0,
+      processed: 0,
+      ignored: 0,
+    };
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return &apos;test&apos;;
+  }
+  
+  /**
+   * @param {Emitter|*} emitter
+   * 
+   * @returns {Promise|*}
+   */
+  run(emitter) {
+    return new Promise((resolve, reject) =&gt; {
+      emitter.onBlocking(emitEvents.module.emit.asset, payload =&gt; {
+        if (!this._match(payload)) {
+          return Promise.resolve();
+        }
+        
+        const { file, fileAbs, module } = payload;
+        
+        this.addProcessing();
+        this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);
+        
+        const testAsset = new TestAsset(file, fileAbs, module);
+        const mocha = new Mocha(this.container.get(&apos;mocha.options&apos;, {}));
+        
+        return emitter.emitBlocking(events.asset.test.start, testAsset, mocha)
+          .then(() =&gt; testAsset.test(mocha))
+          .then(() =&gt; emitter.emitBlocking(events.asset.test.end, testAsset, mocha))
+          .then(() =&gt; {
+            this.removeProcessing();
+            return Promise.resolve();
+          })
+          .catch(error =&gt; {
+            this.removeProcessing();
+            return Promise.reject(error);
+          });
+      }, TestComponent.DEFAULT_PRIORITY);
+      
+      emitter.on(emitEvents.module.emit.end, () =&gt; {
+        this.waitProcessing()
+          .then(() =&gt; emitter.emitBlocking(events.assets.test.end, this))
+          .then(() =&gt; {
+            this.logger.info(
+              this.logger.emoji.beer, 
+              `Finished processing ${ this.stats.processed } test assets`
+            );
+            this.logger.debug(this.dumpStats());
+            resolve();
+          })
+          .catch(error =&gt; reject(error));
+      });
+    });
+  }
+  
+  /**
+   * @param {*} config
+   * @param {string} configFile
+   *
+   * @returns {Container|*}
+   */
+  prepareConfig(config, configFile) {
+    return super.prepareConfig(config, configFile)
+      .then(container =&gt; {
+        return (new ContainerTransformer(container))
+          .addPattern(&apos;pattern&apos;)
+          .addPattern(&apos;ignore&apos;)
+          .transform();
+      });
+  }
+  
+  /**
+   * @param {*} payload
+   *
+   * @returns {boolean}
+   * 
+   * @private
+   */
+  _match(payload) {
+    const pattern = this.container.get(&apos;pattern&apos;, []);
+    const ignore = this.container.get(&apos;ignore&apos;, []);
+
+    const result = pattern.filter(p =&gt; this._test(p, payload.file)).length &gt; 0
+      &amp;&amp; ignore.filter(i =&gt; this._test(i, payload.file)).length &lt;= 0;
+    
+    if (result) {
+      this.stats.processed++;
+    } else {
+      this.stats.ignored++;
+    }
+    
+    this.stats.total++;
+      
+    return result;
+  }
+  
+  /**
+   * @param {string|RegExp} pattern
+   * @param {string} value
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _test(pattern, value) {
+    if (!(pattern instanceof RegExp)) {
+      return value.indexOf(pattern.toString()) !== -1;
+    }
+    
+    return pattern.test(value);
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get stats() {
+    return this._stats;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  dumpStats() {
+    return print(this.stats, {
+      showArrayIndices: true,
+      showArrayLength: true,
+      sortProps: false,
+    }).replace(/\t/g, &apos;   &apos;)
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEFAULT_PRIORITY() {
+    return 10;
+  }
+}
+
+module.exports = TestComponent;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
