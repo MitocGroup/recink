@@ -43,6 +43,10 @@ To configure your project check out [User Guide](https://github.com/MitocGroup/d
 - [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
 - [ ] Dependencies Diagram
 
+# Components (inhouse + 3'rd party)
+
+> TBD...
+
 # Roadmap
 
 - [ ] Add support for fully automated `Travis` configuration 
