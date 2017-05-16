@@ -45,7 +45,7 @@ class NpmModule {
    * @param {*} deps
    * @param {array} scripts
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   install(deps = {}, scripts = []) {
     let cacheKey;
@@ -84,7 +84,7 @@ class NpmModule {
   /**
    * @param {array} scripts
    * 
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -94,14 +94,14 @@ class NpmModule {
     }
     
     return SequentialPromise.all(scripts.map(script => {
-      return this._runScript(script);
+      return () => this._runScript(script);
     }));
   }
   
   /**
    * @param {string} script
    * 
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -137,7 +137,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} additionalDeps
    *
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -161,7 +161,7 @@ class NpmModule {
   /**
    * @param {array} deps
    *
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -204,7 +204,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} deps
    *
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */

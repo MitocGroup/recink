@@ -2,30 +2,32 @@
 
 class SequentialPromise {
   /**
-   * @param {Promise[]} promises
+   * @param {function[]} promises
+   * @param {*} value
    * 
-   * @returns {Promise}
+   * @returns {promise}
    */
-  static all(promises) {
+  static all(promises, value = null) {
     const promisesCloned = [].concat(promises);
     
-    return this._sequential(promisesCloned);
+    return this._sequential(promisesCloned, value);
   }
   
   /**
-   * @param {Promise[]} promises
+   * @param {function[]} promises
+   * @param {*} result
    * 
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
-  static _sequential(promises) {
+  static _sequential(promises, result) {
     if (promises.length <= 0) {
-      return Promise.resolve();
+      return Promise.resolve(result);
     }
     
-    return promises.shift()
-      .then(() => this._sequential(promises));
+    return promises.shift()(result)
+      .then(result => this._sequential(promises, result));
   }
 }
 

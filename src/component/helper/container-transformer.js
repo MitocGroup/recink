@@ -56,7 +56,7 @@ class ContainerTransformer {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    */
   transform() {
     return Promise.all(this.transformers.map(transformer => {

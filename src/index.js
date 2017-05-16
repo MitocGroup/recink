@@ -58,7 +58,7 @@ class Deepstiny extends Emitter {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    */
   run() {
     this.emit(events.components.run, ...this._components);
@@ -80,7 +80,7 @@ class Deepstiny extends Emitter {
   /**
    * @param {AbstractComponent[]|AbstractComponent} components
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   components(...components) {
     this.emit(events.components.load, ...components);
@@ -116,7 +116,7 @@ class Deepstiny extends Emitter {
   /**
    * @param {string} configFile
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   configure(configFile = Deepstiny.CONFIG_FILE) {
     return configFactory.guess(configFile)

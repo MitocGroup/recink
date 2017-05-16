@@ -4,7 +4,7 @@ class AbstractDriver {
   /**
    * @param {string} name
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   read(name) {
     return this._read(name)
@@ -21,7 +21,7 @@ class AbstractDriver {
    * @param {string} name
    * @param {*} coverage
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   write(name, coverage) {
     return this._write(name, JSON.stringify(coverage));
@@ -30,7 +30,7 @@ class AbstractDriver {
   /**
    * @param {string} name
    * 
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -44,7 +44,7 @@ class AbstractDriver {
    * @param {string} name
    * @param {string} content
    * 
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */

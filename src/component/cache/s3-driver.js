@@ -44,7 +44,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -76,7 +76,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -104,7 +104,7 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */

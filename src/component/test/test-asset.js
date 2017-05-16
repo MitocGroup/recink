@@ -19,7 +19,7 @@ class TestAsset {
   /**
    * @param {Mocha} mocha
    * 
-   * @returns {Promise}
+   * @returns {promise}
    */
   test(mocha) {
     return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ class TestAsset {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    */
   get fileContent() {
     return pify(fs.readFile)(this.fileAbs);

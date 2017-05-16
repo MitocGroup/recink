@@ -48,7 +48,7 @@ class CoverageComponent extends ConfigBasedComponent {
   /**
    * @param {istanbul.Collector} collector
    *
-   * @returns {Promise}
+   * @returns {promise}
    * 
    * @private
    */
@@ -153,7 +153,7 @@ class CoverageComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {Promise}
+   * @returns {promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
@@ -224,7 +224,7 @@ class CoverageComponent extends ConfigBasedComponent {
    * @param {istanbul.Collector} collector
    * @param {istanbul.Reporter} reporter
    *
-   * @returns {Promise}
+   * @returns {promise}
    * 
    * @private
    */

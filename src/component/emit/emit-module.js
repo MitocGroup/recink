@@ -28,7 +28,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {Promise}
+   * @returns {promise}
    */
   process(container) {
     if (!this.container.has('root')) {

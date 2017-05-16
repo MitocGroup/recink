@@ -27,7 +27,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {*} args
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   emitBlocking(event, ...args) {
     return this._waitAllowParallel(event)
@@ -119,7 +119,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {number} interval
    *
-   * @returns {Promise}
+   * @returns {promise}
    *
    * @private
    */
@@ -181,7 +181,7 @@ class Emitter extends EventEmitter {
    * @param {string} event
    * @param {*} args
    * 
-   * @returns {Promise}
+   * @returns {promise}
    * 
    * @private
    */

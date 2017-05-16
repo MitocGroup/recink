@@ -21,7 +21,7 @@ class AbstractConfig {
   /**
    * @param {string} file
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   load(file = null) {
     return pify(fs.readFile)(file || this.file)
@@ -32,7 +32,7 @@ class AbstractConfig {
    * @param {*} config
    * @param {string} file
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   dump(config, file = null) {
     return this.encode(config)
@@ -42,7 +42,7 @@ class AbstractConfig {
   /**
    * @param {string} rawConfig
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   decode(rawConfig) {
     return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));
@@ -51,7 +51,7 @@ class AbstractConfig {
   /**
    * @param {*} config
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   encode(config) {
     return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));

@@ -29,7 +29,7 @@ class PreprocessComponent extends AbstractComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {Promise}
+   * @returns {promise}
    */
   subscribe(emitter) {
     emitter.onBlocking(this.events.config.preprocess, config => {
