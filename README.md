@@ -25,7 +25,7 @@ Also Travis integration and caching out of the box ;)
 
 # Configuration
 
-Check out [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository)
+To configure your project check out [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository)
 
 # Usage
 
@@ -37,7 +37,7 @@ Check out [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/
 
 # Documentation
 
-- [x] User Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
+- [x] Quick Start Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
 - [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
 - [ ] Dependencies Diagram
 
