@@ -1,5 +1,6 @@
 'use strict';
 
+const travis = require('./helper/travis');
 const path = require('path');
 const Dumper = require('./helper/dumper');
 const configFactory = require('../../../src/config/factory');
@@ -12,6 +13,10 @@ module.exports = (args, options, logger) => {
   const region = options.awsRegion;
   const accessKeyId = options.awsAccessKeyId;
   const secretAccessKey = options.awsSecretAccessKey;
+  const githubUsername = options.githubUsername;
+  const githubPassword = options.githubPassword;
+  const githubToken = options.githubToken;
+  
   let githubRepository = options.githubRepository;
   
   if (githubRepository) {
@@ -37,12 +42,9 @@ module.exports = (args, options, logger) => {
     githubRepository = `${ user }/${ repository }`;
   }
   
-  // @todo configure it
-  const configFile = '.travis.yml';
-  
   const dumper = new Dumper(
-    path.join(__dirname, '../../templates', configFile),
-    path.join(args.path, configFile),
+    path.join(__dirname, '../../templates', travis.file),
+    path.join(args.path, travis.file),
     logger
   );
   
@@ -61,15 +63,51 @@ module.exports = (args, options, logger) => {
             });
       
       return githubPromise
-        .then(githubRepository => {          
+        .then(repo => {          
           return yaml.decode(yamlContent)
-            .then(travisConfig => {
+            .then(travisConfig => {              
+              const dataVector = [
+                travis.dump(travis.vars.AWS_ACCESS_KEY_ID, accessKeyId),
+                travis.dump(travis.vars.AWS_SECRET_ACCESS_KEY, secretAccessKey),
+              ];
               
-              // @todo implement encryption...
-              console.log('githubRepository', githubRepository);//@todo remove
-              console.log('travisConfig', travisConfig);//@todo remove
+              if (region) {
+                dataVector.push(travis.dump(travis.vars.AWS_REGION, region));
+              }
               
-              return Promise.resolve(travisConfig);
+              const payload = { repo, data: dataVector.join(' ') };
+              
+              if (githubUsername && githubPassword) {
+                payload.username = githubUsername;
+                payload.password = githubPassword;
+              } else if (githubToken) {
+                payload.token = githubToken;
+              }
+
+              return pify(encrypt)(payload)
+                .then(encryptedData => {                  
+                  logger.info(travis.help());
+                  
+                  travisConfig.env = {
+                    global: [
+                      { secure: encryptedData },
+                    ],
+                  };
+                  
+                  return Promise.resolve(travisConfig);
+                })
+                .catch(error => {
+                  if (error.file && error.file === 'not found') {
+                    error = new Error(
+                      `GitHub repository ${ repo } is either missing from Travis CI or Travis CI Pro.\n` +
+                      'Please note that if you are using Travis CI Pro you have to provide GitHub credentials or access token.\n\n' +
+                      'For help menu on configuring Travis Pro credentials or access token run: dps configure travis --help.\n\n' +
+                      'See how to setup you GitHub repository https://docs.travis-ci.com/user/getting-started#To-get-started-with-Travis-CI%3A'
+                    );
+                  }
+                  
+                  return Promise.reject(error);
+                });
             })
             .then(travisConfig => {
               return yaml.encode(travisConfig);

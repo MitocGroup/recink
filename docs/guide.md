@@ -10,6 +10,7 @@ and configure your project.
 
 > To ensure your [Travis](https://travis-ci.org) configuration is valid use `dps lint travis`
 > [Sample configuration](https://github.com/MitocGroup/deepstiny/blob/master/bin/templates/.dps.yml)
+> [Travis variables](https://github.com/MitocGroup/deepstiny/blob/master/bin/commands/configure/helper/travis-vars.js#L3)
 
 ### Running tests
 
