@@ -10,7 +10,6 @@ const fs = require('fs');
 const pify = require('pify');
 const requireHacker = require('require-hacker');
 const storageFactory = require('./coverage/factory');
-const requireFromString = require('require-from-string');
 
 class CoverageComponent extends ConfigBasedComponent {
   /**
