@@ -1,9 +1,9 @@
 # Short User Guide
 
-In order to get started you have to install `Deepstiny` (see [README.md](https://github.com/MitocGroup/deepstiny/blob/master/README.md))
-and configure your project.
+In order to use `Deepstiny` you have to install it (see [README.md](https://github.com/MitocGroup/deepstiny/blob/master/README.md))
+and configure your GitHub project.
 
-### Configure repository:
+### Configuring GitHub project:
 
 - [Enable Travis](https://docs.travis-ci.com/user/getting-started#To-get-started-with-Travis-CI%3A) for your repository
 - Configure `dps`: `dps configure dps`
