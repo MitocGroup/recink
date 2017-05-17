@@ -22,10 +22,13 @@ Object.keys(dependencies).map(key => {
 
 console.log('Ensure peerDependencies are installed');
 
-const npmInstall = spawn(
-  'npm', 
-  [ 'install' ].concat(dependenciesVector)
-);
+const options = [ 'install' ];
+
+if (Env.isGlobalInstallation) {
+  options.push('-g');
+}
+
+const npmInstall = spawn( 'npm', options.concat(dependenciesVector));
 
 npmInstall.on('close', code => {
   process.exit(code);
