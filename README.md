@@ -1,6 +1,7 @@
 run-jst
 ========
 
+[![NPM Version](https://img.shields.io/npm/v/run-jst.svg)](https://npmjs.org/package/run-jst)
 [![Api Docs](https://mitocgroup.github.io/run-jst/api/badge.svg)](https://mitocgroup.github.io/run-jst/api/)
 
 `run-jst` (aka `jst`) is a highly optinionated and extremely optimized test runner

@@ -71,8 +71,7 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/preprocess</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html">AbstractTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/eval-transformer.js~EvalTransformer.html">EvalTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test/test-asset.js~TestAsset.html">TestAsset</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">config</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/abstract-config.js~AbstractConfig.html">AbstractConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
@@ -156,11 +155,9 @@ class NpmModule {
         return this._install(packageFile, deps)
           .then(() =&gt; this._runScripts(scripts))
           .then(() =&gt; {
-            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey } (flush=true)`);
+            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);
             
-            // @todo find a smarter way to invalidate caches
-            return this.cache.flush()
-              .then(() =&gt; this.cache.save(cacheKey, modulesDir));
+            return this.cache.save(cacheKey, modulesDir);
           });
       });
   }
@@ -243,6 +240,21 @@ class NpmModule {
   }
   
   /**
+   * @param {string} depsDebug
+   *
+   * @returns {string}
+   * 
+   * @private
+   */
+  _trimDepsDebugInfo(depsDebug) {
+    if (depsDebug.length &gt; 25) {
+      return depsDebug.substr(0, 25) + &apos;...&apos;;
+    }
+    
+    return depsDebug;
+  }
+  
+  /**
    * @param {array} deps
    *
    * @returns {promise}
@@ -250,7 +262,7 @@ class NpmModule {
    * @private
    */
   _doInstall(deps = []) {
-    const depsDebug = deps.length &gt; 0 ? deps.join(&apos;, &apos;) : &apos;MAIN&apos;;
+    const depsDebug = this._trimDepsDebugInfo(deps.length &gt; 0 ? deps.join(&apos;, &apos;) : &apos;MAIN&apos;);
     
     return (new Spinner(
       `Installing dependencies in ${ this.rootDir } (${ depsDebug })`

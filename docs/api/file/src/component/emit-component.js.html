@@ -71,8 +71,7 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/preprocess</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html">AbstractTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/eval-transformer.js~EvalTransformer.html">EvalTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test/test-asset.js~TestAsset.html">TestAsset</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">config</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/abstract-config.js~AbstractConfig.html">AbstractConfig</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
@@ -90,6 +89,7 @@ const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
 const EmitModule = require(&apos;./emit/emit-module&apos;);
 const events = require(&apos;./emit/events&apos;);
 const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
+const SequentialPromise = require(&apos;./helper/sequential-promise&apos;);
 
 class EmitComponent extends ConfigBasedComponent {
   /**
@@ -118,13 +118,13 @@ class EmitComponent extends ConfigBasedComponent {
     
     emitter.emit(events.modules.process.start, this._modules, this.container);
     
-    return Promise.all(this._modules.map(module =&gt; {
-      emitter.emit(events.module.process.start, module, this.container);
-
-      return module.process(this.container)
-        .then(() =&gt; {
-          emitter.emit(events.module.process.end, module);
-        });
+    return SequentialPromise.all(this._modules.map(module =&gt; {
+      return () =&gt; {
+        return module.check()
+          .then(() =&gt; emitter.emitBlocking(events.module.process.start, module, this.container))
+          .then(() =&gt; module.process(this.container))
+          .then(() =&gt; emitter.emitBlocking(events.module.process.end, module));
+      };
     })).then(() =&gt; {
       emitter.emit(events.modules.process.end, this._modules, this.container);
     });

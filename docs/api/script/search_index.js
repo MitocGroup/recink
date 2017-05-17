@@ -198,12 +198,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "run-jst/src/component/test/test-asset.js~testasset",
-    "class/src/component/test/test-asset.js~TestAsset.html",
-    "<span>TestAsset</span> <span class=\"search-result-import-path\">run-jst/src/component/test/test-asset.js</span>",
-    "class"
-  ],
-  [
     "run-jst/src/component/test-component.js~testcomponent",
     "class/src/component/test-component.js~TestComponent.html",
     "<span>TestComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/test-component.js</span>",
@@ -1056,6 +1050,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/component/emit/emit-module.js~emitmodule#check",
+    "class/src/component/emit/emit-module.js~EmitModule.html#instance-method-check",
+    "src/component/emit/emit-module.js~EmitModule#check",
+    "method"
+  ],
+  [
     "src/component/emit/emit-module.js~emitmodule#constructor",
     "class/src/component/emit/emit-module.js~EmitModule.html#instance-constructor-constructor",
     "src/component/emit/emit-module.js~EmitModule#constructor",
@@ -1612,48 +1612,6 @@ window.esdocSearchIndex = [
     "file/src/component/test/events.js.html",
     "src/component/test/events.js",
     "file"
-  ],
-  [
-    "src/component/test/test-asset.js",
-    "file/src/component/test/test-asset.js.html",
-    "src/component/test/test-asset.js",
-    "file"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#constructor",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-constructor-constructor",
-    "src/component/test/test-asset.js~TestAsset#constructor",
-    "method"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#file",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-get-file",
-    "src/component/test/test-asset.js~TestAsset#file",
-    "member"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#fileabs",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-get-fileAbs",
-    "src/component/test/test-asset.js~TestAsset#fileAbs",
-    "member"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#filecontent",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-get-fileContent",
-    "src/component/test/test-asset.js~TestAsset#fileContent",
-    "member"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#module",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-get-module",
-    "src/component/test/test-asset.js~TestAsset#module",
-    "member"
-  ],
-  [
-    "src/component/test/test-asset.js~testasset#test",
-    "class/src/component/test/test-asset.js~TestAsset.html#instance-method-test",
-    "src/component/test/test-asset.js~TestAsset#test",
-    "method"
   ],
   [
     "src/config/abstract-config.js",
