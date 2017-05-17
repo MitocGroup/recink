@@ -25,9 +25,9 @@ Also Travis integration and caching out of the box ;)
 
 `npm install -g deepstiny`
 
-# Configuration
+# Getting Started
 
-To configure your project check out [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository)
+Check out the [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository)
 
 # Usage
 
@@ -46,6 +46,12 @@ To configure your project check out [User Guide](https://github.com/MitocGroup/d
 # Components (inhouse + 3'rd party)
 
 > TBD...
+
+# Projects using Deepstiny
+
+- [Deep Framework](https://github.com/MitocGroup/deep-framework)
+
+> To add you project to this list please open a PR ;)
 
 # Roadmap
 
