@@ -3,6 +3,7 @@
 'use strict';
 
 const logger = require('../src/logger');
+const Env = require('../src/helper/env');
 const prog = require('caporal');
 const pkg = require('../package.json');
 const path = require('path');
@@ -23,9 +24,15 @@ function cmd(path) {
   };
 }
 
-prog
+let description = pkg.description;
+
+if (Env.isTravis) {
+  description += ' [TravisCI Edition]';
+}
+
+const commands = prog
   .version(pkg.version)
-  .description(pkg.description)
+  .description(description)
     .command('run unit', 'Run unit tests') 
       .argument('[path]', 'Path to tests', /.+/, process.cwd())
       .option('-s <component>', 'Skip component', prog.REPEATABLE)
@@ -33,6 +40,10 @@ prog
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')
       .action(cmd('./commands/run/e2e'))
+;
+
+if (!Env.isTravis) {
+  commands
     .command('configure jst', 'Configure run-jst') 
       .argument('[path]', 'Path to package root', /.+/, process.cwd())
       .option('--overwrite', 'Overwrite existing configuration file')
@@ -51,6 +62,7 @@ prog
     .command('lint travis', 'Lint Travis configuration') 
       .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))
       .action(cmd('./commands/lint/travis'))
-;
+  ;
+}
 
 prog.parse(process.argv);
