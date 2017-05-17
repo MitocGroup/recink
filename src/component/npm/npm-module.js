@@ -159,6 +159,21 @@ class NpmModule {
   }
   
   /**
+   * @param {string} depsDebug
+   *
+   * @returns {string}
+   * 
+   * @private
+   */
+  _trimDepsDebugInfo(depsDebug) {
+    if (depsDebug.length > 25) {
+      return depsDebug.substr(0, 25) + '...';
+    }
+    
+    return depsDebug;
+  }
+  
+  /**
    * @param {array} deps
    *
    * @returns {promise}
@@ -166,7 +181,7 @@ class NpmModule {
    * @private
    */
   _doInstall(deps = []) {
-    const depsDebug = deps.length > 0 ? deps.join(', ') : 'MAIN';
+    const depsDebug = this._trimDepsDebugInfo(deps.length > 0 ? deps.join(', ') : 'MAIN');
     
     return (new Spinner(
       `Installing dependencies in ${ this.rootDir } (${ depsDebug })`

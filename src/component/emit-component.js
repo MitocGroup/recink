@@ -6,6 +6,7 @@ const ConfigBasedComponent = require('./config-based-component');
 const EmitModule = require('./emit/emit-module');
 const events = require('./emit/events');
 const ContainerTransformer = require('./helper/container-transformer');
+const SequentialPromise = require('./helper/sequential-promise');
 
 class EmitComponent extends ConfigBasedComponent {
   /**
@@ -34,13 +35,15 @@ class EmitComponent extends ConfigBasedComponent {
     
     emitter.emit(events.modules.process.start, this._modules, this.container);
     
-    return Promise.all(this._modules.map(module => {
-      emitter.emit(events.module.process.start, module, this.container);
-
-      return module.process(this.container)
-        .then(() => {
-          emitter.emit(events.module.process.end, module);
-        });
+    return SequentialPromise.all(this._modules.map(module => {
+      return () => {
+        emitter.emit(events.module.process.start, module, this.container);
+        
+        return module.process(this.container)
+          .then(() => {
+            emitter.emit(events.module.process.end, module);
+          });
+      };
     })).then(() => {
       emitter.emit(events.modules.process.end, this._modules, this.container);
     });
