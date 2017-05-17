@@ -62,7 +62,7 @@ class TestComponent extends ConfigBasedComponent {
           });
       }, TestComponent.DEFAULT_PRIORITY);
       
-      emitter.on(emitEvents.module.emit.end, () => {
+      emitter.on(emitEvents.modules.process.end, () => {
         this.waitProcessing()
           .then(() => emitter.emitBlocking(events.assets.test.end, this))
           .then(() => {
