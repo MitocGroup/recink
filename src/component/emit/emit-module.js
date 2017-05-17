@@ -67,7 +67,7 @@ class EmitModule {
                   };
                   
                   this.logger.debug('Emit asset', JSON.stringify(
-                    Object.assign(payload, { module: this.name })
+                    Object.assign({}, payload, { module: this.name })
                   ));
                   
                   this.emitter
