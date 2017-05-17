@@ -31,7 +31,7 @@
       "expectCount": 7,
       "actualCount": 6,
       "undocumentLines": [
-        6
+        7
       ]
     },
     "src/component/coverage/abstract-driver.js": {
@@ -150,9 +150,9 @@
         5
       ]
     },
-    "src/component/coverage/factory.js": {
-      "expectCount": 4,
-      "actualCount": 3,
+    "src/component/preprocess/factory.js": {
+      "expectCount": 3,
+      "actualCount": 2,
       "undocumentLines": [
         5
       ]
@@ -164,9 +164,9 @@
         5
       ]
     },
-    "src/component/preprocess/factory.js": {
-      "expectCount": 3,
-      "actualCount": 2,
+    "src/component/coverage/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
       "undocumentLines": [
         5
       ]
@@ -192,18 +192,18 @@
         13
       ]
     },
-    "src/component/coverage/s3-driver.js": {
-      "expectCount": 5,
-      "actualCount": 4,
-      "undocumentLines": [
-        7
-      ]
-    },
     "src/component/cache/s3-driver.js": {
       "expectCount": 5,
       "actualCount": 4,
       "undocumentLines": [
         11
+      ]
+    },
+    "src/component/coverage/s3-driver.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        7
       ]
     },
     "src/component/helper/sequential-promise.js": {
@@ -255,14 +255,7 @@
         6
       ]
     },
-    "src/events.js": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        4
-      ]
-    },
-    "src/component/cache/events.js": {
+    "src/component/emit/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
@@ -276,7 +269,7 @@
         4
       ]
     },
-    "src/component/emit/events.js": {
+    "src/component/cache/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
@@ -284,6 +277,13 @@
       ]
     },
     "src/component/npm/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [

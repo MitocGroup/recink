@@ -35,7 +35,7 @@
   },
   "scripts": {
     "docs": "npm run docs:api",
-    "docs:api": "node node_modules/.bin/esdoc"
+    "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc"
   },
   "dependencies": {
     "yaml-js": "^0.1.5",

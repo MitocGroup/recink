@@ -78,12 +78,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "run-jst~run-jst",
-    "class/src/index.js~run-jst.html",
-    "<span>run-jst</span> <span class=\"search-result-import-path\">run-jst</span>",
-    "class"
-  ],
-  [
     "run-jst/src/component/emit-component.js~emitcomponent",
     "class/src/component/emit-component.js~EmitComponent.html",
     "<span>EmitComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/emit-component.js</span>",
@@ -141,6 +135,12 @@ window.esdocSearchIndex = [
     "run-jst/src/config/factory.js~factory",
     "class/src/config/factory.js~Factory.html",
     "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/config/factory.js</span>",
+    "class"
+  ],
+  [
+    "run-jst~jst",
+    "class/src/index.js~Jst.html",
+    "<span>Jst</span> <span class=\"search-result-import-path\">run-jst</span>",
     "class"
   ],
   [
@@ -1842,63 +1842,63 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/index.js~run-jst#component",
-    "class/src/index.js~run-jst.html#instance-method-component",
-    "src/index.js~run-jst#component",
+    "src/index.js~jst#component",
+    "class/src/index.js~Jst.html#instance-method-component",
+    "src/index.js~Jst#component",
     "method"
   ],
   [
-    "src/index.js~run-jst#components",
-    "class/src/index.js~run-jst.html#instance-method-components",
-    "src/index.js~run-jst#components",
+    "src/index.js~jst#components",
+    "class/src/index.js~Jst.html#instance-method-components",
+    "src/index.js~Jst#components",
     "method"
   ],
   [
-    "src/index.js~run-jst#config",
-    "class/src/index.js~run-jst.html#instance-get-config",
-    "src/index.js~run-jst#config",
+    "src/index.js~jst#config",
+    "class/src/index.js~Jst.html#instance-get-config",
+    "src/index.js~Jst#config",
     "member"
   ],
   [
-    "src/index.js~run-jst#configure",
-    "class/src/index.js~run-jst.html#instance-method-configure",
-    "src/index.js~run-jst#configure",
+    "src/index.js~jst#configure",
+    "class/src/index.js~Jst.html#instance-method-configure",
+    "src/index.js~Jst#configure",
     "method"
   ],
   [
-    "src/index.js~run-jst#constructor",
-    "class/src/index.js~run-jst.html#instance-constructor-constructor",
-    "src/index.js~run-jst#constructor",
+    "src/index.js~jst#constructor",
+    "class/src/index.js~Jst.html#instance-constructor-constructor",
+    "src/index.js~Jst#constructor",
     "method"
   ],
   [
-    "src/index.js~run-jst#container",
-    "class/src/index.js~run-jst.html#instance-get-container",
-    "src/index.js~run-jst#container",
+    "src/index.js~jst#container",
+    "class/src/index.js~Jst.html#instance-get-container",
+    "src/index.js~Jst#container",
     "member"
   ],
   [
-    "src/index.js~run-jst#listcomponents",
-    "class/src/index.js~run-jst.html#instance-method-listComponents",
-    "src/index.js~run-jst#listComponents",
+    "src/index.js~jst#listcomponents",
+    "class/src/index.js~Jst.html#instance-method-listComponents",
+    "src/index.js~Jst#listComponents",
     "method"
   ],
   [
-    "src/index.js~run-jst#run",
-    "class/src/index.js~run-jst.html#instance-method-run",
-    "src/index.js~run-jst#run",
+    "src/index.js~jst#run",
+    "class/src/index.js~Jst.html#instance-method-run",
+    "src/index.js~Jst#run",
     "method"
   ],
   [
-    "src/index.js~run-jst.config_file",
-    "class/src/index.js~run-jst.html#static-get-CONFIG_FILE",
-    "src/index.js~run-jst.CONFIG_FILE",
+    "src/index.js~jst.config_file",
+    "class/src/index.js~Jst.html#static-get-CONFIG_FILE",
+    "src/index.js~Jst.CONFIG_FILE",
     "member"
   ],
   [
-    "src/index.js~run-jst.config_file_name",
-    "class/src/index.js~run-jst.html#static-get-CONFIG_FILE_NAME",
-    "src/index.js~run-jst.CONFIG_FILE_NAME",
+    "src/index.js~jst.config_file_name",
+    "class/src/index.js~Jst.html#static-get-CONFIG_FILE_NAME",
+    "src/index.js~Jst.CONFIG_FILE_NAME",
     "member"
   ],
   [
