@@ -10,6 +10,7 @@ const fs = require('fs');
 const pify = require('pify');
 const requireHacker = require('require-hacker');
 const storageFactory = require('./coverage/factory');
+const requireFromString = require('require-from-string');
 
 class CoverageComponent extends ConfigBasedComponent {
   /**
@@ -172,13 +173,17 @@ class CoverageComponent extends ConfigBasedComponent {
           return (dispatchedAssets[module.name] || []).indexOf(asset) == -1;
         })
         .map(asset => {
+          const moduleRoot = module.container.get('root');
+          
           return pify(fs.readFile)(asset)
             .then(content => {
-              eval(instrumenters[module.name]
-                .instrumentSync(
+              requireFromString(
+                instrumenters[module.name].instrumentSync(
                   content.toString(), 
                   asset
-                ));
+                ),
+                asset
+              );
                 
               return Promise.resolve();  
             });
