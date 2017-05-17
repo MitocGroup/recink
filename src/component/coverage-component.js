@@ -179,7 +179,7 @@ class CoverageComponent extends ConfigBasedComponent {
 
         mocha.loadFiles = (fn => {
           const moduleRoot = testAsset.module.container.get('root');
-              
+          
           mocha.files.map(file => {
             file = path.resolve(file);
             mocha.suite.emit('pre-require', global, file, mocha);

@@ -18,4 +18,4 @@ branches:
     - test
 before_install:
   - "npm install -g deepstiny --only=production"
-script: deepstiny run unit 
+script: dps run unit 

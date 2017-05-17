@@ -66,7 +66,9 @@ class EmitModule {
                     module: this,
                   };
                   
-                  this.logger.debug(`Emit ${ filePath } asset`);
+                  this.logger.debug('Emit asset', JSON.stringify(
+                    Object.assign(payload, { module: this.name })
+                  ));
                   
                   this.emitter
                     .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
