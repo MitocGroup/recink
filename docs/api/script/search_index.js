@@ -96,6 +96,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "run-jst/src/helper/env.js~env",
+    "class/src/helper/env.js~Env.html",
+    "<span>Env</span> <span class=\"search-result-import-path\">run-jst/src/helper/env.js</span>",
+    "class"
+  ],
+  [
     "run-jst/src/component/preprocess/eval-transformer.js~evaltransformer",
     "class/src/component/preprocess/eval-transformer.js~EvalTransformer.html",
     "<span>EvalTransformer</span> <span class=\"search-result-import-path\">run-jst/src/component/preprocess/eval-transformer.js</span>",
@@ -1834,6 +1840,24 @@ window.esdocSearchIndex = [
     "file/src/events.js.html",
     "src/events.js",
     "file"
+  ],
+  [
+    "src/helper/env.js",
+    "file/src/helper/env.js.html",
+    "src/helper/env.js",
+    "file"
+  ],
+  [
+    "src/helper/env.js~env.isglobalinstallation",
+    "class/src/helper/env.js~Env.html#static-get-isGlobalInstallation",
+    "src/helper/env.js~Env.isGlobalInstallation",
+    "member"
+  ],
+  [
+    "src/helper/env.js~env.istravis",
+    "class/src/helper/env.js~Env.html#static-get-isTravis",
+    "src/helper/env.js~Env.isTravis",
+    "member"
   ],
   [
     "src/index.js",

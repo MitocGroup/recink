@@ -1,7 +1,7 @@
 {
-  "coverage": "79.74%",
-  "expectCount": 237,
-  "actualCount": 189,
+  "coverage": "79.58%",
+  "expectCount": 240,
+  "actualCount": 191,
   "files": {
     "src/logger.js": {
       "expectCount": 16,
@@ -143,30 +143,16 @@
         10
       ]
     },
-    "src/component/preprocess/eval-transformer.js": {
-      "expectCount": 2,
-      "actualCount": 1,
-      "undocumentLines": [
-        5
-      ]
-    },
-    "src/component/preprocess/factory.js": {
+    "src/helper/env.js": {
       "expectCount": 3,
       "actualCount": 2,
       "undocumentLines": [
-        5
+        3
       ]
     },
-    "src/component/cache/factory.js": {
-      "expectCount": 4,
-      "actualCount": 3,
-      "undocumentLines": [
-        5
-      ]
-    },
-    "src/component/coverage/factory.js": {
-      "expectCount": 4,
-      "actualCount": 3,
+    "src/component/preprocess/eval-transformer.js": {
+      "expectCount": 2,
+      "actualCount": 1,
       "undocumentLines": [
         5
       ]
@@ -178,9 +164,30 @@
         5
       ]
     },
+    "src/component/cache/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/preprocess/factory.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        5
+      ]
+    },
     "src/component/factory.js": {
       "expectCount": 8,
       "actualCount": 7,
+      "undocumentLines": [
+        5
+      ]
+    },
+    "src/component/coverage/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
       "undocumentLines": [
         5
       ]
@@ -192,18 +199,18 @@
         13
       ]
     },
-    "src/component/cache/s3-driver.js": {
-      "expectCount": 5,
-      "actualCount": 4,
-      "undocumentLines": [
-        11
-      ]
-    },
     "src/component/coverage/s3-driver.js": {
       "expectCount": 5,
       "actualCount": 4,
       "undocumentLines": [
         7
+      ]
+    },
+    "src/component/cache/s3-driver.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        11
       ]
     },
     "src/component/helper/sequential-promise.js": {

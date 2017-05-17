@@ -17,5 +17,5 @@ branches:
     - stage
     - test
 before_install:
-  - "npm install -g run-jst --only=production"
+  - "npm install -g run-jst"
 script: jst run unit 

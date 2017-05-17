@@ -1,6 +1,6 @@
 {
   "name": "run-jst",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Highly opinionated and extremely optimized test runner",
   "keywords": [
     "End2End",
@@ -35,7 +35,8 @@
   },
   "scripts": {
     "docs": "npm run docs:api",
-    "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc"
+    "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc",
+    "postinstall": "node node-bin/ensure-peer-dependencies.js"
   },
   "dependencies": {
     "yaml-js": "^0.1.5",
@@ -58,13 +59,13 @@
     "require-hacker": "^3.0.0",
     "md5-file": "^3.1.1"
   },
-  "devDependencies": {
+  "peerDependencies": {
     "travis-lint": "^1.0.0",
     "travis-encrypt": "MitocGroup/node-travis-encrypt",
     "github-slug": "^2.0.0",
-    "parse-github-repo-url": "^1.4.0"    
+    "parse-github-repo-url": "^1.4.0"
   },
-  "peerDependencies": {
+  "devDependencies": {
     "esdoc": "^0.5.2",
     "esdoc-node": "^1.0.2"
   },
