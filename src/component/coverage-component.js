@@ -248,7 +248,7 @@ class CoverageComponent extends ConfigBasedComponent {
    * @private
    */
   _coverageVariable(testAsset) {
-    return `__dps_coverage__${ testAsset.module.name }__${ md5Hex(testAsset.file) }__`;
+    return `__jst_coverage__${ testAsset.module.name }__${ md5Hex(testAsset.file) }__`;
   }
   
   /**

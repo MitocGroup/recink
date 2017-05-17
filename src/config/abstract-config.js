@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const pify = require('pify');
+const fse = require('fs-extra');
 
 class AbstractConfig {
   /**
@@ -24,8 +25,19 @@ class AbstractConfig {
    * @returns {promise}
    */
   load(file = null) {
-    return pify(fs.readFile)(file || this.file)
-      .then(rawConfig => this.decode(rawConfig));
+    const configFile = file || this.file;
+    
+    return fse.pathExists(configFile)
+      .then(exists => {
+        if (!exists) {
+          return Promise.reject(new Error(
+            `Missing config file ${ configFile }`
+          ));
+        }
+        
+        return pify(fs.readFile)(configFile)
+          .then(rawConfig => this.decode(rawConfig));
+      });
   }
   
   /**

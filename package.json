@@ -1,6 +1,6 @@
 {
-  "name": "deepstiny",
-  "version": "0.0.1",
+  "name": "run-jst",
+  "version": "1.0.0",
   "description": "Highly opinionated and extremely optimized test runner",
   "keywords": [
     "End2End",
@@ -9,9 +9,9 @@
     "Development",
     "Tools"
   ],
-  "homepage": "https://github.com/MitocGroup/deepstiny",
+  "homepage": "https://github.com/MitocGroup/run-jst",
   "bugs": {
-    "url": "https://github.com/MitocGroup/deepstiny/issues"
+    "url": "https://github.com/MitocGroup/run-jst/issues"
   },
   "license": "MIT",
   "author": {
@@ -26,12 +26,12 @@
     }
   ],
   "bin": {
-    "dps": "./bin/cli.js"
+    "jst": "./bin/cli.js"
   },
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MitocGroup/deepstiny.git"
+    "url": "https://github.com/MitocGroup/run-jst.git"
   },
   "scripts": {
     "docs": "npm run docs:api",

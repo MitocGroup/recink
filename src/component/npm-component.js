@@ -38,7 +38,7 @@ class NpmComponent extends ConfigBasedComponent {
       return Promise.resolve(this._cacheDir);
     }
     
-    this._cacheDir = path.join(os.tmpdir(), '_dps_npm_cache_');
+    this._cacheDir = path.join(os.tmpdir(), '_jst_npm_cache_');
     
     return fse.ensureDir(this._cacheDir)
       .then(() => {

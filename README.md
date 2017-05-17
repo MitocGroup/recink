@@ -1,9 +1,10 @@
-# Deepstiny
+run-jst
+========
 
-[![Api Docs](https://mitocgroup.github.io/deepstiny/api/badge.svg)](https://mitocgroup.github.io/deepstiny/api/)
+[![Api Docs](https://mitocgroup.github.io/run-jst/api/badge.svg)](https://mitocgroup.github.io/run-jst/api/)
 
-`Deepstiny` (aka `dps`) is a highly optinionated and extremely optimized test runner
-suitable for running tests on big/hybrid/complex projects by adding a simple `.dps.yml`
+`run-jst` (aka `jst`) is a highly optinionated and extremely optimized test runner
+suitable for running tests on big/hybrid/complex projects by adding a simple `.jst.yml`
 configuration to rule them all.
 
 # Motivation
@@ -23,31 +24,31 @@ Also Travis integration and caching out of the box ;)
 
 # Installation
 
-`npm install -g deepstiny`
+`npm install -g run-jst`
 
 # Getting Started
 
-Check out the [User Guide](https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md#configure-repository)
+Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configure-repository)
 
 # Usage
 
-`dps --help` Show help
+`jst --help` Show help
 
-`dps configure dps` Configure Deepstiny
+`jst configure jst` Configure run-jst
 
-`dps run unit` Run unit tests
+`jst run unit` Run unit tests
 
 # Documentation
 
-- [x] Quick Start Guide - https://github.com/MitocGroup/deepstiny/blob/master/docs/guide.md
-- [x] Api Docs - https://mitocgroup.github.io/deepstiny/api/identifiers.html
+- [x] Quick Start Guide - https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md
+- [x] Api Docs - https://mitocgroup.github.io/run-jst/api/identifiers.html
 - [ ] Dependencies Diagram
 
 # Components (inhouse + 3'rd party)
 
 > TBD...
 
-# Projects using Deepstiny
+# Projects using run-jst
 
 - [Deep Framework](https://github.com/MitocGroup/deep-framework)
 
@@ -69,7 +70,7 @@ This repository is being sponsored by:
 
 # License
 
-Deepstiny is released under the MIT license.
+run-jst is released under the MIT license.
 
 Copyright (c) 2017 Mitoc Group Inc
 

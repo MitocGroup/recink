@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/component/coverage/volatile-driver.js | Deepstiny - highly opinionated and extremely optimized test runner API Document</title>
+  <title data-ice="title">src/component/coverage/volatile-driver.js | run-jst - highly opinionated and extremely optimized test runner API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -19,7 +19,7 @@
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
-  <a data-ice="repoURL" href="https://github.com/MitocGroup/deepstiny.git" class="repo-url-github">Repository</a>
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/run-jst.git" class="repo-url-github">Repository</a>
   <div class="search-box">
   <span>
     <img src="./image/search.png">
@@ -34,7 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/container.js~Container.html">Container</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.js~Deepstiny.html">Deepstiny</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.js~run-jst.html">run-jst</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/logger.js~Logger.html">Logger</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AbstractComponent">AbstractComponent</a></span></span></li>
@@ -131,7 +131,7 @@ class VolatileDriver extends AbstractDriver {
    * @private
    */
   _storageFile(name) {
-    return path.join(os.tmpDir(), &apos;__dps_coverage_volatile__&apos;, name);
+    return path.join(os.tmpDir(), &apos;__jst_coverage_volatile__&apos;, name);
   }
 }
 

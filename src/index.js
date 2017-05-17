@@ -8,7 +8,7 @@ const Container = require('./container');
 const AbstractComponent = require('./component/abstract-component');
 const logger = require('./logger');
 
-class Deepstiny extends Emitter {
+class Jst extends Emitter {
   constructor() {
     super();
     
@@ -118,7 +118,7 @@ class Deepstiny extends Emitter {
    *
    * @returns {promise}
    */
-  configure(configFile = Deepstiny.CONFIG_FILE) {
+  configure(configFile = Jst.CONFIG_FILE) {
     return configFactory.guess(configFile)
       .load()
       .then(config => this._configLoad(config, configFile));
@@ -181,8 +181,8 @@ class Deepstiny extends Emitter {
    * @returns {string}
    */
   static get CONFIG_FILE_NAME() {
-    return '.dps.yml';
+    return '.jst.yml';
   }
 }
 
-module.exports = { Deepstiny, AbstractComponent, };
+module.exports = { Jst, AbstractComponent, };

@@ -1,13 +1,13 @@
 'use strict';
 
-const Deepstiny = require('../../../../src/index').Deepstiny;
+const Jst = require('../../../../src/index').Jst;
 
 const file = '.travis.yml';
 
 const vars = {
-  AWS_ACCESS_KEY_ID: 'DPS_AWS_ACCESS_KEY_ID',
-  AWS_SECRET_ACCESS_KEY: 'DPS_AWS_SECRET_ACCESS_KEY',
-  AWS_REGION: 'DPS_AWS_REGION',
+  AWS_ACCESS_KEY_ID: 'JST_AWS_ACCESS_KEY_ID',
+  AWS_SECRET_ACCESS_KEY: 'JST_AWS_SECRET_ACCESS_KEY',
+  AWS_REGION: 'JST_AWS_REGION',
 };
 
 const info = {
@@ -31,7 +31,7 @@ function dump(varName, value) {
  */
 function help() {
   const output = [
-    `You can use the following variables in your ${ Deepstiny.CONFIG_FILE_NAME }:`,
+    `You can use the following variables in your ${ Jst.CONFIG_FILE_NAME }:`,
   ];
   
   output.push('\n');
@@ -42,7 +42,7 @@ function help() {
   
   output.push('\n');
   output.push('Please ensure the \'eval\' preprocessor added for the options.');
-  output.push('Sample Config: https://github.com/MitocGroup/deepstiny/blob/master/bin/templates/.dps.yml#L5');
+  output.push('Sample Config: https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L5');
   
   return output.join('\n');
 }

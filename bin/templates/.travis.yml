@@ -17,5 +17,5 @@ branches:
     - stage
     - test
 before_install:
-  - "npm install -g deepstiny --only=production"
-script: dps run unit 
+  - "npm install -g run-jst --only=production"
+script: jst run unit 

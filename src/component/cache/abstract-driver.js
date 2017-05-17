@@ -207,7 +207,7 @@ class AbstractDriver extends EventEmitter {
    * @returns {string}
    */
   static get DEFAULT_NS() {
-    return 'dps_package';
+    return 'jst_package';
   }
 }
 

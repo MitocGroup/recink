@@ -2,10 +2,10 @@
 
 const path = require('path');
 const Dumper = require('./helper/dumper');
-const Deepstiny = require('../../../src/index').Deepstiny;
+const Jst = require('../../../src/index').Jst;
 
 module.exports = (args, options, logger) => {
-  const configFile = Deepstiny.CONFIG_FILE_NAME;
+  const configFile = Jst.CONFIG_FILE_NAME;
   
   return (new Dumper(
     path.join(__dirname, '../../templates', configFile),

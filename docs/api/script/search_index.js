@@ -1,266 +1,266 @@
 window.esdocSearchIndex = [
   [
-    "deepstiny/src/component/abstract-component.js~abstractcomponent",
+    "run-jst/src/component/abstract-component.js~abstractcomponent",
     "class/src/component/abstract-component.js~AbstractComponent.html",
-    "<span>AbstractComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/abstract-component.js</span>",
+    "<span>AbstractComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/abstract-component.js</span>",
     "class"
   ],
   [
-    "deepstiny~abstractcomponent",
+    "run-jst~abstractcomponent",
     "variable/index.html#static-variable-AbstractComponent",
-    "<span>AbstractComponent</span> <span class=\"search-result-import-path\">deepstiny</span>",
+    "<span>AbstractComponent</span> <span class=\"search-result-import-path\">run-jst</span>",
     "variable"
   ],
   [
-    "deepstiny/src/config/abstract-config.js~abstractconfig",
+    "run-jst/src/config/abstract-config.js~abstractconfig",
     "class/src/config/abstract-config.js~AbstractConfig.html",
-    "<span>AbstractConfig</span> <span class=\"search-result-import-path\">deepstiny/src/config/abstract-config.js</span>",
+    "<span>AbstractConfig</span> <span class=\"search-result-import-path\">run-jst/src/config/abstract-config.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache/abstract-driver.js~abstractdriver",
+    "run-jst/src/component/cache/abstract-driver.js~abstractdriver",
     "class/src/component/cache/abstract-driver.js~AbstractDriver.html",
-    "<span>AbstractDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/abstract-driver.js</span>",
+    "<span>AbstractDriver</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/abstract-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/coverage/abstract-driver.js~abstractdriver",
+    "run-jst/src/component/coverage/abstract-driver.js~abstractdriver",
     "class/src/component/coverage/abstract-driver.js~AbstractDriver.html",
-    "<span>AbstractDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/abstract-driver.js</span>",
+    "<span>AbstractDriver</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/abstract-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/preprocess/abstract-transformer.js~abstracttransformer",
+    "run-jst/src/component/preprocess/abstract-transformer.js~abstracttransformer",
     "class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html",
-    "<span>AbstractTransformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/preprocess/abstract-transformer.js</span>",
+    "<span>AbstractTransformer</span> <span class=\"search-result-import-path\">run-jst/src/component/preprocess/abstract-transformer.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/npm/cache.js~cache",
+    "run-jst/src/component/npm/cache.js~cache",
     "class/src/component/npm/cache.js~Cache.html",
-    "<span>Cache</span> <span class=\"search-result-import-path\">deepstiny/src/component/npm/cache.js</span>",
+    "<span>Cache</span> <span class=\"search-result-import-path\">run-jst/src/component/npm/cache.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache-component.js~cachecomponent",
+    "run-jst/src/component/cache-component.js~cachecomponent",
     "class/src/component/cache-component.js~CacheComponent.html",
-    "<span>CacheComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache-component.js</span>",
+    "<span>CacheComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/cache-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache-component.js~configbasedcomponent",
+    "run-jst/src/component/cache-component.js~configbasedcomponent",
     "variable/index.html#static-variable-ConfigBasedComponent",
-    "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache-component.js</span>",
+    "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/cache-component.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/config-based-component.js~configbasedcomponent",
+    "run-jst/src/component/config-based-component.js~configbasedcomponent",
     "class/src/component/config-based-component.js~ConfigBasedComponent.html",
-    "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/config-based-component.js</span>",
+    "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/config-based-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/container.js~container",
+    "run-jst/src/container.js~container",
     "class/src/container.js~Container.html",
-    "<span>Container</span> <span class=\"search-result-import-path\">deepstiny/src/container.js</span>",
+    "<span>Container</span> <span class=\"search-result-import-path\">run-jst/src/container.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/helper/container-transformer.js~containertransformer",
+    "run-jst/src/component/helper/container-transformer.js~containertransformer",
     "class/src/component/helper/container-transformer.js~ContainerTransformer.html",
-    "<span>ContainerTransformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/container-transformer.js</span>",
+    "<span>ContainerTransformer</span> <span class=\"search-result-import-path\">run-jst/src/component/helper/container-transformer.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/coverage-component.js~coveragecomponent",
+    "run-jst/src/component/coverage-component.js~coveragecomponent",
     "class/src/component/coverage-component.js~CoverageComponent.html",
-    "<span>CoverageComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage-component.js</span>",
+    "<span>CoverageComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage-component.js</span>",
     "class"
   ],
   [
-    "deepstiny~deepstiny",
-    "class/src/index.js~Deepstiny.html",
-    "<span>Deepstiny</span> <span class=\"search-result-import-path\">deepstiny</span>",
+    "run-jst~run-jst",
+    "class/src/index.js~run-jst.html",
+    "<span>run-jst</span> <span class=\"search-result-import-path\">run-jst</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/emit-component.js~emitcomponent",
+    "run-jst/src/component/emit-component.js~emitcomponent",
     "class/src/component/emit-component.js~EmitComponent.html",
-    "<span>EmitComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/emit-component.js</span>",
+    "<span>EmitComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/emit-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/emit/emit-module.js~emitmodule",
+    "run-jst/src/component/emit/emit-module.js~emitmodule",
     "class/src/component/emit/emit-module.js~EmitModule.html",
-    "<span>EmitModule</span> <span class=\"search-result-import-path\">deepstiny/src/component/emit/emit-module.js</span>",
+    "<span>EmitModule</span> <span class=\"search-result-import-path\">run-jst/src/component/emit/emit-module.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/emitter.js~emitter",
+    "run-jst/src/emitter.js~emitter",
     "class/src/emitter.js~Emitter.html",
-    "<span>Emitter</span> <span class=\"search-result-import-path\">deepstiny/src/emitter.js</span>",
+    "<span>Emitter</span> <span class=\"search-result-import-path\">run-jst/src/emitter.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/preprocess/eval-transformer.js~evaltransformer",
+    "run-jst/src/component/preprocess/eval-transformer.js~evaltransformer",
     "class/src/component/preprocess/eval-transformer.js~EvalTransformer.html",
-    "<span>EvalTransformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/preprocess/eval-transformer.js</span>",
+    "<span>EvalTransformer</span> <span class=\"search-result-import-path\">run-jst/src/component/preprocess/eval-transformer.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache/abstract-driver.js~eventemitter",
+    "run-jst/src/component/cache/abstract-driver.js~eventemitter",
     "variable/index.html#static-variable-EventEmitter",
-    "<span>EventEmitter</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/abstract-driver.js</span>",
+    "<span>EventEmitter</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/abstract-driver.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/cache/factory.js~factory",
+    "run-jst/src/component/cache/factory.js~factory",
     "class/src/component/cache/factory.js~Factory.html",
-    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/factory.js</span>",
+    "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/factory.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/coverage/factory.js~factory",
+    "run-jst/src/component/coverage/factory.js~factory",
     "class/src/component/coverage/factory.js~Factory.html",
-    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/factory.js</span>",
+    "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/factory.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/factory.js~factory",
+    "run-jst/src/component/factory.js~factory",
     "class/src/component/factory.js~Factory.html",
-    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/factory.js</span>",
+    "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/component/factory.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/preprocess/factory.js~factory",
+    "run-jst/src/component/preprocess/factory.js~factory",
     "class/src/component/preprocess/factory.js~Factory.html",
-    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/component/preprocess/factory.js</span>",
+    "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/component/preprocess/factory.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/config/factory.js~factory",
+    "run-jst/src/config/factory.js~factory",
     "class/src/config/factory.js~Factory.html",
-    "<span>Factory</span> <span class=\"search-result-import-path\">deepstiny/src/config/factory.js</span>",
+    "<span>Factory</span> <span class=\"search-result-import-path\">run-jst/src/config/factory.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/logger.js~logger",
+    "run-jst/src/logger.js~logger",
     "class/src/logger.js~Logger.html",
-    "<span>Logger</span> <span class=\"search-result-import-path\">deepstiny/src/logger.js</span>",
+    "<span>Logger</span> <span class=\"search-result-import-path\">run-jst/src/logger.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/npm-component.js~npmcomponent",
+    "run-jst/src/component/npm-component.js~npmcomponent",
     "class/src/component/npm-component.js~NpmComponent.html",
-    "<span>NpmComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/npm-component.js</span>",
+    "<span>NpmComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/npm-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/npm/npm-module.js~npmmodule",
+    "run-jst/src/component/npm/npm-module.js~npmmodule",
     "class/src/component/npm/npm-module.js~NpmModule.html",
-    "<span>NpmModule</span> <span class=\"search-result-import-path\">deepstiny/src/component/npm/npm-module.js</span>",
+    "<span>NpmModule</span> <span class=\"search-result-import-path\">run-jst/src/component/npm/npm-module.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/preprocess-component.js~preprocesscomponent",
+    "run-jst/src/component/preprocess-component.js~preprocesscomponent",
     "class/src/component/preprocess-component.js~PreprocessComponent.html",
-    "<span>PreprocessComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/preprocess-component.js</span>",
+    "<span>PreprocessComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/preprocess-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache/s3-driver.js~s3driver",
+    "run-jst/src/component/cache/s3-driver.js~s3driver",
     "class/src/component/cache/s3-driver.js~S3Driver.html",
-    "<span>S3Driver</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/s3-driver.js</span>",
+    "<span>S3Driver</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/s3-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/coverage/s3-driver.js~s3driver",
+    "run-jst/src/component/coverage/s3-driver.js~s3driver",
     "class/src/component/coverage/s3-driver.js~S3Driver.html",
-    "<span>S3Driver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/s3-driver.js</span>",
+    "<span>S3Driver</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/s3-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/helper/sequential-promise.js~sequentialpromise",
+    "run-jst/src/component/helper/sequential-promise.js~sequentialpromise",
     "class/src/component/helper/sequential-promise.js~SequentialPromise.html",
-    "<span>SequentialPromise</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/sequential-promise.js</span>",
+    "<span>SequentialPromise</span> <span class=\"search-result-import-path\">run-jst/src/component/helper/sequential-promise.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/helper/spinner.js~spinner",
+    "run-jst/src/component/helper/spinner.js~spinner",
     "class/src/component/helper/spinner.js~Spinner.html",
-    "<span>Spinner</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/spinner.js</span>",
+    "<span>Spinner</span> <span class=\"search-result-import-path\">run-jst/src/component/helper/spinner.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/test/test-asset.js~testasset",
+    "run-jst/src/component/test/test-asset.js~testasset",
     "class/src/component/test/test-asset.js~TestAsset.html",
-    "<span>TestAsset</span> <span class=\"search-result-import-path\">deepstiny/src/component/test/test-asset.js</span>",
+    "<span>TestAsset</span> <span class=\"search-result-import-path\">run-jst/src/component/test/test-asset.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/test-component.js~testcomponent",
+    "run-jst/src/component/test-component.js~testcomponent",
     "class/src/component/test-component.js~TestComponent.html",
-    "<span>TestComponent</span> <span class=\"search-result-import-path\">deepstiny/src/component/test-component.js</span>",
+    "<span>TestComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/test-component.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/helper/transformer.js~transformer",
+    "run-jst/src/component/helper/transformer.js~transformer",
     "class/src/component/helper/transformer.js~Transformer.html",
-    "<span>Transformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/transformer.js</span>",
+    "<span>Transformer</span> <span class=\"search-result-import-path\">run-jst/src/component/helper/transformer.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache/void-driver.js~voiddriver",
+    "run-jst/src/component/cache/void-driver.js~voiddriver",
     "class/src/component/cache/void-driver.js~VoidDriver.html",
-    "<span>VoidDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/void-driver.js</span>",
+    "<span>VoidDriver</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/void-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/coverage/volatile-driver.js~volatiledriver",
+    "run-jst/src/component/coverage/volatile-driver.js~volatiledriver",
     "class/src/component/coverage/volatile-driver.js~VolatileDriver.html",
-    "<span>VolatileDriver</span> <span class=\"search-result-import-path\">deepstiny/src/component/coverage/volatile-driver.js</span>",
+    "<span>VolatileDriver</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/volatile-driver.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/config/yaml-config.js~yamlconfig",
+    "run-jst/src/config/yaml-config.js~yamlconfig",
     "class/src/config/yaml-config.js~YamlConfig.html",
-    "<span>YamlConfig</span> <span class=\"search-result-import-path\">deepstiny/src/config/yaml-config.js</span>",
+    "<span>YamlConfig</span> <span class=\"search-result-import-path\">run-jst/src/config/yaml-config.js</span>",
     "class"
   ],
   [
-    "deepstiny/src/component/cache/events.js~events",
+    "run-jst/src/component/cache/events.js~events",
     "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">deepstiny/src/component/cache/events.js</span>",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/cache/events.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/emit/events.js~events",
+    "run-jst/src/component/emit/events.js~events",
     "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">deepstiny/src/component/emit/events.js</span>",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/emit/events.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/npm/events.js~events",
+    "run-jst/src/component/npm/events.js~events",
     "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">deepstiny/src/component/npm/events.js</span>",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/npm/events.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/test/events.js~events",
+    "run-jst/src/component/test/events.js~events",
     "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">deepstiny/src/component/test/events.js</span>",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/test/events.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/events.js~events",
+    "run-jst/src/events.js~events",
     "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">deepstiny/src/events.js</span>",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/events.js</span>",
     "variable"
   ],
   [
-    "deepstiny/src/component/helper/pattern-transformer.js~patterntransformer",
+    "run-jst/src/component/helper/pattern-transformer.js~patterntransformer",
     "function/index.html#static-function-patterntransformer",
-    "<span>patterntransformer</span> <span class=\"search-result-import-path\">deepstiny/src/component/helper/pattern-transformer.js</span>",
+    "<span>patterntransformer</span> <span class=\"search-result-import-path\">run-jst/src/component/helper/pattern-transformer.js</span>",
     "function"
   ],
   [
@@ -1842,63 +1842,63 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/index.js~deepstiny#component",
-    "class/src/index.js~Deepstiny.html#instance-method-component",
-    "src/index.js~Deepstiny#component",
+    "src/index.js~run-jst#component",
+    "class/src/index.js~run-jst.html#instance-method-component",
+    "src/index.js~run-jst#component",
     "method"
   ],
   [
-    "src/index.js~deepstiny#components",
-    "class/src/index.js~Deepstiny.html#instance-method-components",
-    "src/index.js~Deepstiny#components",
+    "src/index.js~run-jst#components",
+    "class/src/index.js~run-jst.html#instance-method-components",
+    "src/index.js~run-jst#components",
     "method"
   ],
   [
-    "src/index.js~deepstiny#config",
-    "class/src/index.js~Deepstiny.html#instance-get-config",
-    "src/index.js~Deepstiny#config",
+    "src/index.js~run-jst#config",
+    "class/src/index.js~run-jst.html#instance-get-config",
+    "src/index.js~run-jst#config",
     "member"
   ],
   [
-    "src/index.js~deepstiny#configure",
-    "class/src/index.js~Deepstiny.html#instance-method-configure",
-    "src/index.js~Deepstiny#configure",
+    "src/index.js~run-jst#configure",
+    "class/src/index.js~run-jst.html#instance-method-configure",
+    "src/index.js~run-jst#configure",
     "method"
   ],
   [
-    "src/index.js~deepstiny#constructor",
-    "class/src/index.js~Deepstiny.html#instance-constructor-constructor",
-    "src/index.js~Deepstiny#constructor",
+    "src/index.js~run-jst#constructor",
+    "class/src/index.js~run-jst.html#instance-constructor-constructor",
+    "src/index.js~run-jst#constructor",
     "method"
   ],
   [
-    "src/index.js~deepstiny#container",
-    "class/src/index.js~Deepstiny.html#instance-get-container",
-    "src/index.js~Deepstiny#container",
+    "src/index.js~run-jst#container",
+    "class/src/index.js~run-jst.html#instance-get-container",
+    "src/index.js~run-jst#container",
     "member"
   ],
   [
-    "src/index.js~deepstiny#listcomponents",
-    "class/src/index.js~Deepstiny.html#instance-method-listComponents",
-    "src/index.js~Deepstiny#listComponents",
+    "src/index.js~run-jst#listcomponents",
+    "class/src/index.js~run-jst.html#instance-method-listComponents",
+    "src/index.js~run-jst#listComponents",
     "method"
   ],
   [
-    "src/index.js~deepstiny#run",
-    "class/src/index.js~Deepstiny.html#instance-method-run",
-    "src/index.js~Deepstiny#run",
+    "src/index.js~run-jst#run",
+    "class/src/index.js~run-jst.html#instance-method-run",
+    "src/index.js~run-jst#run",
     "method"
   ],
   [
-    "src/index.js~deepstiny.config_file",
-    "class/src/index.js~Deepstiny.html#static-get-CONFIG_FILE",
-    "src/index.js~Deepstiny.CONFIG_FILE",
+    "src/index.js~run-jst.config_file",
+    "class/src/index.js~run-jst.html#static-get-CONFIG_FILE",
+    "src/index.js~run-jst.CONFIG_FILE",
     "member"
   ],
   [
-    "src/index.js~deepstiny.config_file_name",
-    "class/src/index.js~Deepstiny.html#static-get-CONFIG_FILE_NAME",
-    "src/index.js~Deepstiny.CONFIG_FILE_NAME",
+    "src/index.js~run-jst.config_file_name",
+    "class/src/index.js~run-jst.html#static-get-CONFIG_FILE_NAME",
+    "src/index.js~run-jst.CONFIG_FILE_NAME",
     "member"
   ],
   [
