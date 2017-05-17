@@ -248,7 +248,10 @@ class CoverageComponent extends ConfigBasedComponent {
    * @private
    */
   _coverageVariable(testAsset) {
-    return `__jst_coverage__${ testAsset.module.name }__${ md5Hex(testAsset.file) }__`;
+    const cleanModuleName = testAsset.module.name.replace(/[^a-z0-9]/g, '_');
+    const assetHash = md5Hex(testAsset.file);
+    
+    return `__jst_coverage__${ cleanModuleName }__${ assetHash }__`;
   }
   
   /**
