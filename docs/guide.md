@@ -14,13 +14,16 @@ To properly encrypt [Travis variables](https://github.com/MitocGroup/deepstiny/b
 you should run the `dps configure travis` command with `--github-token` or `--github-username` and `--github-password`.
 
 > To ensure your [Travis](https://travis-ci.org) configuration is valid use `dps lint travis`
-> [Sample configuration](https://github.com/MitocGroup/deepstiny/blob/master/bin/templates/.dps.yml)
-> [Travis variables](https://github.com/MitocGroup/deepstiny/blob/master/bin/commands/configure/helper/travis.js#L7)
 
 ### Running tests
 
 - Run unit tests: `dps run unit`
 - Run end-to-end tests: `dps run e2e` (Not yet implemented!)
+
+#### Reference
+
+- [Sample configuration](https://github.com/MitocGroup/deepstiny/blob/master/bin/templates/.dps.yml)
+- [Travis variables](https://github.com/MitocGroup/deepstiny/blob/master/bin/commands/configure/helper/travis.js#L7)
 
 ### Shell autocompletion
 
