@@ -75,7 +75,7 @@ class NpmComponent extends ConfigBasedComponent {
    */
   run(emitter) {
     return new Promise(resolve => {
-      emitter.onBlocking(emitEvents.module.emit.start, emitModule => {
+      emitter.onBlocking(emitEvents.module.process.start, emitModule => {
         return this.cache(emitter, emitModule.name)
           .then(cache => {
             const npmModule = new NpmModule(

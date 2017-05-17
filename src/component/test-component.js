@@ -5,7 +5,6 @@ const emitEvents = require('./emit/events');
 const events = require('./test/events');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
-const TestAsset = require('./test/test-asset');
 const Mocha = require('mocha');
 
 class TestComponent extends ConfigBasedComponent {
@@ -36,30 +35,49 @@ class TestComponent extends ConfigBasedComponent {
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
+      const hasToRunTests = {};
+      const mochas = {};
+      
       emitter.onBlocking(emitEvents.module.emit.asset, payload => {
         if (!this._match(payload)) {
+          return emitter.emitBlocking(events.asset.test.skip, payload);
+        }
+        
+        const { fileAbs, module } = payload;
+
+        mochas[module.name] = mochas[module.name] 
+          || new Mocha(this.container.get('mocha.options', {}));
+
+        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])
+          .then(() => {
+            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);
+            
+            mochas[module.name].addFile(fileAbs);
+            
+            return Promise.resolve();
+          });
+      }, TestComponent.DEFAULT_PRIORITY);
+      
+      emitter.onBlocking(emitEvents.module.process.end, module => {
+        if (!mochas[module.name]) {
           return Promise.resolve();
         }
         
-        const { file, fileAbs, module } = payload;
-        
-        this.addProcessing();
-        this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);
-        
-        const testAsset = new TestAsset(file, fileAbs, module);
-        const mocha = new Mocha(this.container.get('mocha.options', {}));
-        
-        return emitter.emitBlocking(events.asset.test.start, testAsset, mocha)
-          .then(() => testAsset.test(mocha))
-          .then(() => emitter.emitBlocking(events.asset.test.end, testAsset, mocha))
+        return emitter.emitBlocking(events.asset.tests.start, mochas[module.name], module)
           .then(() => {
-            this.removeProcessing();
-            return Promise.resolve();
+            return new Promise((resolve, reject) => {
+              mochas[module.name].run(failures => {                
+                if (failures > 0) {
+                  return reject(new Error(
+                    `Tests failed in module ${ module.name } with ${ failures } failures`
+                  ));
+                }
+                
+                resolve();
+              });
+            });
           })
-          .catch(error => {
-            this.removeProcessing();
-            return Promise.reject(error);
-          });
+          .then(() => emitter.emitBlocking(events.asset.tests.end, mochas[module.name], module));
       }, TestComponent.DEFAULT_PRIORITY);
       
       emitter.on(emitEvents.modules.process.end, () => {

@@ -37,12 +37,10 @@ class EmitComponent extends ConfigBasedComponent {
     
     return SequentialPromise.all(this._modules.map(module => {
       return () => {
-        emitter.emit(events.module.process.start, module, this.container);
-        
-        return module.process(this.container)
-          .then(() => {
-            emitter.emit(events.module.process.end, module);
-          });
+        return module.check()
+          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))
+          .then(() => module.process(this.container))
+          .then(() => emitter.emitBlocking(events.module.process.end, module));
       };
     })).then(() => {
       emitter.emit(events.modules.process.end, this._modules, this.container);

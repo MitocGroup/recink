@@ -7,6 +7,7 @@ const ContainerTransformer = require('./helper/container-transformer');
 const md5Hex = require('md5-hex');
 const path = require('path');
 const fs = require('fs');
+const pify = require('pify');
 const requireHacker = require('require-hacker');
 const storageFactory = require('./coverage/factory');
 
@@ -151,6 +152,41 @@ class CoverageComponent extends ConfigBasedComponent {
   }
   
   /**
+   * @param {*} assetsToInstrument
+   * @param {*} dispatchedAssets
+   * @param {array} instrumenters
+   * @param {EmitModule} module
+   *
+   * @returns {promise}
+   * 
+   * @private
+   */
+  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, instrumenters, module) {
+    if (!assetsToInstrument[module.name] || !instrumenters[module.name]) {
+      return Promise.resolve();
+    }
+    
+    return Promise.all(
+      assetsToInstrument[module.name]
+        .filter(asset => {
+          return (dispatchedAssets[module.name] || []).indexOf(asset) == -1;
+        })
+        .map(asset => {
+          return pify(fs.readFile)(asset)
+            .then(content => {
+              eval(instrumenters[module.name]
+                .instrumentSync(
+                  content.toString(), 
+                  asset
+                ));
+                
+              return Promise.resolve();  
+            });
+        })
+    );
+  }
+  
+  /**
    * @param {Emitter} emitter
    * 
    * @returns {promise}
@@ -161,6 +197,9 @@ class CoverageComponent extends ConfigBasedComponent {
       const reporter = new istanbul.Reporter();
       const reporters = this.container.get('reporters', {});
       const coverageVariables = [];
+      const assetsToInstrument = {};
+      const instrumenters = {};
+      const dispatchedAssets = {};
       
       Object.keys(reporters).map(reporterName => {
         const report = istanbul.Report.create(
@@ -171,40 +210,78 @@ class CoverageComponent extends ConfigBasedComponent {
         reporter.reports[reporterName] = report;
       });
       
-      emitter.onBlocking(testEvents.asset.test.start, (testAsset, mocha) => {
-        const coverageVariable = this._coverageVariable(testAsset);
-        const instrumenter = new istanbul.Instrumenter({ coverageVariable });
+      emitter.onBlocking(testEvents.asset.test.skip, payload => {
+        const { module, fileAbs } = payload;
         
-        coverageVariables.push(coverageVariable);
-
-        mocha.loadFiles = (fn => {
-          const moduleRoot = testAsset.module.container.get('root');
-          
-          mocha.files.map(file => {
-            file = path.resolve(file);
-            mocha.suite.emit('pre-require', global, file, mocha);
-            
-            // @todo add other extensions to be covered
-            const requireHook = requireHacker.hook('js', depPath => {
-              if (depPath.indexOf(moduleRoot) === 0
-                && this._match(path.relative(moduleRoot, depPath))) {
-                
-                return instrumenter.instrumentSync(
-                  fs.readFileSync(depPath).toString(), 
-                  depPath
-                );
-              }
-            });
-            mocha.suite.emit('require', require(file), file, mocha);            
-            requireHook.unmount();
-            
-            mocha.suite.emit('post-require', global, file, mocha);
-          });
-          
-          fn && fn();
-        });
+        assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];
+        assetsToInstrument[module.name].push(fileAbs);
         
         return Promise.resolve();
+      });
+      
+      emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {
+        return this._persistModuleBlankCoverage(
+          assetsToInstrument,
+          dispatchedAssets,
+          instrumenters,
+          module
+        ).then(() => {
+          
+          // cleanup memory
+          delete instrumenters[module.name];
+          delete assetsToInstrument[module.name];
+          delete dispatchedAssets[module.name];
+        });
+      });
+      
+      emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {
+        return new Promise(resolve => {
+          const coverageVariable = this._coverageVariable(module);
+          const instrumenter = new istanbul.Instrumenter({ coverageVariable });
+          
+          instrumenters[module.name] = instrumenter;
+          coverageVariables.push(coverageVariable);
+          
+          mocha.loadFiles = (fn => {
+            const moduleRoot = module.container.get('root');
+            const coverableAssets = assetsToInstrument[module.name] || [];
+            
+            mocha.files.map(file => {
+              file = path.resolve(file);
+              mocha.suite.emit('pre-require', global, file, mocha);
+              
+              // @todo add other extensions to be covered
+              try {
+                const requireHook = requireHacker.hook('js', depPath => {
+                  if (coverableAssets.indexOf(depPath) !== -1
+                    && this._match(path.relative(moduleRoot, depPath))) {
+                    
+                    dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                    dispatchedAssets[module.name].push(depPath);
+                    
+                    return instrumenter.instrumentSync(
+                      fs.readFileSync(depPath).toString(), 
+                      depPath
+                    );
+                  }
+                });
+                
+                mocha.suite.emit('require', require(file), file, mocha);            
+                requireHook.unmount();
+                
+                mocha.suite.emit('post-require', global, file, mocha);
+              } catch (error) {
+                
+                // ensure we unmounted the js listener
+                try { requireHook.unmount() } catch (error) { };
+              }
+            });
+            
+            fn && fn();
+          });
+          
+          resolve();
+        });
       });
       
       emitter.onBlocking(testEvents.assets.test.end, () => {
@@ -241,17 +318,16 @@ class CoverageComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {string} testAsset
+   * @param {EmitModule} module
    *
    * @returns {string}
    *
    * @private
    */
-  _coverageVariable(testAsset) {
-    const cleanModuleName = testAsset.module.name.replace(/[^a-z0-9]/g, '_');
-    const assetHash = md5Hex(testAsset.file);
+  _coverageVariable(module) {
+    const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');
     
-    return `__jst_coverage__${ cleanModuleName }__${ assetHash }__`;
+    return `__jst_coverage__${ cleanModuleName }__`;
   }
   
   /**

@@ -27,7 +27,15 @@ class SequentialPromise {
     }
     
     return promises.shift()(result)
-      .then(result => this._sequential(promises, result));
+      .then(result => {
+        return new Promise((resolve, reject) => {
+          process.nextTick(() => {
+            this._sequential(promises, result)
+              .then(result => resolve(result))
+              .catch(error => reject(error));
+          });
+        });
+      });
   }
 }
 

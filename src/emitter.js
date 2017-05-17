@@ -134,7 +134,7 @@ class Emitter extends EventEmitter {
         if (this._allowParallel(event)) {
           this._addParallel(event);
           clearInterval(id);
-          resolve();
+          process.nextTick(() => resolve());
         }
       }, interval);
     });

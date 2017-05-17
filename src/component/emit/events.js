@@ -8,9 +8,7 @@ events.$ = [
   'modules.process.end',
   'module.process.start',
   'module.process.end',
-  'module.emit.start',
   'module.emit.asset',
-  'module.emit.end',
 ].map(eventPath => {
   dot.str(eventPath, eventPath, events);
   

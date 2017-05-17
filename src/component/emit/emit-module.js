@@ -2,7 +2,7 @@
 
 const print = require('print');
 const path = require('path');
-const fs = require('fs');
+const fse = require('fs-extra');
 const pify = require('pify');
 const readdir = require('readdir-enhanced');
 const events = require('./events');
@@ -30,79 +30,77 @@ class EmitModule {
   /**
    * @returns {promise}
    */
-  process(container) {
-    if (!this.container.has('root')) {
+  check() {
+    const moduleRoot = this.container.get('root', null);
+    
+    if (!moduleRoot) {
       return Promise.reject(new Error(`Missing root for module ${ this.name }`));
     }
     
-    const moduleRoot = this.container.get('root');
-
-    return new Promise((resolve, reject) => {
-      fs.exists(moduleRoot, exists => {
-        if (!exists) {
-          return reject(new Error(
+    return fse.pathExists(moduleRoot)
+      .then(hasModuleRoot => {
+        if (!hasModuleRoot) {
+          return Promise.reject(new Error(
             `Module ${ this.name } root ${ moduleRoot } does not exists or wrong permissions set`
           ));
         }
         
-        this.emitter.emitBlocking(events.module.emit.start, this)
-          .then(() => {
-            const options = {
-              deep: this._deepFilter(container).bind(this),
-              filter: this._filter(container).bind(this),
-            };
-            
-            return new Promise((resolve, reject) => {
-              let ended = false;
-              let processing = 0;
+        return Promise.resolve();
+      })
+  }
+  
+  /**
+   * @returns {promise}
+   */
+  process(container) {
+    return new Promise((resolve, reject) => {
+      const moduleRoot = this.container.get('root');
+      
+      const options = {
+        deep: this._deepFilter(container).bind(this),
+        filter: this._filter(container).bind(this),
+      };
+      
+      let ended = false;
+      let processing = 0;
+      
+      readdir.stream(moduleRoot, options)
+        .on('data', filePath => {
+          processing++;
+          
+          const payload = {
+            file: filePath,
+            fileAbs: path.join(moduleRoot, filePath),
+            module: this,
+          };
+          
+          this.logger.debug('Emit asset', JSON.stringify(
+            Object.assign({}, payload, { module: this.name })
+          ));
+          
+          this.emitter
+            .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
+            .emitBlocking(events.module.emit.asset, payload)
+            .then(() => {
+              processing--;
               
-              readdir.stream(moduleRoot, options)
-                .on('data', filePath => {
-                  processing++;
-                  
-                  const payload = {
-                    file: filePath,
-                    fileAbs: path.join(moduleRoot, filePath),
-                    module: this,
-                  };
-                  
-                  this.logger.debug('Emit asset', JSON.stringify(
-                    Object.assign({}, payload, { module: this.name })
-                  ));
-                  
-                  this.emitter
-                    .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
-                    .emitBlocking(events.module.emit.asset, payload)
-                    .then(() => {
-                      processing--;
-                      
-                      if (processing <= 0 && ended) {
-                        this.emitter.emit(events.module.emit.end);
-                        resolve();
-                      }
-                    })
-                    .catch(error => {
-                      this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);
-                      reject(error);
-                    });
-                })
-                .on('end', () => {
-                  ended = true;
-                  
-                  if (processing <= 0) {
-                    this.emitter.emit(events.module.emit.end);
-                    resolve();
-                  }
-                })
-                .on('error', error => reject(error));
+              if (processing <= 0 && ended) {
+                resolve();
+              }
+            })
+            .catch(error => {
+              this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);
+              reject(error);
             });
-          })
-          .then(() => resolve())
-          .catch(error => {
-            this.logger.warn(this.logger.emoji.poop, `failed dispatching module ${ this.name }`);
-            reject(error);
-          });
-      });
+        })
+        .on('end', () => {
+          ended = true;
+          
+          if (processing <= 0) {
+            resolve();
+          }
+        })
+        .on('error', error => reject(error));
     });
   }
   

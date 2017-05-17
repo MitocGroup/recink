@@ -72,11 +72,9 @@ class NpmModule {
         return this._install(packageFile, deps)
           .then(() => this._runScripts(scripts))
           .then(() => {
-            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey } (flush=true)`);
+            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);
             
-            // @todo find a smarter way to invalidate caches
-            return this.cache.flush()
-              .then(() => this.cache.save(cacheKey, modulesDir));
+            return this.cache.save(cacheKey, modulesDir);
           });
       });
   }
