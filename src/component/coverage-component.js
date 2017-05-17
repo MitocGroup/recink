@@ -155,17 +155,18 @@ class CoverageComponent extends ConfigBasedComponent {
   /**
    * @param {*} assetsToInstrument
    * @param {*} dispatchedAssets
-   * @param {array} instrumenters
    * @param {EmitModule} module
    *
    * @returns {promise}
    * 
    * @private
    */
-  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, instrumenters, module) {
-    if (!assetsToInstrument[module.name] || !instrumenters[module.name]) {
+  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module) {
+    if (!assetsToInstrument[module.name]) {
       return Promise.resolve();
     }
+    
+    const coverageVariable = this._coverageVariable(module);
     
     return Promise.all(
       assetsToInstrument[module.name]
@@ -177,14 +178,16 @@ class CoverageComponent extends ConfigBasedComponent {
           
           return pify(fs.readFile)(asset)
             .then(content => {
-              requireFromString(
-                instrumenters[module.name].instrumentSync(
-                  content.toString(), 
-                  asset
-                ),
+              const instrumenter = new istanbul.Instrumenter({ coverageVariable });
+
+              instrumenter.instrumentSync(
+                content.toString(), 
                 asset
               );
-                
+              
+              global[coverageVariable] = global[coverageVariable] || {};
+              global[coverageVariable][asset] = instrumenter.lastFileCoverage();
+
               return Promise.resolve();  
             });
         })
@@ -203,7 +206,6 @@ class CoverageComponent extends ConfigBasedComponent {
       const reporters = this.container.get('reporters', {});
       const coverageVariables = [];
       const assetsToInstrument = {};
-      const instrumenters = {};
       const dispatchedAssets = {};
       
       Object.keys(reporters).map(reporterName => {
@@ -228,12 +230,10 @@ class CoverageComponent extends ConfigBasedComponent {
         return this._persistModuleBlankCoverage(
           assetsToInstrument,
           dispatchedAssets,
-          instrumenters,
           module
         ).then(() => {
           
           // cleanup memory
-          delete instrumenters[module.name];
           delete assetsToInstrument[module.name];
           delete dispatchedAssets[module.name];
         });
@@ -244,7 +244,6 @@ class CoverageComponent extends ConfigBasedComponent {
           const coverageVariable = this._coverageVariable(module);
           const instrumenter = new istanbul.Instrumenter({ coverageVariable });
           
-          instrumenters[module.name] = instrumenter;
           coverageVariables.push(coverageVariable);
           
           mocha.loadFiles = (fn => {
