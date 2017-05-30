@@ -245,43 +245,45 @@ class CoverageComponent extends ConfigBasedComponent {
           
           coverageVariables.push(coverageVariable);
           
-          mocha.loadFiles = (fn => {
-            const moduleRoot = module.container.get('root');
-            const coverableAssets = assetsToInstrument[module.name] || [];
-            
-            mocha.files.map(file => {
-              file = path.resolve(file);
-              mocha.suite.emit('pre-require', global, file, mocha);
+          if (mocha) {
+            mocha.loadFiles = (fn => {
+              const moduleRoot = module.container.get('root');
+              const coverableAssets = assetsToInstrument[module.name] || [];
               
-              // @todo add other extensions to be covered
-              try {
-                const requireHook = requireHacker.hook('js', depPath => {
-                  if (coverableAssets.indexOf(depPath) !== -1
-                    && this._match(path.relative(moduleRoot, depPath))) {
-                    
-                    dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                    dispatchedAssets[module.name].push(depPath);
-                    
-                    return instrumenter.instrumentSync(
-                      fs.readFileSync(depPath).toString(), 
-                      depPath
-                    );
-                  }
-                });
+              mocha.files.map(file => {
+                file = path.resolve(file);
+                mocha.suite.emit('pre-require', global, file, mocha);
                 
-                mocha.suite.emit('require', require(file), file, mocha);            
-                requireHook.unmount();
-                
-                mocha.suite.emit('post-require', global, file, mocha);
-              } catch (error) {
-                
-                // ensure we unmounted the js listener
-                try { requireHook.unmount() } catch (error) { };
-              }
+                // @todo add other extensions to be covered
+                try {
+                  const requireHook = requireHacker.hook('js', depPath => {
+                    if (coverableAssets.indexOf(depPath) !== -1
+                      && this._match(path.relative(moduleRoot, depPath))) {
+                      
+                      dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                      dispatchedAssets[module.name].push(depPath);
+                      
+                      return instrumenter.instrumentSync(
+                        fs.readFileSync(depPath).toString(), 
+                        depPath
+                      );
+                    }
+                  });
+                  
+                  mocha.suite.emit('require', require(file), file, mocha);            
+                  requireHook.unmount();
+                  
+                  mocha.suite.emit('post-require', global, file, mocha);
+                } catch (error) {
+                  
+                  // ensure we unmounted the js listener
+                  try { requireHook.unmount() } catch (error) { };
+                }
+              });
+              
+              fn && fn();
             });
-            
-            fn && fn();
-          });
+          }
           
           resolve();
         });

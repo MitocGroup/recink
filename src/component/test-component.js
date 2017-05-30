@@ -59,14 +59,12 @@ class TestComponent extends ConfigBasedComponent {
       }, TestComponent.DEFAULT_PRIORITY);
       
       emitter.onBlocking(emitEvents.module.process.end, module => {
-        if (!mochas[module.name]) {
-          return Promise.resolve();
-        }
+        const mocha = mochas[module.name] || null;
         
-        return emitter.emitBlocking(events.asset.tests.start, mochas[module.name], module)
+        return emitter.emitBlocking(events.asset.tests.start, mocha, module)
           .then(() => {
-            return new Promise((resolve, reject) => {
-              mochas[module.name].run(failures => {                
+            return mocha ? new Promise((resolve, reject) => {
+              mocha.run(failures => {                
                 if (failures > 0) {
                   return reject(new Error(
                     `Tests failed in module ${ module.name } with ${ failures } failures`
@@ -75,9 +73,9 @@ class TestComponent extends ConfigBasedComponent {
                 
                 resolve();
               });
-            });
+            }) : Promise.resolve();
           })
-          .then(() => emitter.emitBlocking(events.asset.tests.end, mochas[module.name], module));
+          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));
       }, TestComponent.DEFAULT_PRIORITY);
       
       emitter.on(emitEvents.modules.process.end, () => {
