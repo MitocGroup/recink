@@ -7,8 +7,12 @@ const spawn = require('child_process').spawn;
 const packageObj = require('../package.json');
 const dependencies = packageObj.peerDependencies || {};
 
-if (Env.isTravis) {
-  console.log('Skip installation of peerDependencies whilst in TravisCI');
+// Read npm parameters passed to original command
+let args = JSON.parse((process.env.npm_config_argv || '{"original":[]}').trim()).original;
+const forceNoPeer = args.map(a => a.toLowerCase()).filter(a => a === '--no-peer').length > 0;
+
+if (Env.isTravis || forceNoPeer) {
+  console.log('Skip installation of peerDependencies whilst either in TravisCI or forced by --no-peer flag');
   process.exit(0);
 }
 
