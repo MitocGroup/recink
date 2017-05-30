@@ -43,10 +43,10 @@ then
   fail "Please provide a valid semver function (https://github.com/npm/node-semver#functions)"
 fi
 
-`require_clean_work_tree`                                           || fail "Pre-checking git status"
+$(require_clean_work_tree || exit 1)                                || fail "Pre-checking git status"
 rm -rf node_modules                                                 || fail "Cleaning up node_modules"
 npm install --no-shrinkwrap --no-peer                               || fail "Installing dependencies"
-`npm_install_peers`                                                 || fail "Installing peer dependencies"
+$(npm_install_peers || exit 1)                                      || fail "Installing peer dependencies"
 npm shrinkwrap                                                      || fail "Tightening up dependencies"
 git add . && git commit -a -m"Update npm-shrinkwrap.json"           || fail "Commiting npm-shrinkwrap.json"
 npm version "$1"                                                    || fail "Updating $1 package version"
