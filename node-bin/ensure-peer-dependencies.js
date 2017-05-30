@@ -8,8 +8,9 @@ const packageObj = require('../package.json');
 const dependencies = packageObj.peerDependencies || {};
 
 // Read npm parameters passed to original command
-let args = JSON.parse((process.env.npm_config_argv || '{"original":[]}').trim()).original;
-const forceNoPeer = args.map(a => a.toLowerCase()).filter(a => a === '--no-peer').length > 0;
+const forceNoPeer = JSON.parse(
+  (process.env.npm_config_argv || '{"original":[]}').trim()
+).original.map(a => a.toLowerCase()).indexOf('--no-peer') !== -1;
 
 if (Env.isTravis || forceNoPeer) {
   console.log('Skip installation of peerDependencies whilst either in TravisCI or forced by --no-peer flag');
