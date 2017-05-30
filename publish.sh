@@ -5,7 +5,7 @@
 ### Author: AlexanderC <acucer@mitocgroup.com>
 
 function fail () {
-  echo >&2 "[FAILED] $1."
+  echo >&2 "[FAILED] $1!"
   exit 1
 }
 
@@ -50,6 +50,5 @@ npm install --no-shrinkwrap --no-peer                               || fail "Ins
 npm shrinkwrap                                                      || fail "Tightening up dependencies"
 git add . && git commit -a -m"Update npm-shrinkwrap.json"           || fail "Commiting npm-shrinkwrap.json"
 npm version "$1"                                                    || fail "Updating $1 package version"
-git commit -a -m"Increment npm $1 package version"                  || fail "Commiting package.json"
 npm publish                                                         || fail "Publishing npm package"
 git push && git push --tags                                         || fail "Pushing to git remote"
