@@ -43,7 +43,7 @@ function validate_input () {
   fi
 }
 
-validate_input
+validate_input "$@"
 require_clean_work_tree
 rm -rf node_modules                                                 || fail "Cleaning up node_modules"
 npm install --no-shrinkwrap --no-peer                               || fail "Installing dependencies"
