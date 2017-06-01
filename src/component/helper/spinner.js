@@ -1,4 +1,4 @@
-'use srtrict';
+'use strict';
 
 const ora = require('ora');
 
