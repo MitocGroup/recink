@@ -18,7 +18,7 @@ class NpmComponent extends ConfigBasedComponent {
     super(...args);
     
     this._cacheDir = null;
-    this._cache = null;
+    this._cache = {};
   }
   
   /**
@@ -56,15 +56,15 @@ class NpmComponent extends ConfigBasedComponent {
    * @returns {promise}
    */
   cache(emitter, name) {
-    if (this._cache) {
-      return Promise.resolve(this._cache);
+    if (this._cache.hasOwnProperty(name)) {
+      return Promise.resolve(this._cache[name]);
     }
     
     return this.cacheDir(emitter)
       .then(cacheDir => {
-        this._cache = new Cache(cacheDir, name);
+        this._cache[name] = new Cache(cacheDir, name);
         
-        return Promise.resolve(this._cache);
+        return Promise.resolve(this._cache[name]);
       });
   }
   

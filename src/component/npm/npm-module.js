@@ -74,7 +74,8 @@ class NpmModule {
           .then(() => {
             this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);
             
-            return this.cache.save(cacheKey, modulesDir);
+            return this.cache.flush()
+              .then(() => this.cache.save(cacheKey, modulesDir));
           });
       });
   }

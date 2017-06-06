@@ -56,7 +56,7 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 
 # Roadmap
 
-- [ ] Implement smart cache invalidation
+- [x] Implement smart cache invalidation
 - [ ] Add support for fully automated `Travis` configuration 
 - [ ] Add support for external components
 - [ ] Improve documentation

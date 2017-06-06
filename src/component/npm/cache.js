@@ -69,9 +69,16 @@ class Cache {
    * @returns {promise}
    */
   flush() {
-    const cacheDir = path.join(this.cacheDir, this.prefix);
-    
-    return fse.remove(cacheDir);
+    return fse.remove(this._base);
+  }
+  
+  /**
+   * @returns {string}
+   *
+   * @private
+   */
+  get _base() {
+    return path.join(this.cacheDir, process.version, this.prefix);
   }
   
   /**
@@ -82,7 +89,7 @@ class Cache {
    * @private
    */
   _cacheKey(key) {
-    return path.join(this.cacheDir, this.prefix, key);
+    return path.join(this._base, key);
   }
 }
 
