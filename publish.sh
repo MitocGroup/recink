@@ -45,10 +45,10 @@ function validate_input () {
 
 validate_input "$@"
 require_clean_work_tree
-rm -rf node_modules                                                                                             || fail "Cleaning up node_modules"
-npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing dependencies"
-npm shrinkwrap                                                                                                  || fail "Tightening up dependencies"
-(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Update npm-shrinkwrap.json"))
+# rm -rf node_modules                                                                                             || fail "Cleaning up node_modules"
+# npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing dependencies"
+# npm shrinkwrap                                                                                                  || fail "Tightening up dependencies"
+# (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Update npm-shrinkwrap.json"))
 npm version "$1"                                                                                                || fail "Updating $1 package version"
 npm publish                                                                                                     || fail "Publishing npm package"
 git push && git push --tags
