@@ -804,6 +804,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/cache/s3-driver.js~s3driver#includenodeversion",
+    "class/src/component/cache/s3-driver.js~S3Driver.html#instance-get-includeNodeVersion",
+    "src/component/cache/s3-driver.js~S3Driver#includeNodeVersion",
+    "member"
+  ],
+  [
     "src/component/cache/s3-driver.js~s3driver#options",
     "class/src/component/cache/s3-driver.js~S3Driver.html#instance-get-options",
     "src/component/cache/s3-driver.js~S3Driver#options",

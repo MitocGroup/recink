@@ -78,7 +78,7 @@ class Cache {
    * @private
    */
   get _base() {
-    return path.join(this.cacheDir, process.version, this.prefix);
+    return path.join(this.cacheDir, this.prefix);
   }
   
   /**

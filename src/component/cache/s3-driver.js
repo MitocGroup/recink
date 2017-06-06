@@ -13,13 +13,22 @@ class S3Driver extends AbstractDriver {
    * @param {string} cacheDir
    * @param {string} path
    * @param {*} options
+   * @param {boolean} includeNodeVersion
    */
-  constructor(cacheDir, path, options) {
+  constructor(cacheDir, path, options, includeNodeVersion = true) {
     super(cacheDir);
     
     this._path = path;
     this._options = options;
+    this._includeNodeVersion = includeNodeVersion;
     this._client = new S3(this.options);
+  }
+  
+  /**
+   * @returns {boolean}
+   */
+  get includeNodeVersion() {
+    return this._includeNodeVersion;
   }
   
   /**
@@ -61,7 +70,7 @@ class S3Driver extends AbstractDriver {
               return Promise.resolve();
             }
             
-            const { Bucket, Key } = this._parseS3Path(this.path);
+            const { Bucket, Key } = this._s3Location(this.path);
             const packageStream = fs.createReadStream(this._packagePath);
             
             packageStream.on('error', error => reject(error));
@@ -83,7 +92,7 @@ class S3Driver extends AbstractDriver {
   get _hasChanged() {
     return pify(md5File)(this._packagePath)
       .then(packageHash => {
-        const { Bucket, Key } = this._parseS3Path(this.path);
+        const { Bucket, Key } = this._s3Location(this.path);
         
         return this.client
           .headObject({ Bucket, Key, })
@@ -110,7 +119,7 @@ class S3Driver extends AbstractDriver {
    */
   _download() {
     return new Promise((resolve, reject) => {
-      const { Bucket, Key } = this._parseS3Path(this.path);
+      const { Bucket, Key } = this._s3Location(this.path);
       const packageStream = fs.createWriteStream(this._packagePath);
       const remoteStream = this.client
         .getObject({ Bucket, Key, }).createReadStream();
@@ -164,7 +173,7 @@ class S3Driver extends AbstractDriver {
    *
    * @private
    */
-  _parseS3Path(s3Path) {
+  _s3Location(s3Path) {
     const matches = s3Path.match(
       /^(?:s3:\/\/|\/)?([^\/]+)(?:\/(.*))?$/i
     );
@@ -177,8 +186,9 @@ class S3Driver extends AbstractDriver {
     
     const Key = path.join(
       keyPrefix || '',
+      this.includeNodeVersion ? process.version : '',
       path.basename(this._packagePath)
-    );
+    ).replace(/\\+/g, '/'); // ensure path delimiter set to slash
     
     return { Bucket, Key };
   }

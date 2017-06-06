@@ -1,7 +1,7 @@
 {
-  "coverage": "79.48%",
-  "expectCount": 234,
-  "actualCount": 186,
+  "coverage": "79.57%",
+  "expectCount": 235,
+  "actualCount": 187,
   "files": {
     "src/logger.js": {
       "expectCount": 16,
@@ -157,6 +157,13 @@
         5
       ]
     },
+    "src/component/cache/factory.js": {
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        5
+      ]
+    },
     "src/component/factory.js": {
       "expectCount": 8,
       "actualCount": 7,
@@ -171,13 +178,6 @@
         5
       ]
     },
-    "src/component/coverage/factory.js": {
-      "expectCount": 4,
-      "actualCount": 3,
-      "undocumentLines": [
-        5
-      ]
-    },
     "src/component/preprocess/factory.js": {
       "expectCount": 3,
       "actualCount": 2,
@@ -185,7 +185,7 @@
         5
       ]
     },
-    "src/component/cache/factory.js": {
+    "src/component/coverage/factory.js": {
       "expectCount": 4,
       "actualCount": 3,
       "undocumentLines": [
@@ -200,8 +200,8 @@
       ]
     },
     "src/component/cache/s3-driver.js": {
-      "expectCount": 5,
-      "actualCount": 4,
+      "expectCount": 6,
+      "actualCount": 5,
       "undocumentLines": [
         11
       ]
@@ -255,7 +255,7 @@
         6
       ]
     },
-    "src/component/npm/events.js": {
+    "src/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
@@ -276,14 +276,14 @@
         4
       ]
     },
-    "src/events.js": {
+    "src/component/cache/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
         4
       ]
     },
-    "src/component/cache/events.js": {
+    "src/component/npm/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [

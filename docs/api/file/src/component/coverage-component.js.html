@@ -328,43 +328,45 @@ class CoverageComponent extends ConfigBasedComponent {
           
           coverageVariables.push(coverageVariable);
           
-          mocha.loadFiles = (fn =&gt; {
-            const moduleRoot = module.container.get(&apos;root&apos;);
-            const coverableAssets = assetsToInstrument[module.name] || [];
-            
-            mocha.files.map(file =&gt; {
-              file = path.resolve(file);
-              mocha.suite.emit(&apos;pre-require&apos;, global, file, mocha);
+          if (mocha) {
+            mocha.loadFiles = (fn =&gt; {
+              const moduleRoot = module.container.get(&apos;root&apos;);
+              const coverableAssets = assetsToInstrument[module.name] || [];
               
-              // @todo add other extensions to be covered
-              try {
-                const requireHook = requireHacker.hook(&apos;js&apos;, depPath =&gt; {
-                  if (coverableAssets.indexOf(depPath) !== -1
-                    &amp;&amp; this._match(path.relative(moduleRoot, depPath))) {
-                    
-                    dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                    dispatchedAssets[module.name].push(depPath);
-                    
-                    return instrumenter.instrumentSync(
-                      fs.readFileSync(depPath).toString(), 
-                      depPath
-                    );
-                  }
-                });
+              mocha.files.map(file =&gt; {
+                file = path.resolve(file);
+                mocha.suite.emit(&apos;pre-require&apos;, global, file, mocha);
                 
-                mocha.suite.emit(&apos;require&apos;, require(file), file, mocha);            
-                requireHook.unmount();
-                
-                mocha.suite.emit(&apos;post-require&apos;, global, file, mocha);
-              } catch (error) {
-                
-                // ensure we unmounted the js listener
-                try { requireHook.unmount() } catch (error) { };
-              }
+                // @todo add other extensions to be covered
+                try {
+                  const requireHook = requireHacker.hook(&apos;js&apos;, depPath =&gt; {
+                    if (coverableAssets.indexOf(depPath) !== -1
+                      &amp;&amp; this._match(path.relative(moduleRoot, depPath))) {
+                      
+                      dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                      dispatchedAssets[module.name].push(depPath);
+                      
+                      return instrumenter.instrumentSync(
+                        fs.readFileSync(depPath).toString(), 
+                        depPath
+                      );
+                    }
+                  });
+                  
+                  mocha.suite.emit(&apos;require&apos;, require(file), file, mocha);            
+                  requireHook.unmount();
+                  
+                  mocha.suite.emit(&apos;post-require&apos;, global, file, mocha);
+                } catch (error) {
+                  
+                  // ensure we unmounted the js listener
+                  try { requireHook.unmount() } catch (error) { };
+                }
+              });
+              
+              fn &amp;&amp; fn();
             });
-            
-            fn &amp;&amp; fn();
-          });
+          }
           
           resolve();
         });
