@@ -19,8 +19,10 @@ Also Travis integration and caching out of the box ;)
 
 # Prerequisites
 
-- [ ] Ensure `Node.js 6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
+- [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
 - [ ] Profit?!
+
+> We'd recommend installing Node.js v8.x to speedup things.
 
 # Installation
 
