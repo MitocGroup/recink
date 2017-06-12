@@ -48,7 +48,11 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 
 # Components (inhouse + 3'rd party)
 
-> TBD...
+Check out the [Component Developer Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md) to start building components
+
+### Components list:
+
+- [CodeClimate Integration](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
 
 # Projects using run-jst
 
@@ -59,10 +63,10 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 # Roadmap
 
 - [x] Implement smart cache invalidation
+- [x] Add support for external components
 - [ ] Add support for fully automated `Travis` configuration 
-- [ ] Add support for external components
-- [ ] Improve documentation
 - [ ] Add support for End-to-End tests
+- [ ] Improve documentation
 
 # Sponsors
 
