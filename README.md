@@ -54,6 +54,8 @@ Check out the [Component Developer Guide](https://github.com/MitocGroup/run-jst/
 
 - [CodeClimate Integration](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
 
+> [Navigate here](https://github.com/MitocGroup/run-jst/tree/master/components) to see all inhouse components
+
 # Projects using run-jst
 
 - [Deep Framework](https://github.com/MitocGroup/deep-framework)
