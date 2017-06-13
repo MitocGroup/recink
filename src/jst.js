@@ -78,6 +78,33 @@ class Jst extends Emitter {
   }
   
   /**
+   * @param {Function} targetClass
+   *
+   * @returns {string}
+   *
+   * @private
+   */
+  _getBaseClass(targetClass) {
+    if (targetClass instanceof Function) {
+      let baseClass = targetClass;
+
+      while (baseClass) {
+        const newBaseClass = Object.getPrototypeOf(baseClass);
+
+        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {
+          baseClass = newBaseClass;
+        } else {
+          break;
+        }
+      }
+
+      return baseClass.name;
+    }
+    
+    return null;
+  }
+  
+  /**
    * @param {AbstractComponent[]|AbstractComponent} components
    *
    * @returns {promise}
@@ -90,7 +117,10 @@ class Jst extends Emitter {
     }
     
     return Promise.all(components.map(component => {
-      if (!(component instanceof AbstractComponent)) {
+      if (!(component instanceof AbstractComponent) 
+        && [ 'ConfigBasedComponent', 'AbstractComponent' ]
+          .indexOf(this._getBaseClass(component.constructor)) === -1) {
+        
         return Promise.reject(new Error(
           `Component ${ component.constructor.name } should be an instance of AbstractComponent`
         ));
@@ -185,4 +215,4 @@ class Jst extends Emitter {
   }
 }
 
-module.exports = { Jst, AbstractComponent, };
+module.exports = Jst;

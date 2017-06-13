@@ -16,8 +16,26 @@ coverage information into [CodeClimate](https://codeclimate.com) backend.
 
 # Configuration
 
-Open in your IDE the `.jst.yml` configuration file from the project
+`.jst.yml` configuration:
+
+```
+$:
+  preprocess:
+    '$.codeclimate.token': 'eval'
+  codeclimate:
+    token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'
+```
+
+Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-coverage-troubleshooting-tips#section--should-i-keep-my-test-coverage-token-secret-) to `.travis.yml`:
+
+```
+jst travis encrypt -x 'JST_CODECLIMATE_REPO_TOKEN=1234'
+```
+
+> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
 
 # Usage
 
-Execute `jst run unit` to run unit tests and upload coverage to [CodeClimate](https://codeclimate.com)
+`jst run unit -c run-jst-codeclimate`
+
+> Development usage: `./bin/cli.js run unit ./test/ -c ./components/codeclimate/src/codeclimate-component`

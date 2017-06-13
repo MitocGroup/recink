@@ -36,6 +36,7 @@ const commands = prog
     .command('run unit', 'Run unit tests') 
       .argument('[path]', 'Path to tests', /.+/, process.cwd())
       .option('-s <component>', 'Skip component', prog.REPEATABLE)
+      .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
       .complete(() => require('./run/unit/components'))
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')
@@ -59,9 +60,17 @@ if (!Env.isTravis) {
       .option('--github-password <password>', 'GitHub Password to login to Travis CI Pro')
       .option('--github-token <token>', 'GitHub Access Token to login to Travis CI Pro')
       .action(cmd('./commands/configure/travis'))
-    .command('lint travis', 'Lint Travis configuration') 
+    .command('travis encrypt', 'Encrypt Travis environment variables') 
+      .argument('[path]', 'Path to package root', /.+/, process.cwd())
+      .option('-x <var>', 'Variable to encrypt', prog.REPEATABLE)
+      .option('--github-repository <repository>', 'GitHub Repository')
+      .option('--github-username <username>', 'GitHub Username to login to Travis CI Pro')
+      .option('--github-password <password>', 'GitHub Password to login to Travis CI Pro')
+      .option('--github-token <token>', 'GitHub Access Token to login to Travis CI Pro')
+      .action(cmd('./commands/travis/encrypt'))
+    .command('travis lint', 'Lint Travis configuration') 
       .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))
-      .action(cmd('./commands/lint/travis'))
+      .action(cmd('./commands/travis/lint'))
   ;
 }
 

@@ -2,7 +2,7 @@
 
 const path = require('path');
 const Dumper = require('./helper/dumper');
-const Jst = require('../../../src/index').Jst;
+const Jst = require('../../../src/jst');
 
 module.exports = (args, options, logger) => {
   const configFile = Jst.CONFIG_FILE_NAME;

@@ -10,6 +10,6 @@ TBD
 
 TBD
 
-### The "Hello World"
+### The "Hello World" Component
 
 TBD

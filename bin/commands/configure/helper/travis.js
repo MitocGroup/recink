@@ -1,7 +1,6 @@
 'use strict';
 
-const Jst = require('../../../../src/index').Jst;
-
+const Jst = require('../../../../src/jst');
 const file = '.travis.yml';
 
 const vars = {
@@ -27,17 +26,25 @@ function dump(varName, value) {
 }
 
 /**
+ * @param {String[]} localVars
+ * 
  * @returns {string}
  */
-function help() {
+function help(localVars = null) {
   const output = [
     `You can use the following variables in your ${ Jst.CONFIG_FILE_NAME }:`,
   ];
   
   output.push('\n');
   
-  Object.keys(vars).map(key => {
-    output.push(`  - process.env.${ vars[key] } - ${ info[key] }`);
+  localVars = localVars || vars;
+  
+  Object.keys(localVars).map(key => {
+    if (info[key]) {
+      output.push(`  - process.env.${ localVars[key] } - ${ info[key] }`);
+    } else {
+      output.push(`  - process.env.${ localVars[key] }`);
+    }
   });
   
   output.push('\n');
