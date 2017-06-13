@@ -38,4 +38,4 @@ jst travis encrypt -x 'JST_CODECLIMATE_REPO_TOKEN=1234'
 
 `jst run unit -c run-jst-codeclimate`
 
-> Development usage: `./bin/cli.js run unit ./test/ -c ./components/codeclimate/src/codeclimate-component`
+> Development usage: `JST_CODECLIMATE_REPO_TOKEN=1234 ./bin/cli.js run unit ./test/ -c ./components/codeclimate/src/codeclimate-component`
