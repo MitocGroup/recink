@@ -47,6 +47,7 @@ validate_input "$@"
 require_clean_work_tree
 rm -rf node_modules                                                                                             || fail "Cleaning up node_modules"
 npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing dependencies"
+npm shrinkwrap                                                                                                  || fail "Tightening up dependencies"
 npm run docs                                                                                                    || fail "Generate API documentation"
 (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Generate API docs and update npm-shrinkwrap.json"))
 npm version "$1"                                                                                                || fail "Updating $1 package version"
