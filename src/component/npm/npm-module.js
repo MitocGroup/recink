@@ -199,7 +199,7 @@ class NpmModule {
         deps = [ '--ignore-scripts' ];
       }
 
-      const npmInstall = spawn('npm', [ 'install' ].concat(deps), options);
+      const npmInstall = spawn('npm', [ 'install', '--no-shrinkwrap' ].concat(deps), options);
       
       npmInstall.on('close', code => {
         if (code !== 0) {          
