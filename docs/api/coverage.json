@@ -1,6 +1,6 @@
 {
-  "coverage": "79.57%",
-  "expectCount": 235,
+  "coverage": "79.91%",
+  "expectCount": 234,
   "actualCount": 187,
   "files": {
     "src/logger.js": {
@@ -16,15 +16,6 @@
       "undocumentLines": [
         5,
         6
-      ]
-    },
-    "src/index.js": {
-      "expectCount": 12,
-      "actualCount": 9,
-      "undocumentLines": [
-        8,
-        11,
-        12
       ]
     },
     "src/config/abstract-config.js": {
@@ -54,6 +45,14 @@
       "actualCount": 1,
       "undocumentLines": [
         3
+      ]
+    },
+    "src/jst.js": {
+      "expectCount": 11,
+      "actualCount": 9,
+      "undocumentLines": [
+        11,
+        12
       ]
     },
     "src/component/coverage-component.js": {
@@ -164,9 +163,9 @@
         5
       ]
     },
-    "src/component/factory.js": {
-      "expectCount": 8,
-      "actualCount": 7,
+    "src/component/preprocess/factory.js": {
+      "expectCount": 3,
+      "actualCount": 2,
       "undocumentLines": [
         5
       ]
@@ -178,9 +177,9 @@
         5
       ]
     },
-    "src/component/preprocess/factory.js": {
-      "expectCount": 3,
-      "actualCount": 2,
+    "src/component/factory.js": {
+      "expectCount": 8,
+      "actualCount": 7,
       "undocumentLines": [
         5
       ]
@@ -255,7 +254,7 @@
         6
       ]
     },
-    "src/events.js": {
+    "src/component/npm/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
@@ -269,13 +268,6 @@
         4
       ]
     },
-    "src/component/emit/events.js": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        4
-      ]
-    },
     "src/component/cache/events.js": {
       "expectCount": 1,
       "actualCount": 0,
@@ -283,7 +275,14 @@
         4
       ]
     },
-    "src/component/npm/events.js": {
+    "src/events.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/component/emit/events.js": {
       "expectCount": 1,
       "actualCount": 0,
       "undocumentLines": [
