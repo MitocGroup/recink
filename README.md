@@ -30,7 +30,7 @@ Also Travis integration and caching out of the box ;)
 
 # Getting Started
 
-Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configure-repository)
+Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project)
 
 # Usage
 
