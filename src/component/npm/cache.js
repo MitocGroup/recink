@@ -3,6 +3,9 @@
 const fse = require('fs-extra');
 const path = require('path');
 
+/**
+ * File system cache implementation
+ */
 class Cache {
   /**
    * @param {string} cacheDir

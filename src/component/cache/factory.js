@@ -2,6 +2,9 @@
 
 const AbstractDriver = require('./abstract-driver');
 
+/**
+ * Cache factory
+ */
 class Factory {  
   /**
    * @param {string} name

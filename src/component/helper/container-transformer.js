@@ -3,6 +3,9 @@
 const Transformer = require('./transformer');
 const patternTransformer = require('./pattern-transformer');
 
+/**
+ * Apply transformations to an configuration container
+ */
 class ContainerTransformer {
   /**
    * @param {Container} container

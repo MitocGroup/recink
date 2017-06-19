@@ -2,6 +2,9 @@
 
 const AbstractDriver = require('./abstract-driver');
 
+/**
+ * Void cache driver
+ */
 class VoidDriver extends AbstractDriver {
   /**
    * @returns {promise}

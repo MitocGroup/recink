@@ -3,6 +3,9 @@
 const AbstractConfig = require('./abstract-config');
 const yaml = require('yaml-js');
 
+/**
+ * YAML configuration manager
+ */
 class YamlConfig extends AbstractConfig {
   /**
    * @param {string} rawConfig

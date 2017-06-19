@@ -2,6 +2,9 @@
 
 const events = require('../events');
 
+/**
+ * Abstract component
+ */
 class AbstractComponent {
   constructor() {
     this._logger = console;

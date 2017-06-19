@@ -4,6 +4,9 @@ const fs = require('fs');
 const pify = require('pify');
 const fse = require('fs-extra');
 
+/**
+ * Abstract configuration manager
+ */
 class AbstractConfig {
   /**
    * @param {string} file

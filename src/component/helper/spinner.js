@@ -2,6 +2,9 @@
 
 const ora = require('ora');
 
+/**
+ * Terminal spinner implementation
+ */
 class Spinner {
   /**
    * @param {string} msg

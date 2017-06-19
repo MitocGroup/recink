@@ -2,6 +2,9 @@
 
 const chalk = require('chalk');
 
+/**
+ * Logger abstraction
+ */
 class Logger {
   /**
    * @param {*} logger

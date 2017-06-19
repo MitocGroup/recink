@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Abstract coverage storage driver
+ */
 class AbstractDriver {
   /**
    * @param {string} name

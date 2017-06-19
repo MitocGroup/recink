@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Implements Promise.all() but sequential execution
+ */
 class SequentialPromise {
   /**
    * @param {function[]} promises

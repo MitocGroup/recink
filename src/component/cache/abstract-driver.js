@@ -8,6 +8,9 @@ const EventEmitter = require('events');
 const events = require('./events');
 const fs = require('fs');
 
+/**
+ * Abstract cache driver
+ */
 class AbstractDriver extends EventEmitter {
   /**
    * @returns {string}

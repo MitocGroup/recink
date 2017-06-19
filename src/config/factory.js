@@ -2,6 +2,9 @@
 
 const AbstractConfig = require('./abstract-config');
 
+/**
+ * Configuration factory
+ */
 class Factory {
   /**
    * @param {string} file

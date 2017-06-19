@@ -8,6 +8,9 @@ const Container = require('./container');
 const AbstractComponent = require('./component/abstract-component');
 const logger = require('./logger');
 
+/**
+ * Jst entry point
+ */
 class Jst extends Emitter {
   constructor() {
     super();

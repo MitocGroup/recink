@@ -11,6 +11,9 @@ const pify = require('pify');
 const requireHacker = require('require-hacker');
 const storageFactory = require('./coverage/factory');
 
+/**
+ * Coverage component
+ */
 class CoverageComponent extends ConfigBasedComponent {
   /**
    * @param {*} args

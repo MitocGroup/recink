@@ -7,6 +7,9 @@ const pify = require('pify');
 const readdir = require('readdir-enhanced');
 const events = require('./events');
 
+/**
+ * Class representing emited test module
+ */
 class EmitModule {
   /**
    * @param {string} name

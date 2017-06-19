@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Transformer interface
+ */
 class AbstractTransformer {
   /**
    * @param {*} value

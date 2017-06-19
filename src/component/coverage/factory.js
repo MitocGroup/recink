@@ -2,6 +2,9 @@
 
 const AbstractDriver = require('./abstract-driver');
 
+/**
+ * Coverage storage factory
+ */
 class Factory {  
   /**
    * @param {string} name

@@ -2,6 +2,9 @@
 
 const EventEmitter = require('events');
 
+/**
+ * Extended Emitter implementation
+ */
 class Emitter extends EventEmitter {
   constructor(...args) {
     super(...args);

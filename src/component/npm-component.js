@@ -10,6 +10,9 @@ const NpmModule = require('./npm/npm-module');
 const Cache = require('./npm/cache');
 const path = require('path');
 
+/**
+ * NPM component
+ */
 class NpmComponent extends ConfigBasedComponent {
   /**
    * @param {*} args

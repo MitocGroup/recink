@@ -7,6 +7,9 @@ const os = require('os');
 const fs = require('fs');
 const pify = require('pify');
 
+/**
+ * Volatile coverage storage driver
+ */
 class VolatileDriver extends AbstractDriver {
   /**
    * @param {string} name

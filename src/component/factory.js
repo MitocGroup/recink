@@ -2,6 +2,9 @@
 
 const AbstractComponent = require('./abstract-component');
 
+/**
+ * Component factory
+ */
 class Factory {  
   /**
    * @param {string} name

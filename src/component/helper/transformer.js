@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Apply transformer over a value
+ */
 class Transformer {
   /**
    * @param {string} path

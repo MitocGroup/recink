@@ -4,6 +4,9 @@ const print = require('print');
 const dot = require('dot-object');
 dot.overwrite = true;
 
+/**
+ * Configuration container
+ */
 class Container {
   /**
    * @param {*} config

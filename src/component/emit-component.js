@@ -8,6 +8,9 @@ const events = require('./emit/events');
 const ContainerTransformer = require('./helper/container-transformer');
 const SequentialPromise = require('./helper/sequential-promise');
 
+/**
+ * Emit component
+ */
 class EmitComponent extends ConfigBasedComponent {
   /**
    * @param {*} args

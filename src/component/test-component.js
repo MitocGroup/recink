@@ -7,6 +7,9 @@ const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const Mocha = require('mocha');
 
+/**
+ * Test component
+ */
 class TestComponent extends ConfigBasedComponent {
   /**
    * @param {*} args

@@ -5,7 +5,13 @@ const ConfigBasedComponent = require('./config-based-component');
 const factory = require('./preprocess/factory');
 const Container = require('../container');
 
+/**
+ * Preprocess component
+ */
 class PreprocessComponent extends AbstractComponent {
+  /**
+   * @param {string} configPath
+   */
   constructor(configPath = null) {
     super();
     

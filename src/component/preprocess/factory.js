@@ -2,6 +2,9 @@
 
 const AbstractTransformer = require('./abstract-transformer');
 
+/**
+ * Transformer factory
+ */
 class Factory {  
   /**
    * @param {string} name

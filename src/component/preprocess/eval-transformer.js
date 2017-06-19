@@ -2,6 +2,9 @@
 
 const AbstractTransformer = require('./abstract-transformer');
 
+/**
+ * Transformer implementation of 'eval'
+ */
 class EvalTransformer extends AbstractTransformer {
   /**
    * @param {*} value

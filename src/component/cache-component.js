@@ -8,6 +8,9 @@ const Spinner = require('./helper/spinner');
 const cacheEvents = require('./cache/events');
 const prettyBytes = require('pretty-bytes');
 
+/**
+ * Cache component
+ */
 class CacheComponent extends ConfigBasedComponent {
   /**
    * @param {*} args

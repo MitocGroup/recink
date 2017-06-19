@@ -4,17 +4,29 @@ const AbstractDriver = require('./abstract-driver');
 const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
 
+/**
+ * AWS S3 coverage storage driver
+ */
 class S3Driver extends AbstractDriver {
   /**
    * @param {string} path
    * @param {*} options
+   * @param {boolean} includeNodeVersion
    */
-  constructor(path, options) {
+  constructor(path, options, includeNodeVersion = true) {
     super();
     
     this._path = path;
     this._options = options;
     this._client = new S3(this.options);
+    this._includeNodeVersion = includeNodeVersion;
+  }
+  
+  /**
+   * @returns {boolean}
+   */
+  get includeNodeVersion() {
+    return this._includeNodeVersion;
   }
   
   /**
@@ -107,7 +119,12 @@ class S3Driver extends AbstractDriver {
     }
     
     const [ , Bucket, keyPrefix ] = matches;
-    const Key = path.join(keyPrefix || '', name);
+    
+    const Key = path.join(
+      keyPrefix || '',
+      this.includeNodeVersion ? process.version : '',
+      name
+    ).replace(/\\+/g, '/'); // ensure path delimiter set to slash
     
     return { Bucket, Key };
   }

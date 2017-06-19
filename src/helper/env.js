@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Environment helpers
+ */
 class Env {
   /**
    * @returns {boolean}

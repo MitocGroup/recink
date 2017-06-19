@@ -4,6 +4,9 @@ const path = require('path');
 const Container = require('../container');
 const AbstractComponent = require('./abstract-component');
 
+/**
+ * Abstract configuration aware component
+ */
 class ConfigBasedComponent extends AbstractComponent {
   /**
    * @param {string} configPath
