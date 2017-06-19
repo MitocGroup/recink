@@ -1,6 +1,10 @@
 'use strict';
 
 const dot = require('dot-object');
+
+/**
+ * JST main events
+ */
 const events = {};
 
 events.$ = [

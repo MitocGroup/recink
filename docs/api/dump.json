@@ -1435,7 +1435,7 @@
     "__docId__": 51,
     "kind": "file",
     "name": "src/component/cache/events.js",
-    "content": "'use strict';\n\nconst dot = require('dot-object');\nconst events = {};\n\nevents.$ = [\n  'cache.progress',\n  'cache.upload.progress',\n  'cache.download.progress',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
+    "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * Cache component events\n */\nconst events = {};\n\nevents.$ = [\n  'cache.progress',\n  'cache.upload.progress',\n  'cache.download.progress',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
     "static": true,
     "longname": "src/component/cache/events.js",
     "access": null,
@@ -1479,15 +1479,8 @@
     "export": true,
     "importPath": "run-jst/src/component/cache/events.js",
     "importStyle": "events",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Cache component events",
+    "lineNumber": 8,
     "type": {
       "types": [
         "{}"
@@ -6446,7 +6439,7 @@
     "__docId__": 221,
     "kind": "file",
     "name": "src/component/emit/events.js",
-    "content": "'use strict';\n\nconst dot = require('dot-object');\nconst events = {};\n\nevents.$ = [\n  'modules.process.start',\n  'modules.process.end',\n  'module.process.start',\n  'module.process.end',\n  'module.emit.asset',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
+    "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * Emit component events\n */\nconst events = {};\n\nevents.$ = [\n  'modules.process.start',\n  'modules.process.end',\n  'module.process.start',\n  'module.process.end',\n  'module.emit.asset',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
     "static": true,
     "longname": "src/component/emit/events.js",
     "access": null,
@@ -6490,15 +6483,8 @@
     "export": true,
     "importPath": "run-jst/src/component/emit/events.js",
     "importStyle": "events",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Emit component events",
+    "lineNumber": 8,
     "type": {
       "types": [
         "{}"
@@ -7704,7 +7690,7 @@
     "__docId__": 264,
     "kind": "file",
     "name": "src/component/helper/pattern-transformer.js",
-    "content": "'use strict';\n\nmodule.exports = (value => {  \n  return Promise.resolve((Array.isArray(value) ? value : [ value ])\n    .filter(pattern => !!((pattern || '').trim()))\n    .map(pattern => {\n      if (isRegexp(pattern)) {\n        return toRegexp(pattern);\n      }\n      \n      return pattern;\n    }));\n});\n\n/**\n * @param {string} value\n *\n * @returns {RegExp}\n */\nfunction toRegexp(value) {\n  const matches = value.match(/^\\/(.+)\\/([gmiyu])*$/);\n  \n  const [ , regex, modifiers ] = matches;\n  \n  return new RegExp(regex, modifiers);\n}\n\n/**\n * @param {string} value\n *\n * @returns {boolean}\n */\nfunction isRegexp(value) {\n  return /\\/.+\\/[a-z]*/i.test(value);\n}\n",
+    "content": "'use strict';\n\n/**\n * @param {*} value\n *\n * @returns {Promise}\n */\nmodule.exports = (value => {  \n  return Promise.resolve((Array.isArray(value) ? value : [ value ])\n    .filter(pattern => !!((pattern || '').trim()))\n    .map(pattern => {\n      if (isRegexp(pattern)) {\n        return toRegexp(pattern);\n      }\n      \n      return pattern;\n    }));\n});\n\n/**\n * @param {string} value\n *\n * @returns {RegExp}\n */\nfunction toRegexp(value) {\n  const matches = value.match(/^\\/(.+)\\/([gmiyu])*$/);\n  \n  const [ , regex, modifiers ] = matches;\n  \n  return new RegExp(regex, modifiers);\n}\n\n/**\n * @param {string} value\n *\n * @returns {boolean}\n */\nfunction isRegexp(value) {\n  return /\\/.+\\/[a-z]*/i.test(value);\n}\n",
     "static": true,
     "longname": "src/component/helper/pattern-transformer.js",
     "access": null,
@@ -7724,27 +7710,33 @@
     "export": true,
     "importPath": "run-jst/src/component/helper/pattern-transformer.js",
     "importStyle": "patterntransformer",
-    "description": null,
-    "lineNumber": 3,
-    "undocument": true,
+    "description": "",
+    "lineNumber": 8,
     "unknown": [
       {
-        "tagName": "@_undocument",
-        "tagValue": ""
+        "tagName": "@returns",
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
       {
-        "name": "value",
+        "nullable": null,
         "types": [
           "*"
-        ]
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "value",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Promise"
+      ],
+      "spread": false,
+      "description": ""
     }
   },
   {
@@ -7761,7 +7753,7 @@
     "importPath": "run-jst/src/component/helper/pattern-transformer.js",
     "importStyle": null,
     "description": "",
-    "lineNumber": 20,
+    "lineNumber": 25,
     "unknown": [
       {
         "tagName": "@returns",
@@ -7803,7 +7795,7 @@
     "importPath": "run-jst/src/component/helper/pattern-transformer.js",
     "importStyle": null,
     "description": "",
-    "lineNumber": 33,
+    "lineNumber": 38,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9228,7 +9220,7 @@
     "__docId__": 316,
     "kind": "file",
     "name": "src/component/npm/events.js",
-    "content": "'use strict';\n\nconst dot = require('dot-object');\nconst events = {};\n\nevents.$ = [\n  'npm.dependencies.install',\n  'npm.cache.init',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
+    "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * NPM component events\n */\nconst events = {};\n\nevents.$ = [\n  'npm.dependencies.install',\n  'npm.cache.init',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
     "static": true,
     "longname": "src/component/npm/events.js",
     "access": null,
@@ -9272,15 +9264,8 @@
     "export": true,
     "importPath": "run-jst/src/component/npm/events.js",
     "importStyle": "events",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "NPM component events",
+    "lineNumber": 8,
     "type": {
       "types": [
         "{}"
@@ -11308,7 +11293,7 @@
     "__docId__": 390,
     "kind": "file",
     "name": "src/component/test/events.js",
-    "content": "'use strict';\n\nconst dot = require('dot-object');\nconst events = {};\n\nevents.$ = [\n  'assets.test.end',\n  'asset.test.skip',\n  'asset.test.add',\n  'asset.tests.start',\n  'asset.tests.end',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
+    "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * Test component events\n */\nconst events = {};\n\nevents.$ = [\n  'assets.test.end',\n  'asset.test.skip',\n  'asset.test.add',\n  'asset.tests.start',\n  'asset.tests.end',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
     "static": true,
     "longname": "src/component/test/events.js",
     "access": null,
@@ -11352,15 +11337,8 @@
     "export": true,
     "importPath": "run-jst/src/component/test/events.js",
     "importStyle": "events",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Test component events",
+    "lineNumber": 8,
     "type": {
       "types": [
         "{}"
@@ -13730,7 +13708,7 @@
     "__docId__": 468,
     "kind": "file",
     "name": "src/events.js",
-    "content": "'use strict';\n\nconst dot = require('dot-object');\nconst events = {};\n\nevents.$ = [\n  'config.preprocess',\n  'config.load',\n  'components.load',\n  'components.run',\n  'component.load',\n  'component.run',\n  'component.ready',\n  'component.subscribe',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
+    "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * JST main events\n */\nconst events = {};\n\nevents.$ = [\n  'config.preprocess',\n  'config.load',\n  'components.load',\n  'components.run',\n  'component.load',\n  'component.run',\n  'component.ready',\n  'component.subscribe',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;",
     "static": true,
     "longname": "src/events.js",
     "access": null,
@@ -13774,15 +13752,8 @@
     "export": true,
     "importPath": "run-jst/src/events.js",
     "importStyle": "events",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "JST main events",
+    "lineNumber": 8,
     "type": {
       "types": [
         "{}"

@@ -82,6 +82,11 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/component/helper/pattern-transformer.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
+/**
+ * @param {*} value
+ *
+ * @returns {Promise}
+ */
 module.exports = (value =&gt; {  
   return Promise.resolve((Array.isArray(value) ? value : [ value ])
     .filter(pattern =&gt; !!((pattern || &apos;&apos;).trim()))

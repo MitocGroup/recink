@@ -1,6 +1,10 @@
 'use strict';
 
 const dot = require('dot-object');
+
+/**
+ * Cache component events
+ */
 const events = {};
 
 events.$ = [

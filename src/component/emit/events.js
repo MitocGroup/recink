@@ -1,6 +1,10 @@
 'use strict';
 
 const dot = require('dot-object');
+
+/**
+ * Emit component events
+ */
 const events = {};
 
 events.$ = [

@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @param {*} value
+ *
+ * @returns {Promise}
+ */
 module.exports = (value => {  
   return Promise.resolve((Array.isArray(value) ? value : [ value ])
     .filter(pattern => !!((pattern || '').trim()))
