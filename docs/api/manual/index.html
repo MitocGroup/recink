@@ -55,7 +55,23 @@ is as hard as writing high quality tests. The main reason is getting test runned
 with minimal headache possible and extending the runner via components with simple and documented api.</p>
 <p>Also Travis integration and caching out of the box ;)</p>
 <blockquote>
-<p>The project was started to cover the needs of <a href="https://github.com/MitocGroup/deep-framework">Deep Ecosystem</a></p>
+<p>The project have been started to cover the needs of <a href="https://github.com/MitocGroup/deep-framework">Deep Ecosystem</a></p>
+</blockquote>
+<h1 id="features">Features</h1>
+<ul>
+<li>Easy to <a href="https://github.com/MitocGroup/run-jst#installation">install</a>/<a href="https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project">configure</a>/<a href="https://github.com/MitocGroup/run-jst#usage">use</a></li>
+<li><a href="https://github.com/MitocGroup/deep-framework/blob/master/.jst.yml#L58">Multimodule</a> support with consolidated coverage</li>
+<li><a href="https://travis-ci.org">Travis</a> support</li>
+<li><a href="https://istanbul.js.org">Coverage</a> support</li>
+<li><a href="https://www.npmjs.com">NPM</a> support with packages global/local overwrites (including custom scripts execution)</li>
+<li><a href="https://aws.amazon.com/s3/">AWS S3</a> storage driver support</li>
+<li><a href="https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L10">Caching</a> support</li>
+<li><a href="https://github.com/MitocGroup/run-jst#components-inhouse--3rd-party">Easily extensible</a></li>
+<li><a href="https://github.com/MitocGroup/run-jst#documentation">Well documented</a></li>
+<li>To be continued...</li>
+</ul>
+<blockquote>
+<p><a href="http://mochajs.org">Mocha</a> is used as test framework for both <code>unit</code> and <code>end2end</code> testing</p>
 </blockquote>
 <h1 id="prerequisites">Prerequisites</h1>
 <ul>
@@ -68,7 +84,7 @@ with minimal headache possible and extending the runner via components with simp
 <h1 id="installation">Installation</h1>
 <p><code>npm install -g run-jst</code></p>
 <h1 id="getting-started">Getting Started</h1>
-<p>Check out the <a href="https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configure-repository">User Guide</a></p>
+<p>Check out the <a href="https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project">User Guide</a></p>
 <h1 id="usage">Usage</h1>
 <p><code>jst --help</code> Show help</p>
 <p><code>jst configure jst</code> Configure run-jst</p>
@@ -76,12 +92,11 @@ with minimal headache possible and extending the runner via components with simp
 <h1 id="documentation">Documentation</h1>
 <ul>
 <li>[x] <a href="https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md">Quick Start Guide</a></li>
+<li>[x] <a href="https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md">Crafting Components</a></li>
 <li>[x] <a href="https://mitocgroup.github.io/run-jst/api/identifiers.html">Api Docs</a></li>
-<li>[ ] Dependencies Diagram</li>
+<li>[x] <a href="https://mitocgroup.github.io/run-jst/module-diagram.html">Module Diagram</a></li>
 </ul>
 <h1 id="components-inhouse-3-rd-party-">Components (inhouse + 3&apos;rd party)</h1>
-<p>Check out the <a href="https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md">Component Developer Guide</a> to start building components</p>
-<h3 id="components-list-">Components list:</h3>
 <ul>
 <li><a href="https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md">CodeClimate Integration</a></li>
 </ul>
@@ -99,9 +114,9 @@ with minimal headache possible and extending the runner via components with simp
 <ul>
 <li>[x] Implement smart cache invalidation</li>
 <li>[x] Add support for external components</li>
-<li>[ ] Add support for fully automated <code>Travis</code> configuration </li>
+<li>[x] Add support for fully automated <code>Travis</code> configuration </li>
+<li>[ ] Add component development guide</li>
 <li>[ ] Add support for End-to-End tests</li>
-<li>[ ] Improve documentation</li>
 </ul>
 <h1 id="sponsors">Sponsors</h1>
 <p>This repository is being sponsored by:</p>
