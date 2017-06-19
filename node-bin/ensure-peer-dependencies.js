@@ -31,7 +31,9 @@ const options = [ 'install' ];
 
 if (Env.isGlobalInstallation) {
   options.push('-g');
+} else {
+  options.push('--no-save');
 }
 
-spawn('npm', options.concat(dependenciesVector))
+spawn('npm', options.concat(dependenciesVector), { stdio: 'inherit' })
   .on('close', code => process.exit(code));
