@@ -1,8 +1,8 @@
 run-jst
 ========
 
-[![NPM Version](https://img.shields.io/npm/v/run-jst.svg)](https://npmjs.org/package/run-jst)
-[![API Docs](https://mitocgroup.github.io/run-jst/api/badge.svg)](https://mitocgroup.github.io/run-jst/api/)
+[![NPM Version](https://img.shields.io/npm/v/run-jst.svg?maxAge=0)](https://npmjs.org/package/run-jst)
+[![API Docs](https://mitocgroup.github.io/run-jst/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/run-jst/api/)
 
 `run-jst` (aka `jst`) is a highly customizable and extremely optimized tests runner
 suitable for running tests on big / hybrid / complex projects by adding a simple `.jst.yml` config.
