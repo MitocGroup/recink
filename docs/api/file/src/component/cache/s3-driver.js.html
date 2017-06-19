@@ -90,6 +90,9 @@ const progress = require(&apos;progress-stream&apos;);
 const md5File = require(&apos;md5-file&apos;);
 const pify = require(&apos;pify&apos;);
 
+/**
+ * AWS S3 cache driver
+ */
 class S3Driver extends AbstractDriver {
   /**
    * @param {string} cacheDir

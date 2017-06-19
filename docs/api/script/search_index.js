@@ -984,6 +984,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/coverage/s3-driver.js~s3driver#includenodeversion",
+    "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-get-includeNodeVersion",
+    "src/component/coverage/s3-driver.js~S3Driver#includeNodeVersion",
+    "member"
+  ],
+  [
     "src/component/coverage/s3-driver.js~s3driver#options",
     "class/src/component/coverage/s3-driver.js~S3Driver.html#instance-get-options",
     "src/component/coverage/s3-driver.js~S3Driver#options",

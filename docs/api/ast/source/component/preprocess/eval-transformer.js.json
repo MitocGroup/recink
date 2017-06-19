@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 273,
+  "end": 321,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 17,
+      "line": 20,
       "column": 0
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 273,
+    "end": 321,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 17,
+        "line": 20,
         "column": 0
       }
     },
@@ -130,50 +130,69 @@
             }
           }
         ],
-        "kind": "const"
+        "kind": "const",
+        "trailingComments": [
+          {
+            "type": "CommentBlock",
+            "value": "*\n * Transformer implementation of 'eval'\n ",
+            "start": 79,
+            "end": 126,
+            "loc": {
+              "start": {
+                "line": 5,
+                "column": 0
+              },
+              "end": {
+                "line": 7,
+                "column": 3
+              }
+            }
+          }
+        ]
       },
       {
         "type": "Identifier",
-        "start": 79,
-        "end": 239,
+        "start": 127,
+        "end": 287,
         "loc": {
           "start": {
-            "line": 5,
+            "line": 8,
             "column": 0
           },
           "end": {
-            "line": 14,
+            "line": 17,
             "column": 1
           }
         },
         "id": {
           "type": "Identifier",
-          "start": 85,
-          "end": 100,
+          "start": 133,
+          "end": 148,
           "loc": {
             "start": {
-              "line": 5,
+              "line": 8,
               "column": 6
             },
             "end": {
-              "line": 5,
+              "line": 8,
               "column": 21
             },
             "identifierName": "EvalTransformer"
           },
-          "name": "EvalTransformer"
+          "name": "EvalTransformer",
+          "leadingComments": null
         },
         "superClass": {
           "type": "Identifier",
-          "start": 109,
-          "end": 128,
+          "start": 157,
+          "end": 176,
           "loc": {
             "start": {
-              "line": 5,
+              "line": 8,
               "column": 30
             },
             "end": {
-              "line": 5,
+              "line": 8,
               "column": 49
             },
             "identifierName": "AbstractTransformer"
@@ -182,45 +201,45 @@
         },
         "body": {
           "type": "ClassBody",
-          "start": 129,
-          "end": 239,
+          "start": 177,
+          "end": 287,
           "loc": {
             "start": {
-              "line": 5,
+              "line": 8,
               "column": 50
             },
             "end": {
-              "line": 14,
+              "line": 17,
               "column": 1
             }
           },
           "body": [
             {
               "type": "ClassMethod",
-              "start": 191,
-              "end": 237,
+              "start": 239,
+              "end": 285,
               "loc": {
                 "start": {
-                  "line": 11,
+                  "line": 14,
                   "column": 2
                 },
                 "end": {
-                  "line": 13,
+                  "line": 16,
                   "column": 3
                 }
               },
               "computed": false,
               "key": {
                 "type": "Identifier",
-                "start": 191,
-                "end": 200,
+                "start": 239,
+                "end": 248,
                 "loc": {
                   "start": {
-                    "line": 11,
+                    "line": 14,
                     "column": 2
                   },
                   "end": {
-                    "line": 11,
+                    "line": 14,
                     "column": 11
                   },
                   "identifierName": "transform"
@@ -237,15 +256,15 @@
               "params": [
                 {
                   "type": "Identifier",
-                  "start": 201,
-                  "end": 206,
+                  "start": 249,
+                  "end": 254,
                   "loc": {
                     "start": {
-                      "line": 11,
+                      "line": 14,
                       "column": 12
                     },
                     "end": {
-                      "line": 11,
+                      "line": 14,
                       "column": 17
                     },
                     "identifierName": "value"
@@ -255,58 +274,58 @@
               ],
               "body": {
                 "type": "BlockStatement",
-                "start": 208,
-                "end": 237,
+                "start": 256,
+                "end": 285,
                 "loc": {
                   "start": {
-                    "line": 11,
+                    "line": 14,
                     "column": 19
                   },
                   "end": {
-                    "line": 13,
+                    "line": 16,
                     "column": 3
                   }
                 },
                 "body": [
                   {
                     "type": "ReturnStatement",
-                    "start": 214,
-                    "end": 233,
+                    "start": 262,
+                    "end": 281,
                     "loc": {
                       "start": {
-                        "line": 12,
+                        "line": 15,
                         "column": 4
                       },
                       "end": {
-                        "line": 12,
+                        "line": 15,
                         "column": 23
                       }
                     },
                     "argument": {
                       "type": "CallExpression",
-                      "start": 221,
-                      "end": 232,
+                      "start": 269,
+                      "end": 280,
                       "loc": {
                         "start": {
-                          "line": 12,
+                          "line": 15,
                           "column": 11
                         },
                         "end": {
-                          "line": 12,
+                          "line": 15,
                           "column": 22
                         }
                       },
                       "callee": {
                         "type": "Identifier",
-                        "start": 221,
-                        "end": 225,
+                        "start": 269,
+                        "end": 273,
                         "loc": {
                           "start": {
-                            "line": 12,
+                            "line": 15,
                             "column": 11
                           },
                           "end": {
-                            "line": 12,
+                            "line": 15,
                             "column": 15
                           },
                           "identifierName": "eval"
@@ -316,15 +335,15 @@
                       "arguments": [
                         {
                           "type": "Identifier",
-                          "start": 226,
-                          "end": 231,
+                          "start": 274,
+                          "end": 279,
                           "loc": {
                             "start": {
-                              "line": 12,
+                              "line": 15,
                               "column": 16
                             },
                             "end": {
-                              "line": 12,
+                              "line": 15,
                               "column": 21
                             },
                             "identifierName": "value"
@@ -341,15 +360,15 @@
                 {
                   "type": "CommentBlock",
                   "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
-                  "start": 133,
-                  "end": 188,
+                  "start": 181,
+                  "end": 236,
                   "loc": {
                     "start": {
-                      "line": 6,
+                      "line": 9,
                       "column": 2
                     },
                     "end": {
-                      "line": 10,
+                      "line": 13,
                       "column": 5
                     }
                   }
@@ -358,35 +377,35 @@
             }
           ]
         },
-        "name": "_",
         "leadingComments": [],
+        "name": "_",
         "trailingComments": []
       },
       {
         "type": "Identifier",
-        "start": 241,
-        "end": 272,
+        "start": 289,
+        "end": 320,
         "loc": {
           "start": {
-            "line": 16,
+            "line": 19,
             "column": 0
           },
           "end": {
-            "line": 16,
+            "line": 19,
             "column": 31
           }
         },
         "declaration": {
           "type": "Identifier",
-          "start": 256,
-          "end": 271,
+          "start": 304,
+          "end": 319,
           "loc": {
             "start": {
-              "line": 16,
+              "line": 19,
               "column": 15
             },
             "end": {
-              "line": 16,
+              "line": 19,
               "column": 30
             },
             "identifierName": "EvalTransformer"
@@ -399,60 +418,61 @@
       },
       {
         "type": "ExportDefaultDeclaration",
-        "start": 241,
-        "end": 272,
+        "start": 289,
+        "end": 320,
         "loc": {
           "start": {
-            "line": 16,
+            "line": 19,
             "column": 0
           },
           "end": {
-            "line": 16,
+            "line": 19,
             "column": 31
           }
         },
         "declaration": {
           "type": "ClassDeclaration",
-          "start": 79,
-          "end": 239,
+          "start": 127,
+          "end": 287,
           "loc": {
             "start": {
-              "line": 5,
+              "line": 8,
               "column": 0
             },
             "end": {
-              "line": 14,
+              "line": 17,
               "column": 1
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 85,
-            "end": 100,
+            "start": 133,
+            "end": 148,
             "loc": {
               "start": {
-                "line": 5,
+                "line": 8,
                 "column": 6
               },
               "end": {
-                "line": 5,
+                "line": 8,
                 "column": 21
               },
               "identifierName": "EvalTransformer"
             },
-            "name": "EvalTransformer"
+            "name": "EvalTransformer",
+            "leadingComments": null
           },
           "superClass": {
             "type": "Identifier",
-            "start": 109,
-            "end": 128,
+            "start": 157,
+            "end": 176,
             "loc": {
               "start": {
-                "line": 5,
+                "line": 8,
                 "column": 30
               },
               "end": {
-                "line": 5,
+                "line": 8,
                 "column": 49
               },
               "identifierName": "AbstractTransformer"
@@ -461,45 +481,45 @@
           },
           "body": {
             "type": "ClassBody",
-            "start": 129,
-            "end": 239,
+            "start": 177,
+            "end": 287,
             "loc": {
               "start": {
-                "line": 5,
+                "line": 8,
                 "column": 50
               },
               "end": {
-                "line": 14,
+                "line": 17,
                 "column": 1
               }
             },
             "body": [
               {
                 "type": "ClassMethod",
-                "start": 191,
-                "end": 237,
+                "start": 239,
+                "end": 285,
                 "loc": {
                   "start": {
-                    "line": 11,
+                    "line": 14,
                     "column": 2
                   },
                   "end": {
-                    "line": 13,
+                    "line": 16,
                     "column": 3
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 191,
-                  "end": 200,
+                  "start": 239,
+                  "end": 248,
                   "loc": {
                     "start": {
-                      "line": 11,
+                      "line": 14,
                       "column": 2
                     },
                     "end": {
-                      "line": 11,
+                      "line": 14,
                       "column": 11
                     },
                     "identifierName": "transform"
@@ -516,15 +536,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 201,
-                    "end": 206,
+                    "start": 249,
+                    "end": 254,
                     "loc": {
                       "start": {
-                        "line": 11,
+                        "line": 14,
                         "column": 12
                       },
                       "end": {
-                        "line": 11,
+                        "line": 14,
                         "column": 17
                       },
                       "identifierName": "value"
@@ -534,58 +554,58 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 208,
-                  "end": 237,
+                  "start": 256,
+                  "end": 285,
                   "loc": {
                     "start": {
-                      "line": 11,
+                      "line": 14,
                       "column": 19
                     },
                     "end": {
-                      "line": 13,
+                      "line": 16,
                       "column": 3
                     }
                   },
                   "body": [
                     {
                       "type": "ReturnStatement",
-                      "start": 214,
-                      "end": 233,
+                      "start": 262,
+                      "end": 281,
                       "loc": {
                         "start": {
-                          "line": 12,
+                          "line": 15,
                           "column": 4
                         },
                         "end": {
-                          "line": 12,
+                          "line": 15,
                           "column": 23
                         }
                       },
                       "argument": {
                         "type": "CallExpression",
-                        "start": 221,
-                        "end": 232,
+                        "start": 269,
+                        "end": 280,
                         "loc": {
                           "start": {
-                            "line": 12,
+                            "line": 15,
                             "column": 11
                           },
                           "end": {
-                            "line": 12,
+                            "line": 15,
                             "column": 22
                           }
                         },
                         "callee": {
                           "type": "Identifier",
-                          "start": 221,
-                          "end": 225,
+                          "start": 269,
+                          "end": 273,
                           "loc": {
                             "start": {
-                              "line": 12,
+                              "line": 15,
                               "column": 11
                             },
                             "end": {
-                              "line": 12,
+                              "line": 15,
                               "column": 15
                             },
                             "identifierName": "eval"
@@ -595,15 +615,15 @@
                         "arguments": [
                           {
                             "type": "Identifier",
-                            "start": 226,
-                            "end": 231,
+                            "start": 274,
+                            "end": 279,
                             "loc": {
                               "start": {
-                                "line": 12,
+                                "line": 15,
                                 "column": 16
                               },
                               "end": {
-                                "line": 12,
+                                "line": 15,
                                 "column": 21
                               },
                               "identifierName": "value"
@@ -620,15 +640,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
-                    "start": 133,
-                    "end": 188,
+                    "start": 181,
+                    "end": 236,
                     "loc": {
                       "start": {
-                        "line": 6,
+                        "line": 9,
                         "column": 2
                       },
                       "end": {
-                        "line": 10,
+                        "line": 13,
                         "column": 5
                       }
                     }
@@ -637,8 +657,25 @@
               }
             ]
           },
+          "leadingComments": [
+            {
+              "type": "CommentBlock",
+              "value": "*\n * Transformer implementation of 'eval'\n ",
+              "start": 79,
+              "end": 126,
+              "loc": {
+                "start": {
+                  "line": 5,
+                  "column": 0
+                },
+                "end": {
+                  "line": 7,
+                  "column": 3
+                }
+              }
+            }
+          ],
           "__PseudoExport__": false,
-          "leadingComments": [],
           "trailingComments": []
         },
         "leadingComments": null
@@ -685,16 +722,32 @@
   "comments": [
     {
       "type": "CommentBlock",
-      "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
-      "start": 133,
-      "end": 188,
+      "value": "*\n * Transformer implementation of 'eval'\n ",
+      "start": 79,
+      "end": 126,
       "loc": {
         "start": {
-          "line": 6,
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 7,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
+      "start": 181,
+      "end": 236,
+      "loc": {
+        "start": {
+          "line": 9,
           "column": 2
         },
         "end": {
-          "line": 10,
+          "line": 13,
           "column": 5
         }
       }
@@ -965,6 +1018,22 @@
       }
     },
     {
+      "type": "CommentBlock",
+      "value": "*\n * Transformer implementation of 'eval'\n ",
+      "start": 79,
+      "end": 126,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 7,
+          "column": 3
+        }
+      }
+    },
+    {
       "type": {
         "label": "class",
         "keyword": "class",
@@ -979,15 +1048,15 @@
         "updateContext": null
       },
       "value": "class",
-      "start": 79,
-      "end": 84,
+      "start": 127,
+      "end": 132,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 8,
           "column": 0
         },
         "end": {
-          "line": 5,
+          "line": 8,
           "column": 5
         }
       }
@@ -1005,15 +1074,15 @@
         "binop": null
       },
       "value": "EvalTransformer",
-      "start": 85,
-      "end": 100,
+      "start": 133,
+      "end": 148,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 8,
           "column": 6
         },
         "end": {
-          "line": 5,
+          "line": 8,
           "column": 21
         }
       }
@@ -1033,15 +1102,15 @@
         "updateContext": null
       },
       "value": "extends",
-      "start": 101,
-      "end": 108,
+      "start": 149,
+      "end": 156,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 8,
           "column": 22
         },
         "end": {
-          "line": 5,
+          "line": 8,
           "column": 29
         }
       }
@@ -1059,15 +1128,15 @@
         "binop": null
       },
       "value": "AbstractTransformer",
-      "start": 109,
-      "end": 128,
+      "start": 157,
+      "end": 176,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 8,
           "column": 30
         },
         "end": {
-          "line": 5,
+          "line": 8,
           "column": 49
         }
       }
@@ -1084,15 +1153,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 129,
-      "end": 130,
+      "start": 177,
+      "end": 178,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 8,
           "column": 50
         },
         "end": {
-          "line": 5,
+          "line": 8,
           "column": 51
         }
       }
@@ -1100,15 +1169,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * @param {*} value\n   * \n   * @returns {*}\n   ",
-      "start": 133,
-      "end": 188,
+      "start": 181,
+      "end": 236,
       "loc": {
         "start": {
-          "line": 6,
+          "line": 9,
           "column": 2
         },
         "end": {
-          "line": 10,
+          "line": 13,
           "column": 5
         }
       }
@@ -1126,15 +1195,15 @@
         "binop": null
       },
       "value": "transform",
-      "start": 191,
-      "end": 200,
+      "start": 239,
+      "end": 248,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 14,
           "column": 2
         },
         "end": {
-          "line": 11,
+          "line": 14,
           "column": 11
         }
       }
@@ -1151,15 +1220,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 200,
-      "end": 201,
+      "start": 248,
+      "end": 249,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 14,
           "column": 11
         },
         "end": {
-          "line": 11,
+          "line": 14,
           "column": 12
         }
       }
@@ -1177,15 +1246,15 @@
         "binop": null
       },
       "value": "value",
-      "start": 201,
-      "end": 206,
+      "start": 249,
+      "end": 254,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 14,
           "column": 12
         },
         "end": {
-          "line": 11,
+          "line": 14,
           "column": 17
         }
       }
@@ -1202,15 +1271,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 206,
-      "end": 207,
+      "start": 254,
+      "end": 255,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 14,
           "column": 17
         },
         "end": {
-          "line": 11,
+          "line": 14,
           "column": 18
         }
       }
@@ -1227,15 +1296,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 208,
-      "end": 209,
+      "start": 256,
+      "end": 257,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 14,
           "column": 19
         },
         "end": {
-          "line": 11,
+          "line": 14,
           "column": 20
         }
       }
@@ -1255,15 +1324,15 @@
         "updateContext": null
       },
       "value": "return",
-      "start": 214,
-      "end": 220,
+      "start": 262,
+      "end": 268,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 4
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 10
         }
       }
@@ -1281,15 +1350,15 @@
         "binop": null
       },
       "value": "eval",
-      "start": 221,
-      "end": 225,
+      "start": 269,
+      "end": 273,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 11
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 15
         }
       }
@@ -1306,15 +1375,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 225,
-      "end": 226,
+      "start": 273,
+      "end": 274,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 15
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 16
         }
       }
@@ -1332,15 +1401,15 @@
         "binop": null
       },
       "value": "value",
-      "start": 226,
-      "end": 231,
+      "start": 274,
+      "end": 279,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 16
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 21
         }
       }
@@ -1357,15 +1426,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 231,
-      "end": 232,
+      "start": 279,
+      "end": 280,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 21
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 22
         }
       }
@@ -1383,15 +1452,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 232,
-      "end": 233,
+      "start": 280,
+      "end": 281,
       "loc": {
         "start": {
-          "line": 12,
+          "line": 15,
           "column": 22
         },
         "end": {
-          "line": 12,
+          "line": 15,
           "column": 23
         }
       }
@@ -1408,15 +1477,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 236,
-      "end": 237,
+      "start": 284,
+      "end": 285,
       "loc": {
         "start": {
-          "line": 13,
+          "line": 16,
           "column": 2
         },
         "end": {
-          "line": 13,
+          "line": 16,
           "column": 3
         }
       }
@@ -1433,15 +1502,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 238,
-      "end": 239,
+      "start": 286,
+      "end": 287,
       "loc": {
         "start": {
-          "line": 14,
+          "line": 17,
           "column": 0
         },
         "end": {
-          "line": 14,
+          "line": 17,
           "column": 1
         }
       }
@@ -1461,15 +1530,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 241,
-      "end": 247,
+      "start": 289,
+      "end": 295,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 19,
           "column": 0
         },
         "end": {
-          "line": 16,
+          "line": 19,
           "column": 6
         }
       }
@@ -1489,15 +1558,15 @@
         "updateContext": null
       },
       "value": "default",
-      "start": 248,
-      "end": 255,
+      "start": 296,
+      "end": 303,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 19,
           "column": 7
         },
         "end": {
-          "line": 16,
+          "line": 19,
           "column": 14
         }
       }
@@ -1515,15 +1584,15 @@
         "binop": null
       },
       "value": "EvalTransformer",
-      "start": 256,
-      "end": 271,
+      "start": 304,
+      "end": 319,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 19,
           "column": 15
         },
         "end": {
-          "line": 16,
+          "line": 19,
           "column": 30
         }
       }
@@ -1541,15 +1610,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 271,
-      "end": 272,
+      "start": 319,
+      "end": 320,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 19,
           "column": 30
         },
         "end": {
-          "line": 16,
+          "line": 19,
           "column": 31
         }
       }
@@ -1567,15 +1636,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 273,
-      "end": 273,
+      "start": 321,
+      "end": 321,
       "loc": {
         "start": {
-          "line": 17,
+          "line": 20,
           "column": 0
         },
         "end": {
-          "line": 17,
+          "line": 20,
           "column": 0
         }
       }

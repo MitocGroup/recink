@@ -90,6 +90,9 @@ const spawn = require(&apos;child_process&apos;).spawn;
 const md5Hex = require(&apos;md5-hex&apos;);
 const SequentialPromise = require(&apos;../helper/sequential-promise&apos;);
 
+/**
+ * Abstraction over an NPM module
+ */
 class NpmModule {
   /**
    * @param {string} rootDir

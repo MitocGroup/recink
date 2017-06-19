@@ -87,7 +87,13 @@ const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
 const factory = require(&apos;./preprocess/factory&apos;);
 const Container = require(&apos;../container&apos;);
 
+/**
+ * Preprocess component
+ */
 class PreprocessComponent extends AbstractComponent {
+  /**
+   * @param {string} configPath
+   */
   constructor(configPath = null) {
     super();
     
