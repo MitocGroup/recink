@@ -42,8 +42,8 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 
 # Documentation
 
-- [x] Quick Start Guide - https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md
-- [x] Api Docs - https://mitocgroup.github.io/run-jst/api/identifiers.html
+- [x] [Quick Start Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md)
+- [x] [Api Docs](https://mitocgroup.github.io/run-jst/api/identifiers.html)
 - [ ] Dependencies Diagram
 
 # Components (inhouse + 3'rd party)
