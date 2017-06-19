@@ -55,7 +55,7 @@ class CacheComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise(resolve => {

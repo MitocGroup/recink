@@ -48,7 +48,7 @@ class NpmModule {
    * @param {*} deps
    * @param {array} scripts
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   install(deps = {}, scripts = []) {
     let cacheKey;
@@ -86,7 +86,7 @@ class NpmModule {
   /**
    * @param {array} scripts
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -103,7 +103,7 @@ class NpmModule {
   /**
    * @param {string} script
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -139,7 +139,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} additionalDeps
    *
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -178,7 +178,7 @@ class NpmModule {
   /**
    * @param {array} deps
    *
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -221,7 +221,7 @@ class NpmModule {
    * @param {string} packageFile
    * @param {*} deps
    *
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */

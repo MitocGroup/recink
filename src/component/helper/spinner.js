@@ -50,9 +50,9 @@ class Spinner {
   }
   
   /**
-   * @param {promise} promiseToWrap
+   * @param {Promise} promiseToWrap
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   promise(promiseToWrap) {
     this.spinner.start();

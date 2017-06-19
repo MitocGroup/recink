@@ -10,7 +10,7 @@ class YamlConfig extends AbstractConfig {
   /**
    * @param {string} rawConfig
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   decode(rawConfig) {
     try {
@@ -23,7 +23,7 @@ class YamlConfig extends AbstractConfig {
   /**
    * @param {*} config
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   encode(config) {
     try {

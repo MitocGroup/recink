@@ -61,7 +61,7 @@ class Jst extends Emitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   run() {
     this.emit(events.components.run, ...this._components);
@@ -110,7 +110,7 @@ class Jst extends Emitter {
   /**
    * @param {AbstractComponent[]|AbstractComponent} components
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   components(...components) {
     this.emit(events.components.load, ...components);
@@ -149,7 +149,7 @@ class Jst extends Emitter {
   /**
    * @param {string} configFile
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   configure(configFile = Jst.CONFIG_FILE) {
     return configFactory.guess(configFile)

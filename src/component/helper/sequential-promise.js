@@ -8,7 +8,7 @@ class SequentialPromise {
    * @param {function[]} promises
    * @param {*} value
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   static all(promises, value = null) {
     const promisesCloned = [].concat(promises);
@@ -20,7 +20,7 @@ class SequentialPromise {
    * @param {function[]} promises
    * @param {*} result
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */

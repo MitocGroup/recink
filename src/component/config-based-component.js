@@ -37,7 +37,7 @@ class ConfigBasedComponent extends AbstractComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   subscribe(emitter) {
     this._readyPromise = this.waitConfig(emitter)
@@ -49,7 +49,7 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   ready() {
     return this._readyPromise;
@@ -58,7 +58,7 @@ class ConfigBasedComponent extends AbstractComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   waitConfig(emitter) {
     return new Promise((resolve, reject) => {

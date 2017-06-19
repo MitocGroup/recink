@@ -53,7 +53,7 @@ class S3Driver extends AbstractDriver {
   /**
    * @param {string} name
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -77,7 +77,7 @@ class S3Driver extends AbstractDriver {
    * @param {string} name
    * @param {string} content
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */

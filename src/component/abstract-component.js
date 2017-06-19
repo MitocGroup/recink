@@ -22,7 +22,7 @@ class AbstractComponent {
   /**
    * @param {number} interval
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   waitProcessing(interval = 200) {
     return new Promise(resolve => {
@@ -117,7 +117,7 @@ class AbstractComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   run(emitter) {
     return Promise.resolve();
@@ -126,14 +126,14 @@ class AbstractComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   subscribe(emitter) {
     return Promise.resolve();
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   ready() {
     return Promise.resolve();

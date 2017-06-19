@@ -31,7 +31,7 @@ class EmitComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   run(emitter) {
     this._registerDebugers(emitter);
@@ -53,7 +53,7 @@ class EmitComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   waitConfig(emitter) {
     return super.waitConfig(emitter)

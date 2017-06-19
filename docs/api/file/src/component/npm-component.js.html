@@ -116,7 +116,7 @@ class NpmComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   cacheDir(emitter) {
     if (this._cacheDir) {
@@ -138,7 +138,7 @@ class NpmComponent extends ConfigBasedComponent {
    * @param {Emitter} emitter
    * @param {string} name
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   cache(emitter, name) {
     if (this._cache.hasOwnProperty(name)) {
@@ -156,7 +156,7 @@ class NpmComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise(resolve =&gt; {

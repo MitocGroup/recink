@@ -30,7 +30,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   upload() {
     return this._switchProgressType('upload')
@@ -41,7 +41,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   download() {
     return this._switchProgressType('download')
@@ -84,7 +84,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    * 
    * @private
    */
@@ -95,7 +95,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    * 
    * @private
    */
@@ -116,7 +116,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -149,7 +149,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -175,7 +175,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -185,7 +185,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -196,7 +196,7 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */

@@ -31,7 +31,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   check() {
     const moduleRoot = this.container.get('root', null);
@@ -53,7 +53,7 @@ class EmitModule {
   }
   
   /**
-   * @returns {promise}
+   * @returns {Promise}
    */
   process(container) {
     return new Promise((resolve, reject) => {

@@ -3,7 +3,7 @@
     "__docId__": 0,
     "kind": "file",
     "name": "src/component/abstract-component.js",
-    "content": "'use strict';\n\nconst events = require('../events');\n\n/**\n * Abstract component\n */\nclass AbstractComponent {\n  constructor() {\n    this._logger = console;\n    this._active = false;\n    this._processing = 0;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  get processing() {\n    return this._processing;\n  }\n  \n  /**\n   * @param {number} interval\n   *\n   * @returns {promise}\n   */\n  waitProcessing(interval = 200) {\n    return new Promise(resolve => {\n      if (!this.isProcessing) {\n        return process.nextTick(() => resolve());\n      }\n      \n      const id = setInterval(() => {\n        if (!this.isProcessing) {\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  removeProcessing() {\n    this._processing--;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  addProcessing() {\n    this._processing++;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isProcessing() {\n    return this.processing > 0;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {AbstractComponent}\n   */\n  setLogger(logger) {\n    this._logger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {boolean} state\n   *\n   * @returns {AbstractComponent}\n   */\n  setActive(state) {\n    this._active = !!state;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isActive() {\n    return !!this._active;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    throw new Error(`${ this.constructor.name }.name not implemented!`);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get events() {\n    return events;\n  }\n\n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  subscribe(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  ready() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = AbstractComponent;",
+    "content": "'use strict';\n\nconst events = require('../events');\n\n/**\n * Abstract component\n */\nclass AbstractComponent {\n  constructor() {\n    this._logger = console;\n    this._active = false;\n    this._processing = 0;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  get processing() {\n    return this._processing;\n  }\n  \n  /**\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   */\n  waitProcessing(interval = 200) {\n    return new Promise(resolve => {\n      if (!this.isProcessing) {\n        return process.nextTick(() => resolve());\n      }\n      \n      const id = setInterval(() => {\n        if (!this.isProcessing) {\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  removeProcessing() {\n    this._processing--;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  addProcessing() {\n    this._processing++;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isProcessing() {\n    return this.processing > 0;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {AbstractComponent}\n   */\n  setLogger(logger) {\n    this._logger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {boolean} state\n   *\n   * @returns {AbstractComponent}\n   */\n  setActive(state) {\n    this._active = !!state;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isActive() {\n    return !!this._active;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    throw new Error(`${ this.constructor.name }.name not implemented!`);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get events() {\n    return events;\n  }\n\n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  subscribe(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  ready() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = AbstractComponent;",
     "static": true,
     "longname": "src/component/abstract-component.js",
     "access": null,
@@ -188,7 +188,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -206,7 +206,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -562,7 +562,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -580,7 +580,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -601,7 +601,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -619,7 +619,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -640,14 +640,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -657,7 +657,7 @@
     "__docId__": 23,
     "kind": "file",
     "name": "src/component/cache/abstract-driver.js",
-    "content": "'use strict';\n\nconst jag = require('jag');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst pify = require('pify');\nconst EventEmitter = require('events');\nconst events = require('./events');\nconst fs = require('fs');\n\n/**\n * Abstract cache driver\n */\nclass AbstractDriver extends EventEmitter {\n  /**\n   * @returns {string}\n   */\n  constructor(cacheDir) {\n    super();\n    \n    this._cacheDir = cacheDir;\n    this._progressType = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get cacheDir() {\n    return this._cacheDir;\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  upload() {\n    return this._switchProgressType('upload')\n      ._removePackageFile()\n      .then(() => this._pack())\n      .then(() => this._upload())\n      .then(() => this._resetOperation());\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  download() {\n    return this._switchProgressType('download')\n      ._removePackageFile()\n      .then(() => this._download())\n      .then(() => this._unpack())\n      .then(() => this._resetOperation());\n  }\n  \n  /**\n   * @param {string} type\n   *\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  _switchProgressType(type) {\n    this._progressType = type;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} total\n   * @param {number} amount\n   *\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  _progress(total, amount) {\n    const payload = {\n      amount, total, remaining: total - amount,\n    };\n    \n    this.emit(events.cache.progress, payload);\n    this.emit(events.cache[this._progressType].progress, payload);\n    \n    return this;\n  }\n  \n  /**\n   * @returns {promise}\n   * \n   * @private\n   */\n  _resetOperation() {\n    this._progressType = null;\n    \n    return this._removePackageFile();\n  }\n  \n  /**\n   * @returns {promise}\n   * \n   * @private\n   */\n  _removePackageFile() {\n    return fse.remove(this._packagePath);\n  }\n  \n  /**\n   * @returns {string}\n   *\n   * @private\n   */\n  get _packagePath() {\n    return path.join(\n      path.dirname(this.cacheDir),\n      (path.basename(this.cacheDir) || AbstractDriver.DEFAULT_NS) + '.tar.gz'\n    );\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _pack() {\n    const packagePath = this._packagePath;\n    \n    return fse.pathExists(this.cacheDir)\n      .then(result => {\n        if (!result) {\n          return Promise.resolve();\n        }\n        \n        return pify(jag.pack)(this.cacheDir, packagePath)\n          .then(() => {\n            \n            // @todo remove when fixed\n            // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53\n            const tmpPackagePath = path.join(\n              path.dirname(packagePath),\n              path.basename(packagePath, '.tar.gz')\n            ) + '.tar.tar.gz';\n            \n            return fse.move(\n              tmpPackagePath, \n              packagePath, \n              { overwrite: true }\n            );\n          });\n      });\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _unpack() {\n    return fse.pathExists(this._packagePath)\n      .then(result => {\n        if (!result) {\n          return Promise.resolve();\n        }\n\n        return this._packageSize\n          .then(packageSize => {            \n            if (packageSize <= 0) {\n              return Promise.resolve();\n            }\n            \n            return fse.ensureDir(this.cacheDir)\n              .then(() => {\n                return pify(jag.unpack)(this._packagePath, this.cacheDir);\n              });\n          });\n      });\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  get _packageSize() {\n    return pify(fs.stat)(this._packagePath)\n      .then(stat => Promise.resolve(stat.size));\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _upload() {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._upload() not implemented!`\n    ));\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _download() {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._download() not implemented!`\n    ));\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_NS() {\n    return 'jst_package';\n  }\n}\n\nmodule.exports = AbstractDriver;\n",
+    "content": "'use strict';\n\nconst jag = require('jag');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst pify = require('pify');\nconst EventEmitter = require('events');\nconst events = require('./events');\nconst fs = require('fs');\n\n/**\n * Abstract cache driver\n */\nclass AbstractDriver extends EventEmitter {\n  /**\n   * @returns {string}\n   */\n  constructor(cacheDir) {\n    super();\n    \n    this._cacheDir = cacheDir;\n    this._progressType = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get cacheDir() {\n    return this._cacheDir;\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  upload() {\n    return this._switchProgressType('upload')\n      ._removePackageFile()\n      .then(() => this._pack())\n      .then(() => this._upload())\n      .then(() => this._resetOperation());\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  download() {\n    return this._switchProgressType('download')\n      ._removePackageFile()\n      .then(() => this._download())\n      .then(() => this._unpack())\n      .then(() => this._resetOperation());\n  }\n  \n  /**\n   * @param {string} type\n   *\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  _switchProgressType(type) {\n    this._progressType = type;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} total\n   * @param {number} amount\n   *\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  _progress(total, amount) {\n    const payload = {\n      amount, total, remaining: total - amount,\n    };\n    \n    this.emit(events.cache.progress, payload);\n    this.emit(events.cache[this._progressType].progress, payload);\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _resetOperation() {\n    this._progressType = null;\n    \n    return this._removePackageFile();\n  }\n  \n  /**\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _removePackageFile() {\n    return fse.remove(this._packagePath);\n  }\n  \n  /**\n   * @returns {string}\n   *\n   * @private\n   */\n  get _packagePath() {\n    return path.join(\n      path.dirname(this.cacheDir),\n      (path.basename(this.cacheDir) || AbstractDriver.DEFAULT_NS) + '.tar.gz'\n    );\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _pack() {\n    const packagePath = this._packagePath;\n    \n    return fse.pathExists(this.cacheDir)\n      .then(result => {\n        if (!result) {\n          return Promise.resolve();\n        }\n        \n        return pify(jag.pack)(this.cacheDir, packagePath)\n          .then(() => {\n            \n            // @todo remove when fixed\n            // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53\n            const tmpPackagePath = path.join(\n              path.dirname(packagePath),\n              path.basename(packagePath, '.tar.gz')\n            ) + '.tar.tar.gz';\n            \n            return fse.move(\n              tmpPackagePath, \n              packagePath, \n              { overwrite: true }\n            );\n          });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _unpack() {\n    return fse.pathExists(this._packagePath)\n      .then(result => {\n        if (!result) {\n          return Promise.resolve();\n        }\n\n        return this._packageSize\n          .then(packageSize => {            \n            if (packageSize <= 0) {\n              return Promise.resolve();\n            }\n            \n            return fse.ensureDir(this.cacheDir)\n              .then(() => {\n                return pify(jag.unpack)(this._packagePath, this.cacheDir);\n              });\n          });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  get _packageSize() {\n    return pify(fs.stat)(this._packagePath)\n      .then(stat => Promise.resolve(stat.size));\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _upload() {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._upload() not implemented!`\n    ));\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _download() {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._download() not implemented!`\n    ));\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_NS() {\n    return 'jst_package';\n  }\n}\n\nmodule.exports = AbstractDriver;\n",
     "static": true,
     "longname": "src/component/cache/abstract-driver.js",
     "access": null,
@@ -992,14 +992,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1020,14 +1020,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1159,14 +1159,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1210,14 +1210,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1270,14 +1270,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1298,14 +1298,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1326,13 +1326,13 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1358,14 +1358,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1386,14 +1386,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -1677,7 +1677,7 @@
     "__docId__": 60,
     "kind": "file",
     "name": "src/component/cache/s3-driver.js",
-    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst S3 = require('aws-sdk/clients/s3');\nconst path = require('path');\nconst fs = require('fs');\nconst progress = require('progress-stream');\nconst md5File = require('md5-file');\nconst pify = require('pify');\n\n/**\n * AWS S3 cache driver\n */\nclass S3Driver extends AbstractDriver {\n  /**\n   * @param {string} cacheDir\n   * @param {string} path\n   * @param {*} options\n   * @param {boolean} includeNodeVersion\n   */\n  constructor(cacheDir, path, options, includeNodeVersion = true) {\n    super(cacheDir);\n    \n    this._path = path;\n    this._options = options;\n    this._includeNodeVersion = includeNodeVersion;\n    this._client = new S3(this.options);\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get includeNodeVersion() {\n    return this._includeNodeVersion;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n  \n  /**\n   * @returns {S3}\n   */\n  get client() {    \n    return this._client;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get options() {\n    return this._options;\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _upload() {\n    return this._packageSize\n      .then(ContentLength => {\n        if (ContentLength <= 0) {\n          return Promise.resolve();\n        }\n        \n        return this._hasChanged\n          .then(hasChanged => {\n            if (!hasChanged) {\n              return Promise.resolve();\n            }\n            \n            const { Bucket, Key } = this._s3Location(this.path);\n            const packageStream = fs.createReadStream(this._packagePath);\n            \n            packageStream.on('error', error => reject(error));\n            \n            const Body = this._track(packageStream, ContentLength);\n\n            return this.client\n              .upload({ Bucket, Key, Body, })\n              .promise();\n          });\n      });\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  get _hasChanged() {\n    return pify(md5File)(this._packagePath)\n      .then(packageHash => {\n        const { Bucket, Key } = this._s3Location(this.path);\n        \n        return this.client\n          .headObject({ Bucket, Key, })\n          .promise()\n          .then(data => {\n            const remoteHash = data.ETag.replace(/\"/g, '');\n            \n            return Promise.resolve(packageHash !== remoteHash);\n          })\n          .catch(error => {\n            if (this._isMissingObject(error)) {\n              return Promise.resolve(true);\n            }\n            \n            return Promise.reject(error);\n          });\n      });\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _download() {\n    return new Promise((resolve, reject) => {\n      const { Bucket, Key } = this._s3Location(this.path);\n      const packageStream = fs.createWriteStream(this._packagePath);\n      const remoteStream = this.client\n        .getObject({ Bucket, Key, }).createReadStream();\n      \n      remoteStream.on('end', () => resolve());\n      remoteStream.on('error', error => {\n        if (this._isMissingObject(error)) {\n          return resolve();\n        }\n        \n        reject(error);\n      });\n      packageStream.on('error', error => reject(error));\n      \n      this._track(remoteStream).pipe(packageStream);\n    });\n  }\n  \n  /**\n   * @param {*} error\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _isMissingObject(error) {\n    return [ 'NoSuchKey', 'NotFound' ].indexOf(error.code) !== -1;\n  }\n  \n  /**\n   * @param {ReadableStream} stream\n   * @param {number} length\n   * @param {number} time\n   *\n   * @private\n   */\n  _track(stream, length = undefined, time = 50) {\n    const tracker = progress({ length, time, });\n        \n    tracker.on('progress', progress => {\n      this._progress(progress.length, progress.transferred);\n    });\n        \n    return stream.pipe(tracker);\n  }\n  \n  /**\n   * @param {string} s3Path\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _s3Location(s3Path) {\n    const matches = s3Path.match(\n      /^(?:s3:\\/\\/|\\/)?([^\\/]+)(?:\\/(.*))?$/i\n    );\n    \n    if (matches.length === 2) {\n      matches.push('');\n    }\n    \n    const [ , Bucket, keyPrefix ] = matches;\n    \n    const Key = path.join(\n      keyPrefix || '',\n      this.includeNodeVersion ? process.version : '',\n      path.basename(this._packagePath)\n    ).replace(/\\\\+/g, '/'); // ensure path delimiter set to slash\n    \n    return { Bucket, Key };\n  }\n}\n\nmodule.exports = S3Driver;\n",
+    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst S3 = require('aws-sdk/clients/s3');\nconst path = require('path');\nconst fs = require('fs');\nconst progress = require('progress-stream');\nconst md5File = require('md5-file');\nconst pify = require('pify');\n\n/**\n * AWS S3 cache driver\n */\nclass S3Driver extends AbstractDriver {\n  /**\n   * @param {string} cacheDir\n   * @param {string} path\n   * @param {*} options\n   * @param {boolean} includeNodeVersion\n   */\n  constructor(cacheDir, path, options, includeNodeVersion = true) {\n    super(cacheDir);\n    \n    this._path = path;\n    this._options = options;\n    this._includeNodeVersion = includeNodeVersion;\n    this._client = new S3(this.options);\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get includeNodeVersion() {\n    return this._includeNodeVersion;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n  \n  /**\n   * @returns {S3}\n   */\n  get client() {    \n    return this._client;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get options() {\n    return this._options;\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _upload() {\n    return this._packageSize\n      .then(ContentLength => {\n        if (ContentLength <= 0) {\n          return Promise.resolve();\n        }\n        \n        return this._hasChanged\n          .then(hasChanged => {\n            if (!hasChanged) {\n              return Promise.resolve();\n            }\n            \n            const { Bucket, Key } = this._s3Location(this.path);\n            const packageStream = fs.createReadStream(this._packagePath);\n            \n            packageStream.on('error', error => reject(error));\n            \n            const Body = this._track(packageStream, ContentLength);\n\n            return this.client\n              .upload({ Bucket, Key, Body, })\n              .promise();\n          });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  get _hasChanged() {\n    return pify(md5File)(this._packagePath)\n      .then(packageHash => {\n        const { Bucket, Key } = this._s3Location(this.path);\n        \n        return this.client\n          .headObject({ Bucket, Key, })\n          .promise()\n          .then(data => {\n            const remoteHash = data.ETag.replace(/\"/g, '');\n            \n            return Promise.resolve(packageHash !== remoteHash);\n          })\n          .catch(error => {\n            if (this._isMissingObject(error)) {\n              return Promise.resolve(true);\n            }\n            \n            return Promise.reject(error);\n          });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _download() {\n    return new Promise((resolve, reject) => {\n      const { Bucket, Key } = this._s3Location(this.path);\n      const packageStream = fs.createWriteStream(this._packagePath);\n      const remoteStream = this.client\n        .getObject({ Bucket, Key, }).createReadStream();\n      \n      remoteStream.on('end', () => resolve());\n      remoteStream.on('error', error => {\n        if (this._isMissingObject(error)) {\n          return resolve();\n        }\n        \n        reject(error);\n      });\n      packageStream.on('error', error => reject(error));\n      \n      this._track(remoteStream).pipe(packageStream);\n    });\n  }\n  \n  /**\n   * @param {*} error\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _isMissingObject(error) {\n    return [ 'NoSuchKey', 'NotFound' ].indexOf(error.code) !== -1;\n  }\n  \n  /**\n   * @param {ReadableStream} stream\n   * @param {number} length\n   * @param {number} time\n   *\n   * @private\n   */\n  _track(stream, length = undefined, time = 50) {\n    const tracker = progress({ length, time, });\n        \n    tracker.on('progress', progress => {\n      this._progress(progress.length, progress.transferred);\n    });\n        \n    return stream.pipe(tracker);\n  }\n  \n  /**\n   * @param {string} s3Path\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _s3Location(s3Path) {\n    const matches = s3Path.match(\n      /^(?:s3:\\/\\/|\\/)?([^\\/]+)(?:\\/(.*))?$/i\n    );\n    \n    if (matches.length === 2) {\n      matches.push('');\n    }\n    \n    const [ , Bucket, keyPrefix ] = matches;\n    \n    const Key = path.join(\n      keyPrefix || '',\n      this.includeNodeVersion ? process.version : '',\n      path.basename(this._packagePath)\n    ).replace(/\\\\+/g, '/'); // ensure path delimiter set to slash\n    \n    return { Bucket, Key };\n  }\n}\n\nmodule.exports = S3Driver;\n",
     "static": true,
     "longname": "src/component/cache/s3-driver.js",
     "access": null,
@@ -2174,14 +2174,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2202,13 +2202,13 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2234,14 +2234,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2379,7 +2379,7 @@
     "__docId__": 84,
     "kind": "file",
     "name": "src/component/cache/void-driver.js",
-    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\n\n/**\n * Void cache driver\n */\nclass VoidDriver extends AbstractDriver {\n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _upload() {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {promise}\n   *\n   * @private\n   */\n  _download() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = VoidDriver;\n",
+    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\n\n/**\n * Void cache driver\n */\nclass VoidDriver extends AbstractDriver {\n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _upload() {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _download() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = VoidDriver;\n",
     "static": true,
     "longname": "src/component/cache/void-driver.js",
     "access": null,
@@ -2445,14 +2445,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2473,14 +2473,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2490,7 +2490,7 @@
     "__docId__": 89,
     "kind": "file",
     "name": "src/component/cache-component.js",
-    "content": "'use strict';\n\nconst npmEvents = require('./npm/events');\nconst testEvents = require('./test/events');\nconst cacheFactory = require('./cache/factory');\nconst ConfigBasedComponent = require('./config-based-component');\nconst Spinner = require('./helper/spinner');\nconst cacheEvents = require('./cache/events');\nconst prettyBytes = require('pretty-bytes');\n\n/**\n * Cache component\n */\nclass CacheComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._cache = null;\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   */\n  get cache() {\n    return this._cache;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'cache';\n  }\n  \n  /**\n   * @param {string} cacheDriver\n   * @param {string} cacheDir\n   *\n   * @returns {CacheComponent}\n   *\n   * @private\n   */\n  _initCache(cacheDriver, cacheDir) {\n    this._cache = cacheFactory[cacheDriver](\n      cacheDir,\n      ...this.container.get('options', [])\n    );\n    \n    return this;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    return new Promise(resolve => {\n      const cacheDriver = this.container.get('driver');\n      \n      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {\n        const spinner = new Spinner(`Downloading caches from #${ cacheDriver }`);\n        \n        return spinner.then(\n          'Caches downloaded.'\n        ).catch(\n          'Caches failed to download!'\n        ).promise(\n          this._initCache(cacheDriver, cacheDir)\n            ._trackProgress(this.cache, spinner)\n            .cache.download()\n        )\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {\n        if (!this.cache) {\n          resolve();\n          return Promise.resolve();\n        }\n        \n        const spinner = new Spinner(`Uploading caches to #${ cacheDriver }`);\n\n        return spinner.then(\n          'Caches uploaded.'\n        ).catch(\n          'Caches failed to upload!'\n        ).promise(\n          this._trackProgress(this.cache, spinner)\n            .cache.upload()\n        ).then(() => resolve());\n      });\n    });\n  }\n  \n  /**\n   * @param {EventEmitter} emitter\n   * @param {ora} spinner\n   *\n   * @returns {CacheComponent}\n   *\n   * @private\n   */\n  _trackProgress(emitter, spinner) {\n    emitter.on(cacheEvents.cache.upload.progress, payload => {\n      const { amount, total } = payload;\n      \n      spinner.prepend(`[${ prettyBytes(amount) }/${ prettyBytes(total) }]`);\n    });\n    \n    spinner.prepend(`[0/0]`);\n    \n    return this;\n  }\n}\n\nmodule.exports = CacheComponent;\n",
+    "content": "'use strict';\n\nconst npmEvents = require('./npm/events');\nconst testEvents = require('./test/events');\nconst cacheFactory = require('./cache/factory');\nconst ConfigBasedComponent = require('./config-based-component');\nconst Spinner = require('./helper/spinner');\nconst cacheEvents = require('./cache/events');\nconst prettyBytes = require('pretty-bytes');\n\n/**\n * Cache component\n */\nclass CacheComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._cache = null;\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   */\n  get cache() {\n    return this._cache;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'cache';\n  }\n  \n  /**\n   * @param {string} cacheDriver\n   * @param {string} cacheDir\n   *\n   * @returns {CacheComponent}\n   *\n   * @private\n   */\n  _initCache(cacheDriver, cacheDir) {\n    this._cache = cacheFactory[cacheDriver](\n      cacheDir,\n      ...this.container.get('options', [])\n    );\n    \n    return this;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise(resolve => {\n      const cacheDriver = this.container.get('driver');\n      \n      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {\n        const spinner = new Spinner(`Downloading caches from #${ cacheDriver }`);\n        \n        return spinner.then(\n          'Caches downloaded.'\n        ).catch(\n          'Caches failed to download!'\n        ).promise(\n          this._initCache(cacheDriver, cacheDir)\n            ._trackProgress(this.cache, spinner)\n            .cache.download()\n        )\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {\n        if (!this.cache) {\n          resolve();\n          return Promise.resolve();\n        }\n        \n        const spinner = new Spinner(`Uploading caches to #${ cacheDriver }`);\n\n        return spinner.then(\n          'Caches uploaded.'\n        ).catch(\n          'Caches failed to upload!'\n        ).promise(\n          this._trackProgress(this.cache, spinner)\n            .cache.upload()\n        ).then(() => resolve());\n      });\n    });\n  }\n  \n  /**\n   * @param {EventEmitter} emitter\n   * @param {ora} spinner\n   *\n   * @returns {CacheComponent}\n   *\n   * @private\n   */\n  _trackProgress(emitter, spinner) {\n    emitter.on(cacheEvents.cache.upload.progress, payload => {\n      const { amount, total } = payload;\n      \n      spinner.prepend(`[${ prettyBytes(amount) }/${ prettyBytes(total) }]`);\n    });\n    \n    spinner.prepend(`[0/0]`);\n    \n    return this;\n  }\n}\n\nmodule.exports = CacheComponent;\n",
     "static": true,
     "longname": "src/component/cache-component.js",
     "access": null,
@@ -2896,7 +2896,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -2914,7 +2914,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -2973,7 +2973,7 @@
     "__docId__": 106,
     "kind": "file",
     "name": "src/component/config-based-component.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst Container = require('../container');\nconst AbstractComponent = require('./abstract-component');\n\n/**\n * Abstract configuration aware component\n */\nclass ConfigBasedComponent extends AbstractComponent {\n  /**\n   * @param {string} configPath\n   */\n  constructor(configPath = null) {\n    super();\n    \n    this._container = null;\n    this._readyPromise = Promise.resolve();\n    this._configPath = configPath \n      || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get configPath() {\n    return this._configPath;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {promise}\n   */\n  subscribe(emitter) {\n    this._readyPromise = this.waitConfig(emitter)\n      .then(container => {\n        this._container = container;\n      });\n      \n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  ready() {\n    return this._readyPromise;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {promise}\n   */\n  waitConfig(emitter) {\n    return new Promise((resolve, reject) => {\n      emitter.on(this.events.config.load, (container, configFile) => {\n        if (container.has(this.configPath)) {\n          return this.prepareConfig(\n            container.get(this.configPath, {}),\n            configFile\n          ).then(container => {\n            this.setActive(true);\n            \n            resolve(container);\n          }).catch(error => reject(error));\n        }\n        \n        resolve(null);\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    const configFileRealPath = path.resolve(configFile);\n    \n    return Promise.resolve(this.createContainer(\n      Object.assign({\n        __file: configFileRealPath,\n        __dir: path.dirname(configFileRealPath),\n      }, config)\n    ));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Container}\n   */\n  createContainer(config) {\n    return new Container(config);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get MAIN_CONFIG_KEY() {\n    return '$';\n  }\n}\n\nmodule.exports = ConfigBasedComponent;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst Container = require('../container');\nconst AbstractComponent = require('./abstract-component');\n\n/**\n * Abstract configuration aware component\n */\nclass ConfigBasedComponent extends AbstractComponent {\n  /**\n   * @param {string} configPath\n   */\n  constructor(configPath = null) {\n    super();\n    \n    this._container = null;\n    this._readyPromise = Promise.resolve();\n    this._configPath = configPath \n      || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get configPath() {\n    return this._configPath;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  subscribe(emitter) {\n    this._readyPromise = this.waitConfig(emitter)\n      .then(container => {\n        this._container = container;\n      });\n      \n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  ready() {\n    return this._readyPromise;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return new Promise((resolve, reject) => {\n      emitter.on(this.events.config.load, (container, configFile) => {\n        if (container.has(this.configPath)) {\n          return this.prepareConfig(\n            container.get(this.configPath, {}),\n            configFile\n          ).then(container => {\n            this.setActive(true);\n            \n            resolve(container);\n          }).catch(error => reject(error));\n        }\n        \n        resolve(null);\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    const configFileRealPath = path.resolve(configFile);\n    \n    return Promise.resolve(this.createContainer(\n      Object.assign({\n        __file: configFileRealPath,\n        __dir: path.dirname(configFileRealPath),\n      }, config)\n    ));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Container}\n   */\n  createContainer(config) {\n    return new Container(config);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get MAIN_CONFIG_KEY() {\n    return '$';\n  }\n}\n\nmodule.exports = ConfigBasedComponent;\n",
     "static": true,
     "longname": "src/component/config-based-component.js",
     "access": null,
@@ -3249,7 +3249,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3267,7 +3267,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3334,14 +3334,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3362,7 +3362,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3380,7 +3380,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3510,7 +3510,7 @@
     "__docId__": 125,
     "kind": "file",
     "name": "src/component/coverage/abstract-driver.js",
-    "content": "'use strict';\n\n/**\n * Abstract coverage storage driver\n */\nclass AbstractDriver {\n  /**\n   * @param {string} name\n   *\n   * @returns {promise}\n   */\n  read(name) {\n    return this._read(name)\n      .then(content => {\n        if (!content) {\n          return Promise.resolve(null);\n        }\n        \n        return Promise.resolve(JSON.parse(content));\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {*} coverage\n   *\n   * @returns {promise}\n   */\n  write(name, coverage) {\n    return this._write(name, JSON.stringify(coverage));\n  }\n\n  /**\n   * @param {string} name\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _read(name) {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._read(name) not implemented!`\n    ));\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._write(name, content) not implemented!`\n    ));\n  }\n}\n\nmodule.exports = AbstractDriver;\n",
+    "content": "'use strict';\n\n/**\n * Abstract coverage storage driver\n */\nclass AbstractDriver {\n  /**\n   * @param {string} name\n   *\n   * @returns {Promise}\n   */\n  read(name) {\n    return this._read(name)\n      .then(content => {\n        if (!content) {\n          return Promise.resolve(null);\n        }\n        \n        return Promise.resolve(JSON.parse(content));\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {*} coverage\n   *\n   * @returns {Promise}\n   */\n  write(name, coverage) {\n    return this._write(name, JSON.stringify(coverage));\n  }\n\n  /**\n   * @param {string} name\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _read(name) {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._read(name) not implemented!`\n    ));\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    return Promise.reject(new Error(\n      `${ this.constructor.name }._write(name, content) not implemented!`\n    ));\n  }\n}\n\nmodule.exports = AbstractDriver;\n",
     "static": true,
     "longname": "src/component/coverage/abstract-driver.js",
     "access": null,
@@ -3547,7 +3547,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3565,7 +3565,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3586,7 +3586,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3614,7 +3614,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3635,7 +3635,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3653,7 +3653,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3674,7 +3674,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -3702,7 +3702,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -3891,7 +3891,7 @@
     "__docId__": 137,
     "kind": "file",
     "name": "src/component/coverage/s3-driver.js",
-    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst S3 = require('aws-sdk/clients/s3');\nconst path = require('path');\n\n/**\n * AWS S3 coverage storage driver\n */\nclass S3Driver extends AbstractDriver {\n  /**\n   * @param {string} path\n   * @param {*} options\n   * @param {boolean} includeNodeVersion\n   */\n  constructor(path, options, includeNodeVersion = true) {\n    super();\n    \n    this._path = path;\n    this._options = options;\n    this._client = new S3(this.options);\n    this._includeNodeVersion = includeNodeVersion;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get includeNodeVersion() {\n    return this._includeNodeVersion;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n  \n  /**\n   * @returns {S3}\n   */\n  get client() {    \n    return this._client;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get options() {\n    return this._options;\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _read(name) {\n    const { Bucket, Key } = this._s3Payload(name);\n    \n    return this.client\n      .getObject({ Bucket, Key, })\n      .promise()\n      .then(data => Promise.resolve(data.Body.toString()))\n      .catch(error => {\n        if (this._isMissingObject(error)) {\n          return Promise.resolve(null);\n        }\n        \n        Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    const Body = content;\n    const { Bucket, Key } = this._s3Payload(name);\n    \n    return this.client\n      .upload({ Bucket, Key, Body, })\n      .promise()\n      .then(data => Promise.resolve());\n  }\n  \n  /**\n   * @param {*} error\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _isMissingObject(error) {\n    return [ 'NoSuchKey', 'NotFound' ].indexOf(error.code) !== -1;\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _s3Payload(name) {\n    const matches = this.path.match(\n      /^(?:s3:\\/\\/|\\/)?([^\\/]+)(?:\\/(.*))?$/i\n    );\n    \n    if (matches.length === 2) {\n      matches.push('');\n    }\n    \n    const [ , Bucket, keyPrefix ] = matches;\n    \n    const Key = path.join(\n      keyPrefix || '',\n      this.includeNodeVersion ? process.version : '',\n      name\n    ).replace(/\\\\+/g, '/'); // ensure path delimiter set to slash\n    \n    return { Bucket, Key };\n  }\n}\n\nmodule.exports = S3Driver;\n",
+    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst S3 = require('aws-sdk/clients/s3');\nconst path = require('path');\n\n/**\n * AWS S3 coverage storage driver\n */\nclass S3Driver extends AbstractDriver {\n  /**\n   * @param {string} path\n   * @param {*} options\n   * @param {boolean} includeNodeVersion\n   */\n  constructor(path, options, includeNodeVersion = true) {\n    super();\n    \n    this._path = path;\n    this._options = options;\n    this._client = new S3(this.options);\n    this._includeNodeVersion = includeNodeVersion;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get includeNodeVersion() {\n    return this._includeNodeVersion;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n  \n  /**\n   * @returns {S3}\n   */\n  get client() {    \n    return this._client;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get options() {\n    return this._options;\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _read(name) {\n    const { Bucket, Key } = this._s3Payload(name);\n    \n    return this.client\n      .getObject({ Bucket, Key, })\n      .promise()\n      .then(data => Promise.resolve(data.Body.toString()))\n      .catch(error => {\n        if (this._isMissingObject(error)) {\n          return Promise.resolve(null);\n        }\n        \n        Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    const Body = content;\n    const { Bucket, Key } = this._s3Payload(name);\n    \n    return this.client\n      .upload({ Bucket, Key, Body, })\n      .promise()\n      .then(data => Promise.resolve());\n  }\n  \n  /**\n   * @param {*} error\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _isMissingObject(error) {\n    return [ 'NoSuchKey', 'NotFound' ].indexOf(error.code) !== -1;\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _s3Payload(name) {\n    const matches = this.path.match(\n      /^(?:s3:\\/\\/|\\/)?([^\\/]+)(?:\\/(.*))?$/i\n    );\n    \n    if (matches.length === 2) {\n      matches.push('');\n    }\n    \n    const [ , Bucket, keyPrefix ] = matches;\n    \n    const Key = path.join(\n      keyPrefix || '',\n      this.includeNodeVersion ? process.version : '',\n      name\n    ).replace(/\\\\+/g, '/'); // ensure path delimiter set to slash\n    \n    return { Bucket, Key };\n  }\n}\n\nmodule.exports = S3Driver;\n",
     "static": true,
     "longname": "src/component/coverage/s3-driver.js",
     "access": null,
@@ -4274,7 +4274,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -4292,7 +4292,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -4313,7 +4313,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -4341,7 +4341,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -4429,7 +4429,7 @@
     "__docId__": 155,
     "kind": "file",
     "name": "src/component/coverage/volatile-driver.js",
-    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst os = require('os');\nconst fs = require('fs');\nconst pify = require('pify');\n\n/**\n * Volatile coverage storage driver\n */\nclass VolatileDriver extends AbstractDriver {\n  /**\n   * @param {string} name\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _read(name) {\n    const file = this._storageFile(name);\n    \n    return fse.pathExists(file)\n      .then(exists => {\n        if (!exists) {\n          return Promise.resolve(null);\n        }\n        \n        return pify(fs.readFile)(file);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    return fse.outputFile(this._storageFile(name), content);\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  _storageFile(name) {\n    return path.join(os.tmpDir(), '__jst_coverage_volatile__', name);\n  }\n}\n\nmodule.exports = VolatileDriver;\n",
+    "content": "'use strict';\n\nconst AbstractDriver = require('./abstract-driver');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst os = require('os');\nconst fs = require('fs');\nconst pify = require('pify');\n\n/**\n * Volatile coverage storage driver\n */\nclass VolatileDriver extends AbstractDriver {\n  /**\n   * @param {string} name\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _read(name) {\n    const file = this._storageFile(name);\n    \n    return fse.pathExists(file)\n      .then(exists => {\n        if (!exists) {\n          return Promise.resolve(null);\n        }\n        \n        return pify(fs.readFile)(file);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   * @param {string} content\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _write(name, content) {\n    return fse.outputFile(this._storageFile(name), content);\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  _storageFile(name) {\n    return path.join(os.tmpDir(), '__jst_coverage_volatile__', name);\n  }\n}\n\nmodule.exports = VolatileDriver;\n",
     "static": true,
     "longname": "src/component/coverage/volatile-driver.js",
     "access": null,
@@ -4625,7 +4625,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -4643,7 +4643,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -4664,7 +4664,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -4692,7 +4692,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -4741,7 +4741,7 @@
     "__docId__": 166,
     "kind": "file",
     "name": "src/component/coverage-component.js",
-    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst istanbul = require('istanbul');\nconst testEvents = require('./test/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst md5Hex = require('md5-hex');\nconst path = require('path');\nconst fs = require('fs');\nconst pify = require('pify');\nconst requireHacker = require('require-hacker');\nconst storageFactory = require('./coverage/factory');\n\n/**\n * Coverage component\n */\nclass CoverageComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._storage = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'coverage';\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  get _comparatorStorage() {\n    if (this._storage) {\n      return this._storage;\n    }\n    \n    const driver = this.container.get('compare.storage.driver', 'volatile');\n    const options = this.container.get('compare.storage.options', []);\n    \n    this._storage = storageFactory[driver](...options);\n    \n    return this._storage;\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   *\n   * @returns {promise}\n   * \n   * @private\n   */\n  _doCompare(collector) {\n    const allowedDelta = Math.abs(parseFloat(\n      this.container.get('compare.negative-delta', 100)\n    ));\n    \n    if (!allowedDelta || allowedDelta >= 100) {\n      return Promise.resolve();\n    }\n    \n    const storage = this._comparatorStorage;\n    \n    if (storage.constructor.name === 'VolatileDriver') {\n      this.logger.debug(\n        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`\n      );\n    }\n    \n    return storage.read(CoverageComponent.COVERAGE_FILE)\n      .then(coverage => {\n        const newCoverage = collector.getFinalCoverage();\n        \n        if (!coverage) {\n          this.logger.debug('No saved coverage info, saving the new one...');\n          \n          return storage.write(\n            CoverageComponent.COVERAGE_FILE, \n            newCoverage\n          );\n        }\n        \n        const delta = this._calculateDelta(coverage, newCoverage);\n        \n        if (delta > allowedDelta) {          \n          return Promise.reject(new Error(\n            `Coverage delta decreased ${ delta.toFixed(2) } > ${ allowedDelta.toFixed(2) }`\n          ));\n        }\n        \n        this.logger.info(\n          this.logger.emoji.bicycle,\n          `Coverage delta checked ${ delta.toFixed(2) } >= ${ allowedDelta.toFixed(2) }`\n        );\n        \n        return storage.write(\n          CoverageComponent.COVERAGE_FILE, \n          newCoverage\n        );\n      });\n  }\n  \n  /**\n   * @param {*} coverage\n   * @param {*} newCoverage\n   *\n   * @returns {number}\n   *\n   * @private\n   */\n  _calculateDelta(coverage, newCoverage) {\n    const summary = this._summarizeCoverage(coverage);\n    const newSummary = this._summarizeCoverage(newCoverage);\n    \n    return CoverageComponent.COVERAGE_KEYS\n      .reduce((accumulator, key) => {\n        return accumulator + \n          parseFloat(summary[key]) - \n          parseFloat((newSummary[key] || 0));\n      }, 0) / CoverageComponent.COVERAGE_KEYS.length;\n  }\n  \n  /**\n   * @param {*} coverage\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _summarizeCoverage(coverage) {\n    const summary = {};\n    \n    const summaries = Object.keys(coverage)\n      .map(file => {\n        return istanbul.utils\n          .summarizeFileCoverage(coverage[file]);\n      });\n    \n    const summaryObj = istanbul.utils\n      .mergeSummaryObjects\n      .apply(null, summaries);\n    \n    Object.keys(summaryObj)\n      .map(key => {\n        summary[key] = summaryObj[key].pct;\n      });\n      \n    return summary;\n  }\n  \n  /**\n   * @param {*} assetsToInstrument\n   * @param {*} dispatchedAssets\n   * @param {EmitModule} module\n   *\n   * @returns {promise}\n   * \n   * @private\n   */\n  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module) {\n    if (!assetsToInstrument[module.name]) {\n      return Promise.resolve();\n    }\n    \n    const coverageVariable = this._coverageVariable(module);\n    \n    return Promise.all(\n      assetsToInstrument[module.name]\n        .filter(asset => {\n          return (dispatchedAssets[module.name] || []).indexOf(asset) == -1;\n        })\n        .map(asset => {\n          const moduleRoot = module.container.get('root');\n          \n          return pify(fs.readFile)(asset)\n            .then(content => {\n              const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n\n              instrumenter.instrumentSync(\n                content.toString(), \n                asset\n              );\n              \n              global[coverageVariable] = global[coverageVariable] || {};\n              global[coverageVariable][asset] = instrumenter.lastFileCoverage();\n\n              return Promise.resolve();  \n            });\n        })\n    );\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const collector = new istanbul.Collector();\n      const reporter = new istanbul.Reporter();\n      const reporters = this.container.get('reporters', {});\n      const coverageVariables = [];\n      const assetsToInstrument = {};\n      const dispatchedAssets = {};\n      \n      Object.keys(reporters).map(reporterName => {\n        const report = istanbul.Report.create(\n          reporterName, \n          reporters[reporterName] || {}\n        );\n        \n        reporter.reports[reporterName] = report;\n      });\n      \n      emitter.onBlocking(testEvents.asset.test.skip, payload => {\n        const { module, fileAbs } = payload;\n        \n        assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];\n        assetsToInstrument[module.name].push(fileAbs);\n        \n        return Promise.resolve();\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {\n        return this._persistModuleBlankCoverage(\n          assetsToInstrument,\n          dispatchedAssets,\n          module\n        ).then(() => {\n          \n          // cleanup memory\n          delete assetsToInstrument[module.name];\n          delete dispatchedAssets[module.name];\n        });\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {\n        return new Promise(resolve => {\n          const coverageVariable = this._coverageVariable(module);\n          const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n          \n          coverageVariables.push(coverageVariable);\n          \n          if (mocha) {\n            mocha.loadFiles = (fn => {\n              const moduleRoot = module.container.get('root');\n              const coverableAssets = assetsToInstrument[module.name] || [];\n              \n              mocha.files.map(file => {\n                file = path.resolve(file);\n                mocha.suite.emit('pre-require', global, file, mocha);\n                \n                // @todo add other extensions to be covered\n                try {\n                  const requireHook = requireHacker.hook('js', depPath => {\n                    if (coverableAssets.indexOf(depPath) !== -1\n                      && this._match(path.relative(moduleRoot, depPath))) {\n                      \n                      dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];\n                      dispatchedAssets[module.name].push(depPath);\n                      \n                      return instrumenter.instrumentSync(\n                        fs.readFileSync(depPath).toString(), \n                        depPath\n                      );\n                    }\n                  });\n                  \n                  mocha.suite.emit('require', require(file), file, mocha);            \n                  requireHook.unmount();\n                  \n                  mocha.suite.emit('post-require', global, file, mocha);\n                } catch (error) {\n                  \n                  // ensure we unmounted the js listener\n                  try { requireHook.unmount() } catch (error) { };\n                }\n              });\n              \n              fn && fn();\n            });\n          }\n          \n          resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {\n        coverageVariables.map(coverageVariable => {\n          collector.add(global[coverageVariable] || {});\n        });\n        \n        return this._dumpCoverageStats(collector, reporter)\n          .then(() => this._doCompare(collector));\n      });\n      \n      emitter.on(testEvents.assets.test.end, () => resolve());\n    });\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   * @param {istanbul.Reporter} reporter\n   *\n   * @returns {promise}\n   * \n   * @private\n   */\n  _dumpCoverageStats(collector, reporter) {\n    return new Promise(resolve => {\n      reporter.write(collector, false, () => {\n        \n        // @todo find a smarter way to indent the output (buffer it?)\n        process.stdout.write('\\n\\n');\n        \n        resolve();\n      });\n    });\n  }\n  \n  /**\n   * @param {EmitModule} module\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _coverageVariable(module) {\n    const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');\n    \n    return `__jst_coverage__${ cleanModuleName }__`;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(file) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, file)).length > 0\n      && ignore.filter(i => this._test(i, file)).length <= 0;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  static get COVERAGE_KEYS() {\n    return [ 'lines', 'statements', 'functions', 'branches' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get COVERAGE_FILE() {\n    return 'coverage.json';\n  }\n}\n\nmodule.exports = CoverageComponent;",
+    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst istanbul = require('istanbul');\nconst testEvents = require('./test/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst md5Hex = require('md5-hex');\nconst path = require('path');\nconst fs = require('fs');\nconst pify = require('pify');\nconst requireHacker = require('require-hacker');\nconst storageFactory = require('./coverage/factory');\n\n/**\n * Coverage component\n */\nclass CoverageComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._storage = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'coverage';\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  get _comparatorStorage() {\n    if (this._storage) {\n      return this._storage;\n    }\n    \n    const driver = this.container.get('compare.storage.driver', 'volatile');\n    const options = this.container.get('compare.storage.options', []);\n    \n    this._storage = storageFactory[driver](...options);\n    \n    return this._storage;\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _doCompare(collector) {\n    const allowedDelta = Math.abs(parseFloat(\n      this.container.get('compare.negative-delta', 100)\n    ));\n    \n    if (!allowedDelta || allowedDelta >= 100) {\n      return Promise.resolve();\n    }\n    \n    const storage = this._comparatorStorage;\n    \n    if (storage.constructor.name === 'VolatileDriver') {\n      this.logger.debug(\n        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`\n      );\n    }\n    \n    return storage.read(CoverageComponent.COVERAGE_FILE)\n      .then(coverage => {\n        const newCoverage = collector.getFinalCoverage();\n        \n        if (!coverage) {\n          this.logger.debug('No saved coverage info, saving the new one...');\n          \n          return storage.write(\n            CoverageComponent.COVERAGE_FILE, \n            newCoverage\n          );\n        }\n        \n        const delta = this._calculateDelta(coverage, newCoverage);\n        \n        if (delta > allowedDelta) {          \n          return Promise.reject(new Error(\n            `Coverage delta decreased ${ delta.toFixed(2) } > ${ allowedDelta.toFixed(2) }`\n          ));\n        }\n        \n        this.logger.info(\n          this.logger.emoji.bicycle,\n          `Coverage delta checked ${ delta.toFixed(2) } >= ${ allowedDelta.toFixed(2) }`\n        );\n        \n        return storage.write(\n          CoverageComponent.COVERAGE_FILE, \n          newCoverage\n        );\n      });\n  }\n  \n  /**\n   * @param {*} coverage\n   * @param {*} newCoverage\n   *\n   * @returns {number}\n   *\n   * @private\n   */\n  _calculateDelta(coverage, newCoverage) {\n    const summary = this._summarizeCoverage(coverage);\n    const newSummary = this._summarizeCoverage(newCoverage);\n    \n    return CoverageComponent.COVERAGE_KEYS\n      .reduce((accumulator, key) => {\n        return accumulator + \n          parseFloat(summary[key]) - \n          parseFloat((newSummary[key] || 0));\n      }, 0) / CoverageComponent.COVERAGE_KEYS.length;\n  }\n  \n  /**\n   * @param {*} coverage\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _summarizeCoverage(coverage) {\n    const summary = {};\n    \n    const summaries = Object.keys(coverage)\n      .map(file => {\n        return istanbul.utils\n          .summarizeFileCoverage(coverage[file]);\n      });\n    \n    const summaryObj = istanbul.utils\n      .mergeSummaryObjects\n      .apply(null, summaries);\n    \n    Object.keys(summaryObj)\n      .map(key => {\n        summary[key] = summaryObj[key].pct;\n      });\n      \n    return summary;\n  }\n  \n  /**\n   * @param {*} assetsToInstrument\n   * @param {*} dispatchedAssets\n   * @param {EmitModule} module\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module) {\n    if (!assetsToInstrument[module.name]) {\n      return Promise.resolve();\n    }\n    \n    const coverageVariable = this._coverageVariable(module);\n    \n    return Promise.all(\n      assetsToInstrument[module.name]\n        .filter(asset => {\n          return (dispatchedAssets[module.name] || []).indexOf(asset) == -1;\n        })\n        .map(asset => {\n          const moduleRoot = module.container.get('root');\n          \n          return pify(fs.readFile)(asset)\n            .then(content => {\n              const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n\n              instrumenter.instrumentSync(\n                content.toString(), \n                asset\n              );\n              \n              global[coverageVariable] = global[coverageVariable] || {};\n              global[coverageVariable][asset] = instrumenter.lastFileCoverage();\n\n              return Promise.resolve();  \n            });\n        })\n    );\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const collector = new istanbul.Collector();\n      const reporter = new istanbul.Reporter();\n      const reporters = this.container.get('reporters', {});\n      const coverageVariables = [];\n      const assetsToInstrument = {};\n      const dispatchedAssets = {};\n      \n      Object.keys(reporters).map(reporterName => {\n        const report = istanbul.Report.create(\n          reporterName, \n          reporters[reporterName] || {}\n        );\n        \n        reporter.reports[reporterName] = report;\n      });\n      \n      emitter.onBlocking(testEvents.asset.test.skip, payload => {\n        const { module, fileAbs } = payload;\n        \n        assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];\n        assetsToInstrument[module.name].push(fileAbs);\n        \n        return Promise.resolve();\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {\n        return this._persistModuleBlankCoverage(\n          assetsToInstrument,\n          dispatchedAssets,\n          module\n        ).then(() => {\n          \n          // cleanup memory\n          delete assetsToInstrument[module.name];\n          delete dispatchedAssets[module.name];\n        });\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {\n        return new Promise(resolve => {\n          const coverageVariable = this._coverageVariable(module);\n          const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n          \n          coverageVariables.push(coverageVariable);\n          \n          if (mocha) {\n            mocha.loadFiles = (fn => {\n              const moduleRoot = module.container.get('root');\n              const coverableAssets = assetsToInstrument[module.name] || [];\n              \n              mocha.files.map(file => {\n                file = path.resolve(file);\n                mocha.suite.emit('pre-require', global, file, mocha);\n                \n                // @todo add other extensions to be covered\n                try {\n                  const requireHook = requireHacker.hook('js', depPath => {\n                    if (coverableAssets.indexOf(depPath) !== -1\n                      && this._match(path.relative(moduleRoot, depPath))) {\n                      \n                      dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];\n                      dispatchedAssets[module.name].push(depPath);\n                      \n                      return instrumenter.instrumentSync(\n                        fs.readFileSync(depPath).toString(), \n                        depPath\n                      );\n                    }\n                  });\n                  \n                  mocha.suite.emit('require', require(file), file, mocha);            \n                  requireHook.unmount();\n                  \n                  mocha.suite.emit('post-require', global, file, mocha);\n                } catch (error) {\n                  \n                  // ensure we unmounted the js listener\n                  try { requireHook.unmount() } catch (error) { };\n                }\n              });\n              \n              fn && fn();\n            });\n          }\n          \n          resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {\n        coverageVariables.map(coverageVariable => {\n          collector.add(global[coverageVariable] || {});\n        });\n        \n        return this._dumpCoverageStats(collector, reporter)\n          .then(() => this._doCompare(collector));\n      });\n      \n      emitter.on(testEvents.assets.test.end, () => resolve());\n    });\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   * @param {istanbul.Reporter} reporter\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dumpCoverageStats(collector, reporter) {\n    return new Promise(resolve => {\n      reporter.write(collector, false, () => {\n        \n        // @todo find a smarter way to indent the output (buffer it?)\n        process.stdout.write('\\n\\n');\n        \n        resolve();\n      });\n    });\n  }\n  \n  /**\n   * @param {EmitModule} module\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _coverageVariable(module) {\n    const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');\n    \n    return `__jst_coverage__${ cleanModuleName }__`;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(file) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, file)).length > 0\n      && ignore.filter(i => this._test(i, file)).length <= 0;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  static get COVERAGE_KEYS() {\n    return [ 'lines', 'statements', 'functions', 'branches' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get COVERAGE_FILE() {\n    return 'coverage.json';\n  }\n}\n\nmodule.exports = CoverageComponent;",
     "static": true,
     "longname": "src/component/coverage-component.js",
     "access": null,
@@ -5176,7 +5176,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -5194,7 +5194,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -5303,7 +5303,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -5341,7 +5341,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -5362,7 +5362,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -5380,7 +5380,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -5401,7 +5401,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -5429,7 +5429,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -5680,7 +5680,7 @@
     "__docId__": 195,
     "kind": "file",
     "name": "src/component/emit/emit-module.js",
-    "content": "'use strict';\n\nconst print = require('print');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst pify = require('pify');\nconst readdir = require('readdir-enhanced');\nconst events = require('./events');\n\n/**\n * Class representing emited test module\n */\nclass EmitModule {\n  /**\n   * @param {string} name\n   * @param {Container} container\n   * @param {Emitter} emitter\n   * @param {*} logger\n   */\n  constructor(name, container, emitter, logger) {\n    this._emitter = emitter;\n    this._logger = logger;\n    this._name = name;\n    this._container = container;\n    this._stats = {\n      total: 0,\n      emitted: 0,\n      ignored: 0,\n      dirs: 0,\n    };\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  check() {\n    const moduleRoot = this.container.get('root', null);\n    \n    if (!moduleRoot) {\n      return Promise.reject(new Error(`Missing root for module ${ this.name }`));\n    }\n    \n    return fse.pathExists(moduleRoot)\n      .then(hasModuleRoot => {\n        if (!hasModuleRoot) {\n          return Promise.reject(new Error(\n            `Module ${ this.name } root ${ moduleRoot } does not exists or wrong permissions set`\n          ));\n        }\n        \n        return Promise.resolve();\n      })\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  process(container) {\n    return new Promise((resolve, reject) => {\n      const moduleRoot = this.container.get('root');\n      \n      const options = {\n        deep: this._deepFilter(container).bind(this),\n        filter: this._filter(container).bind(this),\n      };\n      \n      let ended = false;\n      let processing = 0;\n      \n      readdir.stream(moduleRoot, options)\n        .on('data', filePath => {\n          processing++;\n          \n          const payload = {\n            file: filePath,\n            fileAbs: path.join(moduleRoot, filePath),\n            module: this,\n          };\n          \n          this.logger.debug('Emit asset', JSON.stringify(\n            Object.assign({}, payload, { module: this.name })\n          ));\n          \n          this.emitter\n            .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)\n            .emitBlocking(events.module.emit.asset, payload)\n            .then(() => {\n              processing--;\n              \n              if (processing <= 0 && ended) {\n                resolve();\n              }\n            })\n            .catch(error => {\n              this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);\n              reject(error);\n            });\n        })\n        .on('end', () => {\n          ended = true;\n          \n          if (processing <= 0) {\n            resolve();\n          }\n        })\n        .on('error', error => reject(error));\n    });\n  }\n  \n  /**\n   * @param {Container} container\n   *\n   * @returns {function}\n   *\n   * @private\n   */\n  _filter(container) {\n    const pattern = container.get('pattern', []);\n    const ignore = container.get('ignore', []);\n    \n    return stats => {\n      const result = stats.isFile() \n        && pattern.filter(p => this._test(p, stats.path)).length > 0\n        && ignore.filter(i => this._test(i, stats.path)).length <= 0;\n      \n      if (stats.isFile()) {\n        if (result) {\n          this.stats.emitted++;\n        } else {\n          this.stats.ignored++;\n        }\n        \n        this.stats.total++;\n      } else if(stats.isDirectory()) {\n        this.stats.dirs++;\n      }\n        \n      return result;  \n    };\n  }\n  \n  /**\n   * @param {Container} container\n   *\n   * @returns {function}\n   *\n   * @private\n   */\n  _deepFilter(container) {\n    const ignore = container.get('ignore', []);\n    \n    return stats => {\n      return ignore.filter(i => this._test(i, stats.path)).length <= 0;\n    };\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @returns {Emitter}\n   */\n  get emitter() {\n    return this._emitter;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return this._name;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ')\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @todo make it configurable for specific use cases\n   */\n  static get MAX_PARALLEL_ASSETS_EMIT() {\n    return 1;\n  }\n}\n\nmodule.exports = EmitModule;\n",
+    "content": "'use strict';\n\nconst print = require('print');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst pify = require('pify');\nconst readdir = require('readdir-enhanced');\nconst events = require('./events');\n\n/**\n * Class representing emited test module\n */\nclass EmitModule {\n  /**\n   * @param {string} name\n   * @param {Container} container\n   * @param {Emitter} emitter\n   * @param {*} logger\n   */\n  constructor(name, container, emitter, logger) {\n    this._emitter = emitter;\n    this._logger = logger;\n    this._name = name;\n    this._container = container;\n    this._stats = {\n      total: 0,\n      emitted: 0,\n      ignored: 0,\n      dirs: 0,\n    };\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  check() {\n    const moduleRoot = this.container.get('root', null);\n    \n    if (!moduleRoot) {\n      return Promise.reject(new Error(`Missing root for module ${ this.name }`));\n    }\n    \n    return fse.pathExists(moduleRoot)\n      .then(hasModuleRoot => {\n        if (!hasModuleRoot) {\n          return Promise.reject(new Error(\n            `Module ${ this.name } root ${ moduleRoot } does not exists or wrong permissions set`\n          ));\n        }\n        \n        return Promise.resolve();\n      })\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  process(container) {\n    return new Promise((resolve, reject) => {\n      const moduleRoot = this.container.get('root');\n      \n      const options = {\n        deep: this._deepFilter(container).bind(this),\n        filter: this._filter(container).bind(this),\n      };\n      \n      let ended = false;\n      let processing = 0;\n      \n      readdir.stream(moduleRoot, options)\n        .on('data', filePath => {\n          processing++;\n          \n          const payload = {\n            file: filePath,\n            fileAbs: path.join(moduleRoot, filePath),\n            module: this,\n          };\n          \n          this.logger.debug('Emit asset', JSON.stringify(\n            Object.assign({}, payload, { module: this.name })\n          ));\n          \n          this.emitter\n            .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)\n            .emitBlocking(events.module.emit.asset, payload)\n            .then(() => {\n              processing--;\n              \n              if (processing <= 0 && ended) {\n                resolve();\n              }\n            })\n            .catch(error => {\n              this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);\n              reject(error);\n            });\n        })\n        .on('end', () => {\n          ended = true;\n          \n          if (processing <= 0) {\n            resolve();\n          }\n        })\n        .on('error', error => reject(error));\n    });\n  }\n  \n  /**\n   * @param {Container} container\n   *\n   * @returns {function}\n   *\n   * @private\n   */\n  _filter(container) {\n    const pattern = container.get('pattern', []);\n    const ignore = container.get('ignore', []);\n    \n    return stats => {\n      const result = stats.isFile() \n        && pattern.filter(p => this._test(p, stats.path)).length > 0\n        && ignore.filter(i => this._test(i, stats.path)).length <= 0;\n      \n      if (stats.isFile()) {\n        if (result) {\n          this.stats.emitted++;\n        } else {\n          this.stats.ignored++;\n        }\n        \n        this.stats.total++;\n      } else if(stats.isDirectory()) {\n        this.stats.dirs++;\n      }\n        \n      return result;  \n    };\n  }\n  \n  /**\n   * @param {Container} container\n   *\n   * @returns {function}\n   *\n   * @private\n   */\n  _deepFilter(container) {\n    const ignore = container.get('ignore', []);\n    \n    return stats => {\n      return ignore.filter(i => this._test(i, stats.path)).length <= 0;\n    };\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @returns {Emitter}\n   */\n  get emitter() {\n    return this._emitter;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return this._name;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ')\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @todo make it configurable for specific use cases\n   */\n  static get MAX_PARALLEL_ASSETS_EMIT() {\n    return 1;\n  }\n}\n\nmodule.exports = EmitModule;\n",
     "static": true,
     "longname": "src/component/emit/emit-module.js",
     "access": null,
@@ -6043,14 +6043,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -6071,7 +6071,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -6085,7 +6085,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -6509,7 +6509,7 @@
     "__docId__": 224,
     "kind": "file",
     "name": "src/component/emit-component.js",
-    "content": "'use strict';\n\nconst print = require('print');\nconst path = require('path');\nconst ConfigBasedComponent = require('./config-based-component');\nconst EmitModule = require('./emit/emit-module');\nconst events = require('./emit/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst SequentialPromise = require('./helper/sequential-promise');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n        \n        if (moduleKeys.length <= 0) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   *\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      this.logger.info(\n        this.logger.emoji.diamond, \n        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      this.logger.info(\n        this.logger.emoji.magic, \n        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
+    "content": "'use strict';\n\nconst print = require('print');\nconst path = require('path');\nconst ConfigBasedComponent = require('./config-based-component');\nconst EmitModule = require('./emit/emit-module');\nconst events = require('./emit/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst SequentialPromise = require('./helper/sequential-promise');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n        \n        if (moduleKeys.length <= 0) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   *\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      this.logger.info(\n        this.logger.emoji.diamond, \n        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      this.logger.info(\n        this.logger.emoji.magic, \n        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
     "static": true,
     "longname": "src/component/emit-component.js",
     "access": null,
@@ -6811,7 +6811,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -6829,7 +6829,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -6850,7 +6850,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -6868,7 +6868,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -7336,7 +7336,7 @@
     "__docId__": 251,
     "kind": "file",
     "name": "src/component/helper/container-transformer.js",
-    "content": "'use strict';\n\nconst Transformer = require('./transformer');\nconst patternTransformer = require('./pattern-transformer');\n\n/**\n * Apply transformations to an configuration container\n */\nclass ContainerTransformer {\n  /**\n   * @param {Container} container\n   */\n  constructor(container) {\n    this._container = container;\n    this._transformers = [];\n  }\n  \n  /**\n   * @param {string} path\n   *\n   * @returns {ContainerTransformer}\n   */\n  addPattern(path) {\n    return this.add({ path, transformer: patternTransformer });\n  }\n  \n  /**\n   * @param {string} path\n   * @param {function} transformer\n   *\n   * @returns {Transformer}\n   */\n  create(path, transformer) {\n    return new Transformer(path, transformer);\n  }\n  \n  /**\n   * @param {Transformer} transformerInstance\n   *\n   * @returns {ContainerTransformer}\n   */\n  add(transformerInstance) {\n    if (!(transformerInstance instanceof Transformer)) {\n      const { path, transformer } = transformerInstance;\n      \n      transformerInstance = this.create(path, transformer);\n    }\n\n    this._transformers.push(transformerInstance);\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Transformer[]}\n   */\n  get transformers() {\n    return this._transformers;\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  transform() {\n    return Promise.all(this.transformers.map(transformer => {\n      if (this.container.has(transformer.path)) {\n        return transformer.transform(this.container.get(transformer.path))\n          .then(value => {\n            this.container.set(transformer.path, value);\n            \n            return Promise.resolve();\n          });\n      }\n      \n      return Promise.resolve();\n    })).then(() => Promise.resolve(this.container));\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n}\n\nmodule.exports = ContainerTransformer;\n",
+    "content": "'use strict';\n\nconst Transformer = require('./transformer');\nconst patternTransformer = require('./pattern-transformer');\n\n/**\n * Apply transformations to an configuration container\n */\nclass ContainerTransformer {\n  /**\n   * @param {Container} container\n   */\n  constructor(container) {\n    this._container = container;\n    this._transformers = [];\n  }\n  \n  /**\n   * @param {string} path\n   *\n   * @returns {ContainerTransformer}\n   */\n  addPattern(path) {\n    return this.add({ path, transformer: patternTransformer });\n  }\n  \n  /**\n   * @param {string} path\n   * @param {function} transformer\n   *\n   * @returns {Transformer}\n   */\n  create(path, transformer) {\n    return new Transformer(path, transformer);\n  }\n  \n  /**\n   * @param {Transformer} transformerInstance\n   *\n   * @returns {ContainerTransformer}\n   */\n  add(transformerInstance) {\n    if (!(transformerInstance instanceof Transformer)) {\n      const { path, transformer } = transformerInstance;\n      \n      transformerInstance = this.create(path, transformer);\n    }\n\n    this._transformers.push(transformerInstance);\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Transformer[]}\n   */\n  get transformers() {\n    return this._transformers;\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  transform() {\n    return Promise.all(this.transformers.map(transformer => {\n      if (this.container.has(transformer.path)) {\n        return transformer.transform(this.container.get(transformer.path))\n          .then(value => {\n            this.container.set(transformer.path, value);\n            \n            return Promise.resolve();\n          });\n      }\n      \n      return Promise.resolve();\n    })).then(() => Promise.resolve(this.container));\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n}\n\nmodule.exports = ContainerTransformer;\n",
     "static": true,
     "longname": "src/component/helper/container-transformer.js",
     "access": null,
@@ -7655,14 +7655,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -7835,7 +7835,7 @@
     "__docId__": 268,
     "kind": "file",
     "name": "src/component/helper/sequential-promise.js",
-    "content": "'use strict';\n\n/**\n * Implements Promise.all() but sequential execution\n */\nclass SequentialPromise {\n  /**\n   * @param {function[]} promises\n   * @param {*} value\n   * \n   * @returns {promise}\n   */\n  static all(promises, value = null) {\n    const promisesCloned = [].concat(promises);\n    \n    return this._sequential(promisesCloned, value);\n  }\n  \n  /**\n   * @param {function[]} promises\n   * @param {*} result\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  static _sequential(promises, result) {\n    if (promises.length <= 0) {\n      return Promise.resolve(result);\n    }\n    \n    return promises.shift()(result)\n      .then(result => {\n        return new Promise((resolve, reject) => {\n          process.nextTick(() => {\n            this._sequential(promises, result)\n              .then(result => resolve(result))\n              .catch(error => reject(error));\n          });\n        });\n      });\n  }\n}\n\nmodule.exports = SequentialPromise;\n",
+    "content": "'use strict';\n\n/**\n * Implements Promise.all() but sequential execution\n */\nclass SequentialPromise {\n  /**\n   * @param {function[]} promises\n   * @param {*} value\n   * \n   * @returns {Promise}\n   */\n  static all(promises, value = null) {\n    const promisesCloned = [].concat(promises);\n    \n    return this._sequential(promisesCloned, value);\n  }\n  \n  /**\n   * @param {function[]} promises\n   * @param {*} result\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  static _sequential(promises, result) {\n    if (promises.length <= 0) {\n      return Promise.resolve(result);\n    }\n    \n    return promises.shift()(result)\n      .then(result => {\n        return new Promise((resolve, reject) => {\n          process.nextTick(() => {\n            this._sequential(promises, result)\n              .then(result => resolve(result))\n              .catch(error => reject(error));\n          });\n        });\n      });\n  }\n}\n\nmodule.exports = SequentialPromise;\n",
     "static": true,
     "longname": "src/component/helper/sequential-promise.js",
     "access": null,
@@ -7872,7 +7872,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -7900,7 +7900,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -7921,7 +7921,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -7949,7 +7949,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -7959,7 +7959,7 @@
     "__docId__": 272,
     "kind": "file",
     "name": "src/component/helper/spinner.js",
-    "content": "'use strict';\n\nconst ora = require('ora');\n\n/**\n * Terminal spinner implementation\n */\nclass Spinner {\n  /**\n   * @param {string} msg\n   */\n  constructor(msg) {\n    this._main = msg;\n    this._then = msg;\n    this._catch = msg;\n    this._spinner = null;\n  }\n  \n  /**\n   * @param {string} text\n   *\n   * @returns {ora}\n   */\n  prepend(text) {\n    this.spinner.text = `${ text } ${ this._main }`;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} text\n   *\n   * @returns {ora}\n   */\n  append(text) {\n    this.spinner.text = `${ this._main } ${ text }`;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {ora}\n   */\n  get spinner() {\n    if (!this._spinner) {\n      this._spinner = ora(this._main);\n    }\n    \n    return this._spinner;\n  }\n  \n  /**\n   * @param {promise} promiseToWrap\n   *\n   * @returns {promise}\n   */\n  promise(promiseToWrap) {\n    this.spinner.start();\n    \n    return promiseToWrap\n      .then(result => {\n        this.spinner.succeed(this.thenText);\n        \n        return Promise.resolve(result);\n      })\n      .catch(error => {\n        this.spinner.fail(this.catchText);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} msg\n   *\n   * @returns {Spinner}\n   */\n  then(msg) {\n    this._then = msg;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} msg\n   *\n   * @returns {Spinner}\n   */\n  catch(msg) {\n    this._catch = msg;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get catchText() {\n    return this._catch + '\\n';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get thenText() {\n    return this._then + '\\n';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get mainText() {\n    return this._main + '\\n';\n  }\n}\n\nmodule.exports = Spinner;\n",
+    "content": "'use strict';\n\nconst ora = require('ora');\n\n/**\n * Terminal spinner implementation\n */\nclass Spinner {\n  /**\n   * @param {string} msg\n   */\n  constructor(msg) {\n    this._main = msg;\n    this._then = msg;\n    this._catch = msg;\n    this._spinner = null;\n  }\n  \n  /**\n   * @param {string} text\n   *\n   * @returns {ora}\n   */\n  prepend(text) {\n    this.spinner.text = `${ text } ${ this._main }`;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} text\n   *\n   * @returns {ora}\n   */\n  append(text) {\n    this.spinner.text = `${ this._main } ${ text }`;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {ora}\n   */\n  get spinner() {\n    if (!this._spinner) {\n      this._spinner = ora(this._main);\n    }\n    \n    return this._spinner;\n  }\n  \n  /**\n   * @param {Promise} promiseToWrap\n   *\n   * @returns {Promise}\n   */\n  promise(promiseToWrap) {\n    this.spinner.start();\n    \n    return promiseToWrap\n      .then(result => {\n        this.spinner.succeed(this.thenText);\n        \n        return Promise.resolve(result);\n      })\n      .catch(error => {\n        this.spinner.fail(this.catchText);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} msg\n   *\n   * @returns {Spinner}\n   */\n  then(msg) {\n    this._then = msg;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} msg\n   *\n   * @returns {Spinner}\n   */\n  catch(msg) {\n    this._catch = msg;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get catchText() {\n    return this._catch + '\\n';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get thenText() {\n    return this._then + '\\n';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get mainText() {\n    return this._main + '\\n';\n  }\n}\n\nmodule.exports = Spinner;\n",
     "static": true,
     "longname": "src/component/helper/spinner.js",
     "access": null,
@@ -8272,14 +8272,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
       {
         "nullable": null,
         "types": [
-          "promise"
+          "Promise"
         ],
         "spread": false,
         "optional": false,
@@ -8290,7 +8290,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -8520,7 +8520,7 @@
     "__docId__": 292,
     "kind": "file",
     "name": "src/component/helper/transformer.js",
-    "content": "'use strict';\n\n/**\n * Apply transformer over a value\n */\nclass Transformer {\n  /**\n   * @param {string} path\n   * @param {function} transformer\n   */\n  constructor(path, transformer) {\n    this._path = path;\n    this._transformer = transformer;\n  }\n  \n  /**\n   * @param {*} value\n   *\n   * @returns {promise}\n   */\n  transform(value) {\n    return this.transformer(value);\n  }\n  \n  /**\n   * @returns {function}\n   */\n  get transformer() {\n    return this._transformer;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n}\n\nmodule.exports = Transformer;\n",
+    "content": "'use strict';\n\n/**\n * Apply transformer over a value\n */\nclass Transformer {\n  /**\n   * @param {string} path\n   * @param {function} transformer\n   */\n  constructor(path, transformer) {\n    this._path = path;\n    this._transformer = transformer;\n  }\n  \n  /**\n   * @param {*} value\n   *\n   * @returns {Promise}\n   */\n  transform(value) {\n    return this.transformer(value);\n  }\n  \n  /**\n   * @returns {function}\n   */\n  get transformer() {\n    return this._transformer;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get path() {\n    return this._path;\n  }\n}\n\nmodule.exports = Transformer;\n",
     "static": true,
     "longname": "src/component/helper/transformer.js",
     "access": null,
@@ -8638,7 +8638,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -8656,7 +8656,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -8730,7 +8730,7 @@
     "__docId__": 300,
     "kind": "file",
     "name": "src/component/npm/cache.js",
-    "content": "'use strict';\n\nconst fse = require('fs-extra');\nconst path = require('path');\n\n/**\n * File system cache implementation\n */\nclass Cache {\n  /**\n   * @param {string} cacheDir\n   * @param {string} prefix\n   */\n  constructor(cacheDir, prefix) {\n    this._cacheDir = cacheDir;\n    this._prefix = prefix;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get prefix() {\n    return this._prefix;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get cacheDir() {\n    return this._cacheDir;\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {promise}\n   */\n  has(key) {\n    return fse.pathExists(this._cacheKey(key));\n  }\n  \n  /**\n   * @param {string} key\n   * @param {string} src\n   *\n   * @returns {promise}\n   */\n  save(key, src) {\n    return fse.copy(src, this._cacheKey(key));\n  }\n  \n  /**\n   * @param {string} key\n   * @param {string} dest\n   *\n   * @returns {promise}\n   */\n  restore(key, dest) {\n    return fse.copy(this._cacheKey(key), dest);\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {promise}\n   */\n  invalidate(key) {\n    return fse.remove(this._cacheKey(key));\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  flush() {\n    return fse.remove(this._base);\n  }\n  \n  /**\n   * @returns {string}\n   *\n   * @private\n   */\n  get _base() {\n    return path.join(this.cacheDir, this.prefix);\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _cacheKey(key) {\n    return path.join(this._base, key);\n  }\n}\n\nmodule.exports = Cache;\n",
+    "content": "'use strict';\n\nconst fse = require('fs-extra');\nconst path = require('path');\n\n/**\n * File system cache implementation\n */\nclass Cache {\n  /**\n   * @param {string} cacheDir\n   * @param {string} prefix\n   */\n  constructor(cacheDir, prefix) {\n    this._cacheDir = cacheDir;\n    this._prefix = prefix;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get prefix() {\n    return this._prefix;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get cacheDir() {\n    return this._cacheDir;\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {Promise}\n   */\n  has(key) {\n    return fse.pathExists(this._cacheKey(key));\n  }\n  \n  /**\n   * @param {string} key\n   * @param {string} src\n   *\n   * @returns {Promise}\n   */\n  save(key, src) {\n    return fse.copy(src, this._cacheKey(key));\n  }\n  \n  /**\n   * @param {string} key\n   * @param {string} dest\n   *\n   * @returns {Promise}\n   */\n  restore(key, dest) {\n    return fse.copy(this._cacheKey(key), dest);\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {Promise}\n   */\n  invalidate(key) {\n    return fse.remove(this._cacheKey(key));\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  flush() {\n    return fse.remove(this._base);\n  }\n  \n  /**\n   * @returns {string}\n   *\n   * @private\n   */\n  get _base() {\n    return path.join(this.cacheDir, this.prefix);\n  }\n  \n  /**\n   * @param {string} key\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _cacheKey(key) {\n    return path.join(this._base, key);\n  }\n}\n\nmodule.exports = Cache;\n",
     "static": true,
     "longname": "src/component/npm/cache.js",
     "access": null,
@@ -8964,7 +8964,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -8982,7 +8982,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9003,7 +9003,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9031,7 +9031,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9052,7 +9052,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9080,7 +9080,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9101,7 +9101,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9119,7 +9119,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9140,14 +9140,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9291,7 +9291,7 @@
     "__docId__": 319,
     "kind": "file",
     "name": "src/component/npm/npm-module.js",
-    "content": "'use strict';\n\nconst packageHash = require('package-hash');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst Spinner = require('../helper/spinner');\nconst spawn = require('child_process').spawn;\nconst md5Hex = require('md5-hex');\nconst SequentialPromise = require('../helper/sequential-promise');\n\n/**\n * Abstraction over an NPM module\n */\nclass NpmModule {\n  /**\n   * @param {string} rootDir\n   * @param {Cache} cache\n   * @param {*} logger\n   */\n  constructor(rootDir, cache, logger) {\n    this._rootDir = rootDir;\n    this._cache = cache;\n    this._logger = logger;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get rootDir() {\n    return this._rootDir;\n  }\n  \n  /**\n   * @param {Cache} cache\n   */\n  get cache() {\n    return this._cache;\n  }\n  \n  /**\n   * @param {*} deps\n   * @param {array} scripts\n   *\n   * @returns {promise}\n   */\n  install(deps = {}, scripts = []) {\n    let cacheKey;\n    const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);\n    const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);\n    \n    return fse.ensureDir(modulesDir)\n      .then(() => this._packageHash(packageFile, deps))\n      .then(hash => {\n        cacheKey = hash;\n        \n        return this.cache.has(hash);\n      })\n      .then(inCache => {\n        if (inCache) {\n          this.logger.debug(`Restore ${ this.rootDir } cache from #${ cacheKey }`);\n          \n          return this.cache.restore(cacheKey, modulesDir)\n            .then(() => this._runScripts(scripts));\n        }\n        \n        this.logger.debug(`Install dependencies in ${ this.rootDir }`);\n        \n        return this._install(packageFile, deps)\n          .then(() => this._runScripts(scripts))\n          .then(() => {\n            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);\n            \n            return this.cache.flush()\n              .then(() => this.cache.save(cacheKey, modulesDir));\n          });\n      });\n  }\n  \n  /**\n   * @param {array} scripts\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _runScripts(scripts) {\n    if (scripts.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return SequentialPromise.all(scripts.map(script => {\n      return () => this._runScript(script);\n    }));\n  }\n  \n  /**\n   * @param {string} script\n   * \n   * @returns {promise}\n   *\n   * @private\n   */\n  _runScript(script) {\n    return (new Spinner(\n      `Running ${ script } script in ${ this.rootDir }`\n    )).then(\n      `Script ${ script } execution succeed in ${ this.rootDir }`\n    ).catch(\n      `Script ${ script } execution failed in ${ this.rootDir }`\n    ).promise(new Promise((resolve, reject) => {\n      const options = {\n        cwd: this.rootDir, \n        stdio: 'ignore',\n      };\n\n      const npmInstall = spawn('npm', [ 'run', script ], options);\n      \n      npmInstall.on('close', code => {\n        if (code !== 0) {          \n          return reject(new Error(\n            `Failed to run script ${ script } in ${ this.rootDir }.\\n` +\n            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`\n          ));\n        }\n        \n        resolve();\n      });\n    }));\n  }\n  \n  /**\n   * @param {string} packageFile\n   * @param {*} additionalDeps\n   *\n   * @returns {promise}\n   *\n   * @private\n   */\n  _install(packageFile, additionalDeps) {\n    return fse.pathExists(packageFile)\n      .then(hasPackageFile => {\n        return hasPackageFile ? this._doInstall() : Promise.resolve();\n      })\n      .then(() => {\n        const depsVector = Object.keys(additionalDeps)\n          .map(depName => {\n            return `${ depName }@${ additionalDeps[depName] }`;\n          });\n    \n        return depsVector.length > 0 \n          ? this._doInstall(depsVector) \n          : Promise.resolve();\n      });\n  }\n  \n  /**\n   * @param {string} depsDebug\n   *\n   * @returns {string}\n   * \n   * @private\n   */\n  _trimDepsDebugInfo(depsDebug) {\n    if (depsDebug.length > 25) {\n      return depsDebug.substr(0, 25) + '...';\n    }\n    \n    return depsDebug;\n  }\n  \n  /**\n   * @param {array} deps\n   *\n   * @returns {promise}\n   *\n   * @private\n   */\n  _doInstall(deps = []) {\n    const depsDebug = this._trimDepsDebugInfo(deps.length > 0 ? deps.join(', ') : 'MAIN');\n    \n    return (new Spinner(\n      `Installing dependencies in ${ this.rootDir } (${ depsDebug })`\n    )).then(\n      `Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`\n    ).catch(\n      `Dependencies installation failed in ${ this.rootDir } (${ depsDebug })`\n    ).promise(new Promise((resolve, reject) => {\n      const options = {\n        cwd: this.rootDir, \n        stdio: 'ignore',\n      };\n      \n      // ignore running 'npm install' scripts\n      if (deps.length <= 0) {\n        deps = [ '--ignore-scripts' ];\n      }\n\n      const npmInstall = spawn('npm', [ 'install', '--no-shrinkwrap' ].concat(deps), options);\n      \n      npmInstall.on('close', code => {\n        if (code !== 0) {          \n          return reject(new Error(\n            `Failed to install dependencies in ${ this.rootDir }.\\n` +\n            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`\n          ));\n        }\n        \n        resolve();\n      });\n    }));\n  }\n  \n  /**\n   * @param {string} packageFile\n   * @param {*} deps\n   *\n   * @returns {promise}\n   *\n   * @private\n   */\n  _packageHash(packageFile, deps) {\n    return fse.pathExists(packageFile)\n      .then(hasPackageFile => {\n        const depsHash = this._depsHash(deps);\n        const packageDebug = hasPackageFile ? 'exists' : 'missing';\n        \n        this.logger.debug(\n          `File ${ NpmModule.PACKAGE_FILE } ${ packageDebug } in ${ this.rootDir }`\n        );\n        \n        if (!hasPackageFile) {\n          return Promise.resolve(`${ depsHash }-${ NpmModule.DEFAULT_HASH }`);\n        }\n        \n        return packageHash(packageFile)\n          .then(hash => {\n            return Promise.resolve(`${ depsHash }-${ hash }`);\n          });\n      });\n  }\n  \n  /**\n   * @param {*} deps\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _depsHash(deps) {\n    const normalizedDeps = {};\n    \n    Object.keys(deps).sort().map(key => {\n      normalizedDeps[key] = deps[key];\n    });\n    \n    return md5Hex(JSON.stringify(normalizedDeps));\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_HASH() {\n    return 'x'.repeat(32);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get NPM_DEBUG_FILE() {\n    return 'npm-debug.log';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get PACKAGE_FILE() {\n    return 'package.json';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get MODULES_DIR() {\n    return 'node_modules';\n  }\n}\n\nmodule.exports = NpmModule;",
+    "content": "'use strict';\n\nconst packageHash = require('package-hash');\nconst path = require('path');\nconst fse = require('fs-extra');\nconst Spinner = require('../helper/spinner');\nconst spawn = require('child_process').spawn;\nconst md5Hex = require('md5-hex');\nconst SequentialPromise = require('../helper/sequential-promise');\n\n/**\n * Abstraction over an NPM module\n */\nclass NpmModule {\n  /**\n   * @param {string} rootDir\n   * @param {Cache} cache\n   * @param {*} logger\n   */\n  constructor(rootDir, cache, logger) {\n    this._rootDir = rootDir;\n    this._cache = cache;\n    this._logger = logger;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get rootDir() {\n    return this._rootDir;\n  }\n  \n  /**\n   * @param {Cache} cache\n   */\n  get cache() {\n    return this._cache;\n  }\n  \n  /**\n   * @param {*} deps\n   * @param {array} scripts\n   *\n   * @returns {Promise}\n   */\n  install(deps = {}, scripts = []) {\n    let cacheKey;\n    const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);\n    const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);\n    \n    return fse.ensureDir(modulesDir)\n      .then(() => this._packageHash(packageFile, deps))\n      .then(hash => {\n        cacheKey = hash;\n        \n        return this.cache.has(hash);\n      })\n      .then(inCache => {\n        if (inCache) {\n          this.logger.debug(`Restore ${ this.rootDir } cache from #${ cacheKey }`);\n          \n          return this.cache.restore(cacheKey, modulesDir)\n            .then(() => this._runScripts(scripts));\n        }\n        \n        this.logger.debug(`Install dependencies in ${ this.rootDir }`);\n        \n        return this._install(packageFile, deps)\n          .then(() => this._runScripts(scripts))\n          .then(() => {\n            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);\n            \n            return this.cache.flush()\n              .then(() => this.cache.save(cacheKey, modulesDir));\n          });\n      });\n  }\n  \n  /**\n   * @param {array} scripts\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _runScripts(scripts) {\n    if (scripts.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return SequentialPromise.all(scripts.map(script => {\n      return () => this._runScript(script);\n    }));\n  }\n  \n  /**\n   * @param {string} script\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _runScript(script) {\n    return (new Spinner(\n      `Running ${ script } script in ${ this.rootDir }`\n    )).then(\n      `Script ${ script } execution succeed in ${ this.rootDir }`\n    ).catch(\n      `Script ${ script } execution failed in ${ this.rootDir }`\n    ).promise(new Promise((resolve, reject) => {\n      const options = {\n        cwd: this.rootDir, \n        stdio: 'ignore',\n      };\n\n      const npmInstall = spawn('npm', [ 'run', script ], options);\n      \n      npmInstall.on('close', code => {\n        if (code !== 0) {          \n          return reject(new Error(\n            `Failed to run script ${ script } in ${ this.rootDir }.\\n` +\n            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`\n          ));\n        }\n        \n        resolve();\n      });\n    }));\n  }\n  \n  /**\n   * @param {string} packageFile\n   * @param {*} additionalDeps\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _install(packageFile, additionalDeps) {\n    return fse.pathExists(packageFile)\n      .then(hasPackageFile => {\n        return hasPackageFile ? this._doInstall() : Promise.resolve();\n      })\n      .then(() => {\n        const depsVector = Object.keys(additionalDeps)\n          .map(depName => {\n            return `${ depName }@${ additionalDeps[depName] }`;\n          });\n    \n        return depsVector.length > 0 \n          ? this._doInstall(depsVector) \n          : Promise.resolve();\n      });\n  }\n  \n  /**\n   * @param {string} depsDebug\n   *\n   * @returns {string}\n   * \n   * @private\n   */\n  _trimDepsDebugInfo(depsDebug) {\n    if (depsDebug.length > 25) {\n      return depsDebug.substr(0, 25) + '...';\n    }\n    \n    return depsDebug;\n  }\n  \n  /**\n   * @param {array} deps\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _doInstall(deps = []) {\n    const depsDebug = this._trimDepsDebugInfo(deps.length > 0 ? deps.join(', ') : 'MAIN');\n    \n    return (new Spinner(\n      `Installing dependencies in ${ this.rootDir } (${ depsDebug })`\n    )).then(\n      `Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`\n    ).catch(\n      `Dependencies installation failed in ${ this.rootDir } (${ depsDebug })`\n    ).promise(new Promise((resolve, reject) => {\n      const options = {\n        cwd: this.rootDir, \n        stdio: 'ignore',\n      };\n      \n      // ignore running 'npm install' scripts\n      if (deps.length <= 0) {\n        deps = [ '--ignore-scripts' ];\n      }\n\n      const npmInstall = spawn('npm', [ 'install', '--no-shrinkwrap' ].concat(deps), options);\n      \n      npmInstall.on('close', code => {\n        if (code !== 0) {          \n          return reject(new Error(\n            `Failed to install dependencies in ${ this.rootDir }.\\n` +\n            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`\n          ));\n        }\n        \n        resolve();\n      });\n    }));\n  }\n  \n  /**\n   * @param {string} packageFile\n   * @param {*} deps\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _packageHash(packageFile, deps) {\n    return fse.pathExists(packageFile)\n      .then(hasPackageFile => {\n        const depsHash = this._depsHash(deps);\n        const packageDebug = hasPackageFile ? 'exists' : 'missing';\n        \n        this.logger.debug(\n          `File ${ NpmModule.PACKAGE_FILE } ${ packageDebug } in ${ this.rootDir }`\n        );\n        \n        if (!hasPackageFile) {\n          return Promise.resolve(`${ depsHash }-${ NpmModule.DEFAULT_HASH }`);\n        }\n        \n        return packageHash(packageFile)\n          .then(hash => {\n            return Promise.resolve(`${ depsHash }-${ hash }`);\n          });\n      });\n  }\n  \n  /**\n   * @param {*} deps\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _depsHash(deps) {\n    const normalizedDeps = {};\n    \n    Object.keys(deps).sort().map(key => {\n      normalizedDeps[key] = deps[key];\n    });\n    \n    return md5Hex(JSON.stringify(normalizedDeps));\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_HASH() {\n    return 'x'.repeat(32);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get NPM_DEBUG_FILE() {\n    return 'npm-debug.log';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get PACKAGE_FILE() {\n    return 'package.json';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get MODULES_DIR() {\n    return 'node_modules';\n  }\n}\n\nmodule.exports = NpmModule;",
     "static": true,
     "longname": "src/component/npm/npm-module.js",
     "access": null,
@@ -9718,7 +9718,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9746,7 +9746,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9767,7 +9767,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9785,7 +9785,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9806,7 +9806,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9824,7 +9824,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9845,7 +9845,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9873,7 +9873,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9933,7 +9933,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -9951,7 +9951,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -9972,7 +9972,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -10000,7 +10000,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -10177,7 +10177,7 @@
     "__docId__": 347,
     "kind": "file",
     "name": "src/component/npm-component.js",
-    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./npm/events');\nconst os = require('os');\nconst pify = require('pify');\nconst fse = require('fs-extra');\nconst NpmModule = require('./npm/npm-module');\nconst Cache = require('./npm/cache');\nconst path = require('path');\n\n/**\n * NPM component\n */\nclass NpmComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._cacheDir = null;\n    this._cache = {};\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'npm';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  cacheDir(emitter) {\n    if (this._cacheDir) {\n      return Promise.resolve(this._cacheDir);\n    }\n    \n    this._cacheDir = path.join(os.tmpdir(), '_jst_npm_cache_');\n    \n    return fse.ensureDir(this._cacheDir)\n      .then(() => {\n        this.logger.debug('Npm cache', this._cacheDir);\n        \n        return emitter.emitBlocking(events.npm.cache.init, this._cacheDir)\n          .then(() => Promise.resolve(this._cacheDir));\n      });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @param {string} name\n   * \n   * @returns {promise}\n   */\n  cache(emitter, name) {\n    if (this._cache.hasOwnProperty(name)) {\n      return Promise.resolve(this._cache[name]);\n    }\n    \n    return this.cacheDir(emitter)\n      .then(cacheDir => {\n        this._cache[name] = new Cache(cacheDir, name);\n        \n        return Promise.resolve(this._cache[name]);\n      });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    return new Promise(resolve => {\n      emitter.onBlocking(emitEvents.module.process.start, emitModule => {\n        return this.cache(emitter, emitModule.name)\n          .then(cache => {\n            const npmModule = new NpmModule(\n              emitModule.container.get('root'),\n              cache,\n              this.logger\n            );\n            \n            this.logger.info(\n              this.logger.emoji.hat, \n              `Ensure dependencies in place for ${ emitModule.name }`\n            );\n            emitter.emit(events.npm.dependencies.install, npmModule, emitModule);\n            \n            return npmModule.install(\n              Object.assign(\n                {}, \n                this.container.get('dependencies', {}), \n                emitModule.container.get('dependencies', {})\n              ),\n              [].concat(\n                this.container.get('scripts', []),\n                emitModule.container.get('scripts', [])\n              )\n            );\n          });\n      });\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        process.nextTick(() => resolve());\n      });\n    });\n  }\n}\n\nmodule.exports = NpmComponent;\n",
+    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./npm/events');\nconst os = require('os');\nconst pify = require('pify');\nconst fse = require('fs-extra');\nconst NpmModule = require('./npm/npm-module');\nconst Cache = require('./npm/cache');\nconst path = require('path');\n\n/**\n * NPM component\n */\nclass NpmComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._cacheDir = null;\n    this._cache = {};\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'npm';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  cacheDir(emitter) {\n    if (this._cacheDir) {\n      return Promise.resolve(this._cacheDir);\n    }\n    \n    this._cacheDir = path.join(os.tmpdir(), '_jst_npm_cache_');\n    \n    return fse.ensureDir(this._cacheDir)\n      .then(() => {\n        this.logger.debug('Npm cache', this._cacheDir);\n        \n        return emitter.emitBlocking(events.npm.cache.init, this._cacheDir)\n          .then(() => Promise.resolve(this._cacheDir));\n      });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @param {string} name\n   * \n   * @returns {Promise}\n   */\n  cache(emitter, name) {\n    if (this._cache.hasOwnProperty(name)) {\n      return Promise.resolve(this._cache[name]);\n    }\n    \n    return this.cacheDir(emitter)\n      .then(cacheDir => {\n        this._cache[name] = new Cache(cacheDir, name);\n        \n        return Promise.resolve(this._cache[name]);\n      });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise(resolve => {\n      emitter.onBlocking(emitEvents.module.process.start, emitModule => {\n        return this.cache(emitter, emitModule.name)\n          .then(cache => {\n            const npmModule = new NpmModule(\n              emitModule.container.get('root'),\n              cache,\n              this.logger\n            );\n            \n            this.logger.info(\n              this.logger.emoji.hat, \n              `Ensure dependencies in place for ${ emitModule.name }`\n            );\n            emitter.emit(events.npm.dependencies.install, npmModule, emitModule);\n            \n            return npmModule.install(\n              Object.assign(\n                {}, \n                this.container.get('dependencies', {}), \n                emitModule.container.get('dependencies', {})\n              ),\n              [].concat(\n                this.container.get('scripts', []),\n                emitModule.container.get('scripts', [])\n              )\n            );\n          });\n      });\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        process.nextTick(() => resolve());\n      });\n    });\n  }\n}\n\nmodule.exports = NpmComponent;\n",
     "static": true,
     "longname": "src/component/npm-component.js",
     "access": null,
@@ -10554,7 +10554,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -10572,7 +10572,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -10616,7 +10616,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -10644,7 +10644,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -10665,7 +10665,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -10683,7 +10683,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -10992,7 +10992,7 @@
     "__docId__": 378,
     "kind": "file",
     "name": "src/component/preprocess-component.js",
-    "content": "'use strict';\n\nconst AbstractComponent = require('./abstract-component');\nconst ConfigBasedComponent = require('./config-based-component');\nconst factory = require('./preprocess/factory');\nconst Container = require('../container');\n\n/**\n * Preprocess component\n */\nclass PreprocessComponent extends AbstractComponent {\n  /**\n   * @param {string} configPath\n   */\n  constructor(configPath = null) {\n    super();\n    \n    this._configPath = configPath \n      || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'preprocess';\n  }\n  /**\n   * @returns {string}\n   */\n  get configPath() {\n    return this._configPath;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {promise}\n   */\n  subscribe(emitter) {\n    emitter.onBlocking(this.events.config.preprocess, config => {\n      const container = new Container(config);\n      \n      if (container.has(this.configPath)) {\n        this.setActive(true);\n        \n        const preprocessObj = container.get(this.configPath, {});\n        \n        Object.keys(preprocessObj).map(configPath => {\n          let preprocessors = preprocessObj[configPath];\n          preprocessors = Array.isArray(preprocessors) \n            ? preprocessors : [ preprocessors.toString() ];\n            \n          this.logger.debug(\n            `Preprocess ${ configPath } using - ${preprocessors.join(', ')  }`\n          );\n          \n          const value = preprocessors.map(p => factory[p]()).reduce(\n            (value, preprocessor) => preprocessor.transform(value),\n            container.get(configPath)\n          );\n          \n          container.set(configPath, value);\n        });\n      }\n      \n      return Promise.resolve();\n    }, PreprocessComponent.DEFAULT_PRIORITY);\n    \n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = PreprocessComponent;\n",
+    "content": "'use strict';\n\nconst AbstractComponent = require('./abstract-component');\nconst ConfigBasedComponent = require('./config-based-component');\nconst factory = require('./preprocess/factory');\nconst Container = require('../container');\n\n/**\n * Preprocess component\n */\nclass PreprocessComponent extends AbstractComponent {\n  /**\n   * @param {string} configPath\n   */\n  constructor(configPath = null) {\n    super();\n    \n    this._configPath = configPath \n      || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'preprocess';\n  }\n  /**\n   * @returns {string}\n   */\n  get configPath() {\n    return this._configPath;\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  subscribe(emitter) {\n    emitter.onBlocking(this.events.config.preprocess, config => {\n      const container = new Container(config);\n      \n      if (container.has(this.configPath)) {\n        this.setActive(true);\n        \n        const preprocessObj = container.get(this.configPath, {});\n        \n        Object.keys(preprocessObj).map(configPath => {\n          let preprocessors = preprocessObj[configPath];\n          preprocessors = Array.isArray(preprocessors) \n            ? preprocessors : [ preprocessors.toString() ];\n            \n          this.logger.debug(\n            `Preprocess ${ configPath } using - ${preprocessors.join(', ')  }`\n          );\n          \n          const value = preprocessors.map(p => factory[p]()).reduce(\n            (value, preprocessor) => preprocessor.transform(value),\n            container.get(configPath)\n          );\n          \n          container.set(configPath, value);\n        });\n      }\n      \n      return Promise.resolve();\n    }, PreprocessComponent.DEFAULT_PRIORITY);\n    \n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = PreprocessComponent;\n",
     "static": true,
     "longname": "src/component/preprocess-component.js",
     "access": null,
@@ -11248,7 +11248,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -11266,7 +11266,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -11371,7 +11371,7 @@
     "__docId__": 393,
     "kind": "file",
     "name": "src/component/test-component.js",
-    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./test/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst Mocha = require('mocha');\n\n/**\n * Test component\n */\nclass TestComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'test';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const hasToRunTests = {};\n      const mochas = {};\n      \n      emitter.onBlocking(emitEvents.module.emit.asset, payload => {\n        if (!this._match(payload)) {\n          return emitter.emitBlocking(events.asset.test.skip, payload);\n        }\n        \n        const { fileAbs, module } = payload;\n\n        mochas[module.name] = mochas[module.name] \n          || new Mocha(this.container.get('mocha.options', {}));\n\n        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])\n          .then(() => {\n            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);\n            \n            mochas[module.name].addFile(fileAbs);\n            \n            return Promise.resolve();\n          });\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.onBlocking(emitEvents.module.process.end, module => {\n        const mocha = mochas[module.name] || null;\n        \n        return emitter.emitBlocking(events.asset.tests.start, mocha, module)\n          .then(() => {\n            return mocha ? new Promise((resolve, reject) => {\n              mocha.run(failures => {                \n                if (failures > 0) {\n                  return reject(new Error(\n                    `Tests failed in module ${ module.name } with ${ failures } failures`\n                  ));\n                }\n                \n                resolve();\n              });\n            }) : Promise.resolve();\n          })\n          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        this.waitProcessing()\n          .then(() => emitter.emitBlocking(events.assets.test.end, this))\n          .then(() => {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            resolve();\n          })\n          .catch(error => reject(error));\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ')\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = TestComponent;\n",
+    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./test/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst Mocha = require('mocha');\n\n/**\n * Test component\n */\nclass TestComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'test';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const hasToRunTests = {};\n      const mochas = {};\n      \n      emitter.onBlocking(emitEvents.module.emit.asset, payload => {\n        if (!this._match(payload)) {\n          return emitter.emitBlocking(events.asset.test.skip, payload);\n        }\n        \n        const { fileAbs, module } = payload;\n\n        mochas[module.name] = mochas[module.name] \n          || new Mocha(this.container.get('mocha.options', {}));\n\n        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])\n          .then(() => {\n            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);\n            \n            mochas[module.name].addFile(fileAbs);\n            \n            return Promise.resolve();\n          });\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.onBlocking(emitEvents.module.process.end, module => {\n        const mocha = mochas[module.name] || null;\n        \n        return emitter.emitBlocking(events.asset.tests.start, mocha, module)\n          .then(() => {\n            return mocha ? new Promise((resolve, reject) => {\n              mocha.run(failures => {                \n                if (failures > 0) {\n                  return reject(new Error(\n                    `Tests failed in module ${ module.name } with ${ failures } failures`\n                  ));\n                }\n                \n                resolve();\n              });\n            }) : Promise.resolve();\n          })\n          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        this.waitProcessing()\n          .then(() => emitter.emitBlocking(events.assets.test.end, this))\n          .then(() => {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            resolve();\n          })\n          .catch(error => reject(error));\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ')\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = TestComponent;\n",
     "static": true,
     "longname": "src/component/test-component.js",
     "access": null,
@@ -11647,7 +11647,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -11665,7 +11665,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -11905,7 +11905,7 @@
     "__docId__": 411,
     "kind": "file",
     "name": "src/config/abstract-config.js",
-    "content": "'use strict';\n\nconst fs = require('fs');\nconst pify = require('pify');\nconst fse = require('fs-extra');\n\n/**\n * Abstract configuration manager\n */\nclass AbstractConfig {\n  /**\n   * @param {string} file\n   */\n  constructor(file = null) {\n    this._file = file;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get file() {\n    return this._file;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {promise}\n   */\n  load(file = null) {\n    const configFile = file || this.file;\n    \n    return fse.pathExists(configFile)\n      .then(exists => {\n        if (!exists) {\n          return Promise.reject(new Error(\n            `Missing config file ${ configFile }`\n          ));\n        }\n        \n        return pify(fs.readFile)(configFile)\n          .then(rawConfig => this.decode(rawConfig));\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} file\n   *\n   * @returns {promise}\n   */\n  dump(config, file = null) {\n    return this.encode(config)\n      .then(rawConfig => pify(fs.writeFile)(file || this.file, rawConfig));\n  }\n  \n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {promise}\n   */\n  decode(rawConfig) {\n    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {promise}\n   */\n  encode(config) {\n    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));\n  }\n}\n\nmodule.exports = AbstractConfig;\n",
+    "content": "'use strict';\n\nconst fs = require('fs');\nconst pify = require('pify');\nconst fse = require('fs-extra');\n\n/**\n * Abstract configuration manager\n */\nclass AbstractConfig {\n  /**\n   * @param {string} file\n   */\n  constructor(file = null) {\n    this._file = file;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get file() {\n    return this._file;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  load(file = null) {\n    const configFile = file || this.file;\n    \n    return fse.pathExists(configFile)\n      .then(exists => {\n        if (!exists) {\n          return Promise.reject(new Error(\n            `Missing config file ${ configFile }`\n          ));\n        }\n        \n        return pify(fs.readFile)(configFile)\n          .then(rawConfig => this.decode(rawConfig));\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  dump(config, file = null) {\n    return this.encode(config)\n      .then(rawConfig => pify(fs.writeFile)(file || this.file, rawConfig));\n  }\n  \n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));\n  }\n}\n\nmodule.exports = AbstractConfig;\n",
     "static": true,
     "longname": "src/config/abstract-config.js",
     "access": null,
@@ -12100,7 +12100,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12118,7 +12118,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -12139,7 +12139,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12167,7 +12167,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -12188,7 +12188,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12206,7 +12206,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -12227,7 +12227,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12245,7 +12245,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -12434,7 +12434,7 @@
     "__docId__": 429,
     "kind": "file",
     "name": "src/config/yaml-config.js",
-    "content": "'use strict';\n\nconst AbstractConfig = require('./abstract-config');\nconst yaml = require('yaml-js');\n\n/**\n * YAML configuration manager\n */\nclass YamlConfig extends AbstractConfig {\n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {promise}\n   */\n  decode(rawConfig) {\n    try {\n      return Promise.resolve(yaml.load(rawConfig));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {promise}\n   */\n  encode(config) {\n    try {\n      return Promise.resolve(yaml.dump(config));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n}\n\nmodule.exports = YamlConfig;\n",
+    "content": "'use strict';\n\nconst AbstractConfig = require('./abstract-config');\nconst yaml = require('yaml-js');\n\n/**\n * YAML configuration manager\n */\nclass YamlConfig extends AbstractConfig {\n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    try {\n      return Promise.resolve(yaml.load(rawConfig));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    try {\n      return Promise.resolve(yaml.dump(config));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n}\n\nmodule.exports = YamlConfig;\n",
     "static": true,
     "longname": "src/config/yaml-config.js",
     "access": null,
@@ -12526,7 +12526,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12544,7 +12544,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -12565,7 +12565,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -12583,7 +12583,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -13006,7 +13006,7 @@
     "__docId__": 449,
     "kind": "file",
     "name": "src/emitter.js",
-    "content": "'use strict';\n\nconst EventEmitter = require('events');\n\n/**\n * Extended Emitter implementation\n */\nclass Emitter extends EventEmitter {\n  constructor(...args) {\n    super(...args);\n    \n    this._blockingListeners = {};\n    this._processing = {};\n    this._parallel = {};\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} count\n   *\n   * @returns {Emitter}\n   */\n  maxParallel(event, count) {\n    this._parallel[event] = count;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   *\n   * @returns {promise}\n   */\n  emitBlocking(event, ...args) {\n    return this._waitAllowParallel(event)\n      .then(() => this._dispatch(event, args))\n      .then(() => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event)\n          .emit(event, ...args);\n        \n        return Promise.resolve();\n      })\n      .catch(error => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'on');\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'once');\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _removeParallel(event) {\n    if (!this._processing.hasOwnProperty(event)) {\n      return this;\n    }\n    \n    this._processing[event]--;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _addParallel(event) {\n    this._processing[event] = this._processing[event] || 0;\n    this._processing[event]++;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _allowParallel(event) {\n    return !this._parallel.hasOwnProperty(event)\n      || !this._processing.hasOwnProperty(event)\n      || this._processing[event] < this._parallel[event];\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} interval\n   *\n   * @returns {promise}\n   *\n   * @private\n   */\n  _waitAllowParallel(event, interval = 100) {\n    if (this._allowParallel(event)) {\n      this._addParallel(event);\n      return Promise.resolve();\n    }\n    \n    return new Promise(resolve => {\n      const id = setInterval(() => {\n        if (this._allowParallel(event)) {\n          this._addParallel(event);\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   * @param {string} method\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _pushListener(event, listener, priority, method) {\n    this._blockingListeners[event] = this._blockingListeners[event] || [];\n    this._blockingListeners[event].push({ listener, priority, method });\n    this._blockingListeners[event].sort((a, b) => {\n      return b.priority - a.priority;\n    });\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   * \n   * @private\n   */\n  _cleanupListeners(event) {\n    if (!this._blockingListeners.hasOwnProperty(event) ) {\n      return this;\n    }\n    \n    this._blockingListeners[event] = this._blockingListeners[event].filter(l => !!l);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   * \n   * @returns {promise}\n   * \n   * @private\n   */\n  _dispatch(event, args, _i = 0) {    \n    if (!this._blockingListeners.hasOwnProperty(event) \n      || this._blockingListeners[event].length < _i + 1) {\n      return Promise.resolve();\n    }\n    \n    const dispatcher = this._blockingListeners[event][_i];\n    const result = dispatcher.listener(...args);\n    \n    if (dispatcher.method === 'once') {\n      delete this._blockingListeners[event][_i];\n    }\n    \n    if (!result || typeof result !== 'object' || !(result instanceof Promise)) {\n      return this._dispatch(event, args, _i + 1);\n    }\n    \n    return result.then(() => this._dispatch(event, args, _i + 1));\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 0;\n  }\n}\n\nmodule.exports = Emitter;\n",
+    "content": "'use strict';\n\nconst EventEmitter = require('events');\n\n/**\n * Extended Emitter implementation\n */\nclass Emitter extends EventEmitter {\n  constructor(...args) {\n    super(...args);\n    \n    this._blockingListeners = {};\n    this._processing = {};\n    this._parallel = {};\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} count\n   *\n   * @returns {Emitter}\n   */\n  maxParallel(event, count) {\n    this._parallel[event] = count;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   *\n   * @returns {Promise}\n   */\n  emitBlocking(event, ...args) {\n    return this._waitAllowParallel(event)\n      .then(() => this._dispatch(event, args))\n      .then(() => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event)\n          .emit(event, ...args);\n        \n        return Promise.resolve();\n      })\n      .catch(error => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'on');\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'once');\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _removeParallel(event) {\n    if (!this._processing.hasOwnProperty(event)) {\n      return this;\n    }\n    \n    this._processing[event]--;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _addParallel(event) {\n    this._processing[event] = this._processing[event] || 0;\n    this._processing[event]++;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _allowParallel(event) {\n    return !this._parallel.hasOwnProperty(event)\n      || !this._processing.hasOwnProperty(event)\n      || this._processing[event] < this._parallel[event];\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitAllowParallel(event, interval = 100) {\n    if (this._allowParallel(event)) {\n      this._addParallel(event);\n      return Promise.resolve();\n    }\n    \n    return new Promise(resolve => {\n      const id = setInterval(() => {\n        if (this._allowParallel(event)) {\n          this._addParallel(event);\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   * @param {string} method\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _pushListener(event, listener, priority, method) {\n    this._blockingListeners[event] = this._blockingListeners[event] || [];\n    this._blockingListeners[event].push({ listener, priority, method });\n    this._blockingListeners[event].sort((a, b) => {\n      return b.priority - a.priority;\n    });\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   * \n   * @private\n   */\n  _cleanupListeners(event) {\n    if (!this._blockingListeners.hasOwnProperty(event) ) {\n      return this;\n    }\n    \n    this._blockingListeners[event] = this._blockingListeners[event].filter(l => !!l);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   * \n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dispatch(event, args, _i = 0) {    \n    if (!this._blockingListeners.hasOwnProperty(event) \n      || this._blockingListeners[event].length < _i + 1) {\n      return Promise.resolve();\n    }\n    \n    const dispatcher = this._blockingListeners[event][_i];\n    const result = dispatcher.listener(...args);\n    \n    if (dispatcher.method === 'once') {\n      delete this._blockingListeners[event][_i];\n    }\n    \n    if (!result || typeof result !== 'object' || !(result instanceof Promise)) {\n      return this._dispatch(event, args, _i + 1);\n    }\n    \n    return result.then(() => this._dispatch(event, args, _i + 1));\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 0;\n  }\n}\n\nmodule.exports = Emitter;\n",
     "static": true,
     "longname": "src/emitter.js",
     "access": null,
@@ -13219,7 +13219,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -13247,7 +13247,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -13503,7 +13503,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -13531,7 +13531,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -13660,7 +13660,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -13688,7 +13688,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -13883,7 +13883,7 @@
     "__docId__": 475,
     "kind": "file",
     "name": "src/jst.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst configFactory = require('./config/factory');\nconst Container = require('./container');\nconst AbstractComponent = require('./component/abstract-component');\nconst logger = require('./logger');\n\n/**\n * Jst entry point\n */\nclass Jst extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    \n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -',\n        components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components\n      .filter(component => component.isActive);\n      \n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.run, component);\n      \n      return component.run(this);\n    }));\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent[]|AbstractComponent} components\n   *\n   * @returns {promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   *\n   * @returns {promise}\n   */\n  configure(configFile = Jst.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        \n        this.emit(events.config.load, this.container, configFile);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0];\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.jst.yml';\n  }\n}\n\nmodule.exports = Jst;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst configFactory = require('./config/factory');\nconst Container = require('./container');\nconst AbstractComponent = require('./component/abstract-component');\nconst logger = require('./logger');\n\n/**\n * Jst entry point\n */\nclass Jst extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    \n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -',\n        components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components\n      .filter(component => component.isActive);\n      \n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.run, component);\n      \n      return component.run(this);\n    }));\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent[]|AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = Jst.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        \n        this.emit(events.config.load, this.container, configFile);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0];\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.jst.yml';\n  }\n}\n\nmodule.exports = Jst;\n",
     "static": true,
     "longname": "src/jst.js",
     "access": null,
@@ -14209,14 +14209,14 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -14276,7 +14276,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -14295,7 +14295,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""
@@ -14316,7 +14316,7 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{promise}"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -14334,7 +14334,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "promise"
+        "Promise"
       ],
       "spread": false,
       "description": ""

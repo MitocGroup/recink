@@ -14,7 +14,7 @@ class VolatileDriver extends AbstractDriver {
   /**
    * @param {string} name
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
@@ -35,7 +35,7 @@ class VolatileDriver extends AbstractDriver {
    * @param {string} name
    * @param {string} content
    * 
-   * @returns {promise}
+   * @returns {Promise}
    *
    * @private
    */
