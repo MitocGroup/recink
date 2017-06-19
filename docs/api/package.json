@@ -36,7 +36,8 @@
     "url": "https://github.com/MitocGroup/run-jst.git"
   },
   "scripts": {
-    "docs": "npm run docs:api",
+    "docs": "npm run docs:diagram && npm run docs:api",
+    "docs:diagram": "node node_modules/.bin/dependo -f cjs src/ > docs/module-diagram.html",
     "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc",
     "postinstall": "node node-bin/ensure-peer-dependencies.js"
   },
@@ -68,6 +69,7 @@
     "parse-github-repo-url": "^1.4.0"
   },
   "devDependencies": {
+    "dependo": "^0.1.6",
     "esdoc": "^0.5.2",
     "esdoc-node": "^1.0.2"
   },

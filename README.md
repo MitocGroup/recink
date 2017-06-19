@@ -43,14 +43,11 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 # Documentation
 
 - [x] [Quick Start Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md)
+- [x] [Crafting Components](https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md)
 - [x] [Api Docs](https://mitocgroup.github.io/run-jst/api/identifiers.html)
-- [ ] Dependencies Diagram
+- [x] [Module Diagram](https://mitocgroup.github.io/run-jst/module-diagram.html)
 
 # Components (inhouse + 3'rd party)
-
-Check out the [Component Developer Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md) to start building components
-
-### Components list:
 
 - [CodeClimate Integration](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
 
