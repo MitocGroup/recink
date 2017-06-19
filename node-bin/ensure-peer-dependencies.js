@@ -33,8 +33,5 @@ if (Env.isGlobalInstallation) {
   options.push('-g');
 }
 
-const npmInstall = spawn( 'npm', options.concat(dependenciesVector));
-
-npmInstall.on('close', code => {
-  process.exit(code);
-});
+spawn('npm', options.concat(dependenciesVector))
+  .on('close', code => process.exit(code));
