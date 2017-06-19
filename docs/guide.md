@@ -9,16 +9,22 @@ and configure your GitHub project.
 - Configure `jst`: `jst configure jst`
 - Configure [Travis](https://travis-ci.org): `jst configure travis --aws-access-key-id xxx --aws-secret-access-key xxx` 
 
+### Adding [Travis](https://travis-ci.org) environment variables
+
+```
+jst travis encrypt -x 'JST_EXAMPLE_ENV_VAR=1234' -x 'JST_ANOTHER_EXAMPLE_ENV_VAR=4321'
+```
+
 Please note that if your repository is private you have to use [Travis Pro](https://travis-ci.com).
 To properly encrypt [Travis variables](https://github.com/MitocGroup/run-jst/blob/master/bin/commands/configure/helper/travis.js#L7) 
 you should run the `jst configure travis` command with `--github-token` or `--github-username` and `--github-password`.
 
-> To ensure your [Travis](https://travis-ci.org) configuration is valid use `jst lint travis`
+> To ensure your [Travis](https://travis-ci.org) configuration is valid use `jst travis lint`
 
 ### Running tests
 
 - Run unit tests: `jst run unit`
-- Run end-to-end tests: `jst run e2e` (Not yet implemented!)
+- Run end-to-end tests: `jst run e2e`
 
 #### Reference
 

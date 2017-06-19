@@ -15,7 +15,7 @@ with minimal headache possible and extending the runner via components with simp
 
 Also Travis integration and caching out of the box ;)
 
-> The project was started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
+> The project have been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
 
 # Prerequisites
 
@@ -63,9 +63,9 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 
 - [x] Implement smart cache invalidation
 - [x] Add support for external components
-- [ ] Add support for fully automated `Travis` configuration 
+- [x] Add support for fully automated `Travis` configuration 
+- [ ] Add component development guide
 - [ ] Add support for End-to-End tests
-- [ ] Improve documentation
 
 # Sponsors
 

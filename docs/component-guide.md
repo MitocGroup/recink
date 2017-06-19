@@ -1,15 +1,15 @@
 # Crafting an Component
 
-TBD
+*TBD*
 
 ### Before starting
 
-TBD
+*TBD*
 
 ### Component Interface
 
-TBD
+*TBD*
 
 ### The "Hello World" Component
 
-TBD
+*TBD*
