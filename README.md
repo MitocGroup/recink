@@ -17,6 +17,21 @@ Also Travis integration and caching out of the box ;)
 
 > The project have been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
 
+# Features
+
+- Easy to [install](https://github.com/MitocGroup/run-jst#installation)/[configure](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project)/[use](https://github.com/MitocGroup/run-jst#usage)
+- [Multimodule](https://github.com/MitocGroup/deep-framework/blob/master/.jst.yml#L58) support with consolidated coverage
+- [Travis](https://travis-ci.org) support
+- [Coverage](https://istanbul.js.org) support
+- [NPM](https://www.npmjs.com) support with packages global/local overwrites (including custom scripts execution)
+- [AWS S3](https://aws.amazon.com/s3/) storage driver support
+- [Caching](https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L10) support
+- [Easily extensible](https://github.com/MitocGroup/run-jst#components-inhouse--3rd-party)
+- [Well documented](https://github.com/MitocGroup/run-jst#documentation)
+- To be continued...
+
+> [Mocha](http://mochajs.org) is used as test framework for both `unit` and `end2end` testing
+
 # Prerequisites
 
 - [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
