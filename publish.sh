@@ -57,6 +57,7 @@ npm install --no-shrinkwrap                                                     
 npm version "$1"                                                                                                || fail "Updating $1 version of run-jst-codeclimate package"
 npm publish                                                                                                     || fail "Publishing run-jst-codeclimate package on npmjs.com"
 cd ../../
+(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish packages on npmjs.com"))
 git push && git push --tags
 
 echo '[OK] Done.'
