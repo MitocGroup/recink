@@ -90,6 +90,7 @@ class TestComponent extends ConfigBasedComponent {
               `Finished processing ${ this.stats.processed } test assets`
             );
             this.logger.debug(this.dumpStats());
+            
             resolve();
           })
           .catch(error => reject(error));
@@ -169,7 +170,7 @@ class TestComponent extends ConfigBasedComponent {
       showArrayIndices: true,
       showArrayLength: true,
       sortProps: false,
-    }).replace(/\t/g, '   ')
+    }).replace(/\t/g, '   ');
   }
   
   /**

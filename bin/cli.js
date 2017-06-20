@@ -40,7 +40,11 @@ const commands = prog
       .complete(() => require('./run/unit/components'))
       .action(cmd('./commands/run/unit'))
     .command('run e2e', 'Run end to end tests')
-      .action(cmd('./commands/run/e2e'))
+    .argument('[path]', 'Path to tests', /.+/, process.cwd())
+    .option('-s <component>', 'Skip component', prog.REPEATABLE)
+    .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
+    .complete(() => require('./run/e2e/components'))
+    .action(cmd('./commands/run/e2e'))
 ;
 
 if (!Env.isTravis) {

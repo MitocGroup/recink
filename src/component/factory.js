@@ -62,6 +62,15 @@ class Factory {
   /**
    * @param {*} args
    *
+   * @returns {E2EComponent}
+   */
+  static e2e(...args) {
+    return this.create('e2e', ...args);
+  }
+  
+  /**
+   * @param {*} args
+   *
    * @returns {NpmComponent}
    */
   static npm(...args) {

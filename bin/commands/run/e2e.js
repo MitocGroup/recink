@@ -1,6 +1,6 @@
 'use strict';
 
-// @todo implement
-module.exports = (args, options, logger) => {
-  return Promise.reject(new Error('End to end test runner is not implemented!'));
-};
+const bootstrap = require('./bootstrap');
+const availableComponents = require('./e2e/components');
+
+module.exports = bootstrap(availableComponents);
