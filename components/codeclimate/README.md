@@ -24,6 +24,7 @@ $:
     '$.codeclimate.token': 'eval'
   codeclimate:
     token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'
+    # skip-certificate: true
 ```
 
 Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-coverage-troubleshooting-tips#section--should-i-keep-my-test-coverage-token-secret-) to `.travis.yml`:

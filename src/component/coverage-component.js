@@ -3,6 +3,7 @@
 const ConfigBasedComponent = require('./config-based-component');
 const istanbul = require('istanbul');
 const testEvents = require('./test/events');
+const events = require('./coverage/events');
 const ContainerTransformer = require('./helper/container-transformer');
 const md5Hex = require('md5-hex');
 const path = require('path');
@@ -297,8 +298,15 @@ class CoverageComponent extends ConfigBasedComponent {
           collector.add(global[coverageVariable] || {});
         });
         
-        return this._dumpCoverageStats(collector, reporter)
-          .then(() => this._doCompare(collector));
+        return emitter.emitBlocking(
+          events.coverage.report.create, 
+          istanbul, 
+          reporter, 
+          collector
+        ).then(() => {
+          return this._dumpCoverageStats(collector, reporter)
+            .then(() => this._doCompare(collector));
+        });
       });
       
       emitter.on(testEvents.assets.test.end, () => resolve());
