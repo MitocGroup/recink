@@ -228,6 +228,12 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
+    "run-jst/src/component/coverage/events.js~events",
+    "variable/index.html#static-variable-events",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/events.js</span>",
+    "variable"
+  ],
+  [
     "run-jst/src/component/emit/events.js~events",
     "variable/index.html#static-variable-events",
     "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/emit/events.js</span>",
@@ -940,6 +946,12 @@ window.esdocSearchIndex = [
     "class/src/component/coverage/abstract-driver.js~AbstractDriver.html#instance-method-write",
     "src/component/coverage/abstract-driver.js~AbstractDriver#write",
     "method"
+  ],
+  [
+    "src/component/coverage/events.js",
+    "file/src/component/coverage/events.js.html",
+    "src/component/coverage/events.js",
+    "file"
   ],
   [
     "src/component/coverage/factory.js",
