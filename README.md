@@ -60,6 +60,7 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 # Debugging
 
 In order start debugging TestCafe [read this](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
+
 In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser please refer to [this link](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
 
 > Note that [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser is used as default browser when none specified.
