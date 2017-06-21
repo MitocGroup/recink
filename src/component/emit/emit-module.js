@@ -3,7 +3,6 @@
 const print = require('print');
 const path = require('path');
 const fse = require('fs-extra');
-const pify = require('pify');
 const readdir = require('readdir-enhanced');
 const events = require('./events');
 
@@ -53,6 +52,8 @@ class EmitModule {
   }
   
   /**
+   * @param {*} container
+   * 
    * @returns {Promise}
    */
   process(container) {

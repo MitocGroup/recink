@@ -3,12 +3,15 @@
 const dot = require('dot-object');
 
 /**
- * Coverage component events
+ * End2End component events
  */
 const events = {};
 
 events.$ = [
-  'coverage.report.create',
+  'asset.e2e.skip',
+  'asset.e2e.add',
+  'assets.e2e.start',
+  'assets.e2e.end',
 ].map(eventPath => {
   dot.str(eventPath, eventPath, events);
   

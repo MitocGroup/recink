@@ -4,7 +4,6 @@ const ConfigBasedComponent = require('./config-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./npm/events');
 const os = require('os');
-const pify = require('pify');
 const fse = require('fs-extra');
 const NpmModule = require('./npm/npm-module');
 const Cache = require('./npm/cache');

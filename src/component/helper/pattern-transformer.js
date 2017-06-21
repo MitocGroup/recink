@@ -1,23 +1,6 @@
 'use strict';
 
 /**
- * @param {*} value
- *
- * @returns {Promise}
- */
-module.exports = (value => {  
-  return Promise.resolve((Array.isArray(value) ? value : [ value ])
-    .filter(pattern => !!((pattern || '').trim()))
-    .map(pattern => {
-      if (isRegexp(pattern)) {
-        return toRegexp(pattern);
-      }
-      
-      return pattern;
-    }));
-});
-
-/**
  * @param {string} value
  *
  * @returns {RegExp}
@@ -38,3 +21,20 @@ function toRegexp(value) {
 function isRegexp(value) {
   return /\/.+\/[a-z]*/i.test(value);
 }
+
+/**
+ * @param {*} value
+ *
+ * @returns {Promise}
+ */
+module.exports = (value => {  
+  return Promise.resolve((Array.isArray(value) ? value : [ value ])
+    .filter(pattern => !!((pattern || '').trim()))
+    .map(pattern => {
+      if (isRegexp(pattern)) {
+        return toRegexp(pattern);
+      }
+      
+      return pattern;
+    }));
+});
