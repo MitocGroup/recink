@@ -1,35 +1,21 @@
 --- 
 $:
+  preprocess:
+    '$.codeclimate.token': 'eval'
+  codeclimate:
+    token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'
   e2e:
     pattern:                                                                # Files to include
       - /.+\.e2e\.js$/i
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
-    # browsers:  
-    #    - nightmare                                                             # Browsers to run the tests against
-        #- safari
-    #   - chrome
     wait:
       timeout: 5000                                                        # Timeout to wait for uri's available
       uri:                                                                  # uri's to wait before start running test cases
         - http://devexpress.github.io/testcafe/example/
         - https://www-dev.adtechmedia.io/api/
-  # preprocess:
-  #  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
-  #  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
-  #  '$.cache.options.1.accessKeyId': 'eval'
-  #  '$.cache.options.1.secretAccessKey': 'eval'
-  # cache:
-  #   driver: 's3'                                                          # Available drivers: void, s3
-  #   options:
-  #     - 's3://travis-metadata/cache'                                      # S3 cache directory
-  #     -                                                                   # S3 client options
-  #       region: 'us-east-1'
-  #       accessKeyId: 'process.env.JST_AWS_ACCESS_KEY_ID'
-  #       secretAccessKey: 'process.env.JST_AWS_SECRET_ACCESS_KEY'
   npm:
     scripts: []                                                             # Scripts to run after installing dependencies
-  #   - 'compile'
     dependencies:                                                           # Dependencies to add/overwrite
       chai: 'latest'
   emit:
@@ -54,16 +40,6 @@ $:
       - /^(.*\/)?node_modules(\/?$)?/i
     reporters:                                                              # Istanbul reporters
       text-summary: ~
-  #   compare:
-  #     negative-delta: 3                                                   # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
-  #     storage:                                              
-  #       driver: 's3'                                                      # Available drivers: s3, volative
-  #       options:
-  #         - 's3://travis-metadata/coverage'                               # S3 storage directory
-  #         -                                                               # S3 storage options
-  #           region: 'us-east-1'
-  #           accessKeyId: 'process.env.JST_AWS_ACCESS_KEY_ID'
-  #           secretAccessKey: 'process.env.JST_AWS_SECRET_ACCESS_KEY'
 main:                                                                       # Main module definition
   root: '.'                                                                 # Root package directory (containing package.json and tests)
   dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)

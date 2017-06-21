@@ -1,33 +1,23 @@
 language: node_js
-git:
-  depth: 1
+git: {depth: 1}
 cache:
   bundler: true
-  directories:
-    - node_modules
-    - "$(npm root -g)"
-    - "$(npm config get prefix)/bin"
+  directories: [node_modules, $(npm root -g), $(npm config get prefix)/bin]
 branches:
-  only:
-    - master
-    - dev
-    - stage
-    - test
-before_install:
-  - "npm install -g run-jst"
-script: "cd example && $SCRIPT"
+  only: [master, dev, stage, test]
+before_install: [npm install -g run-jst]
+script: cd example && $SCRIPT
 matrix:
   include:
-    - node_js: 6  # Current LTS
-      env: SCRIPT="jst run unit"
-    - node_js: 8 # Next LTS (@see https://nodejs.org/en/blog/release/v8.0.0/#long-term-support)
-      env: SCRIPT="jst run unit"
-    - node_js: 8
-      env: SCRIPT="jst run e2e"
-      addons:
-        apt:
-          packages:
-            - xvfb
-      install:
-        - "export DISPLAY=':99.0'"
-        - "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
+  - {node_js: 6, env: SCRIPT="jst run unit"}
+  - {node_js: 8, env: SCRIPT="jst run unit"}
+  - node_js: 8
+    env: SCRIPT="jst run e2e"
+    addons:
+      apt:
+        packages: [xvfb]
+    install: ['export DISPLAY='':99.0''', 'Xvfb :99 -screen 0 1024x768x24 > /dev/null
+        2>&1 &']
+env:
+  global:
+  - {secure: BwBUDxyvVgrTs9SHYsWVD1Z1wn1h2yCObMFfI+0unO2Im6cNDwn/Yff1DOSY1q5LJOZ2LwDW7ZQfWhK04vYLm9umv8jSxDJ6Et82q5VC2mhWa84MQWGl500X3YpKpno25kYVmyR7R575WJgp9KNLS8jbtDaDcJJsp7xPfSn4yM/XYXbcb0mzgAo7LM/erpn9DJtVrzfO8JElANVc7vgnbaUXFfSWPdFvmbIZj7sUYggiDvDFbcQe3meINGQsBgaRFtbsf4br7Zf26C4hFOU2oC6JMdeEZQ+VM0uiZ1uKYHNZiE95Rlv1PeIi21vvTEspT0PVp0uuHpXkz3StIDitqlQ3DVsPbofh4yoRxaCj9UZgT4njkYEbqYFXJR4In42QAn5PyHViN5jBFkiOQW92T6UhYD/p9t+CMyOjNe7HGJ0pbdEsMq7k0eU2j9QR1vAYGGBxxUIp6mF8nxaIEQ+Y+hgg+JBbQmIYa6dt2XlzO1vPbvjFiTcyGWBCD4RN2SsFh6Q0NCYeMvoGS9RuGCJziy7g0d05fsSU9W8if1C2zFrVCn4sv88ZsTaA49AHk5ur/6CAGbNn2TDEK5Obsiy7W9xFwwNS9zxScJNwrcCQGVm4W8QlxLmGKbIRlv6fpMjAya0R9QwmJwol84DL1zlML2m7/DfE8ki8t/zkU9BoUOQ=}
