@@ -15,7 +15,7 @@ branches:
     - test
 before_install:
   - "npm install -g run-jst"
-script: "cd example && $SCRIPT"
+script: "cd example/ && $SCRIPT"
 matrix:
   include:
     - node_js:
