@@ -33,7 +33,7 @@ class CodeclimateComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * 
-   * @returns {promise}
+   * @returns {Promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
@@ -69,7 +69,7 @@ class CodeclimateComponent extends ConfigBasedComponent {
   
   /**
    * @param {istanbul} istanbul
-   * @param {istanbul.Reporter}
+   * @param {istanbul.Reporter} reporter
    *
    * @private
    */
@@ -94,7 +94,7 @@ class CodeclimateComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   subscribe(emitter) {
     this._coverageReadyPromise = new Promise(resolve => {
@@ -111,7 +111,7 @@ class CodeclimateComponent extends ConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   waitConfig(emitter) {
     return super.waitConfig(emitter)
