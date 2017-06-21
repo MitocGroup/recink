@@ -89,8 +89,8 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [x] Implement smart cache invalidation
 - [x] Add support for external components
 - [x] Add support for fully automated `Travis` configuration 
+- [x] Add support for End-to-End tests
 - [ ] Add component development guide
-- [ ] Add support for End-to-End tests
 
 # Sponsors
 
