@@ -49,12 +49,12 @@ module.exports = (args, options, logger) => {
     const githubPromise = githubRepository 
       ? Promise.resolve(githubRepository)
       : pify(ghslug)(args.path)
-          .catch(error => {
-              return Promise.reject(new Error(
-                `Unable to guess GitHub repository in ${ args.path }.\n` +
+        .catch(error => {
+          return Promise.reject(new Error(
+            `Unable to guess GitHub repository in ${ args.path }.\n` +
                 'Please specify the GitHub repository by using "--github-repository" option'
-              ));
-          });
+          ));
+        });
     
     return githubPromise
       .then(repo => {          
