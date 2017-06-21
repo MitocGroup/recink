@@ -2,6 +2,8 @@ run-jst
 ========
 
 [![NPM Version](https://img.shields.io/npm/v/run-jst.svg?maxAge=0)](https://npmjs.org/package/run-jst)
+[![Build Status](https://travis-ci.org/MitocGroup/run-jst.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/run-jst)
+[![Code Climate](https://codeclimate.com/github/MitocGroup/run-jst/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/run-jst)
 [![API Docs](https://mitocgroup.github.io/run-jst/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/run-jst/api/)
 
 `run-jst` (aka `jst`) is a highly customizable and extremely optimized tests runner
