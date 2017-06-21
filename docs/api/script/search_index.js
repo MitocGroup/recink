@@ -72,6 +72,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "run-jst/src/component/e2e-component.js~e2ecomponent",
+    "class/src/component/e2e-component.js~E2EComponent.html",
+    "<span>E2EComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/e2e-component.js</span>",
+    "class"
+  ],
+  [
     "run-jst/src/component/emit-component.js~emitcomponent",
     "class/src/component/emit-component.js~EmitComponent.html",
     "<span>EmitComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/emit-component.js</span>",
@@ -231,6 +237,12 @@ window.esdocSearchIndex = [
     "run-jst/src/component/coverage/events.js~events",
     "variable/index.html#static-variable-events",
     "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage/events.js</span>",
+    "variable"
+  ],
+  [
+    "run-jst/src/component/e2e/events.js~events",
+    "variable/index.html#static-variable-events",
+    "<span>events</span> <span class=\"search-result-import-path\">run-jst/src/component/e2e/events.js</span>",
     "variable"
   ],
   [
@@ -1020,6 +1032,102 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/component/e2e-component.js",
+    "file/src/component/e2e-component.js.html",
+    "src/component/e2e-component.js",
+    "file"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#constructor",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-constructor-constructor",
+    "src/component/e2e-component.js~E2EComponent#constructor",
+    "method"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#dumpstats",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-dumpStats",
+    "src/component/e2e-component.js~E2EComponent#dumpStats",
+    "method"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#name",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-name",
+    "src/component/e2e-component.js~E2EComponent#name",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#prepareconfig",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-prepareConfig",
+    "src/component/e2e-component.js~E2EComponent#prepareConfig",
+    "method"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#run",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-run",
+    "src/component/e2e-component.js~E2EComponent#run",
+    "method"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#stats",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-stats",
+    "src/component/e2e-component.js~E2EComponent#stats",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#testcafe",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-testcafe",
+    "src/component/e2e-component.js~E2EComponent#testcafe",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_browsers",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_BROWSERS",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_BROWSERS",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_priority",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_PRIORITY",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_PRIORITY",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_reporter",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_REPORTER",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_REPORTER",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_server_hostname",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_SERVER_HOSTNAME",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_HOSTNAME",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_server_ports",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_SERVER_PORTS",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_PORTS",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_wait_interval",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_WAIT_INTERVAL",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_INTERVAL",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.default_wait_timeout",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_WAIT_TIMEOUT",
+    "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_TIMEOUT",
+    "member"
+  ],
+  [
+    "src/component/e2e/events.js",
+    "file/src/component/e2e/events.js.html",
+    "src/component/e2e/events.js",
+    "file"
+  ],
+  [
     "src/component/emit-component.js",
     "file/src/component/emit-component.js.html",
     "src/component/emit-component.js",
@@ -1155,6 +1263,12 @@ window.esdocSearchIndex = [
     "src/component/factory.js~factory.create",
     "class/src/component/factory.js~Factory.html#static-method-create",
     "src/component/factory.js~Factory.create",
+    "method"
+  ],
+  [
+    "src/component/factory.js~factory.e2e",
+    "class/src/component/factory.js~Factory.html#static-method-e2e",
+    "src/component/factory.js~Factory.e2e",
     "method"
   ],
   [

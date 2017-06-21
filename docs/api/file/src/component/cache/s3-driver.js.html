@@ -41,6 +41,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
@@ -152,20 +154,24 @@ class S3Driver extends AbstractDriver {
         
         return this._hasChanged
           .then(hasChanged =&gt; {
-            if (!hasChanged) {
-              return Promise.resolve();
-            }
-            
-            const { Bucket, Key } = this._s3Location(this.path);
-            const packageStream = fs.createReadStream(this._packagePath);
-            
-            packageStream.on(&apos;error&apos;, error =&gt; reject(error));
-            
-            const Body = this._track(packageStream, ContentLength);
+            return new Promise((resolve, reject) =&gt; {
+              if (!hasChanged) {
+                return resolve();
+              }
+              
+              const { Bucket, Key } = this._s3Location(this.path);
+              const packageStream = fs.createReadStream(this._packagePath);
+              
+              packageStream.on(&apos;error&apos;, error =&gt; reject(error));
+              
+              const Body = this._track(packageStream, ContentLength);
 
-            return this.client
-              .upload({ Bucket, Key, Body, })
-              .promise();
+              this.client
+                .upload({ Bucket, Key, Body, })
+                .promise()
+                .then(() =&gt; resolve())
+                .catch(error =&gt; reject(error));
+            });
           });
       });
   }
@@ -240,11 +246,13 @@ class S3Driver extends AbstractDriver {
    * @param {number} length
    * @param {number} time
    *
+   * @returns {ReadableStream}
+   * 
    * @private
    */
-  _track(stream, length = undefined, time = 50) {
+  _track(stream, length = null, time = 50) {
     const tracker = progress({ length, time, });
-        
+    
     tracker.on(&apos;progress&apos;, progress =&gt; {
       this._progress(progress.length, progress.transferred);
     });

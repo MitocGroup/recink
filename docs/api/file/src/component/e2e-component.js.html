@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/component/helper/spinner.js | run-jst - highly opinionated and extremely optimized test runner API Document</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/component/e2e-component.js | run-jst - highly opinionated and extremely optimized test runner API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -82,124 +82,342 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/component/helper/spinner.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/e2e-component.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const ora = require(&apos;ora&apos;);
+const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
+const emitEvents = require(&apos;./emit/events&apos;);
+const events = require(&apos;./e2e/events&apos;);
+const print = require(&apos;print&apos;);
+const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
+const createTestCafe = require(&apos;testcafe&apos;);
+const Spinner = require(&apos;./helper/spinner&apos;);
+const urlExists = require(&apos;url-exists&apos;);
+const pify = require(&apos;pify&apos;);
 
 /**
- * Terminal spinner implementation
+ * End2End component
  */
-class Spinner {
+class E2EComponent extends ConfigBasedComponent {
   /**
-   * @param {string} msg
+   * @param {*} args
    */
-  constructor(msg) {
-    this._main = msg;
-    this._then = msg;
-    this._catch = msg;
-    this._spinner = null;
-  }
-  
-  /**
-   * @param {string} text
-   *
-   * @returns {ora}
-   */
-  prepend(text) {
-    this.spinner.text = `${ text } ${ this._main }`;
+  constructor(...args) {
+    super(...args);
     
-    return this;
+    this._testAssets = [];
+    this._testcafe = null;
+    this._stats = {
+      total: 0,
+      processed: 0,
+      ignored: 0,
+    };
   }
   
   /**
-   * @param {string} text
-   *
-   * @returns {ora}
+   * @returns {*}
    */
-  append(text) {
-    this.spinner.text = `${ this._main } ${ text }`;
-    
-    return this;
+  get testcafe() {
+    return this._testcafe;
   }
   
   /**
-   * @returns {ora}
+   * @returns {string}
    */
-  get spinner() {
-    if (!this._spinner) {
-      this._spinner = ora(this._main);
-    }
-    
-    return this._spinner;
+  get name() {
+    return &apos;e2e&apos;;
   }
   
   /**
-   * @param {Promise} promiseToWrap
-   *
+   * @param {Emitter} emitter
+   * 
    * @returns {Promise}
+   * 
+   * @private
+   *
+   * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html
+   * @see http://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html
    */
-  promise(promiseToWrap) {
-    this.spinner.start();
-    
-    return promiseToWrap
-      .then(result =&gt; {
-        this.spinner.succeed(this.thenText);
+  _run(emitter) {
+    return this._waitUris()
+      .then(() =&gt; {
+        const runner = this.testcafe.createRunner();
+        const reporter = this.container.get(&apos;reporter&apos;, E2EComponent.DEFAULT_REPORTER);
+        const browsers = this.container.get(&apos;browsers&apos;, E2EComponent.DEFAULT_BROWSERS);
         
-        return Promise.resolve(result);
-      })
-      .catch(error =&gt; {
-        this.spinner.fail(this.catchText);
-        
-        return Promise.reject(error);
+        return emitter.emitBlocking(
+          events.assets.e2e.start, 
+          this.testcafe, 
+          runner, 
+          browsers, 
+          reporter
+        ).then(() =&gt; {
+          return runner
+            .src(this._testAssets)
+            .browsers(browsers)
+            .reporter(reporter)
+            .run();
+        }).then(failedCount =&gt; {
+          
+          // @todo find a smarter way to indent the output (buffer it?)
+          process.stdout.write(&apos;\n\n&apos;);
+          
+          this.testcafe.close();
+          
+          return emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount)
+            .then(() =&gt; Promise.resolve(failedCount));
+        });
       });
   }
   
   /**
-   * @param {string} msg
+   * @returns {Promise}
    *
-   * @returns {Spinner}
+   * @private
    */
-  then(msg) {
-    this._then = msg;
+  _waitUris() {
+    const uris = this.container.get(&apos;wait.uri&apos;, []);
     
-    return this;
+    if (uris.length &lt;= 0) {
+      return Promise.resolve();
+    }
+    
+    const spinner = new Spinner(
+      `Wait for the following uri&apos;s to be available: ${ uris.join(&apos;, &apos;) }`
+    );
+    
+    return spinner.then(
+      `All uri&apos;s are available:\n\t${ uris.join(&apos;\n\t&apos;) }`
+    ).catch(
+      `Some of the following uri&apos;s are not available:\n\t${ uris.join(&apos;\n\t&apos;) }`
+    ).promise(Promise.all(uris.map(uri =&gt; this._waitUri(uri))));
   }
   
   /**
-   * @param {string} msg
+   * @param {string} uri
+   * 
+   * @returns {Promise}
    *
-   * @returns {Spinner}
+   * @private
    */
-  catch(msg) {
-    this._catch = msg;
+  _waitUri(uri) {
+    return new Promise((resolve, reject) =&gt; {
+      const timeout = parseInt(this.container.get(
+        &apos;wait.timeout&apos;, 
+        E2EComponent.DEFAULT_WAIT_TIMEOUT
+      ));
+      const interval = this.container.get(
+        &apos;wait.interval&apos;, 
+        E2EComponent.DEFAULT_WAIT_INTERVAL
+      );
+      const failTime = Date.now() + timeout;
+      
+      const id = setInterval(() =&gt; {
+        pify(urlExists)(uri)
+          .then(exists =&gt; {
+            if (exists) {
+              clearInterval(id);
+              resolve();
+            } else if (failTime &lt;= Date.now()) {
+              clearInterval(id);
+              reject(new Error(
+                `The max timeout limit of ${ timeout } reached`
+              ));
+            }
+          })
+          .catch(error =&gt; {
+            clearInterval(id);
+            reject(error);
+          });
+      }, interval);
+    });
+  }
+  
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  run(emitter) {
+    return createTestCafe(
+      E2EComponent.DEFAULT_SERVER_HOSTNAME, 
+      ...E2EComponent.DEFAULT_SERVER_PORTS
+    ).then(testcafe =&gt; {
+      this._testcafe = testcafe;
+      
+      return new Promise((resolve, reject) =&gt; {
+        emitter.onBlocking(emitEvents.module.emit.asset, payload =&gt; {          
+          if (!this._match(payload)) {
+            return emitter.emitBlocking(events.asset.e2e.skip, payload);
+          }
+          
+          return emitter.emitBlocking(events.asset.e2e.add, payload)
+            .then(() =&gt; {
+              const { fileAbs } = payload;
+              
+              this._testAssets.push(fileAbs);
+            });
+        }, E2EComponent.DEFAULT_PRIORITY);
+        
+        emitter.on(emitEvents.modules.process.end, () =&gt; {
+          if (this._testAssets.length &lt;= 0) {
+            this.logger.info(
+              this.logger.emoji.beer, 
+              `Finished processing ${ this.stats.processed } end-to-end test assets`
+            );
+            this.logger.debug(this.dumpStats());
+            
+            return resolve();
+          }
+          
+          this._run(emitter)
+            .then(failedCount =&gt; {
+              if (failedCount &gt; 0) {
+                return Promise.reject(new Error(
+                  `There is/are ${ failedCount } end-to-end test case/s failed!`
+                ));
+              }
+              
+              this.logger.info(
+                this.logger.emoji.beer, 
+                `Finished processing ${ this.stats.processed } end-to-end test assets`
+              );
+              this.logger.debug(this.dumpStats());
+              
+              resolve();
+            })
+            .catch(error =&gt; reject(error));
+        });
+      });
+    });
+  }
+  
+  /**
+   * @param {*} config
+   * @param {string} configFile
+   *
+   * @returns {Container}
+   */
+  prepareConfig(config, configFile) {
+    return super.prepareConfig(config, configFile)
+      .then(container =&gt; {
+        return (new ContainerTransformer(container))
+          .addPattern(&apos;pattern&apos;)
+          .addPattern(&apos;ignore&apos;)
+          .transform();
+      });
+  }
+  
+  /**
+   * @param {*} payload
+   *
+   * @returns {boolean}
+   * 
+   * @private
+   */
+  _match(payload) {
+    const pattern = this.container.get(&apos;pattern&apos;, []);
+    const ignore = this.container.get(&apos;ignore&apos;, []);
+
+    const result = pattern.filter(p =&gt; this._test(p, payload.file)).length &gt; 0
+      &amp;&amp; ignore.filter(i =&gt; this._test(i, payload.file)).length &lt;= 0;
     
-    return this;
+    if (result) {
+      this.stats.processed++;
+    } else {
+      this.stats.ignored++;
+    }
+    
+    this.stats.total++;
+      
+    return result;
+  }
+  
+  /**
+   * @param {string|RegExp} pattern
+   * @param {string} value
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _test(pattern, value) {
+    if (!(pattern instanceof RegExp)) {
+      return value.indexOf(pattern.toString()) !== -1;
+    }
+    
+    return pattern.test(value);
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get stats() {
+    return this._stats;
   }
   
   /**
    * @returns {string}
    */
-  get catchText() {
-    return this._catch + &apos;\n&apos;;
+  dumpStats() {
+    return print(this.stats, {
+      showArrayIndices: true,
+      showArrayLength: true,
+      sortProps: false,
+    }).replace(/\t/g, &apos;   &apos;);
+  }
+  
+  /**
+   * @returns {number[]}
+   */
+  static get DEFAULT_SERVER_PORTS() {
+    return [ 1337, 1338 ];
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  static get DEFAULT_BROWSERS() {
+    return [ &apos;nightmare&apos; ];
   }
   
   /**
    * @returns {string}
    */
-  get thenText() {
-    return this._then + &apos;\n&apos;;
+  static get DEFAULT_REPORTER() {
+    return &apos;spec&apos;;
   }
   
   /**
    * @returns {string}
    */
-  get mainText() {
-    return this._main + &apos;\n&apos;;
+  static get DEFAULT_SERVER_HOSTNAME() {
+    return &apos;localhost&apos;;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEFAULT_WAIT_INTERVAL() {
+    return 200;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEFAULT_WAIT_TIMEOUT() {
+    return 15000;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get DEFAULT_PRIORITY() {
+    return 10;
   }
 }
 
-module.exports = Spinner;
+module.exports = E2EComponent;
 </code></pre>
 
 </div>
