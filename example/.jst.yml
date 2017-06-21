@@ -49,6 +49,7 @@ $:
     pattern:                                                                # Files to include
       - /.+\.js$/i
     ignore:                                                                 # Files to exclude
+      - /.+\.e2e\.js$/i
       - /.+\.spec\.js$/i
       - /^(.*\/)?node_modules(\/?$)?/i
     reporters:                                                              # Istanbul reporters
