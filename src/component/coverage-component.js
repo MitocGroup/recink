@@ -218,6 +218,10 @@ class CoverageComponent extends ConfigBasedComponent {
       });
       
       emitter.onBlocking(testEvents.asset.test.skip, payload => {
+        if (!this._match(payload.file)) {
+          return Promise.resolve();
+        }
+        
         const { module, fileAbs } = payload;
         
         assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];
