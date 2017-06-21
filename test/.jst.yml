@@ -6,13 +6,14 @@ $:
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
     # browsers:  
-    #   - nightmare                                                             # Browsers to run the tests against
-    #   - safari
+    #    - nightmare                                                             # Browsers to run the tests against
+        #- safari
     #   - chrome
     wait:
       timeout: 5000                                                        # Timeout to wait for uri's available
       uri:                                                                  # uri's to wait before start running test cases
         - http://devexpress.github.io/testcafe/example/
+        - https://www-dev.adtechmedia.io/api/
   # preprocess:
   #  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
   #  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'

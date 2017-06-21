@@ -7,6 +7,8 @@ const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const createTestCafe = require('testcafe');
 const Spinner = require('./helper/spinner');
+const urlExists = require('url-exists');
+const pify = require('pify');
 
 /**
  * End2End component
@@ -49,6 +51,7 @@ class E2EComponent extends ConfigBasedComponent {
    * @private
    *
    * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html
+   * @see http://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html
    */
   _run(emitter) {
     return this._waitUris()
@@ -70,6 +73,10 @@ class E2EComponent extends ConfigBasedComponent {
             .reporter(reporter)
             .run();
         }).then(failedCount => {
+          
+          // @todo find a smarter way to indent the output (buffer it?)
+          process.stdout.write('\n\n');
+          
           this.testcafe.close();
           
           return emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount)
@@ -84,7 +91,7 @@ class E2EComponent extends ConfigBasedComponent {
    * @private
    */
   _waitUris() {
-    const uris = this.container.get('uri', []);
+    const uris = this.container.get('wait.uri', []);
     
     if (uris.length <= 0) {
       return Promise.resolve();
@@ -95,9 +102,9 @@ class E2EComponent extends ConfigBasedComponent {
     );
     
     return spinner.then(
-      'All uri\'s are available.'
+      `All uri's are available:\n\t${ uris.join('\n\t') }`
     ).catch(
-      'Some uri\'s are not available!'
+      `Some of the following uri's are not available:\n\t${ uris.join('\n\t') }`
     ).promise(Promise.all(uris.map(uri => this._waitUri(uri))));
   }
   
@@ -111,23 +118,33 @@ class E2EComponent extends ConfigBasedComponent {
   _waitUri(uri) {
     return new Promise((resolve, reject) => {
       const timeout = parseInt(this.container.get(
-        'timeout', 
+        'wait.timeout', 
         E2EComponent.DEFAULT_WAIT_TIMEOUT
       ));
+      const interval = this.container.get(
+        'wait.interval', 
+        E2EComponent.DEFAULT_WAIT_INTERVAL
+      );
       const failTime = Date.now() + timeout;
       
-      const interval = setInterval(() => {
-        return resolve();
-        
-        // @todo implement check!!!!!
-        
-        if (failTime <= Date.now()) {
-          clearInterval(interval);
-          reject(new Error(
-            `The max timeout limit of ${ timeout } reached`
-          ));
-        }
-      }, this.container.get('interval', E2EComponent.DEFAULT_WAIT_INTERVAL));
+      const id = setInterval(() => {
+        pify(urlExists)(uri)
+          .then(exists => {
+            if (exists) {
+              clearInterval(id);
+              resolve();
+            } else if (failTime <= Date.now()) {
+              clearInterval(id);
+              reject(new Error(
+                `The max timeout limit of ${ timeout } reached`
+              ));
+            }
+          })
+          .catch(error => {
+            clearInterval(id);
+            reject(error);
+          });
+      }, interval);
     });
   }
   

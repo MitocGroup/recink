@@ -26,11 +26,13 @@ Also Travis integration and caching out of the box ;)
 - [NPM](https://www.npmjs.com) support with packages global/local overwrites (including custom scripts execution)
 - [AWS S3](https://aws.amazon.com/s3/) storage driver support
 - [Caching](https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L10) support
-- [Easily extensible](https://github.com/MitocGroup/run-jst#components-inhouse--3rd-party)
+- [Easily extendable](https://github.com/MitocGroup/run-jst#components-inhouse--3rd-party)
+- [Easily debuggable](https://github.com/MitocGroup/run-jst#debugging)
 - [Well documented](https://github.com/MitocGroup/run-jst#documentation)
 - To be continued...
 
-> [Mocha](http://mochajs.org) is used as test framework for both `unit` and `end2end` testing
+> [Mocha](http://mochajs.org) is used as test framework for `unit` testing
+> [TestCafe](https://devexpress.github.io/testcafe/) is used as test framework for `e2e` testing
 
 # Prerequisites
 
@@ -54,6 +56,13 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 `jst configure jst` Configure run-jst
 
 `jst run unit` Run unit tests
+
+# Debugging
+
+In order start debugging TestCafe [read this](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
+In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser please refer to [this link](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
+
+> Note that [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser is used as default browser when none specified.
 
 # Documentation
 
