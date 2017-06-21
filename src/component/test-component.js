@@ -38,7 +38,6 @@ class TestComponent extends ConfigBasedComponent {
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
-      const hasToRunTests = {};
       const mochas = {};
       
       emitter.onBlocking(emitEvents.module.emit.asset, payload => {

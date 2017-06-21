@@ -1,6 +1,5 @@
 'use strict';
 
-const print = require('print');
 const path = require('path');
 const ConfigBasedComponent = require('./config-based-component');
 const EmitModule = require('./emit/emit-module');

@@ -18,7 +18,7 @@ class Container {
   /**
    * @param {*} config
    *
-   * @returns Container
+   * @returns {Container}
    */
   reload(config) {
     this._config = config;
@@ -37,7 +37,7 @@ class Container {
    * @param {string} path
    * @param {*} value
    *
-   * @returns Container
+   * @returns {Container}
    */
   set(path, value) {
     dot.str(path, value, this._config);

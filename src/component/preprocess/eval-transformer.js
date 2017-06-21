@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint no-eval: 0 */
+
 const AbstractTransformer = require('./abstract-transformer');
 
 /**

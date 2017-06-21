@@ -183,6 +183,7 @@ class Emitter extends EventEmitter {
   /**
    * @param {string} event
    * @param {*} args
+   * @param {number} _i
    * 
    * @returns {Promise}
    * 

@@ -5,7 +5,6 @@ const istanbul = require('istanbul');
 const testEvents = require('./test/events');
 const events = require('./coverage/events');
 const ContainerTransformer = require('./helper/container-transformer');
-const md5Hex = require('md5-hex');
 const path = require('path');
 const fs = require('fs');
 const pify = require('pify');
@@ -174,11 +173,9 @@ class CoverageComponent extends ConfigBasedComponent {
     return Promise.all(
       assetsToInstrument[module.name]
         .filter(asset => {
-          return (dispatchedAssets[module.name] || []).indexOf(asset) == -1;
+          return (dispatchedAssets[module.name] || []).indexOf(asset) === -1;
         })
         .map(asset => {
-          const moduleRoot = module.container.get('root');
-          
           return pify(fs.readFile)(asset)
             .then(content => {
               const instrumenter = new istanbul.Instrumenter({ coverageVariable });
@@ -255,12 +252,13 @@ class CoverageComponent extends ConfigBasedComponent {
               const coverableAssets = assetsToInstrument[module.name] || [];
               
               mocha.files.map(file => {
+                let requireHook = null;
                 file = path.resolve(file);
                 mocha.suite.emit('pre-require', global, file, mocha);
                 
                 // @todo add other extensions to be covered
                 try {
-                  const requireHook = requireHacker.hook('js', depPath => {
+                  requireHook = requireHacker.hook('js', depPath => {
                     if (coverableAssets.indexOf(depPath) !== -1
                       && this._match(path.relative(moduleRoot, depPath))) {
                       
@@ -279,9 +277,12 @@ class CoverageComponent extends ConfigBasedComponent {
                   
                   mocha.suite.emit('post-require', global, file, mocha);
                 } catch (error) {
-                  
-                  // ensure we unmounted the js listener
-                  try { requireHook.unmount() } catch (error) { };
+                  try { // ensure we unmounted the js listener
+                    requireHook.unmount();
+                  } catch (error) {
+                    
+                    // do nothing...
+                  }
                 }
               });
               

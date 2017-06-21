@@ -69,20 +69,24 @@ class S3Driver extends AbstractDriver {
         
         return this._hasChanged
           .then(hasChanged => {
-            if (!hasChanged) {
-              return Promise.resolve();
-            }
-            
-            const { Bucket, Key } = this._s3Location(this.path);
-            const packageStream = fs.createReadStream(this._packagePath);
-            
-            packageStream.on('error', error => reject(error));
-            
-            const Body = this._track(packageStream, ContentLength);
+            return new Promise((resolve, reject) => {
+              if (!hasChanged) {
+                return resolve();
+              }
+              
+              const { Bucket, Key } = this._s3Location(this.path);
+              const packageStream = fs.createReadStream(this._packagePath);
+              
+              packageStream.on('error', error => reject(error));
+              
+              const Body = this._track(packageStream, ContentLength);
 
-            return this.client
-              .upload({ Bucket, Key, Body, })
-              .promise();
+              this.client
+                .upload({ Bucket, Key, Body, })
+                .promise()
+                .then(() => resolve())
+                .catch(error => reject(error));
+            });
           });
       });
   }
@@ -157,11 +161,13 @@ class S3Driver extends AbstractDriver {
    * @param {number} length
    * @param {number} time
    *
+   * @returns {ReadableStream}
+   * 
    * @private
    */
-  _track(stream, length = undefined, time = 50) {
+  _track(stream, length = null, time = 50) {
     const tracker = progress({ length, time, });
-        
+    
     tracker.on('progress', progress => {
       this._progress(progress.length, progress.transferred);
     });
