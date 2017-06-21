@@ -43,15 +43,16 @@ $:
     #   - safari
     #   - chrome:headless
     # wait:
-    #   interval: 200                                                         # Interval of running uri checks
-    #   timeout: 15000                                                        # Timeout to wait for uri's available
-    #   uri:                                                                  # uri's to wait before start running test cases
+    #   interval: 200                                                       # Interval of running uri checks
+    #   timeout: 15000                                                      # Timeout to wait for uri's available
+    #   uri:                                                                # uri's to wait before start running test cases
     #     - https://www.example.com
   coverage:
     pattern:                                                                # Files to include
       - /.+\.js$/i
     ignore:                                                                 # Files to exclude
       - /.+\.spec\.js$/i
+      - /.+\.e2e\.js$/i
       - /^(.*\/)?node_modules(\/?$)?/i
     reporters:                                                              # Istanbul reporters
       text-summary: ~
