@@ -76,6 +76,7 @@ if (!Env.isTravis) {
     .option('--github-username <username>', 'GitHub Username to login to Travis CI Pro')
     .option('--github-password <password>', 'GitHub Password to login to Travis CI Pro')
     .option('--github-token <token>', 'GitHub Access Token to login to Travis CI Pro')
+    .option('--print', 'Print JSON diff instead of dumping it to .travis.yml')
     .action(cmd('./commands/travis/encrypt'))
     .command('travis lint', 'Lint Travis configuration') 
     .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))

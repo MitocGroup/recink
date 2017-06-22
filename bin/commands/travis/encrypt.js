@@ -94,6 +94,18 @@ module.exports = (args, options, logger) => {
               .then(encryptedData => {                  
                 logger.info(travis.help(envVarsPlain));
                 
+                if (options.print) {
+                  const travisConfigDiff = {
+                    env: {
+                      global: [
+                        { secure: encryptedData },
+                      ],
+                    },
+                  };
+                  
+                  return Promise.resolve(travisConfigDiff);
+                }
+                
                 travisConfig.env = travisConfig.env || {};
                 travisConfig.env.global = travisConfig.env.global || [];
                 
@@ -120,6 +132,6 @@ module.exports = (args, options, logger) => {
           });
       });
   });
-  
-  return dumper.dump(true);
-}  
+
+  return options.print ? dumper.print() : dumper.dump(true);
+}

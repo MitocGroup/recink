@@ -3,6 +3,7 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const pify = require('pify');
+const chalk = require('chalk');
 const SequentialPromise = require('../../../../src/component/helper/sequential-promise');
 
 class Dumper {
@@ -21,7 +22,7 @@ class Dumper {
   /**
    * @param {boolean} overwrite
    *
-   * @returns {promise}
+   * @returns {Promise}
    */
   dump(overwrite = false) {
     return fse.pathExists(this.configPath)
@@ -46,14 +47,73 @@ class Dumper {
   }
   
   /**
-   * @returns {promise}
+   * @param {function} printer
+   * 
+   * @returns {Promise}
+   */
+  print(printer = Dumper.DEFAULT_PRINTER) {
+    return this._read()
+      .then(content => this._transform(content))
+      .then(content => {
+        printer(content);
+        
+        return Promise.resolve();
+      });
+  }
+  
+  /**
+   * @returns {Promise}
    *
    * @private
    */
   _doDump() {
-    return pify(fs.readFile)(this.template)
-      .then(content => SequentialPromise.all(this.transformers, content))
-      .then(content => fse.outputFile(this.configPath, content));
+    return this._read()
+      .then(content => this._transform(content))
+      .then(content => this._write(content));
+  }
+  
+  /**
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _read() {
+    return pify(fs.readFile)(this.template);
+  }
+  
+  /**
+   * @param {string} content
+   * 
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _transform(content) {
+    return SequentialPromise.all(this.transformers, content);
+  }
+  
+  /**
+   * @param {string} content
+   * 
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _write(content) {
+    return fse.outputFile(this.configPath, content);
+  }
+  
+  /**
+   * @returns {function}
+   */
+  static get DEFAULT_PRINTER() {
+    return content => {
+      const delimiter = '-'.repeat(parseInt(process.stdout.columns) || 30);
+      
+      process.stdout.write(chalk.gray(`\n${ delimiter }\n\n`));
+      process.stdout.write(chalk.green(content));
+      process.stdout.write(chalk.gray(`\n${ delimiter }\n`));
+    };
   }
 }
 
