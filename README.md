@@ -79,6 +79,7 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [x] [Crafting Components](https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md)
 - [x] [Api Docs](https://mitocgroup.github.io/run-jst/api/identifiers.html)
 - [x] [Module Diagram](https://mitocgroup.github.io/run-jst/module-diagram.html)
+- [x] [FAQ](https://github.com/MitocGroup/run-jst/blob/master/docs/faq.md)
 
 # Components (inhouse + 3'rd party)
 

@@ -27,6 +27,15 @@ $:
     # skip-certificate: true
 ```
 
+`.travis.yml` configuration:
+
+```
+script: 'jst run unit -c run-jst-codeclimate'  
+before_install:
+  # other before_install scripts...
+  - 'npm install -g run-jst-codeclimate'
+```
+
 Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-coverage-troubleshooting-tips#section--should-i-keep-my-test-coverage-token-secret-) to `.travis.yml`:
 
 ```
@@ -37,6 +46,6 @@ jst travis encrypt -x 'JST_CODECLIMATE_REPO_TOKEN=1234'
 
 # Usage
 
-`jst run unit -c run-jst-codeclimate`
-
-> Development usage: `JST_CODECLIMATE_REPO_TOKEN=1234 ./bin/cli.js run unit ./test/ -c ./components/codeclimate/src/codeclimate-component`
+```
+JST_CODECLIMATE_REPO_TOKEN=1234 jst run unit -c run-jst-codeclimate
+```
