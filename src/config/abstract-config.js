@@ -34,7 +34,7 @@ class AbstractConfig {
       .then(exists => {
         if (!exists) {
           return Promise.reject(new Error(
-            `Missing config file ${ configFile }`
+            `Missing configuration file ${ configFile }`
           ));
         }
         

@@ -1,7 +1,8 @@
 'use strict';
 
 const AbstractConfig = require('./abstract-config');
-const yaml = require('yaml-js');
+const yamlReader = require('yaml-js');
+const yamlWriter = require('yamljs');
 
 /**
  * YAML configuration manager
@@ -14,7 +15,7 @@ class YamlConfig extends AbstractConfig {
    */
   decode(rawConfig) {
     try {
-      return Promise.resolve(yaml.load(rawConfig));
+      return Promise.resolve(yamlReader.load(rawConfig));
     } catch (error) {
       return Promise.reject(error);
     }
@@ -27,10 +28,28 @@ class YamlConfig extends AbstractConfig {
    */
   encode(config) {
     try {
-      return Promise.resolve(yaml.dump(config));
+      return Promise.resolve(yamlWriter.stringify(
+        config, 
+        YamlConfig.INLINE_DEPTH, 
+        YamlConfig.INDENTATION
+      ));
     } catch (error) {
       return Promise.reject(error);
     }
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get INLINE_DEPTH() {
+    return 8;
+  }
+  
+  /**
+   * @returns {number}
+   */
+  static get INDENTATION() {
+    return 2;
   }
 }
 
