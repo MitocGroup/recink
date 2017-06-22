@@ -41,17 +41,22 @@ function validate_input () {
   then
     fail "Please provide a valid semver function (https://github.com/npm/node-semver#functions)"
   fi
+  
+  if [ -z "$2" ]
+  then
+    fail "Please provide a component name"
+  fi
 }
 
 validate_input "$@"
 require_clean_work_tree
-rm -rf node_modules                                                                                             || fail "Cleaning up run-jst node_modules"
-npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing run-jst dependencies"
-npm run docs                                                                                                    || fail "Generate run-jst API documentation"
-(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Generate API docs"))
-npm version "$1"                                                                                                || fail "Updating $1 version of run-jst package"
-npm publish                                                                                                     || fail "Publishing run-jst package on npmjs.com"
-(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish run-jst package on npmjs.com"))
-git push && git push --tags
+cd "components/$2"                                                                                              || fail "No such component $2 found"
+rm -rf node_modules                                                                                             || fail "Cleaning up run-jst-$2 node_modules"
+npm install --no-shrinkwrap                                                                                     || fail "Installing run-jst-$2 dependencies"
+npm version "$1" --no-git-tag-version                                                                           || fail "Updating $1 version of run-jst-$2 package"
+npm publish                                                                                                     || fail "Publishing run-jst-$2 package on npmjs.com"
+cd ../../
+(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish run-jst-$2 package on npmjs.com"))
+git push
 
 echo '[OK] Done.'
