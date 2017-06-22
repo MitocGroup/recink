@@ -67,6 +67,11 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 
 > Note that [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser is used as default browser when none specified.
 
+# CI Platforms supported
+
+- [x] [Travis](https://travis-ci.org)
+- [x] [Travis Pro](https://travis-ci.com)
+
 # Documentation
 
 - [x] [Quick Start Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md)
@@ -92,6 +97,7 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [x] Add support for external components
 - [x] Add support for fully automated `Travis` configuration 
 - [x] Add support for End-to-End tests
+- [ ] Add support for different CI platforms
 - [ ] Add component development guide
 
 # Sponsors
