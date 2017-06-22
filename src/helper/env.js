@@ -7,6 +7,13 @@ class Env {
   /**
    * @returns {boolean}
    */
+  static get isCI() {
+    return Env.isTravis;
+  }
+  
+  /**
+   * @returns {boolean}
+   */
   static get isTravis() {
     return !!((process.env.CI || process.env.CONTINUOUS_INTEGRATION) 
       && process.env.TRAVIS);

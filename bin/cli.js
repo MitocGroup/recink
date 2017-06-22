@@ -31,8 +31,8 @@ function cmd(path) {
 
 let description = pkg.description;
 
-if (Env.isTravis) {
-  description += ' [TravisCI Edition]';
+if (Env.isCI) {
+  description += ' [CI Build]';
 }
 
 const commands = prog
@@ -52,7 +52,7 @@ const commands = prog
   .action(cmd('./commands/run/e2e'))
 ;
 
-if (!Env.isTravis) {
+if (!Env.isCI) {
   commands
     .command('configure jst', 'Configure run-jst') 
     .argument('[path]', 'Path to package root', /.+/, process.cwd())
