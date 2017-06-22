@@ -1830,6 +1830,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/config/yaml-config.js~yamlconfig.indentation",
+    "class/src/config/yaml-config.js~YamlConfig.html#static-get-INDENTATION",
+    "src/config/yaml-config.js~YamlConfig.INDENTATION",
+    "member"
+  ],
+  [
+    "src/config/yaml-config.js~yamlconfig.inline_depth",
+    "class/src/config/yaml-config.js~YamlConfig.html#static-get-INLINE_DEPTH",
+    "src/config/yaml-config.js~YamlConfig.INLINE_DEPTH",
+    "member"
+  ],
+  [
     "src/container.js",
     "file/src/container.js.html",
     "src/container.js",

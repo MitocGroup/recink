@@ -12988,7 +12988,7 @@
     "__docId__": 449,
     "kind": "file",
     "name": "src/config/abstract-config.js",
-    "content": "'use strict';\n\nconst fs = require('fs');\nconst pify = require('pify');\nconst fse = require('fs-extra');\n\n/**\n * Abstract configuration manager\n */\nclass AbstractConfig {\n  /**\n   * @param {string} file\n   */\n  constructor(file = null) {\n    this._file = file;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get file() {\n    return this._file;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  load(file = null) {\n    const configFile = file || this.file;\n    \n    return fse.pathExists(configFile)\n      .then(exists => {\n        if (!exists) {\n          return Promise.reject(new Error(\n            `Missing config file ${ configFile }`\n          ));\n        }\n        \n        return pify(fs.readFile)(configFile)\n          .then(rawConfig => this.decode(rawConfig));\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  dump(config, file = null) {\n    return this.encode(config)\n      .then(rawConfig => pify(fs.writeFile)(file || this.file, rawConfig));\n  }\n  \n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));\n  }\n}\n\nmodule.exports = AbstractConfig;\n",
+    "content": "'use strict';\n\nconst fs = require('fs');\nconst pify = require('pify');\nconst fse = require('fs-extra');\n\n/**\n * Abstract configuration manager\n */\nclass AbstractConfig {\n  /**\n   * @param {string} file\n   */\n  constructor(file = null) {\n    this._file = file;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get file() {\n    return this._file;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  load(file = null) {\n    const configFile = file || this.file;\n    \n    return fse.pathExists(configFile)\n      .then(exists => {\n        if (!exists) {\n          return Promise.reject(new Error(\n            `Missing configuration file ${ configFile }`\n          ));\n        }\n        \n        return pify(fs.readFile)(configFile)\n          .then(rawConfig => this.decode(rawConfig));\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} file\n   *\n   * @returns {Promise}\n   */\n  dump(config, file = null) {\n    return this.encode(config)\n      .then(rawConfig => pify(fs.writeFile)(file || this.file, rawConfig));\n  }\n  \n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    return Promise.reject(new Error(`${ this.constructor.name }.decode(rawConfig) not implemented!`));\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    return Promise.reject(new Error(`${ this.constructor.name }.encode(config) not implemented!`));\n  }\n}\n\nmodule.exports = AbstractConfig;\n",
     "static": true,
     "longname": "src/config/abstract-config.js",
     "access": null,
@@ -13517,7 +13517,7 @@
     "__docId__": 467,
     "kind": "file",
     "name": "src/config/yaml-config.js",
-    "content": "'use strict';\n\nconst AbstractConfig = require('./abstract-config');\nconst yaml = require('yaml-js');\n\n/**\n * YAML configuration manager\n */\nclass YamlConfig extends AbstractConfig {\n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    try {\n      return Promise.resolve(yaml.load(rawConfig));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    try {\n      return Promise.resolve(yaml.dump(config));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n}\n\nmodule.exports = YamlConfig;\n",
+    "content": "'use strict';\n\nconst AbstractConfig = require('./abstract-config');\nconst yamlReader = require('yaml-js');\nconst yamlWriter = require('yamljs');\n\n/**\n * YAML configuration manager\n */\nclass YamlConfig extends AbstractConfig {\n  /**\n   * @param {string} rawConfig\n   *\n   * @returns {Promise}\n   */\n  decode(rawConfig) {\n    try {\n      return Promise.resolve(yamlReader.load(rawConfig));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Promise}\n   */\n  encode(config) {\n    try {\n      return Promise.resolve(yamlWriter.stringify(\n        config, \n        YamlConfig.INLINE_DEPTH, \n        YamlConfig.INDENTATION\n      ));\n    } catch (error) {\n      return Promise.reject(error);\n    }\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INLINE_DEPTH() {\n    return 8;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INDENTATION() {\n    return 2;\n  }\n}\n\nmodule.exports = YamlConfig;\n",
     "static": true,
     "longname": "src/config/yaml-config.js",
     "access": null,
@@ -13553,10 +13553,10 @@
   {
     "__docId__": 469,
     "kind": "variable",
-    "name": "yaml",
+    "name": "yamlReader",
     "memberof": "src/config/yaml-config.js",
     "static": true,
-    "longname": "src/config/yaml-config.js~yaml",
+    "longname": "src/config/yaml-config.js~yamlReader",
     "access": null,
     "export": false,
     "importPath": "run-jst/src/config/yaml-config.js",
@@ -13578,6 +13578,32 @@
   },
   {
     "__docId__": 470,
+    "kind": "variable",
+    "name": "yamlWriter",
+    "memberof": "src/config/yaml-config.js",
+    "static": true,
+    "longname": "src/config/yaml-config.js~yamlWriter",
+    "access": null,
+    "export": false,
+    "importPath": "run-jst/src/config/yaml-config.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 471,
     "kind": "class",
     "name": "YamlConfig",
     "memberof": "src/config/yaml-config.js",
@@ -13588,14 +13614,14 @@
     "importPath": "run-jst/src/config/yaml-config.js",
     "importStyle": "YamlConfig",
     "description": "YAML configuration manager",
-    "lineNumber": 9,
+    "lineNumber": 10,
     "interface": false,
     "extends": [
       "AbstractConfig"
     ]
   },
   {
-    "__docId__": 471,
+    "__docId__": 472,
     "kind": "method",
     "name": "decode",
     "memberof": "src/config/yaml-config.js~YamlConfig",
@@ -13605,7 +13631,7 @@
     "longname": "src/config/yaml-config.js~YamlConfig#decode",
     "access": null,
     "description": "",
-    "lineNumber": 15,
+    "lineNumber": 16,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13634,7 +13660,7 @@
     }
   },
   {
-    "__docId__": 472,
+    "__docId__": 473,
     "kind": "method",
     "name": "encode",
     "memberof": "src/config/yaml-config.js~YamlConfig",
@@ -13644,7 +13670,7 @@
     "longname": "src/config/yaml-config.js~YamlConfig#encode",
     "access": null,
     "description": "",
-    "lineNumber": 28,
+    "lineNumber": 29,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13673,7 +13699,71 @@
     }
   },
   {
-    "__docId__": 473,
+    "__docId__": 474,
+    "kind": "get",
+    "name": "INLINE_DEPTH",
+    "memberof": "src/config/yaml-config.js~YamlConfig",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/config/yaml-config.js~YamlConfig.INLINE_DEPTH",
+    "access": null,
+    "description": "",
+    "lineNumber": 44,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{number}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 475,
+    "kind": "get",
+    "name": "INDENTATION",
+    "memberof": "src/config/yaml-config.js~YamlConfig",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/config/yaml-config.js~YamlConfig.INDENTATION",
+    "access": null,
+    "description": "",
+    "lineNumber": 51,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{number}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 476,
     "kind": "file",
     "name": "src/container.js",
     "content": "'use strict';\n\nconst print = require('print');\nconst dot = require('dot-object');\ndot.overwrite = true;\n\n/**\n * Configuration container\n */\nclass Container {\n  /**\n   * @param {*} config\n   */\n  constructor(config = {}) {\n    this._config = config;\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Container}\n   */\n  reload(config) {\n    this._config = config;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  listKeys() {\n    return Object.keys(this._config);\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} value\n   *\n   * @returns {Container}\n   */\n  set(path, value) {\n    dot.str(path, value, this._config);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} defaultValue\n   *\n   * @returns {*}\n   */\n  get(path, defaultValue = null) {\n    if (!this.has(path)) {\n      return defaultValue;\n    }\n    \n    return dot.pick(path, this._config);\n  }\n  \n  /**\n   * @param {string} path\n   *\n   * @returns {boolean}\n   */\n  has(path) {\n    return typeof dot.pick(path, this._config) !== 'undefined';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dump() {\n    return print(this.raw, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get raw() {\n    return this._config;\n  }\n}\n\nmodule.exports = Container;\n",
@@ -13684,7 +13774,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 474,
+    "__docId__": 477,
     "kind": "variable",
     "name": "print",
     "memberof": "src/container.js",
@@ -13710,7 +13800,7 @@
     }
   },
   {
-    "__docId__": 475,
+    "__docId__": 478,
     "kind": "variable",
     "name": "dot",
     "memberof": "src/container.js",
@@ -13736,7 +13826,7 @@
     }
   },
   {
-    "__docId__": 476,
+    "__docId__": 479,
     "kind": "class",
     "name": "Container",
     "memberof": "src/container.js",
@@ -13751,7 +13841,7 @@
     "interface": false
   },
   {
-    "__docId__": 477,
+    "__docId__": 480,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/container.js~Container",
@@ -13776,7 +13866,7 @@
     ]
   },
   {
-    "__docId__": 478,
+    "__docId__": 481,
     "kind": "member",
     "name": "_config",
     "memberof": "src/container.js~Container",
@@ -13799,7 +13889,7 @@
     }
   },
   {
-    "__docId__": 479,
+    "__docId__": 482,
     "kind": "method",
     "name": "reload",
     "memberof": "src/container.js~Container",
@@ -13838,7 +13928,7 @@
     }
   },
   {
-    "__docId__": 480,
+    "__docId__": 483,
     "kind": "member",
     "name": "_config",
     "memberof": "src/container.js~Container",
@@ -13861,7 +13951,7 @@
     }
   },
   {
-    "__docId__": 481,
+    "__docId__": 484,
     "kind": "method",
     "name": "listKeys",
     "memberof": "src/container.js~Container",
@@ -13889,7 +13979,7 @@
     }
   },
   {
-    "__docId__": 482,
+    "__docId__": 485,
     "kind": "method",
     "name": "set",
     "memberof": "src/container.js~Container",
@@ -13938,7 +14028,7 @@
     }
   },
   {
-    "__docId__": 483,
+    "__docId__": 486,
     "kind": "method",
     "name": "get",
     "memberof": "src/container.js~Container",
@@ -13987,7 +14077,7 @@
     }
   },
   {
-    "__docId__": 484,
+    "__docId__": 487,
     "kind": "method",
     "name": "has",
     "memberof": "src/container.js~Container",
@@ -14026,7 +14116,7 @@
     }
   },
   {
-    "__docId__": 485,
+    "__docId__": 488,
     "kind": "method",
     "name": "dump",
     "memberof": "src/container.js~Container",
@@ -14054,7 +14144,7 @@
     }
   },
   {
-    "__docId__": 486,
+    "__docId__": 489,
     "kind": "get",
     "name": "raw",
     "memberof": "src/container.js~Container",
@@ -14086,7 +14176,7 @@
     }
   },
   {
-    "__docId__": 487,
+    "__docId__": 490,
     "kind": "file",
     "name": "src/emitter.js",
     "content": "'use strict';\n\nconst EventEmitter = require('events');\n\n/**\n * Extended Emitter implementation\n */\nclass Emitter extends EventEmitter {\n  constructor(...args) {\n    super(...args);\n    \n    this._blockingListeners = {};\n    this._processing = {};\n    this._parallel = {};\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} count\n   *\n   * @returns {Emitter}\n   */\n  maxParallel(event, count) {\n    this._parallel[event] = count;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   *\n   * @returns {Promise}\n   */\n  emitBlocking(event, ...args) {\n    return this._waitAllowParallel(event)\n      .then(() => this._dispatch(event, args))\n      .then(() => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event)\n          .emit(event, ...args);\n        \n        return Promise.resolve();\n      })\n      .catch(error => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'on');\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'once');\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _removeParallel(event) {\n    if (!this._processing.hasOwnProperty(event)) {\n      return this;\n    }\n    \n    this._processing[event]--;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _addParallel(event) {\n    this._processing[event] = this._processing[event] || 0;\n    this._processing[event]++;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _allowParallel(event) {\n    return !this._parallel.hasOwnProperty(event)\n      || !this._processing.hasOwnProperty(event)\n      || this._processing[event] < this._parallel[event];\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitAllowParallel(event, interval = 100) {\n    if (this._allowParallel(event)) {\n      this._addParallel(event);\n      return Promise.resolve();\n    }\n    \n    return new Promise(resolve => {\n      const id = setInterval(() => {\n        if (this._allowParallel(event)) {\n          this._addParallel(event);\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   * @param {string} method\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _pushListener(event, listener, priority, method) {\n    this._blockingListeners[event] = this._blockingListeners[event] || [];\n    this._blockingListeners[event].push({ listener, priority, method });\n    this._blockingListeners[event].sort((a, b) => {\n      return b.priority - a.priority;\n    });\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   * \n   * @private\n   */\n  _cleanupListeners(event) {\n    if (!this._blockingListeners.hasOwnProperty(event) ) {\n      return this;\n    }\n    \n    this._blockingListeners[event] = this._blockingListeners[event].filter(l => !!l);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   * @param {number} _i\n   * \n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dispatch(event, args, _i = 0) {    \n    if (!this._blockingListeners.hasOwnProperty(event) \n      || this._blockingListeners[event].length < _i + 1) {\n      return Promise.resolve();\n    }\n    \n    const dispatcher = this._blockingListeners[event][_i];\n    const result = dispatcher.listener(...args);\n    \n    if (dispatcher.method === 'once') {\n      delete this._blockingListeners[event][_i];\n    }\n    \n    if (!result || typeof result !== 'object' || !(result instanceof Promise)) {\n      return this._dispatch(event, args, _i + 1);\n    }\n    \n    return result.then(() => this._dispatch(event, args, _i + 1));\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 0;\n  }\n}\n\nmodule.exports = Emitter;\n",
@@ -14097,7 +14187,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 488,
+    "__docId__": 491,
     "kind": "variable",
     "name": "EventEmitter",
     "memberof": "src/emitter.js",
@@ -14123,7 +14213,7 @@
     }
   },
   {
-    "__docId__": 489,
+    "__docId__": 492,
     "kind": "class",
     "name": "Emitter",
     "memberof": "src/emitter.js",
@@ -14141,7 +14231,7 @@
     ]
   },
   {
-    "__docId__": 490,
+    "__docId__": 493,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/emitter.js~Emitter",
@@ -14170,7 +14260,7 @@
     ]
   },
   {
-    "__docId__": 491,
+    "__docId__": 494,
     "kind": "member",
     "name": "_blockingListeners",
     "memberof": "src/emitter.js~Emitter",
@@ -14193,7 +14283,7 @@
     }
   },
   {
-    "__docId__": 492,
+    "__docId__": 495,
     "kind": "member",
     "name": "_processing",
     "memberof": "src/emitter.js~Emitter",
@@ -14216,7 +14306,7 @@
     }
   },
   {
-    "__docId__": 493,
+    "__docId__": 496,
     "kind": "member",
     "name": "_parallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14239,7 +14329,7 @@
     }
   },
   {
-    "__docId__": 494,
+    "__docId__": 497,
     "kind": "method",
     "name": "maxParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14288,7 +14378,7 @@
     }
   },
   {
-    "__docId__": 495,
+    "__docId__": 498,
     "kind": "method",
     "name": "emitBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -14337,7 +14427,7 @@
     }
   },
   {
-    "__docId__": 496,
+    "__docId__": 499,
     "kind": "method",
     "name": "onBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -14396,7 +14486,7 @@
     }
   },
   {
-    "__docId__": 497,
+    "__docId__": 500,
     "kind": "method",
     "name": "onceBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -14455,7 +14545,7 @@
     }
   },
   {
-    "__docId__": 498,
+    "__docId__": 501,
     "kind": "method",
     "name": "_removeParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14494,7 +14584,7 @@
     }
   },
   {
-    "__docId__": 499,
+    "__docId__": 502,
     "kind": "method",
     "name": "_addParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14533,7 +14623,7 @@
     }
   },
   {
-    "__docId__": 500,
+    "__docId__": 503,
     "kind": "method",
     "name": "_allowParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14572,7 +14662,7 @@
     }
   },
   {
-    "__docId__": 501,
+    "__docId__": 504,
     "kind": "method",
     "name": "_waitAllowParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -14621,7 +14711,7 @@
     }
   },
   {
-    "__docId__": 502,
+    "__docId__": 505,
     "kind": "method",
     "name": "_pushListener",
     "memberof": "src/emitter.js~Emitter",
@@ -14690,7 +14780,7 @@
     }
   },
   {
-    "__docId__": 503,
+    "__docId__": 506,
     "kind": "method",
     "name": "_cleanupListeners",
     "memberof": "src/emitter.js~Emitter",
@@ -14729,7 +14819,7 @@
     }
   },
   {
-    "__docId__": 504,
+    "__docId__": 507,
     "kind": "method",
     "name": "_dispatch",
     "memberof": "src/emitter.js~Emitter",
@@ -14788,7 +14878,7 @@
     }
   },
   {
-    "__docId__": 505,
+    "__docId__": 508,
     "kind": "get",
     "name": "DEFAULT_PRIORITY",
     "memberof": "src/emitter.js~Emitter",
@@ -14820,7 +14910,7 @@
     }
   },
   {
-    "__docId__": 506,
+    "__docId__": 509,
     "kind": "file",
     "name": "src/events.js",
     "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * JST main events\n */\nconst events = {};\n\nevents.$ = [\n  'config.preprocess',\n  'config.load',\n  'components.load',\n  'components.run',\n  'component.load',\n  'component.run',\n  'component.ready',\n  'component.subscribe',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;\n",
@@ -14831,7 +14921,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 507,
+    "__docId__": 510,
     "kind": "variable",
     "name": "dot",
     "memberof": "src/events.js",
@@ -14857,7 +14947,7 @@
     }
   },
   {
-    "__docId__": 508,
+    "__docId__": 511,
     "kind": "variable",
     "name": "events",
     "memberof": "src/events.js",
@@ -14876,7 +14966,7 @@
     }
   },
   {
-    "__docId__": 509,
+    "__docId__": 512,
     "kind": "file",
     "name": "src/helper/env.js",
     "content": "'use strict';\n\n/**\n * Environment helpers\n */\nclass Env {\n  /**\n   * @returns {boolean}\n   */\n  static get isTravis() {\n    return !!((process.env.CI || process.env.CONTINUOUS_INTEGRATION) \n      && process.env.TRAVIS);\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isGlobalInstallation() {\n    return !!process.env.npm_config_global;\n  }\n}\n\nmodule.exports = Env;\n",
@@ -14887,7 +14977,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 510,
+    "__docId__": 513,
     "kind": "class",
     "name": "Env",
     "memberof": "src/helper/env.js",
@@ -14902,7 +14992,7 @@
     "interface": false
   },
   {
-    "__docId__": 511,
+    "__docId__": 514,
     "kind": "get",
     "name": "isTravis",
     "memberof": "src/helper/env.js~Env",
@@ -14934,7 +15024,7 @@
     }
   },
   {
-    "__docId__": 512,
+    "__docId__": 515,
     "kind": "get",
     "name": "isGlobalInstallation",
     "memberof": "src/helper/env.js~Env",
@@ -14966,7 +15056,7 @@
     }
   },
   {
-    "__docId__": 513,
+    "__docId__": 516,
     "kind": "file",
     "name": "src/jst.js",
     "content": "'use strict';\n\nconst path = require('path');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst configFactory = require('./config/factory');\nconst Container = require('./container');\nconst AbstractComponent = require('./component/abstract-component');\nconst logger = require('./logger');\n\n/**\n * Jst entry point\n */\nclass Jst extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    \n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -',\n        components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components\n      .filter(component => component.isActive);\n      \n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.run, component);\n      \n      return component.run(this);\n    }));\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent[]|AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = Jst.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        \n        this.emit(events.config.load, this.container, configFile);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0];\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.jst.yml';\n  }\n}\n\nmodule.exports = Jst;\n",
@@ -14977,7 +15067,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 514,
+    "__docId__": 517,
     "kind": "variable",
     "name": "path",
     "memberof": "src/jst.js",
@@ -15003,7 +15093,7 @@
     }
   },
   {
-    "__docId__": 515,
+    "__docId__": 518,
     "kind": "variable",
     "name": "Emitter",
     "memberof": "src/jst.js",
@@ -15029,7 +15119,7 @@
     }
   },
   {
-    "__docId__": 516,
+    "__docId__": 519,
     "kind": "variable",
     "name": "events",
     "memberof": "src/jst.js",
@@ -15055,7 +15145,7 @@
     }
   },
   {
-    "__docId__": 517,
+    "__docId__": 520,
     "kind": "variable",
     "name": "configFactory",
     "memberof": "src/jst.js",
@@ -15081,7 +15171,7 @@
     }
   },
   {
-    "__docId__": 518,
+    "__docId__": 521,
     "kind": "variable",
     "name": "Container",
     "memberof": "src/jst.js",
@@ -15107,7 +15197,7 @@
     }
   },
   {
-    "__docId__": 519,
+    "__docId__": 522,
     "kind": "variable",
     "name": "AbstractComponent",
     "memberof": "src/jst.js",
@@ -15133,7 +15223,7 @@
     }
   },
   {
-    "__docId__": 520,
+    "__docId__": 523,
     "kind": "variable",
     "name": "logger",
     "memberof": "src/jst.js",
@@ -15159,7 +15249,7 @@
     }
   },
   {
-    "__docId__": 521,
+    "__docId__": 524,
     "kind": "class",
     "name": "Jst",
     "memberof": "src/jst.js",
@@ -15177,7 +15267,7 @@
     ]
   },
   {
-    "__docId__": 522,
+    "__docId__": 525,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/jst.js~Jst",
@@ -15198,7 +15288,7 @@
     "params": []
   },
   {
-    "__docId__": 523,
+    "__docId__": 526,
     "kind": "member",
     "name": "_config",
     "memberof": "src/jst.js~Jst",
@@ -15221,7 +15311,7 @@
     }
   },
   {
-    "__docId__": 524,
+    "__docId__": 527,
     "kind": "member",
     "name": "_components",
     "memberof": "src/jst.js~Jst",
@@ -15244,7 +15334,7 @@
     }
   },
   {
-    "__docId__": 525,
+    "__docId__": 528,
     "kind": "member",
     "name": "_container",
     "memberof": "src/jst.js~Jst",
@@ -15267,7 +15357,7 @@
     }
   },
   {
-    "__docId__": 526,
+    "__docId__": 529,
     "kind": "method",
     "name": "_registerDebugers",
     "memberof": "src/jst.js~Jst",
@@ -15281,7 +15371,7 @@
     "params": []
   },
   {
-    "__docId__": 527,
+    "__docId__": 530,
     "kind": "method",
     "name": "run",
     "memberof": "src/jst.js~Jst",
@@ -15309,7 +15399,7 @@
     }
   },
   {
-    "__docId__": 528,
+    "__docId__": 531,
     "kind": "method",
     "name": "_getBaseClass",
     "memberof": "src/jst.js~Jst",
@@ -15348,7 +15438,7 @@
     }
   },
   {
-    "__docId__": 529,
+    "__docId__": 532,
     "kind": "method",
     "name": "components",
     "memberof": "src/jst.js~Jst",
@@ -15388,7 +15478,7 @@
     }
   },
   {
-    "__docId__": 530,
+    "__docId__": 533,
     "kind": "method",
     "name": "configure",
     "memberof": "src/jst.js~Jst",
@@ -15427,7 +15517,7 @@
     }
   },
   {
-    "__docId__": 531,
+    "__docId__": 534,
     "kind": "method",
     "name": "_configLoad",
     "memberof": "src/jst.js~Jst",
@@ -15462,7 +15552,7 @@
     ]
   },
   {
-    "__docId__": 532,
+    "__docId__": 535,
     "kind": "member",
     "name": "_config",
     "memberof": "src/jst.js~Jst",
@@ -15485,7 +15575,7 @@
     }
   },
   {
-    "__docId__": 533,
+    "__docId__": 536,
     "kind": "method",
     "name": "component",
     "memberof": "src/jst.js~Jst",
@@ -15524,7 +15614,7 @@
     }
   },
   {
-    "__docId__": 534,
+    "__docId__": 537,
     "kind": "method",
     "name": "listComponents",
     "memberof": "src/jst.js~Jst",
@@ -15552,7 +15642,7 @@
     }
   },
   {
-    "__docId__": 535,
+    "__docId__": 538,
     "kind": "get",
     "name": "container",
     "memberof": "src/jst.js~Jst",
@@ -15584,7 +15674,7 @@
     }
   },
   {
-    "__docId__": 536,
+    "__docId__": 539,
     "kind": "get",
     "name": "config",
     "memberof": "src/jst.js~Jst",
@@ -15616,7 +15706,7 @@
     }
   },
   {
-    "__docId__": 537,
+    "__docId__": 540,
     "kind": "get",
     "name": "CONFIG_FILE",
     "memberof": "src/jst.js~Jst",
@@ -15648,7 +15738,7 @@
     }
   },
   {
-    "__docId__": 538,
+    "__docId__": 541,
     "kind": "get",
     "name": "CONFIG_FILE_NAME",
     "memberof": "src/jst.js~Jst",
@@ -15680,7 +15770,7 @@
     }
   },
   {
-    "__docId__": 539,
+    "__docId__": 542,
     "kind": "file",
     "name": "src/logger.js",
     "content": "'use strict';\n\nconst chalk = require('chalk');\n\n/**\n * Logger abstraction\n */\nclass Logger {\n  /**\n   * @param {*} logger\n   *\n   * @returns {Logger}\n   */\n  static customLogger(logger) {\n    this._customLogger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static level(level) {\n    this._dbgLevel = level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static addLevel(level) {\n    this._dbgLevel = this._level | level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static debug(...args) {\n    return this._exec('debug', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static log(...args) {\n    return this._exec('log', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static info(...args) {\n    return this._exec('info', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static warn(...args) {\n    return this._exec('warn', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static error(...args) {\n    return this._exec('error', ...args);\n  }\n  \n  /**\n   * @returns {*}\n   *\n   * @private\n   */\n  static get _logger() {\n    return this._customLogger || console;\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @private\n   */\n  static get _level() {\n    return this._dbgLevel || (this.WARN | this.ERROR);\n  }\n  \n  /**\n   * @param {string} method\n   * @param {*} args\n   *\n   * @returns {Logger}\n   * \n   * @private\n   */\n  static _exec(method, ...args) {\n    if (this._logger instanceof console.constructor) {\n      if (this._level & this[method.toUpperCase()]) {\n        if (method === 'debug') {\n          method = 'log';\n        }\n        \n        this._logger[method](\n          this._color(method).open,\n          ...args,\n          this._color(method).close\n        );\n      }\n    } else { // rely on winston compatible logger\n      this._logger[method](...args);\n    }\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} method\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  static _color(method) {\n    let color;\n    \n    switch (method) {\n      case 'info':\n        color = 'green';\n        break;  \n      case 'warn':\n        color = 'yellow';\n        break;   \n      case 'error':\n        color = 'red';\n        break;    \n      case 'log':\n      default:\n        color = 'white';\n        break;\n    }\n    \n    return chalk.styles[color];\n  }\n  \n  /**\n   * @returns {*}\n   */\n  static get emoji() {\n    return {\n      rocket: '🚀 ',\n      cross: '❌ ',\n      check: '✅ ',\n      smiley: '😃 ',\n      fire: '🔥 ',\n      diamond: '💎 ',\n      gift: '🎁 ',\n      poop: '💩 ',\n      magic: '✨ ',\n      hat: '🎩 ',\n      new: '🆕 ',\n      fist: '👊 ',\n      beer: '🍺 ',\n      bicycle: '🚲 ',\n      star: '⭐️ ',\n    };\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ALL() {\n    return this.LOG | this.DEBUG | this.INFO | this.WARN | this.ERROR;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get LOG() {\n    return 1;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEBUG() {\n    return 2;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INFO() {\n    return 4;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get WARN() {\n    return 8;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ERROR() {\n    return 16;\n  }\n}\n\nmodule.exports = Logger;\n",
@@ -15691,7 +15781,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 540,
+    "__docId__": 543,
     "kind": "variable",
     "name": "chalk",
     "memberof": "src/logger.js",
@@ -15717,7 +15807,7 @@
     }
   },
   {
-    "__docId__": 541,
+    "__docId__": 544,
     "kind": "class",
     "name": "Logger",
     "memberof": "src/logger.js",
@@ -15732,7 +15822,7 @@
     "interface": false
   },
   {
-    "__docId__": 542,
+    "__docId__": 545,
     "kind": "method",
     "name": "customLogger",
     "memberof": "src/logger.js~Logger",
@@ -15771,7 +15861,7 @@
     }
   },
   {
-    "__docId__": 543,
+    "__docId__": 546,
     "kind": "member",
     "name": "_customLogger",
     "memberof": "src/logger.js~Logger",
@@ -15794,7 +15884,7 @@
     }
   },
   {
-    "__docId__": 544,
+    "__docId__": 547,
     "kind": "method",
     "name": "level",
     "memberof": "src/logger.js~Logger",
@@ -15833,7 +15923,7 @@
     }
   },
   {
-    "__docId__": 545,
+    "__docId__": 548,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -15856,7 +15946,7 @@
     }
   },
   {
-    "__docId__": 546,
+    "__docId__": 549,
     "kind": "method",
     "name": "addLevel",
     "memberof": "src/logger.js~Logger",
@@ -15895,7 +15985,7 @@
     }
   },
   {
-    "__docId__": 547,
+    "__docId__": 550,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -15918,7 +16008,7 @@
     }
   },
   {
-    "__docId__": 548,
+    "__docId__": 551,
     "kind": "method",
     "name": "debug",
     "memberof": "src/logger.js~Logger",
@@ -15957,7 +16047,7 @@
     }
   },
   {
-    "__docId__": 549,
+    "__docId__": 552,
     "kind": "method",
     "name": "log",
     "memberof": "src/logger.js~Logger",
@@ -15996,7 +16086,7 @@
     }
   },
   {
-    "__docId__": 550,
+    "__docId__": 553,
     "kind": "method",
     "name": "info",
     "memberof": "src/logger.js~Logger",
@@ -16035,7 +16125,7 @@
     }
   },
   {
-    "__docId__": 551,
+    "__docId__": 554,
     "kind": "method",
     "name": "warn",
     "memberof": "src/logger.js~Logger",
@@ -16074,7 +16164,7 @@
     }
   },
   {
-    "__docId__": 552,
+    "__docId__": 555,
     "kind": "method",
     "name": "error",
     "memberof": "src/logger.js~Logger",
@@ -16113,7 +16203,7 @@
     }
   },
   {
-    "__docId__": 553,
+    "__docId__": 556,
     "kind": "get",
     "name": "_logger",
     "memberof": "src/logger.js~Logger",
@@ -16145,7 +16235,7 @@
     }
   },
   {
-    "__docId__": 554,
+    "__docId__": 557,
     "kind": "get",
     "name": "_level",
     "memberof": "src/logger.js~Logger",
@@ -16177,7 +16267,7 @@
     }
   },
   {
-    "__docId__": 555,
+    "__docId__": 558,
     "kind": "method",
     "name": "_exec",
     "memberof": "src/logger.js~Logger",
@@ -16226,7 +16316,7 @@
     }
   },
   {
-    "__docId__": 556,
+    "__docId__": 559,
     "kind": "method",
     "name": "_color",
     "memberof": "src/logger.js~Logger",
@@ -16265,7 +16355,7 @@
     }
   },
   {
-    "__docId__": 557,
+    "__docId__": 560,
     "kind": "get",
     "name": "emoji",
     "memberof": "src/logger.js~Logger",
@@ -16297,7 +16387,7 @@
     }
   },
   {
-    "__docId__": 558,
+    "__docId__": 561,
     "kind": "get",
     "name": "ALL",
     "memberof": "src/logger.js~Logger",
@@ -16329,7 +16419,7 @@
     }
   },
   {
-    "__docId__": 559,
+    "__docId__": 562,
     "kind": "get",
     "name": "LOG",
     "memberof": "src/logger.js~Logger",
@@ -16361,7 +16451,7 @@
     }
   },
   {
-    "__docId__": 560,
+    "__docId__": 563,
     "kind": "get",
     "name": "DEBUG",
     "memberof": "src/logger.js~Logger",
@@ -16393,7 +16483,7 @@
     }
   },
   {
-    "__docId__": 561,
+    "__docId__": 564,
     "kind": "get",
     "name": "INFO",
     "memberof": "src/logger.js~Logger",
@@ -16425,7 +16515,7 @@
     }
   },
   {
-    "__docId__": 562,
+    "__docId__": 565,
     "kind": "get",
     "name": "WARN",
     "memberof": "src/logger.js~Logger",
@@ -16457,7 +16547,7 @@
     }
   },
   {
-    "__docId__": 563,
+    "__docId__": 566,
     "kind": "get",
     "name": "ERROR",
     "memberof": "src/logger.js~Logger",
@@ -16489,7 +16579,7 @@
     }
   },
   {
-    "__docId__": 565,
+    "__docId__": 568,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -16501,7 +16591,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 566,
+    "__docId__": 569,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -16513,7 +16603,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 567,
+    "__docId__": 570,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -16525,7 +16615,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 568,
+    "__docId__": 571,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -16537,7 +16627,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 569,
+    "__docId__": 572,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -16549,7 +16639,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 570,
+    "__docId__": 573,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -16561,7 +16651,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 571,
+    "__docId__": 574,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -16573,7 +16663,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 572,
+    "__docId__": 575,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -16585,7 +16675,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 573,
+    "__docId__": 576,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -16597,7 +16687,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 574,
+    "__docId__": 577,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -16609,7 +16699,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 575,
+    "__docId__": 578,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -16621,7 +16711,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 576,
+    "__docId__": 579,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -16633,7 +16723,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 577,
+    "__docId__": 580,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -16645,7 +16735,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 578,
+    "__docId__": 581,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -16657,7 +16747,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 579,
+    "__docId__": 582,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -16669,7 +16759,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 580,
+    "__docId__": 583,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -16681,7 +16771,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 581,
+    "__docId__": 584,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -16693,7 +16783,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 582,
+    "__docId__": 585,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -16705,7 +16795,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 583,
+    "__docId__": 586,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -16717,7 +16807,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 584,
+    "__docId__": 587,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -16729,7 +16819,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 585,
+    "__docId__": 588,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -16741,7 +16831,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 586,
+    "__docId__": 589,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -16753,7 +16843,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 587,
+    "__docId__": 590,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -16765,7 +16855,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 588,
+    "__docId__": 591,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -16777,7 +16867,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 589,
+    "__docId__": 592,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -16789,7 +16879,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 590,
+    "__docId__": 593,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -16801,7 +16891,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 591,
+    "__docId__": 594,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -16813,7 +16903,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 592,
+    "__docId__": 595,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -16825,7 +16915,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 593,
+    "__docId__": 596,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -16837,7 +16927,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 594,
+    "__docId__": 597,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -16849,7 +16939,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 595,
+    "__docId__": 598,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -16861,7 +16951,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 596,
+    "__docId__": 599,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -16873,7 +16963,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 597,
+    "__docId__": 600,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -16885,7 +16975,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 598,
+    "__docId__": 601,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -16897,7 +16987,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 599,
+    "__docId__": 602,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -16909,7 +16999,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 600,
+    "__docId__": 603,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -16921,7 +17011,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 601,
+    "__docId__": 604,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -16933,7 +17023,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 602,
+    "__docId__": 605,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -16945,7 +17035,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 603,
+    "__docId__": 606,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -16957,7 +17047,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 604,
+    "__docId__": 607,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -16969,7 +17059,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 605,
+    "__docId__": 608,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -16981,7 +17071,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 606,
+    "__docId__": 609,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -16993,7 +17083,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 607,
+    "__docId__": 610,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -17005,7 +17095,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 608,
+    "__docId__": 611,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -17017,7 +17107,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 609,
+    "__docId__": 612,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -17029,7 +17119,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 610,
+    "__docId__": 613,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -17041,7 +17131,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 611,
+    "__docId__": 614,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -17054,7 +17144,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 613,
+    "__docId__": 616,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -17066,7 +17156,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 614,
+    "__docId__": 617,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -17078,7 +17168,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 615,
+    "__docId__": 618,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -17090,7 +17180,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 616,
+    "__docId__": 619,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -17102,7 +17192,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 617,
+    "__docId__": 620,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -17114,7 +17204,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 618,
+    "__docId__": 621,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -17126,7 +17216,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 619,
+    "__docId__": 622,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -17138,7 +17228,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 620,
+    "__docId__": 623,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
