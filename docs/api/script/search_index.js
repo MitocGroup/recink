@@ -1950,6 +1950,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/helper/env.js~env.isci",
+    "class/src/helper/env.js~Env.html#static-get-isCI",
+    "src/helper/env.js~Env.isCI",
+    "member"
+  ],
+  [
     "src/helper/env.js~env.isglobalinstallation",
     "class/src/helper/env.js~Env.html#static-get-isGlobalInstallation",
     "src/helper/env.js~Env.isGlobalInstallation",
