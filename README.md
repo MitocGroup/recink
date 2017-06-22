@@ -34,6 +34,7 @@ Also Travis integration and caching out of the box ;)
 - To be continued...
 
 > [Mocha](http://mochajs.org) is used as test framework for `unit` testing
+
 > [TestCafe](https://devexpress.github.io/testcafe/) is used as test framework for `e2e` testing
 
 # Prerequisites
