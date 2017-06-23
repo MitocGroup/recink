@@ -5798,7 +5798,7 @@
     "__docId__": 201,
     "kind": "file",
     "name": "src/component/e2e-component.js",
-    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./e2e/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst createTestCafe = require('testcafe');\nconst Spinner = require('./helper/spinner');\nconst urlExists = require('url-exists');\nconst pify = require('pify');\n\n/**\n * End2End component\n */\nclass E2EComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._testAssets = [];\n    this._testcafe = null;\n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get testcafe() {\n    return this._testcafe;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'e2e';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   * \n   * @private\n   *\n   * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html\n   * @see http://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html\n   */\n  _run(emitter) {\n    return this._waitUris()\n      .then(() => {\n        const runner = this.testcafe.createRunner();\n        const reporter = this.container.get('reporter', E2EComponent.DEFAULT_REPORTER);\n        const browsers = this.container.get('browsers', E2EComponent.DEFAULT_BROWSERS);\n        \n        return emitter.emitBlocking(\n          events.assets.e2e.start, \n          this.testcafe, \n          runner, \n          browsers, \n          reporter\n        ).then(() => {\n          return runner\n            .src(this._testAssets)\n            .browsers(browsers)\n            .reporter(reporter)\n            .run();\n        }).then(failedCount => {\n          \n          // @todo find a smarter way to indent the output (buffer it?)\n          process.stdout.write('\\n\\n');\n          \n          this.testcafe.close();\n          \n          return emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount)\n            .then(() => Promise.resolve(failedCount));\n        });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitUris() {\n    const uris = this.container.get('wait.uri', []);\n    \n    if (uris.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    const spinner = new Spinner(\n      `Wait for the following uri's to be available: ${ uris.join(', ') }`\n    );\n    \n    return spinner.then(\n      `All uri's are available:\\n\\t${ uris.join('\\n\\t') }`\n    ).catch(\n      `Some of the following uri's are not available:\\n\\t${ uris.join('\\n\\t') }`\n    ).promise(Promise.all(uris.map(uri => this._waitUri(uri))));\n  }\n  \n  /**\n   * @param {string} uri\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitUri(uri) {\n    return new Promise((resolve, reject) => {\n      const timeout = parseInt(this.container.get(\n        'wait.timeout', \n        E2EComponent.DEFAULT_WAIT_TIMEOUT\n      ));\n      const interval = this.container.get(\n        'wait.interval', \n        E2EComponent.DEFAULT_WAIT_INTERVAL\n      );\n      const failTime = Date.now() + timeout;\n      \n      const id = setInterval(() => {\n        pify(urlExists)(uri)\n          .then(exists => {\n            if (exists) {\n              clearInterval(id);\n              resolve();\n            } else if (failTime <= Date.now()) {\n              clearInterval(id);\n              reject(new Error(\n                `The max timeout limit of ${ timeout } reached`\n              ));\n            }\n          })\n          .catch(error => {\n            clearInterval(id);\n            reject(error);\n          });\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return createTestCafe(\n      E2EComponent.DEFAULT_SERVER_HOSTNAME, \n      ...E2EComponent.DEFAULT_SERVER_PORTS\n    ).then(testcafe => {\n      this._testcafe = testcafe;\n      \n      return new Promise((resolve, reject) => {\n        emitter.onBlocking(emitEvents.module.emit.asset, payload => {          \n          if (!this._match(payload)) {\n            return emitter.emitBlocking(events.asset.e2e.skip, payload);\n          }\n          \n          return emitter.emitBlocking(events.asset.e2e.add, payload)\n            .then(() => {\n              const { fileAbs } = payload;\n              \n              this._testAssets.push(fileAbs);\n            });\n        }, E2EComponent.DEFAULT_PRIORITY);\n        \n        emitter.on(emitEvents.modules.process.end, () => {\n          if (this._testAssets.length <= 0) {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } end-to-end test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            \n            return resolve();\n          }\n          \n          this._run(emitter)\n            .then(failedCount => {\n              if (failedCount > 0) {\n                return Promise.reject(new Error(\n                  `There is/are ${ failedCount } end-to-end test case/s failed!`\n                ));\n              }\n              \n              this.logger.info(\n                this.logger.emoji.beer, \n                `Finished processing ${ this.stats.processed } end-to-end test assets`\n              );\n              this.logger.debug(this.dumpStats());\n              \n              resolve();\n            })\n            .catch(error => reject(error));\n        });\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {number[]}\n   */\n  static get DEFAULT_SERVER_PORTS() {\n    return [ 1337, 1338 ];\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  static get DEFAULT_BROWSERS() {\n    return [ 'nightmare' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_REPORTER() {\n    return 'spec';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_SERVER_HOSTNAME() {\n    return 'localhost';\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_WAIT_INTERVAL() {\n    return 200;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_WAIT_TIMEOUT() {\n    return 15000;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = E2EComponent;\n",
+    "content": "'use strict';\n\nconst ConfigBasedComponent = require('./config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./e2e/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst createTestCafe = require('testcafe');\nconst Spinner = require('./helper/spinner');\nconst urlExists = require('url-exists');\nconst pify = require('pify');\n\n/**\n * End2End component\n */\nclass E2EComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._testAssets = [];\n    this._testcafe = null;\n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get testcafe() {\n    return this._testcafe;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'e2e';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   * \n   * @private\n   *\n   * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html\n   * @see http://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html\n   */\n  _run(emitter) {\n    return this._waitUris()\n      .then(() => {\n        const runner = this.testcafe.createRunner();\n        const reporter = this.container.get('reporter', E2EComponent.DEFAULT_REPORTER);\n        const browsers = this.container.get('browsers', E2EComponent.DEFAULT_BROWSERS);\n        \n        return emitter.emitBlocking(\n          events.assets.e2e.start, \n          this.testcafe, \n          runner, \n          browsers, \n          reporter\n        ).then(() => {\n          return runner\n            .src(this._testAssets)\n            .browsers(browsers)\n            .reporter(reporter)\n            .run();\n        }).then(failedCount => {\n          \n          // @todo find a smarter way to indent the output (buffer it?)\n          process.stdout.write('\\n\\n');\n          \n          return this.testcafe.close()\n            .then(() => emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount))\n            .then(() => Promise.resolve(failedCount));\n        });\n      });\n  }\n  \n  /**\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitUris() {\n    const uris = this.container.get('wait.uri', []);\n    \n    if (uris.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    const spinner = new Spinner(\n      `Wait for the following uri's to be available: ${ uris.join(', ') }`\n    );\n    \n    return spinner.then(\n      `All uri's are available:\\n\\t${ uris.join('\\n\\t') }`\n    ).catch(\n      `Some of the following uri's are not available:\\n\\t${ uris.join('\\n\\t') }`\n    ).promise(Promise.all(uris.map(uri => this._waitUri(uri))));\n  }\n  \n  /**\n   * @param {string} uri\n   * \n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitUri(uri) {\n    return new Promise((resolve, reject) => {\n      const timeout = parseInt(this.container.get(\n        'wait.timeout', \n        E2EComponent.DEFAULT_WAIT_TIMEOUT\n      ));\n      const interval = this.container.get(\n        'wait.interval', \n        E2EComponent.DEFAULT_WAIT_INTERVAL\n      );\n      const failTime = Date.now() + timeout;\n      \n      const id = setInterval(() => {\n        pify(urlExists)(uri)\n          .then(exists => {\n            if (exists) {\n              clearInterval(id);\n              resolve();\n            } else if (failTime <= Date.now()) {\n              clearInterval(id);\n              reject(new Error(\n                `The max timeout limit of ${ timeout } reached`\n              ));\n            }\n          })\n          .catch(error => {\n            clearInterval(id);\n            reject(error);\n          });\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return createTestCafe(\n      E2EComponent.DEFAULT_SERVER_HOSTNAME, \n      ...E2EComponent.DEFAULT_SERVER_PORTS\n    ).then(testcafe => {\n      this._testcafe = testcafe;\n      \n      return new Promise((resolve, reject) => {\n        emitter.onBlocking(emitEvents.module.emit.asset, payload => {          \n          if (!this._match(payload)) {\n            return emitter.emitBlocking(events.asset.e2e.skip, payload);\n          }\n          \n          return emitter.emitBlocking(events.asset.e2e.add, payload)\n            .then(() => {\n              const { fileAbs } = payload;\n              \n              this._testAssets.push(fileAbs);\n            });\n        }, E2EComponent.DEFAULT_PRIORITY);\n        \n        emitter.on(emitEvents.modules.process.end, () => {\n          if (this._testAssets.length <= 0) {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } end-to-end test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            \n            return resolve();\n          }\n          \n          this._run(emitter)\n            .then(failedCount => {\n              if (failedCount > 0) {\n                return Promise.reject(new Error(\n                  `There is/are ${ failedCount } end-to-end test case/s failed!`\n                ));\n              }\n              \n              this.logger.info(\n                this.logger.emoji.beer, \n                `Finished processing ${ this.stats.processed } end-to-end test assets`\n              );\n              this.logger.debug(this.dumpStats());\n              \n              resolve();\n            })\n            .catch(error => reject(error));\n        });\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {number[]}\n   */\n  static get DEFAULT_SERVER_PORTS() {\n    return [ 1337, 1338 ];\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  static get DEFAULT_BROWSERS() {\n    return [ 'nightmare' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_REPORTER() {\n    return 'spec';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get DEFAULT_SERVER_HOSTNAME() {\n    return 'localhost';\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_WAIT_INTERVAL() {\n    return 200;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_WAIT_TIMEOUT() {\n    return 15000;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = E2EComponent;\n",
     "static": true,
     "longname": "src/component/e2e-component.js",
     "access": null,
@@ -6269,7 +6269,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#_waitUris",
     "access": "private",
     "description": "",
-    "lineNumber": 93,
+    "lineNumber": 92,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6297,7 +6297,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#_waitUri",
     "access": "private",
     "description": "",
-    "lineNumber": 118,
+    "lineNumber": 117,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6336,7 +6336,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#run",
     "access": null,
     "description": "",
-    "lineNumber": 156,
+    "lineNumber": 155,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6373,7 +6373,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#_testcafe",
     "access": null,
     "description": null,
-    "lineNumber": 161,
+    "lineNumber": 160,
     "undocument": true,
     "unknown": [
       {
@@ -6398,7 +6398,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#prepareConfig",
     "access": null,
     "description": "",
-    "lineNumber": 216,
+    "lineNumber": 215,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6447,7 +6447,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#_match",
     "access": "private",
     "description": "",
-    "lineNumber": 233,
+    "lineNumber": 232,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6486,7 +6486,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#_test",
     "access": "private",
     "description": "",
-    "lineNumber": 259,
+    "lineNumber": 258,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6536,7 +6536,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#stats",
     "access": null,
     "description": "",
-    "lineNumber": 270,
+    "lineNumber": 269,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6568,7 +6568,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent#dumpStats",
     "access": null,
     "description": "",
-    "lineNumber": 277,
+    "lineNumber": 276,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6596,7 +6596,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_PORTS",
     "access": null,
     "description": "",
-    "lineNumber": 288,
+    "lineNumber": 287,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6628,7 +6628,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_BROWSERS",
     "access": null,
     "description": "",
-    "lineNumber": 295,
+    "lineNumber": 294,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6660,7 +6660,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_REPORTER",
     "access": null,
     "description": "",
-    "lineNumber": 302,
+    "lineNumber": 301,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6692,7 +6692,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_HOSTNAME",
     "access": null,
     "description": "",
-    "lineNumber": 309,
+    "lineNumber": 308,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6724,7 +6724,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_INTERVAL",
     "access": null,
     "description": "",
-    "lineNumber": 316,
+    "lineNumber": 315,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6756,7 +6756,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_TIMEOUT",
     "access": null,
     "description": "",
-    "lineNumber": 323,
+    "lineNumber": 322,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6788,7 +6788,7 @@
     "longname": "src/component/e2e-component.js~E2EComponent.DEFAULT_PRIORITY",
     "access": null,
     "description": "",
-    "lineNumber": 330,
+    "lineNumber": 329,
     "unknown": [
       {
         "tagName": "@returns",
