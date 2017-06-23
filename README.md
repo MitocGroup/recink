@@ -103,6 +103,7 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [x] Add support for End-to-End tests
 - [ ] Add support for different CI platforms
 - [ ] Add component development guide
+- [ ] Add unit tests for critical functionality
 - [ ] Craft a cool logo for the project :alien:
 
 # Sponsors
