@@ -77,9 +77,8 @@ class E2EComponent extends ConfigBasedComponent {
           // @todo find a smarter way to indent the output (buffer it?)
           process.stdout.write('\n\n');
           
-          this.testcafe.close();
-          
-          return emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount)
+          return this.testcafe.close()
+            .then(() => emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount))
             .then(() => Promise.resolve(failedCount));
         });
       });

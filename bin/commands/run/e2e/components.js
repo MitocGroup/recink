@@ -1,6 +1,5 @@
 'use strict';
 
 module.exports = [
-  'preprocess', 'e2e', 'cache', 
-  'emit', 'npm',
+  'preprocess', 'e2e', 'emit',
 ];
