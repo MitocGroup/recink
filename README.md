@@ -11,11 +11,11 @@ suitable for running tests on big / hybrid / complex projects by adding a simple
 
 # Motivation
 
-Finding an higly configurable test runner that suits more than a basic js app
-is as hard as writing high quality tests. The main reason is getting test runned as fast as possible
-with minimal headache possible and extending the runner via components with simple and documented api.
+Finding an highly configurable test runner that suits for more than a basic js app
+is as hard as writing high quality tests :bowtie:. The main reason is getting test running as fast as possible
+with a minimal headache possible and extending the runner via components using a simple and documented api.
 
-Also Travis integration and caching out of the box ;)
+Also CI integration and caching out of the box :wink:
 
 > The project have been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
 
@@ -60,6 +60,8 @@ Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/doc
 
 `jst run unit` Run unit tests
 
+`jst run e2e` Run end-to-end tests
+
 # Debugging
 
 In order start debugging TestCafe [read this](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
@@ -101,6 +103,7 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [x] Add support for End-to-End tests
 - [ ] Add support for different CI platforms
 - [ ] Add component development guide
+- [ ] Craft a cool logo for the project :alien:
 
 # Sponsors
 
