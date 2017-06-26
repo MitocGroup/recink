@@ -85,7 +85,8 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 
 # Components (inhouse + 3'rd party)
 
-- [CodeClimate Integration](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
+- :house: [CodeClimate](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
+- :house: [Snyk.io](https://github.com/MitocGroup/run-jst/blob/master/components/snyk/README.md)
 
 > [Navigate here](https://github.com/MitocGroup/run-jst/tree/master/components) to see all inhouse components
 

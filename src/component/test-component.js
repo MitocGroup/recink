@@ -1,6 +1,6 @@
 'use strict';
 
-const ConfigBasedComponent = require('./config-based-component');
+const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./test/events');
 const print = require('print');
@@ -10,7 +10,7 @@ const Mocha = require('mocha');
 /**
  * Test component
  */
-class TestComponent extends ConfigBasedComponent {
+class TestComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -29,6 +29,13 @@ class TestComponent extends ConfigBasedComponent {
    */
   get name() {
     return 'test';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'emit' ];
   }
   
   /**

@@ -1,9 +1,9 @@
 'use strict';
 
 const npmEvents = require('./npm/events');
-const testEvents = require('./test/events');
+const emitEvents = require('./emit/events');
 const cacheFactory = require('./cache/factory');
-const ConfigBasedComponent = require('./config-based-component');
+const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const Spinner = require('./helper/spinner');
 const cacheEvents = require('./cache/events');
 const prettyBytes = require('pretty-bytes');
@@ -11,7 +11,7 @@ const prettyBytes = require('pretty-bytes');
 /**
  * Cache component
  */
-class CacheComponent extends ConfigBasedComponent {
+class CacheComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -22,17 +22,24 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {AbstractDriver}
-   */
-  get cache() {
-    return this._cache;
-  }
-  
-  /**
    * @returns {string}
    */
   get name() {
     return 'cache';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'npm' ];
+  }
+  
+  /**
+   * @returns {AbstractDriver}
+   */
+  get cache() {
+    return this._cache;
   }
   
   /**
@@ -75,7 +82,7 @@ class CacheComponent extends ConfigBasedComponent {
         )
       });
       
-      emitter.onBlocking(testEvents.assets.test.end, () => {
+      emitter.onBlocking(emitEvents.modules.process.end, () => {
         if (!this.cache) {
           resolve();
           return Promise.resolve();
@@ -88,8 +95,7 @@ class CacheComponent extends ConfigBasedComponent {
         ).catch(
           'Caches failed to upload!'
         ).promise(
-          this._trackProgress(this.cache, spinner)
-            .cache.upload()
+          this._trackProgress(this.cache, spinner).cache.upload()
         ).then(() => resolve());
       });
     });
