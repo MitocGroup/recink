@@ -6,8 +6,6 @@
 class AbstractTransformer {
   /**
    * @param {*} value
-   * 
-   * @returns {*}
    */
   transform(value) {
     throw new Error(

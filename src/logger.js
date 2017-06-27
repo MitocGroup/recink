@@ -7,6 +7,13 @@ const chalk = require('chalk');
  */
 class Logger {
   /**
+   * @returns {chalk} chalk
+   */
+  static get chalk() {
+    return chalk;
+  }
+  
+  /**
    * @param {*} logger
    *
    * @returns {Logger}
@@ -179,6 +186,9 @@ class Logger {
       beer: '🍺 ',
       bicycle: '🚲 ',
       star: '⭐️ ',
+      moon_full: '🌔 ',
+      moon_half: '🌓 ',
+      moon_empty: '🌘 ',
     };
   }
   

@@ -1,6 +1,6 @@
 'use strict';
 
-const ConfigBasedComponent = require('./config-based-component');
+const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const istanbul = require('istanbul');
 const testEvents = require('./test/events');
 const events = require('./coverage/events');
@@ -14,7 +14,7 @@ const storageFactory = require('./coverage/factory');
 /**
  * Coverage component
  */
-class CoverageComponent extends ConfigBasedComponent {
+class CoverageComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -29,6 +29,13 @@ class CoverageComponent extends ConfigBasedComponent {
    */
   get name() {
     return 'coverage';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'test' ];
   }
   
   /**

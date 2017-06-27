@@ -1,6 +1,6 @@
 'use strict';
 
-const ConfigBasedComponent = require('./config-based-component');
+const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./e2e/events');
 const print = require('print');
@@ -13,7 +13,7 @@ const pify = require('pify');
 /**
  * End2End component
  */
-class E2EComponent extends ConfigBasedComponent {
+class E2EComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -30,17 +30,24 @@ class E2EComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {*}
-   */
-  get testcafe() {
-    return this._testcafe;
-  }
-  
-  /**
    * @returns {string}
    */
   get name() {
     return 'e2e';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'emit' ];
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get testcafe() {
+    return this._testcafe;
   }
   
   /**

@@ -1,0 +1,48 @@
+{
+  "name": "run-jst-snyk",
+  "version": "1.1.0",
+  "description": "Snyk.io run-jst component",
+  "keywords": [
+    "Testing",
+    "Unit",
+    "Development",
+    "Tools",
+    "Travis",
+    "Snyk.io",
+    "Security",
+    "Snyk",
+    "Vulnerabilities"
+  ],
+  "homepage": "https://github.com/MitocGroup/run-jst",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/run-jst/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "http://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "main": "src/snyk-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/run-jst.git"
+  },
+  "dependencies": {
+    "snyk": "^1.36.1"
+  },
+  "peerDependencies": {
+    "run-jst": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=6.0 <7.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

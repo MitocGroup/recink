@@ -1,6 +1,6 @@
 'use strict';
 
-const ConfigBasedComponent = require('./config-based-component');
+const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./npm/events');
 const os = require('os');
@@ -12,7 +12,7 @@ const path = require('path');
 /**
  * NPM component
  */
-class NpmComponent extends ConfigBasedComponent {
+class NpmComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -28,6 +28,13 @@ class NpmComponent extends ConfigBasedComponent {
    */
   get name() {
     return 'npm';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'emit' ];
   }
   
   /**
@@ -102,7 +109,9 @@ class NpmComponent extends ConfigBasedComponent {
                 this.container.get('scripts', []),
                 emitModule.container.get('scripts', [])
               )
-            );
+            ).then(() => {
+              emitter.emit(events.npm.dependencies.postinstall, npmModule, emitModule);
+            });
           });
       });
       

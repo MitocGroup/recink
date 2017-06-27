@@ -1,7 +1,12 @@
 --- 
 $:
+  snyk:
+    token: 'process.env.JST_SNYK_API_TOKEN'
+    actionable: true
+    dev: true
   preprocess:
     '$.codeclimate.token': 'eval'
+    '$.snyk.token': 'eval'
   codeclimate:
     token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'
   e2e:

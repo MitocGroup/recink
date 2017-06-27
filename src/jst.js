@@ -160,16 +160,20 @@ class Jst extends Emitter {
   /**
    * @param {*} config
    * @param {string} configFile
+   *
+   * @returns {Promise}
    * 
    * @private
    */
   _configLoad(config, configFile) {
-    this.emitBlocking(events.config.preprocess, config)
+    return this.emitBlocking(events.config.preprocess, config)
       .then(() => {
         this._config = config;
         this._container.reload(this._config);
         
         this.emit(events.config.load, this.container, configFile);
+        
+        return Promise.resolve(config);
       });
   }
   

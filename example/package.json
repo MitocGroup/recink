@@ -5,9 +5,12 @@
   "main": "lib/test.js",
   "dependencies": {
     "chai": "^4.0.2",
-    "sinon": "^2.3.2"
+    "sinon": "^2.3.2",
+    "tmock": "^0.0.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt-jsdoc-to-markdown": "0.4.3"
+  },
   "scripts": {
     "compile": "echo 'Compiling libs...'"
   },
