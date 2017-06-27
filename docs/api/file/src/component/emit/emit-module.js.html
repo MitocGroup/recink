@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/emit/emit-module.js | reCInk - highly opinionated and extremely optimized test runner API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/reCInk.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/container.js~Container.html">Container</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/logger.js~Logger.html">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/recink.js~ReCInk.html">ReCInk</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/abstract-component.js~AbstractComponent.html">AbstractComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html">DependantConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DependantConfigBasedComponent">DependantConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-EventEmitter">EventEmitter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/npm</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/cache.js~Cache.html">Cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/npm-module.js~NpmModule.html">NpmModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/preprocess</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html">AbstractTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/eval-transformer.js~EvalTransformer.html">EvalTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">config</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/abstract-config.js~AbstractConfig.html">AbstractConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/emit/emit-module.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const print = require(&apos;print&apos;);
+const path = require(&apos;path&apos;);
+const fse = require(&apos;fs-extra&apos;);
+const readdir = require(&apos;readdir-enhanced&apos;);
+const events = require(&apos;./events&apos;);
+
+/**
+ * Class representing emited test module
+ */
+class EmitModule {
+  /**
+   * @param {string} name
+   * @param {Container} container
+   * @param {Emitter} emitter
+   * @param {*} logger
+   */
+  constructor(name, container, emitter, logger) {
+    this._emitter = emitter;
+    this._logger = logger;
+    this._name = name;
+    this._container = container;
+    this._stats = {
+      total: 0,
+      emitted: 0,
+      ignored: 0,
+      dirs: 0,
+    };
+  }
+  
+  /**
+   * @returns {Promise}
+   */
+  check() {
+    const moduleRoot = this.container.get(&apos;root&apos;, null);
+    
+    if (!moduleRoot) {
+      return Promise.reject(new Error(`Missing root for module ${ this.name }`));
+    }
+    
+    return fse.pathExists(moduleRoot)
+      .then(hasModuleRoot =&gt; {
+        if (!hasModuleRoot) {
+          return Promise.reject(new Error(
+            `Module ${ this.name } root ${ moduleRoot } does not exists or wrong permissions set`
+          ));
+        }
+        
+        return Promise.resolve();
+      })
+  }
+  
+  /**
+   * @param {*} container
+   * 
+   * @returns {Promise}
+   */
+  process(container) {
+    return new Promise((resolve, reject) =&gt; {
+      const moduleRoot = this.container.get(&apos;root&apos;);
+      
+      const options = {
+        deep: this._deepFilter(container).bind(this),
+        filter: this._filter(container).bind(this),
+      };
+      
+      let ended = false;
+      let processing = 0;
+      
+      readdir.stream(moduleRoot, options)
+        .on(&apos;data&apos;, filePath =&gt; {
+          processing++;
+          
+          const payload = {
+            file: filePath,
+            fileAbs: path.join(moduleRoot, filePath),
+            module: this,
+          };
+          
+          this.logger.debug(&apos;Emit asset&apos;, JSON.stringify(
+            Object.assign({}, payload, { module: this.name })
+          ));
+          
+          this.emitter
+            .maxParallel(events.module.emit.asset, EmitModule.MAX_PARALLEL_ASSETS_EMIT)
+            .emitBlocking(events.module.emit.asset, payload)
+            .then(() =&gt; {
+              processing--;
+              
+              if (processing &lt;= 0 &amp;&amp; ended) {
+                resolve();
+              }
+            })
+            .catch(error =&gt; {
+              this.logger.warn(this.logger.emoji.poop, `failed dispatching asset ${ filePath }`);
+              reject(error);
+            });
+        })
+        .on(&apos;end&apos;, () =&gt; {
+          ended = true;
+          
+          if (processing &lt;= 0) {
+            resolve();
+          }
+        })
+        .on(&apos;error&apos;, error =&gt; reject(error));
+    });
+  }
+  
+  /**
+   * @param {Container} container
+   *
+   * @returns {function}
+   *
+   * @private
+   */
+  _filter(container) {
+    const pattern = container.get(&apos;pattern&apos;, []);
+    const ignore = container.get(&apos;ignore&apos;, []);
+    
+    return stats =&gt; {
+      const result = stats.isFile() 
+        &amp;&amp; pattern.filter(p =&gt; this._test(p, stats.path)).length &gt; 0
+        &amp;&amp; ignore.filter(i =&gt; this._test(i, stats.path)).length &lt;= 0;
+      
+      if (stats.isFile()) {
+        if (result) {
+          this.stats.emitted++;
+        } else {
+          this.stats.ignored++;
+        }
+        
+        this.stats.total++;
+      } else if(stats.isDirectory()) {
+        this.stats.dirs++;
+      }
+        
+      return result;  
+    };
+  }
+  
+  /**
+   * @param {Container} container
+   *
+   * @returns {function}
+   *
+   * @private
+   */
+  _deepFilter(container) {
+    const ignore = container.get(&apos;ignore&apos;, []);
+    
+    return stats =&gt; {
+      return ignore.filter(i =&gt; this._test(i, stats.path)).length &lt;= 0;
+    };
+  }
+  
+  /**
+   * @param {string|RegExp} pattern
+   * @param {string} value
+   *
+   * @returns {boolean}
+   *
+   * @private
+   */
+  _test(pattern, value) {
+    if (!(pattern instanceof RegExp)) {
+      return value.indexOf(pattern.toString()) !== -1;
+    }
+    
+    return pattern.test(value);
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get logger() {
+    return this._logger;
+  }
+  
+  /**
+   * @returns {Emitter}
+   */
+  get emitter() {
+    return this._emitter;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return this._name;
+  }
+  
+  /**
+   * @returns {Container}
+   */
+  get container() {
+    return this._container;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get stats() {
+    return this._stats;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  dumpStats() {
+    return print(this.stats, {
+      showArrayIndices: true,
+      showArrayLength: true,
+      sortProps: false,
+    }).replace(/\t/g, &apos;   &apos;)
+  }
+  
+  /**
+   * @returns {number}
+   *
+   * @todo make it configurable for specific use cases
+   */
+  static get MAX_PARALLEL_ASSETS_EMIT() {
+    return 1;
+  }
+}
+
+module.exports = EmitModule;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
