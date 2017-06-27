@@ -42,12 +42,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "run-jst/src/component/cache-component.js~configbasedcomponent",
-    "variable/index.html#static-variable-ConfigBasedComponent",
-    "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/cache-component.js</span>",
-    "variable"
-  ],
-  [
     "run-jst/src/component/config-based-component.js~configbasedcomponent",
     "class/src/component/config-based-component.js~ConfigBasedComponent.html",
     "<span>ConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/config-based-component.js</span>",
@@ -69,6 +63,18 @@ window.esdocSearchIndex = [
     "run-jst/src/component/coverage-component.js~coveragecomponent",
     "class/src/component/coverage-component.js~CoverageComponent.html",
     "<span>CoverageComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/coverage-component.js</span>",
+    "class"
+  ],
+  [
+    "run-jst/src/component/cache-component.js~dependantconfigbasedcomponent",
+    "variable/index.html#static-variable-DependantConfigBasedComponent",
+    "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/cache-component.js</span>",
+    "variable"
+  ],
+  [
+    "run-jst/src/component/dependant-config-based-component.js~dependantconfigbasedcomponent",
+    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html",
+    "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">run-jst/src/component/dependant-config-based-component.js</span>",
     "class"
   ],
   [
@@ -720,6 +726,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/cache-component.js~cachecomponent#dependencies",
+    "class/src/component/cache-component.js~CacheComponent.html#instance-get-dependencies",
+    "src/component/cache-component.js~CacheComponent#dependencies",
+    "member"
+  ],
+  [
     "src/component/cache-component.js~cachecomponent#name",
     "class/src/component/cache-component.js~CacheComponent.html#instance-get-name",
     "src/component/cache-component.js~CacheComponent#name",
@@ -912,6 +924,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/coverage-component.js~coveragecomponent#dependencies",
+    "class/src/component/coverage-component.js~CoverageComponent.html#instance-get-dependencies",
+    "src/component/coverage-component.js~CoverageComponent#dependencies",
+    "member"
+  ],
+  [
     "src/component/coverage-component.js~coveragecomponent#name",
     "class/src/component/coverage-component.js~CoverageComponent.html#instance-get-name",
     "src/component/coverage-component.js~CoverageComponent#name",
@@ -1032,6 +1050,30 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/component/dependant-config-based-component.js",
+    "file/src/component/dependant-config-based-component.js.html",
+    "src/component/dependant-config-based-component.js",
+    "file"
+  ],
+  [
+    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#constructor",
+    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-constructor-constructor",
+    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#constructor",
+    "method"
+  ],
+  [
+    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#dependencies",
+    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-get-dependencies",
+    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#dependencies",
+    "member"
+  ],
+  [
+    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#waitconfig",
+    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-method-waitConfig",
+    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#waitConfig",
+    "method"
+  ],
+  [
     "src/component/e2e-component.js",
     "file/src/component/e2e-component.js.html",
     "src/component/e2e-component.js",
@@ -1042,6 +1084,12 @@ window.esdocSearchIndex = [
     "class/src/component/e2e-component.js~E2EComponent.html#instance-constructor-constructor",
     "src/component/e2e-component.js~E2EComponent#constructor",
     "method"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent#dependencies",
+    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-dependencies",
+    "src/component/e2e-component.js~E2EComponent#dependencies",
+    "member"
   ],
   [
     "src/component/e2e-component.js~e2ecomponent#dumpstats",
@@ -1482,6 +1530,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/npm-component.js~npmcomponent#dependencies",
+    "class/src/component/npm-component.js~NpmComponent.html#instance-get-dependencies",
+    "src/component/npm-component.js~NpmComponent#dependencies",
+    "member"
+  ],
+  [
     "src/component/npm-component.js~npmcomponent#name",
     "class/src/component/npm-component.js~NpmComponent.html#instance-get-name",
     "src/component/npm-component.js~NpmComponent#name",
@@ -1572,6 +1626,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/npm/npm-module.js~npmmodule#debugfile",
+    "class/src/component/npm/npm-module.js~NpmModule.html#instance-get-debugFile",
+    "src/component/npm/npm-module.js~NpmModule#debugFile",
+    "member"
+  ],
+  [
     "src/component/npm/npm-module.js~npmmodule#install",
     "class/src/component/npm/npm-module.js~NpmModule.html#instance-method-install",
     "src/component/npm/npm-module.js~NpmModule#install",
@@ -1581,6 +1641,18 @@ window.esdocSearchIndex = [
     "src/component/npm/npm-module.js~npmmodule#logger",
     "class/src/component/npm/npm-module.js~NpmModule.html#instance-get-logger",
     "src/component/npm/npm-module.js~NpmModule#logger",
+    "member"
+  ],
+  [
+    "src/component/npm/npm-module.js~npmmodule#modulesdir",
+    "class/src/component/npm/npm-module.js~NpmModule.html#instance-get-modulesDir",
+    "src/component/npm/npm-module.js~NpmModule#modulesDir",
+    "member"
+  ],
+  [
+    "src/component/npm/npm-module.js~npmmodule#packagefile",
+    "class/src/component/npm/npm-module.js~NpmModule.html#instance-get-packageFile",
+    "src/component/npm/npm-module.js~NpmModule#packageFile",
     "member"
   ],
   [
@@ -1702,6 +1774,12 @@ window.esdocSearchIndex = [
     "class/src/component/test-component.js~TestComponent.html#instance-constructor-constructor",
     "src/component/test-component.js~TestComponent#constructor",
     "method"
+  ],
+  [
+    "src/component/test-component.js~testcomponent#dependencies",
+    "class/src/component/test-component.js~TestComponent.html#instance-get-dependencies",
+    "src/component/test-component.js~TestComponent#dependencies",
+    "member"
   ],
   [
     "src/component/test-component.js~testcomponent#dumpstats",
@@ -2080,6 +2158,12 @@ window.esdocSearchIndex = [
     "class/src/logger.js~Logger.html#static-method-addLevel",
     "src/logger.js~Logger.addLevel",
     "method"
+  ],
+  [
+    "src/logger.js~logger.chalk",
+    "class/src/logger.js~Logger.html#static-get-chalk",
+    "src/logger.js~Logger.chalk",
+    "member"
   ],
   [
     "src/logger.js~logger.customlogger",

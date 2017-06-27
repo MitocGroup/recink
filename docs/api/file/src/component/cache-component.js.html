@@ -41,13 +41,14 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html">DependantConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ConfigBasedComponent">ConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DependantConfigBasedComponent">DependantConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
@@ -86,9 +87,9 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
 const npmEvents = require(&apos;./npm/events&apos;);
-const testEvents = require(&apos;./test/events&apos;);
+const emitEvents = require(&apos;./emit/events&apos;);
 const cacheFactory = require(&apos;./cache/factory&apos;);
-const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
+const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
 const Spinner = require(&apos;./helper/spinner&apos;);
 const cacheEvents = require(&apos;./cache/events&apos;);
 const prettyBytes = require(&apos;pretty-bytes&apos;);
@@ -96,7 +97,7 @@ const prettyBytes = require(&apos;pretty-bytes&apos;);
 /**
  * Cache component
  */
-class CacheComponent extends ConfigBasedComponent {
+class CacheComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -107,17 +108,24 @@ class CacheComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {AbstractDriver}
-   */
-  get cache() {
-    return this._cache;
-  }
-  
-  /**
    * @returns {string}
    */
   get name() {
     return &apos;cache&apos;;
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ &apos;npm&apos; ];
+  }
+  
+  /**
+   * @returns {AbstractDriver}
+   */
+  get cache() {
+    return this._cache;
   }
   
   /**
@@ -160,7 +168,7 @@ class CacheComponent extends ConfigBasedComponent {
         )
       });
       
-      emitter.onBlocking(testEvents.assets.test.end, () =&gt; {
+      emitter.onBlocking(emitEvents.modules.process.end, () =&gt; {
         if (!this.cache) {
           resolve();
           return Promise.resolve();
@@ -173,8 +181,7 @@ class CacheComponent extends ConfigBasedComponent {
         ).catch(
           &apos;Caches failed to upload!&apos;
         ).promise(
-          this._trackProgress(this.cache, spinner)
-            .cache.upload()
+          this._trackProgress(this.cache, spinner).cache.upload()
         ).then(() =&gt; resolve());
       });
     });

@@ -41,13 +41,14 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html">DependantConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ConfigBasedComponent">ConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DependantConfigBasedComponent">DependantConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
@@ -130,6 +131,27 @@ class NpmModule {
   }
   
   /**
+   * @returns {string}
+   */
+  get packageFile() {
+    return path.join(this.rootDir, NpmModule.PACKAGE_FILE);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get modulesDir() {
+    return path.join(this.rootDir, NpmModule.MODULES_DIR);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get debugFile() {
+    return path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE);
+  }
+  
+  /**
    * @param {*} deps
    * @param {array} scripts
    *
@@ -137,8 +159,8 @@ class NpmModule {
    */
   install(deps = {}, scripts = []) {
     let cacheKey;
-    const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);
-    const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
+    const packageFile = this.packageFile;
+    const modulesDir = this.modulesDir;
     
     return fse.ensureDir(modulesDir)
       .then(() =&gt; this._packageHash(packageFile, deps))
@@ -211,7 +233,7 @@ class NpmModule {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to run script ${ script } in ${ this.rootDir }.\n` +
-            `To open logs type: &apos;open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }&apos;`
+            `To open logs type: &apos;open ${ this.debugFile }&apos;`
           ));
         }
         
@@ -293,7 +315,7 @@ class NpmModule {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to install dependencies in ${ this.rootDir }.\n` +
-            `To open logs type: &apos;open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }&apos;`
+            `To open logs type: &apos;open ${ this.debugFile }&apos;`
           ));
         }
         
