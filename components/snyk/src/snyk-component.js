@@ -81,6 +81,7 @@ class SnykComponent extends DependantConfigBasedComponent {
     
     this.logger.debug(JSON.stringify(result, null, '  '));
     
+    const blue = this.logger.chalk.blue;
     const gray = this.logger.chalk.gray;
     const red = this.logger.chalk.red;
     const yellow = this.logger.chalk.yellow;
@@ -124,9 +125,12 @@ class SnykComponent extends DependantConfigBasedComponent {
           break;
       }
       
-      res += badge + this.logger.chalk.red(` ${ severity } severity ${ issue } found on ${ name }\n`);
+      res += badge;
+      res += red(` ${ severity } severity ${ issue } found on `);
+      res += gray.bold(`${ name }\n`);
       res += `   ${ gray('description:') } ${ vuln.title }\n`;
-      res += `   ${ gray('info:') } ${ snykConfig.ROOT }/vuln/${ vuln.id }\n`;
+      res += `   ${ gray('info:') } `;
+      res += blue.underline(`${ snykConfig.ROOT }/vuln/${ vuln.id }\n`);
       
       if (showVulnPaths) {
         res += `   ${ gray('package:') } ${ vuln.from.join(' > ') }\n`;
@@ -181,14 +185,14 @@ class SnykComponent extends DependantConfigBasedComponent {
               
               // A deep dependency needs to be upgraded
               res += `   ${ gray('actionable:') } `;
-              res += yellow('No direct dependency upgrade can address this issue.\n');
+              res += yellow.bold('No direct dependency upgrade can address this issue.\n');
             }
             break;
           }
         }
         
         if (fix.length > 0) {
-          res += `   ${ gray('actionable:') } ${ green(fix) }`;
+          res += `   ${ gray('actionable:') } ${ green.bold(fix) }`;
         }
       } else {
         if (vuln.type === 'license') {
@@ -197,7 +201,7 @@ class SnykComponent extends DependantConfigBasedComponent {
           res = res.slice(0, -1);
         } else if (pm === 'npm') {
           res += `   ${ gray('actionable:') } `;
-          res += red(
+          res += red.bold(
             'No fix available. Consider removing this dependency.'
           );
         }
