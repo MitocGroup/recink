@@ -39,9 +39,10 @@ module.exports = availableComponents => {
                 .replace(/\.js$/i, '') + '.js'
             );
             
-            console.log('resolvedDepPath', resolvedDepPath)
-            
-            return { source: fs.readFileSync(resolvedDepPath), path: depPath };
+            return {
+              source: fs.readFileSync(resolvedDepPath).toString(),
+              path: resolvedDepPath,
+            };
           }
         );
         

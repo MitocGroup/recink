@@ -4,7 +4,7 @@ const Spinner = require('run-jst/src/component/helper/spinner');
 const mainEvents = require('run-jst/src/events');
 const testEvents = require('run-jst/src/component/test/events');
 const coverageEvents = require('run-jst/src/component/coverage/events');
-const ConfigBasedComponent = require('run-jst/src/component/config-based-component');
+const DependantConfigBasedComponent = require('run-jst/src/component/dependant-config-based-component');
 const Formatter = require('codeclimate-test-reporter/formatter');
 const pify = require('pify');
 const CodeclimateClient = require('./codeclimate-client');
@@ -12,7 +12,7 @@ const CodeclimateClient = require('./codeclimate-client');
 /**
  * CodeClimate component
  */
-class CodeclimateComponent extends ConfigBasedComponent {
+class CodeclimateComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -20,7 +20,6 @@ class CodeclimateComponent extends ConfigBasedComponent {
     super(...args);
     
     this._lcovBuffer = '';
-    this._coverageReadyPromise = Promise.resolve();
   }
   
   /**
@@ -28,6 +27,13 @@ class CodeclimateComponent extends ConfigBasedComponent {
    */
   get name() {
     return 'codeclimate';
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [ 'coverage' ];
   }
   
   /**
@@ -92,67 +98,10 @@ class CodeclimateComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {Emitter} emitter
-   *
-   * @returns {Promise}
-   */
-  subscribe(emitter) {
-    this._coverageReadyPromise = new Promise(resolve => {
-      emitter.on(mainEvents.component.ready, component => {
-        if (component.name === CodeclimateComponent.COVERAGE_COMPONENT) {
-          resolve(component.isActive);
-        }
-      });
-    });
-    
-    return super.subscribe(emitter);
-  }
-  
-  /**
-   * @param {Emitter} emitter
-   *
-   * @returns {Promise}
-   */
-  waitConfig(emitter) {
-    return super.waitConfig(emitter)
-      .then(container => {
-        if (container) {
-          if (!emitter.component(CodeclimateComponent.COVERAGE_COMPONENT)) {
-            this.setActive(false);
-            this.logger.debug(`Disabled Coverage component ==> CodeClimate:off`);
-            
-            return Promise.resolve(null);
-          }
-          
-          return this._coverageReadyPromise
-            .then(coverageEnabled => {
-              if (!coverageEnabled) {
-                this.setActive(false);
-                this.logger.debug(`Inactive Coverage component ==> CodeClimate:off`);
-                
-                return Promise.resolve(null);
-              }
-              
-              return Promise.resolve(container);
-            });
-        }
-        
-        return Promise.resolve(null);
-      });
-  }
-  
-  /**
    * @returns {string}
    */
   static get ISTANBUL_REPORTER() {
     return 'text-lcov';
-  }
-  
-  /**
-   * @returns {string}
-   */
-  static get COVERAGE_COMPONENT() {
-    return 'coverage';
   }
 }
 

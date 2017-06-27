@@ -109,7 +109,9 @@ class NpmComponent extends DependantConfigBasedComponent {
                 this.container.get('scripts', []),
                 emitModule.container.get('scripts', [])
               )
-            );
+            ).then(() => {
+              emitter.emit(events.npm.dependencies.postinstall, npmModule, emitModule);
+            });
           });
       });
       
