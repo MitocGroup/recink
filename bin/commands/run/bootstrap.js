@@ -34,10 +34,13 @@ module.exports = availableComponents => {
             const resolvedDepPath = path.join(
               __dirname,
               '../../..',
-              depPath
-                .replace(/^run-jst/i, '')
-                .replace(/\.js$/i, '') + '.js'
+              path.dirname(depPath).replace(/^run-jst(.*\/.*)$/i, '$1'),
+              path.basename(depPath, '.js') + '.js'
             );
+            
+            if (!fs.existsSync(resolvedDepPath)) {
+              return;
+            }
             
             return {
               source: fs.readFileSync(resolvedDepPath).toString(),
