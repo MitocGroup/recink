@@ -6,7 +6,7 @@ reCInk - Rethink CI for JavaScript applications
 [![Code Climate](https://codeclimate.com/github/MitocGroup/reCInk/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/reCInk)
 [![API Docs](https://mitocgroup.github.io/reCInk/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/reCInk/api/)
 
-`reCInk` (aka `recink`) is a highly customizable and extremely optimized tests runner
+`reCInk` (former `run-jst`) is a highly customizable and extremely optimized tests runner
 suitable for running tests on big / hybrid / complex projects by adding a simple `.recink.yml` config.
 
 # Motivation
