@@ -23,8 +23,8 @@ $:
   preprocess:
     '$.codeclimate.token': 'eval'
   codeclimate:
-    token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'
-    # skip-certificate: true
+    token: 'process.env.JST_CODECLIMATE_REPO_TOKEN'     # CodeClimate Repo token
+    # skip-certificate: true                            # Skip validating server SSL certificate
 ```
 
 `.travis.yml` configuration:

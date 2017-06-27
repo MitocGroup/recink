@@ -23,9 +23,9 @@ $:
   preprocess:
     '$.snyk.token': 'eval'
   snyk:
-    token: 'process.env.JST_SNYK_API_TOKEN'
-    # show-vulnerable-paths: true
-    # org: null
+    token: 'process.env.JST_SNYK_API_TOKEN'     # Snyk.io API token
+    # actionable: true                          # Show actionable items
+    # dev: false                                # Analyze 'devDependencies'
 ```
 
 `.travis.yml` configuration:

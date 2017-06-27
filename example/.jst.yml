@@ -2,7 +2,8 @@
 $:
   snyk:
     token: 'process.env.JST_SNYK_API_TOKEN'
-    #org: MitocGroup
+    actionable: true
+    dev: true
   preprocess:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'

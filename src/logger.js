@@ -186,6 +186,9 @@ class Logger {
       beer: '🍺 ',
       bicycle: '🚲 ',
       star: '⭐️ ',
+      moon_full: '🌔 ',
+      moon_half: '🌓 ',
+      moon_empty: '🌘 ',
     };
   }
   

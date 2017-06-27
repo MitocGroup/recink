@@ -34,16 +34,15 @@ class SnykComponent extends DependantConfigBasedComponent {
     return new Promise((resolve, reject) => {
       const promises = [];
       const token = this.container.get('token', '');
-      const org = this.container.get('org', null);
-      const showPaths = this.container.get('show-vulnerable-paths', true);
+      const dev = this.container.get('dev', false);
+      const actionable = this.container.get('actionable', true);
       
       snykUserConfig.set('api', token);
       
       emitter.on(npmEvents.npm.dependencies.postinstall, (npmModule, emitModule) => {
         const options = {
-          org,
-          json: true,
-          'show-vulnerable-paths': showPaths ? 'true' : 'false',
+          dev, json: true,
+          'show-vulnerable-paths': actionable ? 'true' : 'false',
         };
         
         promises.push(
@@ -82,6 +81,10 @@ class SnykComponent extends DependantConfigBasedComponent {
     
     this.logger.debug(JSON.stringify(result, null, '  '));
     
+    const gray = this.logger.chalk.gray;
+    const red = this.logger.chalk.red;
+    const yellow = this.logger.chalk.yellow;
+    const green = this.logger.chalk.green;
     const moduleInfo = `${ emitModule.name } (${ npmModule.packageFile })`;
     const pm = result.packageManager;
     const deps = result.dependencyCount || 0;
@@ -104,20 +107,33 @@ class SnykComponent extends DependantConfigBasedComponent {
       reportedVulns[vuln.id] = true;
 
       let res = '';
+      let badge = '';
       const name = `${ vuln.name }@${ vuln.version }`;
       const severity = vuln.severity[0].toUpperCase() + vuln.severity.slice(1);
       const issue = vuln.type === 'license' ? 'issue' : 'vulnerability';
       
-      res += this.logger.chalk.red(`${ severity } severity ${ issue } found on ${ name }\n`);
-      res += `  - desc: ${ vuln.title }\n`;
-      res += `  - info: ${ snykConfig.ROOT }/vuln/${ vuln.id }\n`;
+      switch(vuln.severity) {
+        case 'high':
+          badge = this.logger.emoji.moon_empty;
+          break;
+        case 'medium':
+          badge = this.logger.emoji.moon_half;
+          break;
+        case 'low':
+          badge = this.logger.emoji.moon_full;
+          break;
+      }
+      
+      res += badge + this.logger.chalk.red(` ${ severity } severity ${ issue } found on ${ name }\n`);
+      res += `   ${ gray('description:') } ${ vuln.title }\n`;
+      res += `   ${ gray('info:') } ${ snykConfig.ROOT }/vuln/${ vuln.id }\n`;
       
       if (showVulnPaths) {
-        res += `  - from: ${ vuln.from.join(' > ') }\n`;
+        res += `   ${ gray('package:') } ${ vuln.from.join(' > ') }\n`;
       }
 
       if (vuln.note) {
-        res += `${ vuln.note }\n`;
+        res += `   ${ gray('note:') } ${ vuln.note }\n`;
       }
 
       // none of the output past this point is relevant if we're not displaying
@@ -138,7 +154,7 @@ class SnykComponent extends DependantConfigBasedComponent {
           ? ` (triggers upgrades to ${ upgradeSteps.join(' > ') })` 
           : '';
 
-        let fix = ''; // = 'Fix:\n';
+        let fix = '';
         
         for (let idx = 0; idx < vuln.upgradePath.length; idx++) {
           const elem = vuln.upgradePath[idx];
@@ -164,21 +180,25 @@ class SnykComponent extends DependantConfigBasedComponent {
             } else {
               
               // A deep dependency needs to be upgraded
-              res += 'No direct dependency upgrade can address this issue.\n';
+              res += `   ${ gray('actionable:') } `;
+              res += yellow('No direct dependency upgrade can address this issue.\n');
             }
             break;
           }
         }
         
-        res += this.logger.chalk.bold(fix);
+        if (fix.length > 0) {
+          res += `   ${ gray('actionable:') } ${ green(fix) }`;
+        }
       } else {
         if (vuln.type === 'license') {
           
           // do not display fix (there isn't any), remove newline
           res = res.slice(0, -1);
         } else if (pm === 'npm') {
-          res += this.logger.chalk.magenta(
-            'Fix: None available. Consider removing this dependency.'
+          res += `   ${ gray('actionable:') } `;
+          res += red(
+            'No fix available. Consider removing this dependency.'
           );
         }
       }
