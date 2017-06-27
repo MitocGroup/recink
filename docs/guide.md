@@ -12,7 +12,7 @@ and configure your GitHub project.
 ### Adding [Travis](https://travis-ci.org) environment variables
 
 ```
-recink travis encrypt -x 'RECINK_EXAMPLE_ENV_VAR=1234' -x 'RECINK_ANOTHER_EXAMPLE_ENV_VAR=4321'
+recink travis encrypt -x 'EXAMPLE_ENV_VAR=1234' -x 'ANOTHER_EXAMPLE_ENV_VAR=4321'
 ```
 
 Please note that if your repository is private you have to use [Travis Pro](https://travis-ci.com).
