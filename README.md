@@ -90,7 +90,7 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 
 > [Navigate here](https://github.com/MitocGroup/reCInk/tree/master/components) to see all inhouse components
 
-# Projects using `reCInk`
+# Projects using "reCInk"
 
 - [Deep Framework](https://github.com/MitocGroup/deep-framework)
 
