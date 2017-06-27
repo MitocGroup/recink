@@ -51,7 +51,7 @@ class VolatileDriver extends AbstractDriver {
    * @private
    */
   _storageFile(name) {
-    return path.join(os.tmpDir(), '__jst_coverage_volatile__', name);
+    return path.join(os.tmpDir(), '__recink_coverage_volatile__', name);
   }
 }
 

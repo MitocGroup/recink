@@ -1,9 +1,9 @@
 'use strict';
 
-const Spinner = require('run-jst/src/component/helper/spinner');
-const testEvents = require('run-jst/src/component/test/events');
-const coverageEvents = require('run-jst/src/component/coverage/events');
-const DependantConfigBasedComponent = require('run-jst/src/component/dependant-config-based-component');
+const Spinner = require('recink/src/component/helper/spinner');
+const testEvents = require('recink/src/component/test/events');
+const coverageEvents = require('recink/src/component/coverage/events');
+const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
 const Formatter = require('codeclimate-test-reporter/formatter');
 const pify = require('pify');
 const CodeclimateClient = require('./codeclimate-client');

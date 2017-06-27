@@ -1,7 +1,7 @@
 {
-  "name": "run-jst-snyk",
+  "name": "recink-snyk",
   "version": "1.1.0",
-  "description": "Snyk.io run-jst component",
+  "description": "Snyk.io reCInk component",
   "keywords": [
     "Testing",
     "Unit",
@@ -11,11 +11,12 @@
     "Snyk.io",
     "Security",
     "Snyk",
-    "Vulnerabilities"
+    "Vulnerabilities",
+    "reCInk"
   ],
-  "homepage": "https://github.com/MitocGroup/run-jst",
+  "homepage": "https://github.com/MitocGroup/reCInk",
   "bugs": {
-    "url": "https://github.com/MitocGroup/run-jst/issues"
+    "url": "https://github.com/MitocGroup/reCInk/issues"
   },
   "license": "MIT",
   "author": {
@@ -32,13 +33,13 @@
   "main": "src/snyk-component.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MitocGroup/run-jst.git"
+    "url": "https://github.com/MitocGroup/reCInk.git"
   },
   "dependencies": {
     "snyk": "^1.36.1"
   },
   "peerDependencies": {
-    "run-jst": "^1.4.0"
+    "recink": "^1.4.0"
   },
   "engines": {
     "node": ">=6.0 <7.0",

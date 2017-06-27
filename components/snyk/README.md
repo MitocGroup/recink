@@ -1,29 +1,29 @@
 Snyk.io Component
 ======================
 
-This is a [run-jst](https://github.com/MitocGroup/run-jst) component that detects vulnerable
+This is a [reCInk](https://github.com/MitocGroup/reCInk) component that detects vulnerable
 dependencies according to `package.json` submitted to [Snyk.io](https://snyk.io) backend.
 
 # Prerequisites
 
 - [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
-- [ ] [Install "run-jst"](https://github.com/MitocGroup/run-jst#installation)
+- [ ] [Install "reCInk"](https://github.com/MitocGroup/reCInk#installation)
 - [ ] Profit?!
 
 # Installation
 
-- `npm install -g run-jst-snyk`
+- `npm install -g recink-snyk`
 
 # Configuration
 
-`.jst.yml` configuration:
+`.recink.yml` configuration:
 
 ```
 $:
   preprocess:
     '$.snyk.token': 'eval'
   snyk:
-    token: 'process.env.JST_SNYK_API_TOKEN'     # Snyk.io API token
+    token: 'process.env.RECINK_SNYK_API_TOKEN'     # Snyk.io API token
     # actionable: true                          # Show actionable items
     # dev: false                                # Analyze 'devDependencies'
 ```
@@ -31,22 +31,22 @@ $:
 `.travis.yml` configuration:
 
 ```
-script: 'jst run unit -c run-jst-snyk'  
+script: 'recink run unit -c recink-snyk'  
 before_install:
   # other before_install scripts...
-  - 'npm install -g run-jst-snyk'
+  - 'npm install -g recink-snyk'
 ```
 
 Add the [Snyk.io API Token](https://snyk.io/docs/quick-start/#authentication) to `.travis.yml`:
 
 ```
-jst travis encrypt -x 'JST_SNYK_API_TOKEN=1234'
+recink travis encrypt -x 'RECINK_SNYK_API_TOKEN=1234'
 ```
 
-> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
 
 # Usage
 
 ```
-JST_SNYK_API_TOKEN=1234 jst run unit -c run-jst-snyk
+RECINK_SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
 ```

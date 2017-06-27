@@ -210,7 +210,7 @@ class AbstractDriver extends EventEmitter {
    * @returns {string}
    */
   static get DEFAULT_NS() {
-    return 'jst_package';
+    return 'recink_package';
   }
 }
 

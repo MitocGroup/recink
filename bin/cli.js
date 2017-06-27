@@ -54,10 +54,10 @@ const commands = prog
 
 if (!Env.isCI) {
   commands
-    .command('configure jst', 'Configure run-jst') 
+    .command('configure recink', 'Configure reCInk') 
     .argument('[path]', 'Path to package root', /.+/, process.cwd())
     .option('--overwrite', 'Overwrite existing configuration file')
-    .action(cmd('./commands/configure/jst'))   
+    .action(cmd('./commands/configure/recink'))   
     .command('configure travis', 'Configure Travis') 
     .argument('[path]', 'Path to package root', /.+/, process.cwd())
     .option('--overwrite', 'Overwrite existing configuration file')

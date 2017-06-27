@@ -51,12 +51,12 @@ function validate_input () {
 validate_input "$@"
 require_clean_work_tree
 cd "components/$2"                                                                                              || fail "No such component $2 found"
-rm -rf node_modules                                                                                             || fail "Cleaning up run-jst-$2 node_modules"
-npm install --no-shrinkwrap                                                                                     || fail "Installing run-jst-$2 dependencies"
-npm version "$1" --no-git-tag-version                                                                           || fail "Updating $1 version of run-jst-$2 package"
-npm publish                                                                                                     || fail "Publishing run-jst-$2 package on npmjs.com"
+rm -rf node_modules                                                                                             || fail "Cleaning up recink-$2 node_modules"
+npm install --no-shrinkwrap                                                                                     || fail "Installing recink-$2 dependencies"
+npm version "$1" --no-git-tag-version                                                                           || fail "Updating $1 version of recink-$2 package"
+npm publish                                                                                                     || fail "Publishing recink-$2 package on npmjs.com"
 cd ../../
-(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish run-jst-$2 package on npmjs.com"))
+(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish recink-$2 package on npmjs.com"))
 git push
 
 echo '[OK] Done.'

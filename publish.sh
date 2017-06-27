@@ -45,13 +45,13 @@ function validate_input () {
 
 validate_input "$@"
 require_clean_work_tree
-rm -rf node_modules                                                                                             || fail "Cleaning up run-jst node_modules"
-npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing run-jst dependencies"
-npm run docs                                                                                                    || fail "Generate run-jst API documentation"
+rm -rf node_modules                                                                                             || fail "Cleaning up recink node_modules"
+npm install --no-shrinkwrap --no-peer                                                                           || fail "Installing recink dependencies"
+npm run docs                                                                                                    || fail "Generate recink API documentation"
 (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Generate API docs"))
-npm version "$1"                                                                                                || fail "Updating $1 version of run-jst package"
-npm publish                                                                                                     || fail "Publishing run-jst package on npmjs.com"
-(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish run-jst package on npmjs.com"))
+npm version "$1"                                                                                                || fail "Updating $1 version of recink package"
+npm publish                                                                                                     || fail "Publishing recink package on npmjs.com"
+(git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish recink package on npmjs.com"))
 git push && git push --tags
 
 echo '[OK] Done.'

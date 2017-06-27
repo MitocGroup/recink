@@ -355,7 +355,7 @@ class CoverageComponent extends DependantConfigBasedComponent {
   _coverageVariable(module) {
     const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');
     
-    return `__jst_coverage__${ cleanModuleName }__`;
+    return `__recink_coverage__${ cleanModuleName }__`;
   }
   
   /**

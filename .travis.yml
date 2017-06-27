@@ -19,17 +19,17 @@ matrix:
     -
       node_js: 6
       before_install:
-        - 'npm install -g run-jst'
-      env: 'SCRIPT="jst run unit"'
+        - 'npm install -g recink'
+      env: 'SCRIPT="recink run unit"'
     -
       node_js: 8
       before_install:
-        - 'npm install -g run-jst'
-        - 'npm install -g run-jst-codeclimate'
-      env: 'SCRIPT="jst run unit -c run-jst-codeclimate"'
+        - 'npm install -g recink'
+        - 'npm install -g recink-codeclimate'
+      env: 'SCRIPT="recink run unit -c recink-codeclimate"'
     -
       node_js: 8
-      env: 'SCRIPT="jst run e2e"'
+      env: 'SCRIPT="recink run e2e"'
       addons:
         apt:
           packages:

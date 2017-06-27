@@ -1,7 +1,7 @@
 {
-  "name": "run-jst",
+  "name": "recink",
   "version": "1.8.1",
-  "description": "Highly customizable and extremely optimized tests runner",
+  "description": "Rethink CI for JavaScript applications",
   "keywords": [
     "Testing",
     "End2End",
@@ -11,9 +11,9 @@
     "Travis",
     "Coverage"
   ],
-  "homepage": "https://github.com/MitocGroup/run-jst",
+  "homepage": "https://github.com/MitocGroup/reCInk",
   "bugs": {
-    "url": "https://github.com/MitocGroup/run-jst/issues"
+    "url": "https://github.com/MitocGroup/reCInk/issues"
   },
   "license": "MIT",
   "author": {
@@ -28,12 +28,12 @@
     }
   ],
   "bin": {
-    "jst": "./bin/cli.js"
+    "recink": "./bin/cli.js"
   },
-  "main": "src/jst.js",
+  "main": "src/recink.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MitocGroup/run-jst.git"
+    "url": "https://github.com/MitocGroup/reCInk.git"
   },
   "scripts": {
     "docs": "npm run docs:diagram && npm run docs:api",

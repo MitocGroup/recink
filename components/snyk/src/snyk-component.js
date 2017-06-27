@@ -1,8 +1,8 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('run-jst/src/component/dependant-config-based-component');
-const emitEvents = require('run-jst/src/component/emit/events');
-const npmEvents = require('run-jst/src/component/npm/events');
+const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const emitEvents = require('recink/src/component/emit/events');
+const npmEvents = require('recink/src/component/npm/events');
 const snykUserConfig = require('snyk/lib/user-config');
 const snykTest = require('snyk/cli/commands/test');
 const snykConfig = require('snyk/lib/config');
@@ -73,6 +73,12 @@ class SnykComponent extends DependantConfigBasedComponent {
       try {
         result = JSON.parse(result.message);
       } catch (error) {
+        if (result.code === 'NO_API_TOKEN') {
+          throw new Error('Missing Snyk.io API token.');
+        } else if (result.code === 401) {
+          throw new Error('Snyk.io API token is invalid.');
+        }
+        
         throw result;
       }
     } else {
@@ -86,7 +92,7 @@ class SnykComponent extends DependantConfigBasedComponent {
     const red = this.logger.chalk.red;
     const yellow = this.logger.chalk.yellow;
     const green = this.logger.chalk.green;
-    const moduleInfo = `${ emitModule.name } (${ npmModule.packageFile })`;
+    const moduleInfo = gray(`${ gray.bold(emitModule.name) }:${ npmModule.packageFileRelative }`);
     const pm = result.packageManager;
     const deps = result.dependencyCount || 0;
     const badge = (result.ok && result.vulnerabilities.length <= 0)

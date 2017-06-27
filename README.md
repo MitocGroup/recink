@@ -1,13 +1,13 @@
-run-jst
-========
+reCInk - Rethink CI for JavaScript applications
+===============================================
 
-[![NPM Version](https://img.shields.io/npm/v/run-jst.svg?maxAge=0)](https://npmjs.org/package/run-jst)
-[![Build Status](https://travis-ci.org/MitocGroup/run-jst.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/run-jst)
-[![Code Climate](https://codeclimate.com/github/MitocGroup/run-jst/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/run-jst)
-[![API Docs](https://mitocgroup.github.io/run-jst/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/run-jst/api/)
+[![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
+[![Build Status](https://travis-ci.org/MitocGroup/reCInk.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/reCInk)
+[![Code Climate](https://codeclimate.com/github/MitocGroup/reCInk/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/reCInk)
+[![API Docs](https://mitocgroup.github.io/reCInk/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/reCInk/api/)
 
-`run-jst` (aka `jst`) is a highly customizable and extremely optimized tests runner
-suitable for running tests on big / hybrid / complex projects by adding a simple `.jst.yml` config.
+`reCInk` (aka `recink`) is a highly customizable and extremely optimized tests runner
+suitable for running tests on big / hybrid / complex projects by adding a simple `.recink.yml` config.
 
 # Motivation
 
@@ -17,20 +17,20 @@ with a minimal headache possible and extending the runner via components using a
 
 Also CI integration and caching out of the box :wink:
 
-> The project have been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
+> The project has been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
 
 # Features
 
-- Easy to [install](https://github.com/MitocGroup/run-jst#installation)/[configure](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project)/[use](https://github.com/MitocGroup/run-jst#usage)
-- [Multimodule](https://github.com/MitocGroup/deep-framework/blob/master/.jst.yml#L58) support with consolidated coverage
+- Easy to [install](https://github.com/MitocGroup/reCInk#installation)/[configure](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project)/[use](https://github.com/MitocGroup/reCInk#usage)
+- [Multimodule](https://github.com/MitocGroup/deep-framework/blob/master/.recink.yml#L58) support with consolidated coverage
 - [Travis](https://travis-ci.org) support
 - [Coverage](https://istanbul.js.org) support
 - [NPM](https://www.npmjs.com) support with packages global/local overwrites (including custom scripts execution)
 - [AWS S3](https://aws.amazon.com/s3/) storage driver support
-- [Caching](https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L10) support
-- [Easily extendable](https://github.com/MitocGroup/run-jst#components-inhouse--3rd-party)
-- [Easily debuggable](https://github.com/MitocGroup/run-jst#debugging)
-- [Well documented](https://github.com/MitocGroup/run-jst#documentation)
+- [Caching](https://github.com/MitocGroup/reCInk/blob/master/bin/templates/.recink.yml#L10) support
+- [Easily extendable](https://github.com/MitocGroup/reCInk#components-inhouse--3rd-party)
+- [Easily debuggable](https://github.com/MitocGroup/reCInk#debugging)
+- [Well documented](https://github.com/MitocGroup/reCInk#documentation)
 - To be continued...
 
 > [Mocha](http://mochajs.org) is used as test framework for `unit` testing
@@ -46,21 +46,21 @@ Also CI integration and caching out of the box :wink:
 
 # Installation
 
-`npm install -g run-jst`
+`npm install -g recink`
 
 # Getting Started
 
-Check out the [User Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md#configuring-github-project)
+Check out the [User Guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project)
 
 # Usage
 
-`jst --help` Show help
+`recink --help` Show help
 
-`jst configure jst` Configure run-jst
+`recink configure recink` Configure `reCInk`
 
-`jst run unit` Run unit tests
+`recink run unit` Run unit tests
 
-`jst run e2e` Run end-to-end tests
+`recink run e2e` Run end-to-end tests
 
 # Debugging
 
@@ -77,20 +77,20 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 
 # Documentation
 
-- [x] [Quick Start Guide](https://github.com/MitocGroup/run-jst/blob/master/docs/guide.md)
-- [x] [Crafting Components](https://github.com/MitocGroup/run-jst/blob/master/docs/component-guide.md)
-- [x] [Api Docs](https://mitocgroup.github.io/run-jst/api/identifiers.html)
-- [x] [Module Diagram](https://mitocgroup.github.io/run-jst/module-diagram.html)
-- [x] [FAQ](https://github.com/MitocGroup/run-jst/blob/master/docs/faq.md)
+- [x] [Quick Start Guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md)
+- [x] [Crafting Components](https://github.com/MitocGroup/reCInk/blob/master/docs/component-guide.md)
+- [x] [Api Docs](https://mitocgroup.github.io/reCInk/api/identifiers.html)
+- [x] [Module Diagram](https://mitocgroup.github.io/reCInk/module-diagram.html)
+- [x] [FAQ](https://github.com/MitocGroup/reCInk/blob/master/docs/faq.md)
 
 # Components (inhouse + 3'rd party)
 
-- :house: [CodeClimate](https://github.com/MitocGroup/run-jst/blob/master/components/codeclimate/README.md)
-- :house: [Snyk.io](https://github.com/MitocGroup/run-jst/blob/master/components/snyk/README.md)
+- :house: [CodeClimate](https://github.com/MitocGroup/reCInk/blob/master/components/codeclimate/README.md)
+- :house: [Snyk.io](https://github.com/MitocGroup/reCInk/blob/master/components/snyk/README.md)
 
-> [Navigate here](https://github.com/MitocGroup/run-jst/tree/master/components) to see all inhouse components
+> [Navigate here](https://github.com/MitocGroup/reCInk/tree/master/components) to see all inhouse components
 
-# Projects using run-jst
+# Projects using `reCInk`
 
 - [Deep Framework](https://github.com/MitocGroup/deep-framework)
 
@@ -116,7 +116,7 @@ This repository is being sponsored by:
 
 # License
 
-run-jst is released under the MIT license.
+recink is released under the MIT license.
 
 Copyright (c) 2017 Mitoc Group Inc
 

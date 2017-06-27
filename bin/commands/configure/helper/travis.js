@@ -1,12 +1,12 @@
 'use strict';
 
-const Jst = require('../../../../src/jst');
+const ReCInk = require('../../../../src/recink');
 const file = '.travis.yml';
 
 const vars = {
-  AWS_ACCESS_KEY_ID: 'JST_AWS_ACCESS_KEY_ID',
-  AWS_SECRET_ACCESS_KEY: 'JST_AWS_SECRET_ACCESS_KEY',
-  AWS_REGION: 'JST_AWS_REGION',
+  AWS_ACCESS_KEY_ID: 'RECINK_AWS_ACCESS_KEY_ID',
+  AWS_SECRET_ACCESS_KEY: 'RECINK_AWS_SECRET_ACCESS_KEY',
+  AWS_REGION: 'RECINK_AWS_REGION',
 };
 
 const info = {
@@ -32,7 +32,7 @@ function dump(varName, value) {
  */
 function help(localVars = null) {
   const output = [
-    `You can use the following variables in your ${ Jst.CONFIG_FILE_NAME }:`,
+    `You can use the following variables in your ${ ReCInk.CONFIG_FILE_NAME }:`,
   ];
   
   output.push('\n');
@@ -49,7 +49,7 @@ function help(localVars = null) {
   
   output.push('\n');
   output.push('Please ensure the \'eval\' preprocessor added for the options.');
-  output.push('Sample Config: https://github.com/MitocGroup/run-jst/blob/master/bin/templates/.jst.yml#L5');
+  output.push('Sample Config: https://github.com/MitocGroup/reCInk/blob/master/bin/templates/.recink.yml#L5');
   
   return output.join('\n');
 }

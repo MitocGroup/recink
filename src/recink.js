@@ -9,9 +9,9 @@ const AbstractComponent = require('./component/abstract-component');
 const logger = require('./logger');
 
 /**
- * Jst entry point
+ * ReCInk entry point
  */
-class Jst extends Emitter {
+class ReCInk extends Emitter {
   constructor() {
     super();
     
@@ -151,7 +151,7 @@ class Jst extends Emitter {
    *
    * @returns {Promise}
    */
-  configure(configFile = Jst.CONFIG_FILE) {
+  configure(configFile = ReCInk.CONFIG_FILE) {
     return configFactory.guess(configFile)
       .load()
       .then(config => this._configLoad(config, configFile));
@@ -218,8 +218,8 @@ class Jst extends Emitter {
    * @returns {string}
    */
   static get CONFIG_FILE_NAME() {
-    return '.jst.yml';
+    return '.recink.yml';
   }
 }
 
-module.exports = Jst;
+module.exports = ReCInk;

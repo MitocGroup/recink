@@ -1,6 +1,6 @@
 'use strict';
 
-const Jst = require('../../../src/jst');
+const ReCInk = require('../../../src/recink');
 const componentsFactory = require('../../../src/component/factory');
 const path = require('path');
 const requireHacker = require('require-hacker');
@@ -8,7 +8,7 @@ const fs = require('fs');
 
 module.exports = availableComponents => {
   return (args, options, logger) => {
-    const jst = new Jst();
+    const recink = new ReCInk();
     let disabledComponents = options.s;
     let additionalComponents = options.c;
     
@@ -27,14 +27,14 @@ module.exports = availableComponents => {
         const hook = requireHacker.global_hook(
           'js', 
           depPath => {
-            if (!/^run-jst/i.test(depPath)) {
+            if (!/^recink/i.test(depPath)) {
               return;
             }
             
             const resolvedDepPath = path.join(
               __dirname,
               '../../..',
-              path.dirname(depPath).replace(/^run-jst(.*\/.*)$/i, '$1'),
+              path.dirname(depPath).replace(/^recink(.*\/.*)$/i, '$1'),
               path.basename(depPath, '.js') + '.js'
             );
             
@@ -61,8 +61,8 @@ module.exports = availableComponents => {
       }));
 
     return Promise.all([
-      jst.components(...components),
-      jst.configure(path.join(args.path, Jst.CONFIG_FILE_NAME))
-    ]).then(() => jst.run());
+      recink.components(...components),
+      recink.configure(path.join(args.path, ReCInk.CONFIG_FILE_NAME))
+    ]).then(() => recink.run());
   };
 };

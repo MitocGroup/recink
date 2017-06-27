@@ -119,7 +119,7 @@ module.exports = (args, options, logger) => {
                     `GitHub repository ${ repo } is either missing from Travis CI or Travis CI Pro.\n` +
                     'Please note that if you are using Travis CI Pro you have to provide GitHub credentials or access token, ' +
                     'otherwise please do NOT specify credentials or access token options!\n\n' +
-                    'For help menu on configuring Travis Pro credentials or access token run: jst travis encrypt --help.\n\n' +
+                    'For help menu on configuring Travis Pro credentials or access token run: recink travis encrypt --help.\n\n' +
                     'See how to setup you GitHub repository https://docs.travis-ci.com/user/getting-started#To-get-started-with-Travis-CI%3A'
                   );
                 }

@@ -3,7 +3,7 @@
 const dot = require('dot-object');
 
 /**
- * JST main events
+ * RECINK main events
  */
 const events = {};
 

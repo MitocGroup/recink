@@ -47,6 +47,13 @@ class NpmModule {
   /**
    * @returns {string}
    */
+  get packageFileRelative() {
+    return path.relative(process.cwd(), this.packageFile);
+  }
+  
+  /**
+   * @returns {string}
+   */
   get packageFile() {
     return path.join(this.rootDir, NpmModule.PACKAGE_FILE);
   }

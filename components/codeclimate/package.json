@@ -1,7 +1,7 @@
 {
-  "name": "run-jst-codeclimate",
+  "name": "recink-codeclimate",
   "version": "1.3.0",
-  "description": "CodeClimate run-jst component",
+  "description": "CodeClimate reCInk component",
   "keywords": [
     "Testing",
     "Unit",
@@ -10,11 +10,12 @@
     "CodeClimate",
     "lcov",
     "Coverage",
-    "Travis"
+    "Travis",
+    "reCInk"
   ],
-  "homepage": "https://github.com/MitocGroup/run-jst",
+  "homepage": "https://github.com/MitocGroup/reCInk",
   "bugs": {
-    "url": "https://github.com/MitocGroup/run-jst/issues"
+    "url": "https://github.com/MitocGroup/reCInk/issues"
   },
   "license": "MIT",
   "author": {
@@ -31,7 +32,7 @@
   "main": "src/codeclimate-component.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MitocGroup/run-jst.git"
+    "url": "https://github.com/MitocGroup/reCInk.git"
   },
   "dependencies": {
     "codeclimate-test-reporter": "github:codeclimate/javascript-test-reporter",
@@ -39,7 +40,7 @@
     "request": "^2.81.0"
   },
   "peerDependencies": {
-    "run-jst": "^1.4.0"
+    "recink": "^1.4.0"
   },
   "engines": {
     "node": ">=6.0 <7.0",
