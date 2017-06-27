@@ -1,5 +1,5 @@
-reCInk - Rethink CI for JavaScript applications
-===============================================
+Rethink (reCInk) Continuous Integration for JavaScript Applications 
+===================================================================
 
 [![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
 [![Build Status](https://travis-ci.org/MitocGroup/reCInk.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/reCInk)
