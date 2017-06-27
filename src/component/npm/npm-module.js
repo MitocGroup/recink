@@ -45,6 +45,27 @@ class NpmModule {
   }
   
   /**
+   * @returns {string}
+   */
+  get packageFile() {
+    return path.join(this.rootDir, NpmModule.PACKAGE_FILE);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get modulesDir() {
+    return path.join(this.rootDir, NpmModule.MODULES_DIR);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get debugFile() {
+    return path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE);
+  }
+  
+  /**
    * @param {*} deps
    * @param {array} scripts
    *
@@ -52,8 +73,8 @@ class NpmModule {
    */
   install(deps = {}, scripts = []) {
     let cacheKey;
-    const packageFile = path.join(this.rootDir, NpmModule.PACKAGE_FILE);
-    const modulesDir = path.join(this.rootDir, NpmModule.MODULES_DIR);
+    const packageFile = this.packageFile;
+    const modulesDir = this.modulesDir;
     
     return fse.ensureDir(modulesDir)
       .then(() => this._packageHash(packageFile, deps))
@@ -126,7 +147,7 @@ class NpmModule {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to run script ${ script } in ${ this.rootDir }.\n` +
-            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`
+            `To open logs type: 'open ${ this.debugFile }'`
           ));
         }
         
@@ -208,7 +229,7 @@ class NpmModule {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to install dependencies in ${ this.rootDir }.\n` +
-            `To open logs type: 'open ${ path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE) }'`
+            `To open logs type: 'open ${ this.debugFile }'`
           ));
         }
         

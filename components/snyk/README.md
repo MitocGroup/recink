@@ -25,7 +25,7 @@ $:
   snyk:
     token: 'process.env.JST_SNYK_API_TOKEN'
     # show-vulnerable-paths: true
-    # output-json: false
+    # org: null
 ```
 
 `.travis.yml` configuration:
