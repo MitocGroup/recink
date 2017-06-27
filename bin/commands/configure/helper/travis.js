@@ -4,15 +4,15 @@ const ReCInk = require('../../../../src/recink');
 const file = '.travis.yml';
 
 const vars = {
-  AWS_ACCESS_KEY_ID: 'RECINK_AWS_ACCESS_KEY_ID',
-  AWS_SECRET_ACCESS_KEY: 'RECINK_AWS_SECRET_ACCESS_KEY',
-  AWS_REGION: 'RECINK_AWS_REGION',
+  AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
+  AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
+  AWS_DEFAULT_REGION: 'AWS_DEFAULT_REGION',
 };
 
 const info = {
   AWS_ACCESS_KEY_ID: 'AWS Access Key Id',
   AWS_SECRET_ACCESS_KEY: 'AWS Secret Access Key',
-  AWS_REGION: 'AWS Region',
+  AWS_DEFAULT_REGION: 'AWS Region',
 };
 
 /**

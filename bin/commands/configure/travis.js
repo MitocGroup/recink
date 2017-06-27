@@ -72,7 +72,7 @@ module.exports = (args, options, logger) => {
               ];
               
               if (region) {
-                dataVector.push(travis.dump(travis.vars.AWS_REGION, region));
+                dataVector.push(travis.dump(travis.vars.AWS_DEFAULT_REGION, region));
               }
               
               const payload = { repo, data: dataVector.join(' ') };
