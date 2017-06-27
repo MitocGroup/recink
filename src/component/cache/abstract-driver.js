@@ -14,8 +14,6 @@ const fs = require('fs');
 class AbstractDriver extends EventEmitter {
   /**
    * @param {string} cacheDir
-   * 
-   * @returns {string}
    */
   constructor(cacheDir) {
     super();

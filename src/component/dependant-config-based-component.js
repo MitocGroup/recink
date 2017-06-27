@@ -1,7 +1,6 @@
 'use strict';
 
 const chalk = require('chalk');
-const mainEvents = require('../events');
 const ConfigBasedComponent = require('./config-based-component');
 
 /**

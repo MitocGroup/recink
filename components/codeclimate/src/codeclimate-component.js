@@ -1,7 +1,6 @@
 'use strict';
 
 const Spinner = require('run-jst/src/component/helper/spinner');
-const mainEvents = require('run-jst/src/events');
 const testEvents = require('run-jst/src/component/test/events');
 const coverageEvents = require('run-jst/src/component/coverage/events');
 const DependantConfigBasedComponent = require('run-jst/src/component/dependant-config-based-component');
