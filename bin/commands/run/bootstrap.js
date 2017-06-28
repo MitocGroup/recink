@@ -20,42 +20,40 @@ module.exports = availableComponents => {
       additionalComponents = [ additionalComponents ].filter(c => !!c);
     }
     
+    const hook = requireHacker.global_hook(
+      'js', 
+      depPath => {
+        if (!/^recink/i.test(depPath)) {
+          return;
+        }
+        
+        const resolvedDepPath = path.join(
+          __dirname,
+          '../../..',
+          path.dirname(depPath).replace(/^recink(.*\/.*)$/i, '$1'),
+          path.basename(depPath, '.js') + '.js'
+        );
+        
+        if (!fs.existsSync(resolvedDepPath)) {
+          return;
+        }
+        
+        return {
+          source: fs.readFileSync(resolvedDepPath).toString(),
+          path: resolvedDepPath,
+        };
+      }
+    );
+    
     const components = availableComponents
       .filter(c => disabledComponents.indexOf(c) === -1)
       .map(c => componentsFactory[c]())
       .concat(additionalComponents.map(component => {
-        const hook = requireHacker.global_hook(
-          'js', 
-          depPath => {
-            if (!/^recink/i.test(depPath)) {
-              return;
-            }
-            
-            const resolvedDepPath = path.join(
-              __dirname,
-              '../../..',
-              path.dirname(depPath).replace(/^recink(.*\/.*)$/i, '$1'),
-              path.basename(depPath, '.js') + '.js'
-            );
-            
-            if (!fs.existsSync(resolvedDepPath)) {
-              return;
-            }
-            
-            return {
-              source: fs.readFileSync(resolvedDepPath).toString(),
-              path: resolvedDepPath,
-            };
-          }
-        );
-        
         const ComponentConstructor =  require(
           /^[a-z]/i.test(component) 
             ? component 
             : path.join(process.cwd(), component)
         );
-        
-        hook.unmount();
         
         return new ComponentConstructor();
       }));
@@ -63,6 +61,12 @@ module.exports = availableComponents => {
     return Promise.all([
       recink.components(...components),
       recink.configure(path.join(args.path, ReCInk.CONFIG_FILE_NAME))
-    ]).then(() => recink.run());
+    ])
+    .then(() => recink.run())
+    .then(() => {
+      hook.unmount();
+      
+      return Promise.resolve();
+    });
   };
 };

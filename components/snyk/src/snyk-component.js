@@ -5,7 +5,7 @@ const emitEvents = require('recink/src/component/emit/events');
 const npmEvents = require('recink/src/component/npm/events');
 const snykUserConfig = require('snyk/lib/user-config');
 const snykTest = require('snyk/cli/commands/test');
-const snykConfig = require('snyk/lib/config');
+const ReporterFactory = require('./reporter/factory');
 
 /**
  * Snyk.io component
@@ -47,8 +47,8 @@ class SnykComponent extends DependantConfigBasedComponent {
         
         promises.push(
           snykTest(npmModule.rootDir, options)
-            .then(result => this._info(npmModule, emitModule, result, options))
-            .catch(error => this._info(npmModule, emitModule, error, options))
+            .then(result => this._createReport(npmModule, emitModule, result, options))
+            .catch(error => this._createReport(npmModule, emitModule, error, options))
         );
       });
       
@@ -61,6 +61,75 @@ class SnykComponent extends DependantConfigBasedComponent {
   }
   
   /**
+   * @param {*} result
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _handleFail(result) {
+    const enabled = this.container.get('fail.enabled', false);
+    const minSeverity = this.container.get('fail.severity', 'medium');
+    const minSeverityInt = this._severityInt(minSeverity);
+    
+    if (!enabled) {
+      return Promise.resolve();
+    }
+    
+    const reportedVulns = {};
+    const issues = (result.vulnerabilities || [])
+      .map(vuln => {
+        if (reportedVulns[vuln.id]) {
+          vuln.severityInt = -1;
+          
+          return vuln;
+        }
+        
+        reportedVulns[vuln.id] = true;
+        
+        vuln.severityInt = this._severityInt(vuln.severity);
+        
+        return vuln;
+      })
+      .filter(vuln => vuln.severityInt >= minSeverityInt);
+    
+    if (issues.length <= 0) {
+      return Promise.resolve();
+    }
+    
+    return Promise.reject(new Error(
+      `Snyk.io detected at least ${ issues.length } issues of ${ minSeverity } or higher severity.`
+    ));
+  }
+  
+  /**
+   * @param {string} severity
+   *
+   * @returns {number}
+   *
+   * @private
+   */
+  _severityInt(severity) {
+    let severityInt;
+    
+    switch(severity) {
+      case 'high':
+        severityInt = 3;
+        break;
+      case 'medium':
+        severityInt = 2;
+        break;
+      case 'low':
+        severityInt = 1;
+        break;
+      default:
+        severityInt = 2;
+    }
+    
+    return severityInt;
+  }
+  
+  /**
    * @param {*} npmModule
    * @param {*} emitModule
    * @param {string|Error} result
@@ -68,7 +137,7 @@ class SnykComponent extends DependantConfigBasedComponent {
    *
    * @private
    */
-  _info(npmModule, emitModule, result, options) {
+  _createReport(npmModule, emitModule, result, options) {
     if (result && typeof result === 'object' && result instanceof Error) {
       try {
         result = JSON.parse(result.message);
@@ -87,136 +156,18 @@ class SnykComponent extends DependantConfigBasedComponent {
     
     this.logger.debug(JSON.stringify(result, null, '  '));
     
-    const blue = this.logger.chalk.blue;
-    const gray = this.logger.chalk.gray;
-    const red = this.logger.chalk.red;
-    const yellow = this.logger.chalk.yellow;
-    const green = this.logger.chalk.green;
-    const moduleInfo = gray(`${ gray.bold(emitModule.name) }:${ npmModule.packageFileRelative }`);
-    const pm = result.packageManager;
-    const deps = result.dependencyCount || 0;
-    const badge = (result.ok && result.vulnerabilities.length <= 0)
-      ? this.logger.emoji.check 
-      : this.logger.emoji.cross;
-
-    this.logger.info(
-      `${ badge } Snyk.io processed ${ deps } ${ pm } dependencies - ${ moduleInfo }`
-    );
+    const reporters = this.container.get('reporters', { text: null });
+    const multiReporter = ReporterFactory.multi(this, npmModule, emitModule);
     
-    const showVulnPaths = options['show-vulnerable-paths'] === 'true';
-    const reportedVulns = {};
+    Object.keys(reporters).map(name => {
+      const args = [ this, npmModule, emitModule ].concat(reporters[name] || []);
+      const reporter = ReporterFactory.create(name, ...args);
+      
+      multiReporter.add(reporter);
+    });
     
-    const vulnerabilities = result.vulnerabilities.map(vuln => {
-      if (showVulnPaths && reportedVulns[vuln.id]) {
-        return;
-      }
-      
-      reportedVulns[vuln.id] = true;
-
-      let res = '';
-      let badge = '';
-      const name = `${ vuln.name }@${ vuln.version }`;
-      const severity = vuln.severity[0].toUpperCase() + vuln.severity.slice(1);
-      const issue = vuln.type === 'license' ? 'issue' : 'vulnerability';
-      
-      switch(vuln.severity) {
-        case 'high':
-          badge = this.logger.emoji.moon_empty;
-          break;
-        case 'medium':
-          badge = this.logger.emoji.moon_half;
-          break;
-        case 'low':
-          badge = this.logger.emoji.moon_full;
-          break;
-      }
-      
-      res += badge;
-      res += red(` ${ severity } severity ${ issue } found on `);
-      res += gray.bold(`${ name }\n`);
-      res += `   ${ gray('description:') } ${ vuln.title }\n`;
-      res += `   ${ gray('info:') } `;
-      res += blue.underline(`${ snykConfig.ROOT }/vuln/${ vuln.id }\n`);
-      
-      if (showVulnPaths) {
-        res += `   ${ gray('package:') } ${ vuln.from.join(' > ') }\n`;
-      }
-
-      if (vuln.note) {
-        res += `   ${ gray('note:') } ${ vuln.note }\n`;
-      }
-
-      // none of the output past this point is relevant if we're not displaying
-      // vulnerable paths
-      if (!showVulnPaths) {
-        return res.trim();
-      }
-
-      const upgradeSteps = (vuln.upgradePath || []).filter(Boolean);
-
-      // Remediation instructions (if we have one)
-      if (upgradeSteps.length) {
-
-        // Create upgrade text
-        let upgradeText = upgradeSteps.shift();
-        
-        upgradeText += upgradeSteps.length 
-          ? ` (triggers upgrades to ${ upgradeSteps.join(' > ') })` 
-          : '';
-
-        let fix = '';
-        
-        for (let idx = 0; idx < vuln.upgradePath.length; idx++) {
-          const elem = vuln.upgradePath[idx];
-
-          if (elem) {
-            
-            // Check if we're suggesting to upgrade to ourselves.
-            if (vuln.from.length > idx && vuln.from[idx] === elem) {
-              
-              // This ver should get the not-vuln dependency, suggest refresh
-              fix += `Your dependencies are out of date, otherwise you would` +
-                ` be using a newer ${ vuln.name } than ${ name }.\n`;
-              break;
-            }
-            if (idx === 0) {
-              
-              // This is an outdated version of yourself
-              fix += `You've tested an outdated version of the project. Should be upgraded to ${ upgradeText }`;
-            } else if (idx === 1) {
-              
-              // A direct dependency needs upgrade. Nothing to add.
-              fix += `Upgrade direct dependency ${ vuln.from[idx] } to ${ upgradeText }`;
-            } else {
-              
-              // A deep dependency needs to be upgraded
-              res += `   ${ gray('actionable:') } `;
-              res += yellow.bold('No direct dependency upgrade can address this issue.\n');
-            }
-            break;
-          }
-        }
-        
-        if (fix.length > 0) {
-          res += `   ${ gray('actionable:') } ${ green.bold(fix) }`;
-        }
-      } else {
-        if (vuln.type === 'license') {
-          
-          // do not display fix (there isn't any), remove newline
-          res = res.slice(0, -1);
-        } else if (pm === 'npm') {
-          res += `   ${ gray('actionable:') } `;
-          res += red.bold(
-            'No fix available. Consider removing this dependency.'
-          );
-        }
-      }
-      
-      return res;
-    }).filter(Boolean).join('\n\n');
-    
-    process.stdout.write(`${ vulnerabilities }\n\n`);
+    return multiReporter.report(result, options)
+      .then(() => this._handleFail(result));
   }
 }
 

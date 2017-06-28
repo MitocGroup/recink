@@ -2,8 +2,10 @@
 $:
   snyk:
     token: 'process.env.SNYK_API_TOKEN'
-    actionable: true
     dev: true
+    reporters:
+      text: ~
+      github: ~
   preprocess:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'

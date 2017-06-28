@@ -26,6 +26,12 @@ $:
     token: 'process.env.SNYK_API_TOKEN'         # Snyk.io API token
     # actionable: true                          # Show actionable items
     # dev: false                                # Analyze 'devDependencies'
+    # reporters:                                # Customize Reporters (available: text, github)
+    #   text: ~
+    #   github: ~
+    # fail:                                     
+    #   enabled: false                          # Fail on issues found
+    #   severity: 'medium'                      # Minimal severity to handle (available: low, medium, high)
 ```
 
 `.travis.yml` configuration:
@@ -50,3 +56,12 @@ recink travis encrypt -x 'SNYK_API_TOKEN=1234'
 ```
 SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
 ```
+
+# Gotchas
+
+Please note that if you are using `GitHub` reporter outside 
+[Travis](https://travis-ci.org) environment it does nothing but trigger a warn.
+
+# Roadmap
+
+- [ ] Add support for different CI platforms
