@@ -15,6 +15,11 @@ const path = require('path');
  */
 function cmd(path) {
   return (args, options, customLogger) => {
+    process.once('unhandledRejection', error => {
+      logger.error(error);
+      process.exit(1);
+    });
+    
     require(path)(
       args, 
       options, 

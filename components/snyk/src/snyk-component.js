@@ -32,30 +32,31 @@ class SnykComponent extends DependantConfigBasedComponent {
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
-      const promises = [];
+      const modules = [];
       const token = this.container.get('token', '');
       const dev = this.container.get('dev', false);
       const actionable = this.container.get('actionable', true);
+      const options = {
+        dev, json: true,
+        'show-vulnerable-paths': actionable ? 'true' : 'false',
+      };
       
       snykUserConfig.set('api', token);
       
       emitter.on(npmEvents.npm.dependencies.postinstall, (npmModule, emitModule) => {
-        const options = {
-          dev, json: true,
-          'show-vulnerable-paths': actionable ? 'true' : 'false',
-        };
-        
-        promises.push(
-          snykTest(npmModule.rootDir, options)
-            .then(result => this._createReport(npmModule, emitModule, result, options))
-            .catch(error => this._createReport(npmModule, emitModule, error, options))
-        );
+        modules.push([ npmModule, emitModule ]);
       });
       
       emitter.on(emitEvents.modules.process.end, () => {
-        Promise.all(promises)
-          .then(() => resolve())
-          .catch(error => reject(error));
+        Promise.all(
+          modules.map(args => {
+            const [ npmModule, emitModule ] = args;
+            
+            return snykTest(npmModule.rootDir, options)
+              .then(result => this._createReport(npmModule, emitModule, result, options))
+              .catch(error => this._createReport(npmModule, emitModule, error, options))
+          })
+        ).then(() => resolve()).catch(error => reject(error));
       });
     });
   }
