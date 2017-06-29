@@ -21,9 +21,11 @@ analyze and optimize your site following web best practices using [Google PageSp
 ```
 $:
   google-pagespeed:
-    strategy: desktop               # Available: desktop, mobile
-    filter-third-party: true        # Filter 3'rd party assets
-    locale: en                      # @see https://developers.google.com/speed/docs/insights/languagesx
+    uri:                              # URIs to analyze
+      - https://www.example.com
+    # strategy: desktop               # Available: desktop, mobile
+    # filter-third-party: true        # Filter 3'rd party assets
+    # locale: en                      # @see https://developers.google.com/speed/docs/insights/languagesx
 ```
 
 `.travis.yml` configuration:

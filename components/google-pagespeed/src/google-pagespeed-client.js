@@ -9,56 +9,35 @@ const pify = require('pify');
  */
 class GooglePageSpeedClient {  
   /**
-   * @param {*} json
+   * @param {string} url
+   * @param {*} options
    *
    * @returns {Promise}
    */
-  upload(json) {    
-    // return pify(request.post)(this._requestOptions(json))
-    //   .then(response => {
-    //     if (response.statusCode >= 200 && response.statusCode < 300) {
-    //       return Promise.resolve();
-    //     } else if (response.statusCode === 401) {
-    //       return Promise.reject(new Error(
-    //         'An invalid CODECLIMATE_REPO_TOKEN repo token was specified.'
-    //       ));
-    //     } else {
-    //       return Promise.reject(new Error(
-    //         `Error uploading coverage data to CodeClimate (statusCode=${ response.statusCode })`
-    //       ));
-    //     }
-    //   })
-    //   .catch(error => {
-    //     if (error.code === CodeclimateClient.INCORECT_CERTIFICATE_CHAIN_ERROR) {
-    //       return Promise.reject(new Error(
-    //         `It looks like you might be trying to send coverage 
-    //         to an enterprise version of CodeClimate with a (probably) 
-    //         invalid or incorrectly configured certificate chain. 
-    //         If you are sure about where you are sending your data, 
-    //         set "skip-certificate: true" and try again.`
-    //       ));
-    //     }
-    //     
-    //     return Promise.reject(error);
-    //   });
+  analyze(url, options) {
+    return pify(request.get)(
+      this._requestOptions(Object.assign({ url }, options))
+    ).then(response => {
+      return Promise.resolve(JSON.parse(response.body));
+    });
   }
   
   /**
-   * @param {*} json
+   * @param {*} qs
    * 
    * @returns {*}
    *
    * @private
    */
-  _requestOptions(json) {
+  _requestOptions(qs) {
     return {
+      qs,
       url: `${ GooglePageSpeedClient.HOST }/pagespeedonline/v2/runPagespeed`,
       headers: {
         'User-Agent': `${ pjson.description } (${ pjson.name } v${ pjson.version })`,
         'Content-Type': 'application/json',
       },
       timeout: GooglePageSpeedClient.TIMEOUT,
-      body: JSON.stringify(json),
     };
   }
   
@@ -66,7 +45,7 @@ class GooglePageSpeedClient {
    * @returns {number}
    */
   static get TIMEOUT() {
-    return 5000;
+    return 15000;
   }
   
   /**

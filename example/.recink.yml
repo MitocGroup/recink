@@ -1,9 +1,8 @@
 --- 
 $:
   google-pagespeed:
-    strategy: desktop               # Available: desktop, mobile
-    filter-third-party: true        # Filter 3'rd party assets
-    locale: en                      # @see https://developers.google.com/speed/docs/insights/languagesx
+    uri:
+      - https://www-dev.adtechmedia.io
   snyk:
     token: 'process.env.SNYK_API_TOKEN'
   preprocess:
