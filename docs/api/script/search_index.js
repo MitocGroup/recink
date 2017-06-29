@@ -2034,6 +2034,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/helper/env.js~env.exists",
+    "class/src/helper/env.js~Env.html#static-method-exists",
+    "src/helper/env.js~Env.exists",
+    "method"
+  ],
+  [
     "src/helper/env.js~env.isci",
     "class/src/helper/env.js~Env.html#static-get-isCI",
     "src/helper/env.js~Env.isCI",
@@ -2050,6 +2056,12 @@ window.esdocSearchIndex = [
     "class/src/helper/env.js~Env.html#static-get-isTravis",
     "src/helper/env.js~Env.isTravis",
     "member"
+  ],
+  [
+    "src/helper/env.js~env.read",
+    "class/src/helper/env.js~Env.html#static-method-read",
+    "src/helper/env.js~Env.read",
+    "method"
   ],
   [
     "src/logger.js",

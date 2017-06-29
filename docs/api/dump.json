@@ -3,7 +3,7 @@
     "__docId__": 0,
     "kind": "file",
     "name": "src/component/abstract-component.js",
-    "content": "'use strict';\n\nconst events = require('../events');\n\n/**\n * Abstract component\n */\nclass AbstractComponent {\n  constructor() {\n    this._logger = console;\n    this._active = false;\n    this._processing = 0;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  get processing() {\n    return this._processing;\n  }\n  \n  /**\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   */\n  waitProcessing(interval = 200) {\n    return new Promise(resolve => {\n      if (!this.isProcessing) {\n        return process.nextTick(() => resolve());\n      }\n      \n      const id = setInterval(() => {\n        if (!this.isProcessing) {\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  removeProcessing() {\n    this._processing--;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  addProcessing() {\n    this._processing++;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isProcessing() {\n    return this.processing > 0;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {AbstractComponent}\n   */\n  setLogger(logger) {\n    this._logger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {boolean} state\n   *\n   * @returns {AbstractComponent}\n   */\n  setActive(state) {\n    this._active = !!state;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isActive() {\n    return !!this._active;\n  }\n  \n  /**\n   */\n  get name() {\n    throw new Error(`${ this.constructor.name }.name not implemented!`);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get events() {\n    return events;\n  }\n\n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  subscribe(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  ready() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = AbstractComponent;\n",
+    "content": "'use strict';\n\nconst events = require('../events');\n\n/**\n * Abstract component\n */\nclass AbstractComponent {\n  constructor() {\n    this._logger = console;\n    this._active = false;\n    this._processing = 0;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  get processing() {\n    return this._processing;\n  }\n  \n  /**\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   */\n  waitProcessing(interval = 200) {\n    return new Promise(resolve => {\n      if (!this.isProcessing) {\n        return process.nextTick(() => resolve());\n      }\n      \n      const id = setInterval(() => {\n        if (!this.isProcessing) {\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  removeProcessing() {\n    this._processing--;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {AbstractComponent}\n   */\n  addProcessing() {\n    this._processing++;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isProcessing() {\n    return this.processing > 0;\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get logger() {\n    return this._logger;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {AbstractComponent}\n   */\n  setLogger(logger) {\n    this._logger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {boolean} state\n   *\n   * @returns {AbstractComponent}\n   */\n  setActive(state) {\n    this._active = !!state;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  get isActive() {\n    return !!this._active;\n  }\n  \n  /**\n   * @throws {Error}\n   */\n  get name() {\n    throw new Error(`${ this.constructor.name }.name not implemented!`);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get events() {\n    return events;\n  }\n\n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  subscribe(emitter) {\n    return Promise.resolve();\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  ready() {\n    return Promise.resolve();\n  }\n}\n\nmodule.exports = AbstractComponent;\n",
     "static": true,
     "longname": "src/component/abstract-component.js",
     "access": null,
@@ -499,7 +499,15 @@
     "longname": "src/component/abstract-component.js~AbstractComponent#name",
     "access": null,
     "description": "",
-    "lineNumber": 105
+    "lineNumber": 106,
+    "throws": [
+      {
+        "types": [
+          "Error"
+        ],
+        "description": ""
+      }
+    ]
   },
   {
     "__docId__": 19,
@@ -512,7 +520,7 @@
     "longname": "src/component/abstract-component.js~AbstractComponent#events",
     "access": null,
     "description": "",
-    "lineNumber": 112,
+    "lineNumber": 113,
     "unknown": [
       {
         "tagName": "@returns",
@@ -544,7 +552,7 @@
     "longname": "src/component/abstract-component.js~AbstractComponent#run",
     "access": null,
     "description": "",
-    "lineNumber": 121,
+    "lineNumber": 122,
     "unknown": [
       {
         "tagName": "@returns",
@@ -583,7 +591,7 @@
     "longname": "src/component/abstract-component.js~AbstractComponent#subscribe",
     "access": null,
     "description": "",
-    "lineNumber": 130,
+    "lineNumber": 131,
     "unknown": [
       {
         "tagName": "@returns",
@@ -622,7 +630,7 @@
     "longname": "src/component/abstract-component.js~AbstractComponent#ready",
     "access": null,
     "description": "",
-    "lineNumber": 137,
+    "lineNumber": 138,
     "unknown": [
       {
         "tagName": "@returns",
@@ -15392,7 +15400,7 @@
     "__docId__": 528,
     "kind": "file",
     "name": "src/helper/env.js",
-    "content": "'use strict';\n\n/**\n * Environment helpers\n */\nclass Env {\n  /**\n   * @returns {boolean}\n   */\n  static get isCI() {\n    return Env.isTravis;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isTravis() {\n    return !!((process.env.CI || process.env.CONTINUOUS_INTEGRATION) \n      && process.env.TRAVIS);\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isGlobalInstallation() {\n    return !!process.env.npm_config_global;\n  }\n}\n\nmodule.exports = Env;\n",
+    "content": "'use strict';\n\n/**\n * Environment helpers\n */\nclass Env {\n  /**\n   * @returns {boolean}\n   */\n  static get isCI() {\n    return Env.isTravis;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isTravis() {\n    const isCI = !!(Env.read('CI', false) || Env.read('CONTINUOUS_INTEGRATION', false));\n    \n    return !!(isCI && Env.read('TRAVIS', false));\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isGlobalInstallation() {\n    return !!Env.read('npm_config_global', false);\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {*}\n   */\n  static exists(name) {\n    return process.env.hasOwnProperty(name);\n  }\n  \n  /**\n   * @param {string} name\n   * @param {*} defaultValue\n   * \n   * @returns {*}\n   */\n  static read(name, defaultValue = null) {\n    if (!Env.exists(name)) {\n      return defaultValue;\n    }\n    \n    return process.env[name];\n  }\n}\n\nmodule.exports = Env;\n",
     "static": true,
     "longname": "src/helper/env.js",
     "access": null,
@@ -15489,7 +15497,7 @@
     "longname": "src/helper/env.js~Env.isGlobalInstallation",
     "access": null,
     "description": "",
-    "lineNumber": 25,
+    "lineNumber": 26,
     "unknown": [
       {
         "tagName": "@returns",
@@ -15512,6 +15520,94 @@
   },
   {
     "__docId__": 533,
+    "kind": "method",
+    "name": "exists",
+    "memberof": "src/helper/env.js~Env",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/helper/env.js~Env.exists",
+    "access": null,
+    "description": "",
+    "lineNumber": 35,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{*}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "*"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 534,
+    "kind": "method",
+    "name": "read",
+    "memberof": "src/helper/env.js~Env",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/helper/env.js~Env.read",
+    "access": null,
+    "description": "",
+    "lineNumber": 45,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{*}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "defaultValue",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "*"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 535,
     "kind": "file",
     "name": "src/logger.js",
     "content": "'use strict';\n\nconst chalk = require('chalk');\n\n/**\n * Logger abstraction\n */\nclass Logger {\n  /**\n   * @returns {chalk} chalk\n   */\n  static get chalk() {\n    return chalk;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {Logger}\n   */\n  static customLogger(logger) {\n    this._customLogger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static level(level) {\n    this._dbgLevel = level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static addLevel(level) {\n    this._dbgLevel = this._level | level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static debug(...args) {\n    return this._exec('debug', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static log(...args) {\n    return this._exec('log', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static info(...args) {\n    return this._exec('info', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static warn(...args) {\n    return this._exec('warn', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static error(...args) {\n    return this._exec('error', ...args);\n  }\n  \n  /**\n   * @returns {*}\n   *\n   * @private\n   */\n  static get _logger() {\n    return this._customLogger || console;\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @private\n   */\n  static get _level() {\n    return this._dbgLevel || (this.WARN | this.ERROR);\n  }\n  \n  /**\n   * @param {string} method\n   * @param {*} args\n   *\n   * @returns {Logger}\n   * \n   * @private\n   */\n  static _exec(method, ...args) {\n    if (this._logger instanceof console.constructor) {\n      if (this._level & this[method.toUpperCase()]) {\n        if (method === 'debug') {\n          method = 'log';\n        }\n        \n        this._logger[method](\n          this._color(method).open,\n          ...args,\n          this._color(method).close\n        );\n      }\n    } else { // rely on winston compatible logger\n      this._logger[method](...args);\n    }\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} method\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  static _color(method) {\n    let color;\n    \n    switch (method) {\n      case 'info':\n        color = 'green';\n        break;  \n      case 'warn':\n        color = 'yellow';\n        break;   \n      case 'error':\n        color = 'red';\n        break;    \n      case 'log':\n      default:\n        color = 'white';\n        break;\n    }\n    \n    return chalk.styles[color];\n  }\n  \n  /**\n   * @returns {*}\n   */\n  static get emoji() {\n    return {\n      rocket: '🚀 ',\n      cross: '❌ ',\n      check: '✅ ',\n      smiley: '😃 ',\n      fire: '🔥 ',\n      diamond: '💎 ',\n      gift: '🎁 ',\n      poop: '💩 ',\n      magic: '✨ ',\n      hat: '🎩 ',\n      new: '🆕 ',\n      fist: '👊 ',\n      beer: '🍺 ',\n      bicycle: '🚲 ',\n      star: '⭐️ ',\n      moon_full: '🌔 ',\n      moon_half: '🌓 ',\n      moon_empty: '🌘 ',\n    };\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ALL() {\n    return this.LOG | this.DEBUG | this.INFO | this.WARN | this.ERROR;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get LOG() {\n    return 1;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEBUG() {\n    return 2;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INFO() {\n    return 4;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get WARN() {\n    return 8;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ERROR() {\n    return 16;\n  }\n}\n\nmodule.exports = Logger;\n",
@@ -15522,7 +15618,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 534,
+    "__docId__": 536,
     "kind": "variable",
     "name": "chalk",
     "memberof": "src/logger.js",
@@ -15548,7 +15644,7 @@
     }
   },
   {
-    "__docId__": 535,
+    "__docId__": 537,
     "kind": "class",
     "name": "Logger",
     "memberof": "src/logger.js",
@@ -15563,7 +15659,7 @@
     "interface": false
   },
   {
-    "__docId__": 536,
+    "__docId__": 538,
     "kind": "get",
     "name": "chalk",
     "memberof": "src/logger.js~Logger",
@@ -15595,7 +15691,7 @@
     }
   },
   {
-    "__docId__": 537,
+    "__docId__": 539,
     "kind": "method",
     "name": "customLogger",
     "memberof": "src/logger.js~Logger",
@@ -15634,7 +15730,7 @@
     }
   },
   {
-    "__docId__": 538,
+    "__docId__": 540,
     "kind": "member",
     "name": "_customLogger",
     "memberof": "src/logger.js~Logger",
@@ -15657,7 +15753,7 @@
     }
   },
   {
-    "__docId__": 539,
+    "__docId__": 541,
     "kind": "method",
     "name": "level",
     "memberof": "src/logger.js~Logger",
@@ -15696,7 +15792,7 @@
     }
   },
   {
-    "__docId__": 540,
+    "__docId__": 542,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -15719,7 +15815,7 @@
     }
   },
   {
-    "__docId__": 541,
+    "__docId__": 543,
     "kind": "method",
     "name": "addLevel",
     "memberof": "src/logger.js~Logger",
@@ -15758,7 +15854,7 @@
     }
   },
   {
-    "__docId__": 542,
+    "__docId__": 544,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -15781,7 +15877,7 @@
     }
   },
   {
-    "__docId__": 543,
+    "__docId__": 545,
     "kind": "method",
     "name": "debug",
     "memberof": "src/logger.js~Logger",
@@ -15820,7 +15916,7 @@
     }
   },
   {
-    "__docId__": 544,
+    "__docId__": 546,
     "kind": "method",
     "name": "log",
     "memberof": "src/logger.js~Logger",
@@ -15859,7 +15955,7 @@
     }
   },
   {
-    "__docId__": 545,
+    "__docId__": 547,
     "kind": "method",
     "name": "info",
     "memberof": "src/logger.js~Logger",
@@ -15898,7 +15994,7 @@
     }
   },
   {
-    "__docId__": 546,
+    "__docId__": 548,
     "kind": "method",
     "name": "warn",
     "memberof": "src/logger.js~Logger",
@@ -15937,7 +16033,7 @@
     }
   },
   {
-    "__docId__": 547,
+    "__docId__": 549,
     "kind": "method",
     "name": "error",
     "memberof": "src/logger.js~Logger",
@@ -15976,7 +16072,7 @@
     }
   },
   {
-    "__docId__": 548,
+    "__docId__": 550,
     "kind": "get",
     "name": "_logger",
     "memberof": "src/logger.js~Logger",
@@ -16008,7 +16104,7 @@
     }
   },
   {
-    "__docId__": 549,
+    "__docId__": 551,
     "kind": "get",
     "name": "_level",
     "memberof": "src/logger.js~Logger",
@@ -16040,7 +16136,7 @@
     }
   },
   {
-    "__docId__": 550,
+    "__docId__": 552,
     "kind": "method",
     "name": "_exec",
     "memberof": "src/logger.js~Logger",
@@ -16089,7 +16185,7 @@
     }
   },
   {
-    "__docId__": 551,
+    "__docId__": 553,
     "kind": "method",
     "name": "_color",
     "memberof": "src/logger.js~Logger",
@@ -16128,7 +16224,7 @@
     }
   },
   {
-    "__docId__": 552,
+    "__docId__": 554,
     "kind": "get",
     "name": "emoji",
     "memberof": "src/logger.js~Logger",
@@ -16160,7 +16256,7 @@
     }
   },
   {
-    "__docId__": 553,
+    "__docId__": 555,
     "kind": "get",
     "name": "ALL",
     "memberof": "src/logger.js~Logger",
@@ -16192,7 +16288,7 @@
     }
   },
   {
-    "__docId__": 554,
+    "__docId__": 556,
     "kind": "get",
     "name": "LOG",
     "memberof": "src/logger.js~Logger",
@@ -16224,7 +16320,7 @@
     }
   },
   {
-    "__docId__": 555,
+    "__docId__": 557,
     "kind": "get",
     "name": "DEBUG",
     "memberof": "src/logger.js~Logger",
@@ -16256,7 +16352,7 @@
     }
   },
   {
-    "__docId__": 556,
+    "__docId__": 558,
     "kind": "get",
     "name": "INFO",
     "memberof": "src/logger.js~Logger",
@@ -16288,7 +16384,7 @@
     }
   },
   {
-    "__docId__": 557,
+    "__docId__": 559,
     "kind": "get",
     "name": "WARN",
     "memberof": "src/logger.js~Logger",
@@ -16320,7 +16416,7 @@
     }
   },
   {
-    "__docId__": 558,
+    "__docId__": 560,
     "kind": "get",
     "name": "ERROR",
     "memberof": "src/logger.js~Logger",
@@ -16352,7 +16448,7 @@
     }
   },
   {
-    "__docId__": 559,
+    "__docId__": 561,
     "kind": "file",
     "name": "src/recink.js",
     "content": "'use strict';\n\nconst path = require('path');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst configFactory = require('./config/factory');\nconst Container = require('./container');\nconst AbstractComponent = require('./component/abstract-component');\nconst logger = require('./logger');\n\n/**\n * ReCInk entry point\n */\nclass ReCInk extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    \n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -',\n        components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components\n      .filter(component => component.isActive);\n      \n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.run, component);\n      \n      return component.run(this);\n    }));\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent[]|AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = ReCInk.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        \n        this.emit(events.config.load, this.container, configFile);\n        \n        return Promise.resolve(config);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0];\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = ReCInk;\n",
@@ -16363,7 +16459,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 560,
+    "__docId__": 562,
     "kind": "variable",
     "name": "path",
     "memberof": "src/recink.js",
@@ -16389,7 +16485,7 @@
     }
   },
   {
-    "__docId__": 561,
+    "__docId__": 563,
     "kind": "variable",
     "name": "Emitter",
     "memberof": "src/recink.js",
@@ -16415,7 +16511,7 @@
     }
   },
   {
-    "__docId__": 562,
+    "__docId__": 564,
     "kind": "variable",
     "name": "events",
     "memberof": "src/recink.js",
@@ -16441,7 +16537,7 @@
     }
   },
   {
-    "__docId__": 563,
+    "__docId__": 565,
     "kind": "variable",
     "name": "configFactory",
     "memberof": "src/recink.js",
@@ -16467,7 +16563,7 @@
     }
   },
   {
-    "__docId__": 564,
+    "__docId__": 566,
     "kind": "variable",
     "name": "Container",
     "memberof": "src/recink.js",
@@ -16493,7 +16589,7 @@
     }
   },
   {
-    "__docId__": 565,
+    "__docId__": 567,
     "kind": "variable",
     "name": "AbstractComponent",
     "memberof": "src/recink.js",
@@ -16519,7 +16615,7 @@
     }
   },
   {
-    "__docId__": 566,
+    "__docId__": 568,
     "kind": "variable",
     "name": "logger",
     "memberof": "src/recink.js",
@@ -16545,7 +16641,7 @@
     }
   },
   {
-    "__docId__": 567,
+    "__docId__": 569,
     "kind": "class",
     "name": "ReCInk",
     "memberof": "src/recink.js",
@@ -16563,7 +16659,7 @@
     ]
   },
   {
-    "__docId__": 568,
+    "__docId__": 570,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/recink.js~ReCInk",
@@ -16584,7 +16680,7 @@
     "params": []
   },
   {
-    "__docId__": 569,
+    "__docId__": 571,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~ReCInk",
@@ -16607,7 +16703,7 @@
     }
   },
   {
-    "__docId__": 570,
+    "__docId__": 572,
     "kind": "member",
     "name": "_components",
     "memberof": "src/recink.js~ReCInk",
@@ -16630,7 +16726,7 @@
     }
   },
   {
-    "__docId__": 571,
+    "__docId__": 573,
     "kind": "member",
     "name": "_container",
     "memberof": "src/recink.js~ReCInk",
@@ -16653,7 +16749,7 @@
     }
   },
   {
-    "__docId__": 572,
+    "__docId__": 574,
     "kind": "method",
     "name": "_registerDebugers",
     "memberof": "src/recink.js~ReCInk",
@@ -16667,7 +16763,7 @@
     "params": []
   },
   {
-    "__docId__": 573,
+    "__docId__": 575,
     "kind": "method",
     "name": "run",
     "memberof": "src/recink.js~ReCInk",
@@ -16695,7 +16791,7 @@
     }
   },
   {
-    "__docId__": 574,
+    "__docId__": 576,
     "kind": "method",
     "name": "_getBaseClass",
     "memberof": "src/recink.js~ReCInk",
@@ -16734,7 +16830,7 @@
     }
   },
   {
-    "__docId__": 575,
+    "__docId__": 577,
     "kind": "method",
     "name": "components",
     "memberof": "src/recink.js~ReCInk",
@@ -16774,7 +16870,7 @@
     }
   },
   {
-    "__docId__": 576,
+    "__docId__": 578,
     "kind": "method",
     "name": "configure",
     "memberof": "src/recink.js~ReCInk",
@@ -16813,7 +16909,7 @@
     }
   },
   {
-    "__docId__": 577,
+    "__docId__": 579,
     "kind": "method",
     "name": "_configLoad",
     "memberof": "src/recink.js~ReCInk",
@@ -16862,7 +16958,7 @@
     }
   },
   {
-    "__docId__": 578,
+    "__docId__": 580,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~ReCInk",
@@ -16885,7 +16981,7 @@
     }
   },
   {
-    "__docId__": 579,
+    "__docId__": 581,
     "kind": "method",
     "name": "component",
     "memberof": "src/recink.js~ReCInk",
@@ -16924,7 +17020,7 @@
     }
   },
   {
-    "__docId__": 580,
+    "__docId__": 582,
     "kind": "method",
     "name": "listComponents",
     "memberof": "src/recink.js~ReCInk",
@@ -16952,7 +17048,7 @@
     }
   },
   {
-    "__docId__": 581,
+    "__docId__": 583,
     "kind": "get",
     "name": "container",
     "memberof": "src/recink.js~ReCInk",
@@ -16984,7 +17080,7 @@
     }
   },
   {
-    "__docId__": 582,
+    "__docId__": 584,
     "kind": "get",
     "name": "config",
     "memberof": "src/recink.js~ReCInk",
@@ -17016,7 +17112,7 @@
     }
   },
   {
-    "__docId__": 583,
+    "__docId__": 585,
     "kind": "get",
     "name": "CONFIG_FILE",
     "memberof": "src/recink.js~ReCInk",
@@ -17048,7 +17144,7 @@
     }
   },
   {
-    "__docId__": 584,
+    "__docId__": 586,
     "kind": "get",
     "name": "CONFIG_FILE_NAME",
     "memberof": "src/recink.js~ReCInk",
@@ -17080,7 +17176,7 @@
     }
   },
   {
-    "__docId__": 586,
+    "__docId__": 588,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -17092,7 +17188,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 587,
+    "__docId__": 589,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -17104,7 +17200,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 588,
+    "__docId__": 590,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -17116,7 +17212,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 589,
+    "__docId__": 591,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -17128,7 +17224,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 590,
+    "__docId__": 592,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -17140,7 +17236,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 591,
+    "__docId__": 593,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -17152,7 +17248,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 592,
+    "__docId__": 594,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -17164,7 +17260,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 593,
+    "__docId__": 595,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -17176,7 +17272,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 594,
+    "__docId__": 596,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -17188,7 +17284,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 595,
+    "__docId__": 597,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -17200,7 +17296,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 596,
+    "__docId__": 598,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -17212,7 +17308,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 597,
+    "__docId__": 599,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -17224,7 +17320,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 598,
+    "__docId__": 600,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -17236,7 +17332,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 599,
+    "__docId__": 601,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -17248,7 +17344,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 600,
+    "__docId__": 602,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -17260,7 +17356,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 601,
+    "__docId__": 603,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -17272,7 +17368,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 602,
+    "__docId__": 604,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -17284,7 +17380,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 603,
+    "__docId__": 605,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -17296,7 +17392,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 604,
+    "__docId__": 606,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -17308,7 +17404,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 605,
+    "__docId__": 607,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -17320,7 +17416,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 606,
+    "__docId__": 608,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -17332,7 +17428,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 607,
+    "__docId__": 609,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -17344,7 +17440,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 608,
+    "__docId__": 610,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -17356,7 +17452,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 609,
+    "__docId__": 611,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -17368,7 +17464,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 610,
+    "__docId__": 612,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -17380,7 +17476,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 611,
+    "__docId__": 613,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -17392,7 +17488,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 612,
+    "__docId__": 614,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -17404,7 +17500,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 613,
+    "__docId__": 615,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -17416,7 +17512,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 614,
+    "__docId__": 616,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -17428,7 +17524,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 615,
+    "__docId__": 617,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -17440,7 +17536,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 616,
+    "__docId__": 618,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -17452,7 +17548,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 617,
+    "__docId__": 619,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -17464,7 +17560,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 618,
+    "__docId__": 620,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -17476,7 +17572,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 619,
+    "__docId__": 621,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -17488,7 +17584,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 620,
+    "__docId__": 622,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -17500,7 +17596,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 621,
+    "__docId__": 623,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -17512,7 +17608,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 622,
+    "__docId__": 624,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -17524,7 +17620,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 623,
+    "__docId__": 625,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -17536,7 +17632,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 624,
+    "__docId__": 626,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -17548,7 +17644,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 625,
+    "__docId__": 627,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -17560,7 +17656,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 626,
+    "__docId__": 628,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -17572,7 +17668,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 627,
+    "__docId__": 629,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -17584,7 +17680,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 628,
+    "__docId__": 630,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -17596,7 +17692,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 629,
+    "__docId__": 631,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -17608,7 +17704,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 630,
+    "__docId__": 632,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -17620,7 +17716,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 631,
+    "__docId__": 633,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -17632,7 +17728,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 632,
+    "__docId__": 634,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -17645,7 +17741,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 634,
+    "__docId__": 636,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -17657,7 +17753,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 635,
+    "__docId__": 637,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -17669,7 +17765,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 636,
+    "__docId__": 638,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -17681,7 +17777,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 637,
+    "__docId__": 639,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -17693,7 +17789,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 638,
+    "__docId__": 640,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -17705,7 +17801,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 639,
+    "__docId__": 641,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -17717,7 +17813,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 640,
+    "__docId__": 642,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -17729,7 +17825,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 641,
+    "__docId__": 643,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
