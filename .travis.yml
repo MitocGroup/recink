@@ -1,4 +1,5 @@
 language: node_js
+node_js: 8
 git:
   depth: 1
 cache:
@@ -21,13 +22,8 @@ before_install:
 matrix:
   include:
     -
-      node_js: 6
-      env: 'SCRIPT="recink run unit"'
-    -
-      node_js: 8
       env: 'SCRIPT="recink run unit -c recink-codeclimate -c recink-snyk"'
     -
-      node_js: 8
       env: 'SCRIPT="recink run e2e"'
       addons:
         apt:
