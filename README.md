@@ -1,100 +1,109 @@
-Rethink (reCInk) Continuous Integration for JavaScript Applications 
+Rethink (REciNK) Continuous Integration for JavaScript Applications
 ===================================================================
 
 [![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
-[![Build Status](https://travis-ci.org/MitocGroup/reCInk.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/reCInk)
-[![Code Climate](https://codeclimate.com/github/MitocGroup/reCInk/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/reCInk)
-[![API Docs](https://mitocgroup.github.io/reCInk/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/reCInk/api/)
+[![Build Status](https://travis-ci.org/MitocGroup/recink.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/recink)
+[![Code Climate](https://codeclimate.com/github/MitocGroup/recink/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/recink)
+[![API Docs](https://mitocgroup.github.io/recink/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/recink/api/)
 
-`reCInk` (former `run-jst`) is a highly customizable and extremely optimized tests runner
-suitable for running tests on big / hybrid / complex projects by adding a simple `.recink.yml` config.
 
-# Motivation
+REciNK was born from our need to automate the execution of JavaScript tests.
+We quickly realized that we need to RETHINK (aka `REciNK`) entire Continuous
+Integration process for JavaScript applications. Similar to `.travis.yml`, we
+empower developers to simply drop the `.recink.yml` config into GitHub
+repository and follow below Getting Started guide to use it as part of their
+Continuous Integration pipeline (maybe even extend to Continuous Deployment).
 
-Finding an highly configurable test runner that suits for more than a basic js app
-is as hard as writing high quality tests :bowtie:. The main reason is getting test running as fast as possible
-with a minimal headache possible and extending the runner via components using a simple and documented api.
-
-Also CI integration and caching out of the box :wink:
-
-> The project has been started to cover the needs of [Deep Ecosystem](https://github.com/MitocGroup/deep-framework)
 
 # Features
 
-- Easy to [install](https://github.com/MitocGroup/reCInk#installation)/[configure](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project)/[use](https://github.com/MitocGroup/reCInk#usage)
-- [Multimodule](https://github.com/MitocGroup/deep-framework/blob/master/.recink.yml#L58) support with consolidated coverage
-- [Travis](https://travis-ci.org) support
-- [Coverage](https://istanbul.js.org) support
-- [NPM](https://www.npmjs.com) support with packages global/local overwrites (including custom scripts execution)
-- [AWS S3](https://aws.amazon.com/s3/) storage driver support
-- [Caching](https://github.com/MitocGroup/reCInk/blob/master/bin/templates/.recink.yml#L10) support
-- [Easily extendable](https://github.com/MitocGroup/reCInk#components-inhouse--3rd-party)
-- [Easily debuggable](https://github.com/MitocGroup/reCInk#debugging)
-- [Well documented](https://github.com/MitocGroup/reCInk#documentation)
-- To be continued...
+- [Install](https://github.com/MitocGroup/recink#installation).
+[Configure](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project).
+[Use](https://github.com/MitocGroup/recink#usage).
+- Multi-module support for
+[consolidated coverage](https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml#L50).
+- Built-in support for [Travis](https://travis-ci.org),
+[NPM](https://www.npmjs.com), [Chai](http://chaijs.com),
+[Mocha](http://mochajs.org), [Istanbul](https://istanbul.js.org),
+[TestCafe](https://devexpress.github.io/testcafe).
+- Amazon S3 powered
+[caching](https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml#L10).
+- [Extendable](https://github.com/MitocGroup/recink#components-inhouse--3rd-party).
+[Debuggable](https://github.com/MitocGroup/recink#debugging).
+[Documented](https://github.com/MitocGroup/recink#documentation).
 
-> [Mocha](http://mochajs.org) is used as test framework for `unit` testing
-
-> [TestCafe](https://devexpress.github.io/testcafe/) is used as test framework for `e2e` testing
 
 # Prerequisites
 
-- [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
-- [ ] Profit?!
+- [x] Git >= v1.x
+- [x] Node.js >= v6.x
+- [x] NPM >= v3.x
 
-> We'd recommend installing Node.js v8.x to speedup things.
+> Use [nvm](https://github.com/creationix/nvm#installation) to install and
+manage different versions of Node.js; Ideally, use v8+ for faster performance
+
 
 # Installation
 
 `npm install -g recink`
 
+
 # Getting Started
 
-Check out the [User Guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project)
+@See [User Guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project)
+
 
 # Usage
 
-`recink --help` Show help
+`recink --help` # Show help
 
-`recink configure recink` Configure `reCInk`
+`recink configure recink` # Configure `REciNK`
 
-`recink run unit` Run unit tests
+`recink run unit` # Run unit tests
 
-`recink run e2e` Run end-to-end tests
+`recink run e2e` # Run end-to-end tests
+
 
 # Debugging
 
-In order start debugging TestCafe [read this](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
+TestCafe offers amazing debugging capabilities
+[documented here](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
 
-In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser please refer to [this link](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
+We use [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare)
+as default browser, which provides native debugging capabilities
+[documented here](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
 
-> Note that [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare) browser is used as default browser when none specified.
 
-# CI Platforms supported
+# Supported CI Platforms
 
 - [x] [Travis](https://travis-ci.org)
 - [x] [Travis Pro](https://travis-ci.com)
 
+
 # Documentation
 
-- [x] [Quick Start Guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md)
-- [x] [Crafting Components](https://github.com/MitocGroup/reCInk/blob/master/docs/component-guide.md)
-- [x] [Api Docs](https://mitocgroup.github.io/reCInk/api/identifiers.html)
-- [x] [Module Diagram](https://mitocgroup.github.io/reCInk/module-diagram.html)
-- [x] [FAQ](https://github.com/MitocGroup/reCInk/blob/master/docs/faq.md)
+- [x] [Quick Start Guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md)
+- [x] [Crafting Components](https://github.com/MitocGroup/recink/blob/master/docs/component-guide.md)
+- [x] [API Docs](https://mitocgroup.github.io/recink/api/identifiers.html)
+- [x] [Module Diagram](https://mitocgroup.github.io/recink/module-diagram.html)
+- [x] [FAQ](https://github.com/MitocGroup/recink/blob/master/docs/faq.md)
 
-# Components (inhouse + 3'rd party)
 
-- :house: [CodeClimate](https://github.com/MitocGroup/reCInk/blob/master/components/codeclimate/README.md)
-- :house: [Snyk.io](https://github.com/MitocGroup/reCInk/blob/master/components/snyk/README.md)
+# Components
 
-> [Navigate here](https://github.com/MitocGroup/reCInk/tree/master/components) to see all inhouse components
+- :house: [CodeClimate](https://github.com/MitocGroup/recink/blob/master/components/codeclimate/README.md)
+- :house: [Snyk](https://github.com/MitocGroup/recink/blob/master/components/snyk/README.md)
 
-# Projects using "reCInk"
+> Explore in-house built components
+[here](https://github.com/MitocGroup/recink/tree/master/components)
 
-- [Deep Framework](https://github.com/MitocGroup/deep-framework)
+
+# Projects Using "REciNK"
+
+- [Deep Framework](https://github.com/MitocGroup/deep-framework/blob/master/.recink.yml)
 
 > To add you project to this list please open a PR ;)
+
 
 # Roadmap
 
@@ -107,12 +116,14 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 - [ ] Add unit tests for critical functionality
 - [ ] Craft a cool logo for the project :alien:
 
+
 # Sponsors
 
 This repository is being sponsored by:
 
 - [Mitoc Group](https://www.mitocgroup.com)
 - [AdTechMedia](https://www.adtechmedia.io)
+
 
 # License
 
