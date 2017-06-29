@@ -22,16 +22,18 @@ dependencies according to `package.json` submitted to [Snyk.io](https://snyk.io)
 $:
   preprocess:
     '$.snyk.token': 'eval'
+    # '$.snyk.reporters.github.0.token': 'eval'
   snyk:
-    token: 'process.env.SNYK_API_TOKEN'         # Snyk.io API token
-    # actionable: true                          # Show actionable items
-    # dev: false                                # Analyze 'devDependencies'
-    # reporters:                                # Customize Reporters (available: text, github)
+    token: 'process.env.SNYK_API_TOKEN'               # Snyk.io API token
+    # actionable: true                                # Show actionable items
+    # dev: false                                      # Analyze 'devDependencies'
+    # reporters:                                      # Customize Reporters (available: text, github)
     #   text: ~
-    #   github: ~
+    #   github:
+    #     - token: 'process.env.GITHUB_ACCESS_TOKEN'
     # fail:                                     
-    #   enabled: false                          # Fail on issues found
-    #   severity: 'medium'                      # Minimal severity to handle (available: low, medium, high)
+    #   enabled: false                                # Fail on issues found
+    #   severity: 'medium'                            # Minimal severity to handle (available: low, medium, high)
 ```
 
 `.travis.yml` configuration:

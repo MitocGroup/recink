@@ -33,9 +33,8 @@ class GitHubReporter extends TextReporter {
       .report(result, options, false)
       .then(() => {
         const output = stream.buffer.toString('utf8');
-        const issuesVector = output.split(TextReporter.ISSUES_DELIMITER);
         
-        return this._report(issuesVector);
+        return this._report(output);
       });
   }
   
@@ -52,13 +51,13 @@ class GitHubReporter extends TextReporter {
   }
   
   /**
-   * @param {string[]} issuesVector
+   * @param {string} output
    *
    * @returns {Promise}
    *
    * @private
    */
-  _report(issuesVector) {
+  _report(output) {
     if (!Env.isTravis) {
       this.logger.warn(
         `${this.logger.emoji.poop} Snyk.io GitHub reporter` +
@@ -80,9 +79,8 @@ class GitHubReporter extends TextReporter {
     const ghpr = this._ghpr;
     
     return pify(ghpr.createComment.bind(ghpr))({
-      body: [ 'The following issues found by [Snyk.io](https://snyk.io)' ]
-        .concat(issuesVector)
-        .join(TextReporter.ISSUES_DELIMITER),
+      body: 'The following issues found by [Snyk.io](https://snyk.io)' +
+        TextReporter.ISSUES_DELIMITER + output,
     }).then(() => {
       this.logger.info(
         `${this.logger.emoji.gift} Snyk.io report submitted to GitHub.`
@@ -92,14 +90,14 @@ class GitHubReporter extends TextReporter {
     }).catch(error => {
       if (error.statusCode === 404) {
         return Promise.reject(new Error(
-          `Failed to submit Snyk.io report to GitHub. ` +
-          `It seems the repository or PR does not exist or ` +
-          `you don't have enough rights to access the repository.`
+          'Failed to submit Snyk.io report to GitHub. ' +
+          'It seems the repository or PR does not exist or ' +
+          'you don\'t have enough rights to access the repository.'
         ));
       }
       
       return Promise.reject(new Error(
-        `Failed to submit Snyk.io report to GitHub. ` +
+        'Failed to submit Snyk.io report to GitHub. ' +
         `Failed with message "${ error.message }" and code "${ error.statusCode }"`
       ));
     });

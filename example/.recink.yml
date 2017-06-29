@@ -5,10 +5,12 @@ $:
     dev: true
     reporters:
       text: ~
-      github: ~
+      github:
+        - token: 'process.env.GITHUB_ACCESS_TOKEN'
   preprocess:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'
+    '$.snyk.reporters.github.0.token': 'eval'
   codeclimate:
     token: 'process.env.CODECLIMATE_REPO_TOKEN'
   e2e:
