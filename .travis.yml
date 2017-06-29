@@ -14,23 +14,20 @@ branches:
     - stage
     - test
 script: 'cd example && $SCRIPT'
+before_install:
+  - 'npm install -g recink'
+  - 'npm install -g recink-codeclimate'
+  - 'npm install -g recink-snyk'
 matrix:
   include:
     -
       node_js: 6
-      before_install:
-        - 'npm install -g recink'
       env: 'SCRIPT="recink run unit"'
     -
       node_js: 8
-      before_install:
-        - 'npm install -g recink'
-        - 'npm install -g recink-codeclimate'
-      env: 'SCRIPT="recink run unit -c recink-codeclimate"'
+      env: 'SCRIPT="recink run unit -c recink-codeclimate -c recink-snyk"'
     -
       node_js: 8
-      before_install:
-        - 'npm install -g recink'
       env: 'SCRIPT="recink run e2e"'
       addons:
         apt:
