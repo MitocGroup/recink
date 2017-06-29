@@ -48,7 +48,7 @@ before_install:
 Add the [Snyk.io API Token](https://snyk.io/docs/quick-start/#authentication) to `.travis.yml`:
 
 ```
-recink travis encrypt -x 'SNYK_API_TOKEN=1234'
+recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
@@ -56,7 +56,7 @@ recink travis encrypt -x 'SNYK_API_TOKEN=1234'
 # Usage
 
 ```
-SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
+GITHUB_ACCESS_TOKEN=1234 SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
 ```
 
 # Gotchas
