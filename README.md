@@ -4,7 +4,7 @@ Rethink (reCInk) Continuous Integration for JavaScript Applications
 [![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
 [![Build Status](https://travis-ci.org/MitocGroup/reCInk.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/reCInk)
 [![Code Climate](https://codeclimate.com/github/MitocGroup/reCInk/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/reCInk)
-[![API Docs](https://mitocgroup.github.io/reCInk/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/reCInk/api/)
+[![API Docs](https://mitocgroup.github.io/recink/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/recink/api/)
 
 `reCInk` (former `run-jst`) is a highly customizable and extremely optimized tests runner
 suitable for running tests on big / hybrid / complex projects by adding a simple `.recink.yml` config.
@@ -79,14 +79,15 @@ In case you are using the [Nighmare](https://github.com/ryx/testcafe-browser-pro
 
 - [x] [Quick Start Guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md)
 - [x] [Crafting Components](https://github.com/MitocGroup/reCInk/blob/master/docs/component-guide.md)
-- [x] [Api Docs](https://mitocgroup.github.io/reCInk/api/identifiers.html)
-- [x] [Module Diagram](https://mitocgroup.github.io/reCInk/module-diagram.html)
+- [x] [Api Docs](https://mitocgroup.github.io/recink/api/identifiers.html)
+- [x] [Module Diagram](https://mitocgroup.github.io/recink/module-diagram.html)
 - [x] [FAQ](https://github.com/MitocGroup/reCInk/blob/master/docs/faq.md)
 
 # Components (inhouse + 3'rd party)
 
 - :house: [CodeClimate](https://github.com/MitocGroup/reCInk/blob/master/components/codeclimate/README.md)
 - :house: [Snyk.io](https://github.com/MitocGroup/reCInk/blob/master/components/snyk/README.md)
+- :house: [Google PageSpeed](https://github.com/MitocGroup/reCInk/blob/master/components/google-pagespeed/README.md)
 
 > [Navigate here](https://github.com/MitocGroup/reCInk/tree/master/components) to see all inhouse components
 
