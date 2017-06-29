@@ -1,8 +1,9 @@
 {
   "name": "recink-codeclimate",
   "version": "1.4.1",
-  "description": "CodeClimate reCInk component",
+  "description": "REciNK Component for CodeClimate",
   "keywords": [
+    "REciNK"
     "Testing",
     "Unit",
     "Development",
@@ -10,18 +11,17 @@
     "CodeClimate",
     "lcov",
     "Coverage",
-    "Travis",
-    "reCInk"
+    "Travis"
   ],
-  "homepage": "https://github.com/MitocGroup/reCInk",
+  "homepage": "https://github.com/MitocGroup/recink",
   "bugs": {
-    "url": "https://github.com/MitocGroup/reCInk/issues"
+    "url": "https://github.com/MitocGroup/recink/issues"
   },
   "license": "MIT",
   "author": {
     "name": "Mitoc Group",
     "email": "hello@mitocgroup.com",
-    "url": "http://www.mitocgroup.com"
+    "url": "https://www.mitocgroup.com"
   },
   "contributors": [
     {
@@ -32,7 +32,7 @@
   "main": "src/codeclimate-component.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MitocGroup/reCInk.git"
+    "url": "https://github.com/MitocGroup/recink.git"
   },
   "dependencies": {
     "codeclimate-test-reporter": "github:codeclimate/javascript-test-reporter",
@@ -43,7 +43,7 @@
     "recink": "^1.4.0"
   },
   "engines": {
-    "node": ">=6.0 <7.0",
+    "node": ">=6.0",
     "npm": ">=3.0"
   },
   "preferGlobal": true

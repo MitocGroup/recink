@@ -59,7 +59,7 @@ const commands = prog
 
 if (!Env.isCI) {
   commands
-    .command('configure recink', 'Configure reCInk') 
+    .command('configure recink', 'Configure REciNK')
     .argument('[path]', 'Path to package root', /.+/, process.cwd())
     .option('--overwrite', 'Overwrite existing configuration file')
     .action(cmd('./commands/configure/recink'))   

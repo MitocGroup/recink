@@ -1,18 +1,25 @@
-Snyk.io Component
-======================
+REciNK Component for Snyk
+=========================
 
-This is a [reCInk](https://github.com/MitocGroup/reCInk) component that detects vulnerable
+This is a [REciNK](https://github.com/MitocGroup/recink) component that detects vulnerable
 dependencies according to `package.json` submitted to [Snyk.io](https://snyk.io) backend.
+
 
 # Prerequisites
 
-- [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
-- [ ] [Install "reCInk"](https://github.com/MitocGroup/reCInk#installation)
-- [ ] Profit?!
+- [x] Git >= v1.x
+- [x] Node.js >= v6.x
+- [x] NPM >= v3.x
+- [x] [REciNK](https://github.com/MitocGroup/recink#installation)
+
+> Use [nvm](https://github.com/creationix/nvm#installation) to install and
+manage different versions of Node.js; Ideally, use v8+ for faster performance
+
 
 # Installation
 
 - `npm install -g recink-snyk`
+
 
 # Configuration
 
@@ -51,7 +58,8 @@ Add the [Snyk.io API Token](https://snyk.io/docs/quick-start/#authentication) to
 recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
 ```
 
-> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+
 
 # Usage
 
@@ -59,11 +67,8 @@ recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
 GITHUB_ACCESS_TOKEN=1234 SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
 ```
 
+
 # Gotchas
 
 Please note that if you are using `GitHub` reporter outside 
 [Travis](https://travis-ci.org) environment it does nothing but trigger a warn.
-
-# Roadmap
-
-- [ ] Add support for different CI platforms
