@@ -97,6 +97,7 @@ class NpmComponent extends DependantConfigBasedComponent {
               this.logger.emoji.hat, 
               `Ensure dependencies in place for ${ emitModule.name }`
             );
+            
             emitter.emit(events.npm.dependencies.install, npmModule, emitModule);
             
             return npmModule.install(
@@ -109,7 +110,7 @@ class NpmComponent extends DependantConfigBasedComponent {
                 this.container.get('scripts', []),
                 emitModule.container.get('scripts', [])
               )
-            ).then(() => {
+            ).then(() => {              
               emitter.emit(events.npm.dependencies.postinstall, npmModule, emitModule);
             });
           });

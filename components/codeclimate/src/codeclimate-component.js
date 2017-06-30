@@ -1,7 +1,6 @@
 'use strict';
 
 const Spinner = require('recink/src/component/helper/spinner');
-const testEvents = require('recink/src/component/test/events');
 const coverageEvents = require('recink/src/component/coverage/events');
 const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
 const Formatter = require('codeclimate-test-reporter/formatter');
@@ -44,30 +43,30 @@ class CodeclimateComponent extends DependantConfigBasedComponent {
     return new Promise((resolve, reject) => {
       emitter.onBlocking(coverageEvents.coverage.report.create, (...args) => {
         this._hookReporter(...args);
-        
-        emitter.on(testEvents.assets.test.end, () => {
-          const formatter = new Formatter();
-          
-          pify(formatter.format.bind(formatter))(this._lcovBuffer)
-            .then(json => {
-              this.logger.debug(JSON.stringify(json, null, '  '));
-              
-              const token = this.container.get('token', '');
-              const skipCertificate = this.container.get('skip-certificate', false);
-              const client = new CodeclimateClient(token, skipCertificate);
-              const spinner = new Spinner(`Uploading coverage data uploaded to CodeClimate`);
-              
-              return spinner.then(
-                'Coverage data uploaded to CodeClimate.'
-              ).catch(
-                'Coverage data uploaded to CodeClimate failed.'
-              ).promise(client.upload(json));
-            })
-            .then(() => resolve())
-            .catch(error => reject(error));
-        });
-        
+
         return Promise.resolve();
+      });
+      
+      emitter.on(coverageEvents.coverage.report.compare, () => {
+        const formatter = new Formatter();
+        
+        pify(formatter.format.bind(formatter))(this._lcovBuffer)
+          .then(json => {
+            this.logger.debug(JSON.stringify(json, null, '  '));
+            
+            const token = this.container.get('token', '');
+            const skipCertificate = this.container.get('skip-certificate', false);
+            const client = new CodeclimateClient(token, skipCertificate);
+            const spinner = new Spinner(`Uploading coverage data uploaded to CodeClimate`);
+            
+            return spinner.then(
+              'Coverage data uploaded to CodeClimate.'
+            ).catch(
+              'Coverage data uploaded to CodeClimate failed.'
+            ).promise(client.upload(json));
+          })
+          .then(() => resolve())
+          .catch(error => reject(error));
       });
     });
   }
@@ -83,7 +82,7 @@ class CodeclimateComponent extends DependantConfigBasedComponent {
       CodeclimateComponent.ISTANBUL_REPORTER, 
       { log: this._logFn.bind(this) }
     );
-    
+
     reporter.reports[CodeclimateComponent.ISTANBUL_REPORTER] = lcovReport;
   }
   

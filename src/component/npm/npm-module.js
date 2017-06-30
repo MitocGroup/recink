@@ -181,7 +181,7 @@ class NpmModule {
           .map(depName => {
             return `${ depName }@${ additionalDeps[depName] }`;
           });
-    
+
         return depsVector.length > 0 
           ? this._doInstall(depsVector) 
           : Promise.resolve();

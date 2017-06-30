@@ -9,6 +9,7 @@ const events = {};
 
 events.$ = [
   'coverage.report.create',
+  'coverage.report.compare',
 ].map(eventPath => {
   dot.str(eventPath, eventPath, events);
   
