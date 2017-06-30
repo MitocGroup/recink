@@ -1,13 +1,13 @@
 Google PageSpeed Component
 ==========================
 
-This is a [reCInk](https://github.com/MitocGroup/reCInk) component to
+This is a [REciNK](https://github.com/MitocGroup/recink) component to
 analyze and optimize your site following web best practices using [Google PageSpeed](https://developers.google.com/speed/pagespeed/).
 
 # Prerequisites
 
 - [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
-- [ ] [Install "reCInk"](https://github.com/MitocGroup/reCInk#installation)
+- [ ] [Install "REciNK"](https://github.com/MitocGroup/recink#installation)
 - [ ] Profit?!
 
 # Installation
