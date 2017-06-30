@@ -1,7 +1,6 @@
 'use strict';
 
 const TextReporter = require('./text-reporter');
-const snykConfig = require('snyk/lib/config');
 const BufferedStream = require('./github/buffered-stream');
 const Env = require('recink/src/helper/env');
 const github = require('octonode');

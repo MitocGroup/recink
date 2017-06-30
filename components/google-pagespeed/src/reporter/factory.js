@@ -3,7 +3,7 @@
 const AbstractReporter = require('./abstract-reporter');
 
 /**
- * Snyk.io reporter factory
+ * Google PageSpeed reporter factory
  */
 class Factory {
   /**
@@ -26,28 +26,10 @@ class Factory {
   /**
    * @param {*} args
    *
-   * @returns {GitHubReporter}
-   */
-  static github(...args) {
-    return this.create('github', ...args);
-  }
-  
-  /**
-   * @param {*} args
-   *
    * @returns {TextReporter}
    */
   static text(...args) {
     return this.create('text', ...args);
-  }
-  
-  /**
-   * @param {*} args
-   *
-   * @returns {MultiReporter}
-   */
-  static multi(...args) {
-    return this.create('multi', ...args);
   }
 }
 

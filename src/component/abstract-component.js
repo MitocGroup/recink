@@ -128,6 +128,15 @@ class AbstractComponent {
    * 
    * @returns {Promise}
    */
+  teardown(emitter) {
+    return Promise.resolve();
+  }
+  
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
   subscribe(emitter) {
     return Promise.resolve();
   }

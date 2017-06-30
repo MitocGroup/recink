@@ -104,13 +104,13 @@ class E2EComponent extends DependantConfigBasedComponent {
     }
     
     const spinner = new Spinner(
-      `Wait for the following uri's to be available: ${ uris.join(', ') }`
+      `Wait for the following URIs to be available: ${ uris.join(', ') }`
     );
     
     return spinner.then(
-      `All uri's are available:\n\t${ uris.join('\n\t') }`
+      `All URIs are available:\n\t${ uris.join('\n\t') }`
     ).catch(
-      `Some of the following uri's are not available:\n\t${ uris.join('\n\t') }`
+      `Some of the following URIs are not available:\n\t${ uris.join('\n\t') }`
     ).promise(Promise.all(uris.map(uri => this._waitUri(uri))));
   }
   

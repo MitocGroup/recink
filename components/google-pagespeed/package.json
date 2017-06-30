@@ -1,0 +1,48 @@
+{
+  "name": "recink-google-pagespeed",
+  "version": "1.0.0",
+  "description": "Google PageSpeed reCInk component",
+  "keywords": [
+    "Testing",
+    "Unit",
+    "Development",
+    "Tools",
+    "Google",
+    "PageSpeed",
+    "Travis",
+    "reCInk"
+  ],
+  "homepage": "https://github.com/MitocGroup/reCInk",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/reCInk/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "http://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "main": "src/google-pagespeed-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/reCInk.git"
+  },
+  "dependencies": {
+    "pify": "^3.0.0",
+    "request": "^2.81.0"
+  },
+  "peerDependencies": {
+    "recink": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=6.0 <7.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}
