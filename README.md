@@ -1,4 +1,4 @@
-Rethink (REciNK) Continuous Integration for JavaScript Applications
+REciNK - Rethink Continuous Integration for JavaScript Applications
 ===================================================================
 
 [![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
@@ -10,7 +10,7 @@ Rethink (REciNK) Continuous Integration for JavaScript Applications
 REciNK was born from our need to automate the execution of JavaScript tests.
 We quickly realized that we need to RETHINK (aka `REciNK`) entire Continuous
 Integration process for JavaScript applications. Similar to `.travis.yml`, we
-empower developers to simply drop the `.recink.yml` config into GitHub
+empower developers to simply drop the `.recink.yml` config file into GitHub
 repository and follow below Getting Started guide to use it as part of their
 Continuous Integration pipeline (maybe even extend to Continuous Deployment).
 
@@ -97,6 +97,7 @@ as default browser, which provides native debugging capabilities
 
 > Explore in-house built components [here](https://github.com/MitocGroup/recink/tree/master/components)
 
+
 # Projects Using "REciNK"
 
 - [Deep Framework](https://github.com/MitocGroup/deep-framework/blob/master/.recink.yml)
@@ -110,9 +111,9 @@ as default browser, which provides native debugging capabilities
 - [x] Add support for external components
 - [x] Add support for fully automated `Travis` configuration 
 - [x] Add support for End-to-End tests
-- [ ] Add support for different CI platforms
 - [ ] Add component development guide
 - [ ] Add unit tests for critical functionality
+- [ ] Add support for different CI platforms
 - [ ] Craft a cool logo for the project :alien:
 
 
