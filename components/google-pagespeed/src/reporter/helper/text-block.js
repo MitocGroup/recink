@@ -117,8 +117,6 @@ class TextBlock {
         value = this.logger.chalk.underline.blue(replacement);
         break;
       case 'SNAPSHOT_RECT':
-        throw new Error('Google PageSpeed SNAPSHOT_RECT type is not supported');
-        break;
       case 'INT_LITERAL':
       default: value = replacement; 
     }
