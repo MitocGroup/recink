@@ -401,10 +401,17 @@ class CoverageComponent extends DependantConfigBasedComponent {
           istanbul, 
           reporter, 
           collector
-        ).then(() =&gt; {
-          return this._dumpCoverageStats(collector, reporter)
-            .then(() =&gt; this._doCompare(collector));
-        });
+        )
+        .then(() =&gt; this._dumpCoverageStats(collector, reporter))
+        .then(() =&gt; {
+          return emitter.emitBlocking(
+            events.coverage.report.compare, 
+            istanbul, 
+            reporter, 
+            collector
+          );
+        })
+        .then(() =&gt; this._doCompare(collector));
       });
       
       emitter.on(testEvents.assets.test.end, () =&gt; resolve());
