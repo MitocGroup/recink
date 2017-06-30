@@ -1,18 +1,25 @@
-CodeClimate Component
-======================
+REciNK Component for CodeClimate
+================================
 
-This is a [reCInk](https://github.com/MitocGroup/reCInk) component that submit 
+This is a [REciNK](https://github.com/MitocGroup/recink) component that submit
 coverage information into [CodeClimate](https://codeclimate.com) backend.
+
 
 # Prerequisites
 
-- [ ] Ensure `Node.js >=v6.x` is installed (We recommend using `nvm` https://github.com/creationix/nvm#installation)
-- [ ] [Install "reCInk"](https://github.com/MitocGroup/reCInk#installation)
-- [ ] Profit?!
+- [x] Git >= v1.x
+- [x] Node.js >= v6.x
+- [x] NPM >= v3.x
+- [x] [REciNK](https://github.com/MitocGroup/recink#installation)
+
+> Use [nvm](https://github.com/creationix/nvm#installation) to install and
+manage different versions of Node.js; Ideally, use v8+ for faster performance
+
 
 # Installation
 
 - `npm install -g recink-codeclimate`
+
 
 # Configuration
 
@@ -42,7 +49,7 @@ Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-cov
 recink travis encrypt -x 'CODECLIMATE_REPO_TOKEN=1234'
 ```
 
-> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/reCInk/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
 
 # Usage
 

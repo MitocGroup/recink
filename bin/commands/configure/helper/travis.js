@@ -49,7 +49,7 @@ function help(localVars = null) {
   
   output.push('\n');
   output.push('Please ensure the \'eval\' preprocessor added for the options.');
-  output.push('Sample Config: https://github.com/MitocGroup/reCInk/blob/master/bin/templates/.recink.yml#L5');
+  output.push('Sample Config: https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml#L4');
   
   return output.join('\n');
 }
