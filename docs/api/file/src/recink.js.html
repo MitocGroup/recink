@@ -19,7 +19,7 @@
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
-  <a data-ice="repoURL" href="https://github.com/MitocGroup/reCInk.git" class="repo-url-github">Repository</a>
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/recink.git" class="repo-url-github">Repository</a>
   <div class="search-box">
   <span>
     <img src="./image/search.png">
@@ -144,6 +144,13 @@ class ReCInk extends Emitter {
         );
       });
     });
+    
+    this.on(events.components.teardown, (...components) =&gt; {
+      logger.debug(
+        &apos;Teardown components -&apos;,
+        components.map(c =&gt; c.name).join(&apos;, &apos;) || &apos;None&apos;
+      );
+    });
   }
   
   /**
@@ -163,7 +170,15 @@ class ReCInk extends Emitter {
       this.emit(events.component.run, component);
       
       return component.run(this);
-    }));
+    })).then(() =&gt; {
+      this.emit(events.components.teardown, ...this._components);
+      
+      return Promise.all(this._components.map(component =&gt; {
+        this.emit(events.component.teardown, component);
+        
+        return component.teardown(this);
+      }));
+    });
   }
   
   /**

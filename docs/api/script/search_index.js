@@ -702,6 +702,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/component/abstract-component.js~abstractcomponent#teardown",
+    "class/src/component/abstract-component.js~AbstractComponent.html#instance-method-teardown",
+    "src/component/abstract-component.js~AbstractComponent#teardown",
+    "method"
+  ],
+  [
     "src/component/abstract-component.js~abstractcomponent#waitprocessing",
     "class/src/component/abstract-component.js~AbstractComponent.html#instance-method-waitProcessing",
     "src/component/abstract-component.js~AbstractComponent#waitProcessing",

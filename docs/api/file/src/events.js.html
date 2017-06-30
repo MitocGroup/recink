@@ -19,7 +19,7 @@
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
-  <a data-ice="repoURL" href="https://github.com/MitocGroup/reCInk.git" class="repo-url-github">Repository</a>
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/recink.git" class="repo-url-github">Repository</a>
   <div class="search-box">
   <span>
     <img src="./image/search.png">
@@ -89,7 +89,7 @@
 const dot = require(&apos;dot-object&apos;);
 
 /**
- * RECINK main events
+ * REciNK main events
  */
 const events = {};
 
@@ -98,8 +98,10 @@ events.$ = [
   &apos;config.load&apos;,
   &apos;components.load&apos;,
   &apos;components.run&apos;,
+  &apos;components.teardown&apos;,
   &apos;component.load&apos;,
   &apos;component.run&apos;,
+  &apos;component.teardown&apos;,
   &apos;component.ready&apos;,
   &apos;component.subscribe&apos;,
 ].map(eventPath =&gt; {

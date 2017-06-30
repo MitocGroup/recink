@@ -1,7 +1,7 @@
 {
   "coverage": "98.16%",
-  "expectCount": 272,
-  "actualCount": 267,
+  "expectCount": 273,
+  "actualCount": 268,
   "files": {
     "src/logger.js": {
       "expectCount": 17,
@@ -9,8 +9,8 @@
       "undocumentLines": []
     },
     "src/component/abstract-component.js": {
-      "expectCount": 16,
-      "actualCount": 15,
+      "expectCount": 17,
+      "actualCount": 16,
       "undocumentLines": [
         9
       ]
@@ -86,17 +86,17 @@
       "actualCount": 14,
       "undocumentLines": []
     },
+    "src/component/test-component.js": {
+      "expectCount": 9,
+      "actualCount": 9,
+      "undocumentLines": []
+    },
     "src/emitter.js": {
       "expectCount": 7,
       "actualCount": 6,
       "undocumentLines": [
         9
       ]
-    },
-    "src/component/test-component.js": {
-      "expectCount": 9,
-      "actualCount": 9,
-      "undocumentLines": []
     },
     "src/component/preprocess-component.js": {
       "expectCount": 6,
@@ -133,6 +133,11 @@
       "actualCount": 4,
       "undocumentLines": []
     },
+    "src/component/preprocess/factory.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
     "src/component/factory.js": {
       "expectCount": 9,
       "actualCount": 9,
@@ -146,11 +151,6 @@
     "src/component/coverage/factory.js": {
       "expectCount": 4,
       "actualCount": 4,
-      "undocumentLines": []
-    },
-    "src/component/preprocess/factory.js": {
-      "expectCount": 3,
-      "actualCount": 3,
       "undocumentLines": []
     },
     "src/config/yaml-config.js": {
@@ -198,17 +198,7 @@
       "actualCount": 1,
       "undocumentLines": []
     },
-    "src/events.js": {
-      "expectCount": 1,
-      "actualCount": 1,
-      "undocumentLines": []
-    },
     "src/component/test/events.js": {
-      "expectCount": 1,
-      "actualCount": 1,
-      "undocumentLines": []
-    },
-    "src/component/coverage/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
@@ -229,6 +219,16 @@
       "undocumentLines": []
     },
     "src/component/e2e/events.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/events.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/component/coverage/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
