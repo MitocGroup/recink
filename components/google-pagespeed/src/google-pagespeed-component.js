@@ -3,6 +3,7 @@
 const ConfigBasedComponent = require('recink/src/component/config-based-component');
 const pify = require('pify');
 const GooglePageSpeedClient = require('./google-pagespeed-client');
+const ReporterFactory = require('./reporter/factory');
 
 /**
  * Google PageSpeed component
@@ -40,17 +41,13 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
     return Promise.all(uris.map(uri => {
       return client.analyze(uri, options)
         .then(data => this._report(uri, data));
-    })).then(reports => {
-      this.logger.info(
-        `The following URIs have been analyzed by Google PageSpeed:\n\t${ uris.join('\n\t') }`
-      );
-      
+    })).then(reports => {      
       reports.map(report => {
         const uri = this.logger.chalk.gray.bold(report.uri);
         const output = report.output;
         
         process.stdout.write(
-          `${ this.logger.emoji.star } Google PageSpeed for ${ uri }:\n${ output }\n\n`
+          `${ this.logger.emoji.star } Google PageSpeed report for ${ uri }\n${ output }\n\n`
         );
       });
       
@@ -59,7 +56,6 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @param {string} uri
    * @param {*} data
    *
    * @returns {Promise}
@@ -67,9 +63,12 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
    * @private
    */
   _report(uri, data) {
-    console.log(uri, data)//@todo remove
+    this.logger.debug(JSON.stringify(data, null, '  '));
     
-    return Promise.resolve({ uri, output: 'TBD' });
+    return ReporterFactory
+      .text(this)
+      .report(data)
+      .then(output => Promise.resolve({ uri, output }));
   }
 }
 

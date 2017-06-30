@@ -174,6 +174,7 @@ class Logger {
       rocket: '🚀 ',
       cross: '❌ ',
       check: '✅ ',
+      banana: '🍌 ',
       smiley: '😃 ',
       fire: '🔥 ',
       diamond: '💎 ',

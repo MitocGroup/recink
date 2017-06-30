@@ -70,6 +70,7 @@ class TextReporter extends AbstractReporter {
   /**
    * @param {*} result
    * @param {*} options
+   * @param {boolean} _info
    *
    * @returns {Promise}
    */
