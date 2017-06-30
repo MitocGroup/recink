@@ -1,7 +1,6 @@
 'use strict';
 
 const ConfigBasedComponent = require('recink/src/component/config-based-component');
-const pify = require('pify');
 const GooglePageSpeedClient = require('./google-pagespeed-client');
 const ReporterFactory = require('./reporter/factory');
 
@@ -76,6 +75,7 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
   }
   
   /**
+   * @param {string} uri
    * @param {*} data
    *
    * @returns {Promise}

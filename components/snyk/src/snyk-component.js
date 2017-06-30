@@ -148,6 +148,8 @@ class SnykComponent extends DependantConfigBasedComponent {
    * @param {string|Error} result
    * @param {*} options
    *
+   * @returns {Promise}
+   * 
    * @private
    */
   _createReport(npmModule, emitModule, result, options) {

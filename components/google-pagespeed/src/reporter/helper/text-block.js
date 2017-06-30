@@ -93,6 +93,8 @@ class TextBlock {
    * @param {string} content
    * @param {string} replacement
    * @param {string} type
+   *
+   * @returns {string}
    * 
    * @private
    */

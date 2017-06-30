@@ -161,8 +161,8 @@ class TextReporter extends AbstractReporter {
    *
    * @private
    */
-  _text(metedata) {
-    return new TextBlock(metedata, this.logger).render();
+  _text(metadata) {
+    return new TextBlock(metadata, this.logger).render();
   }
 }
 

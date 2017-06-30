@@ -27,7 +27,7 @@ class BufferedStream extends Writable {
    * @param {string} encoding
    * @param {function} callback
    *
-   * @returns {boolean}
+   * @private
    */
   _write(chunk, encoding, callback) {
     const buffer = Buffer.isBuffer(chunk) 
