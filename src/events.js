@@ -3,7 +3,7 @@
 const dot = require('dot-object');
 
 /**
- * RECINK main events
+ * REciNK main events
  */
 const events = {};
 
@@ -12,8 +12,10 @@ events.$ = [
   'config.load',
   'components.load',
   'components.run',
+  'components.teardown',
   'component.load',
   'component.run',
+  'component.teardown',
   'component.ready',
   'component.subscribe',
 ].map(eventPath => {

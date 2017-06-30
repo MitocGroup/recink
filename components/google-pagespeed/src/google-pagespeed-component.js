@@ -8,7 +8,16 @@ const ReporterFactory = require('./reporter/factory');
 /**
  * Google PageSpeed component
  */
-class GooglePageSpeedComponent extends ConfigBasedComponent {  
+class GooglePageSpeedComponent extends ConfigBasedComponent {
+  /**
+   * @param {*} args
+   */
+  constructor(...args) {
+    super(...args);
+    
+    this._reports = [];
+  }
+  
   /**
    * @returns {string}
    */
@@ -42,17 +51,28 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
       return client.analyze(uri, options)
         .then(data => this._report(uri, data));
     })).then(reports => {      
-      reports.map(report => {
-        const uri = this.logger.chalk.gray.bold(report.uri);
-        const output = report.output;
-        
-        process.stdout.write(
-          `${ this.logger.emoji.star } Google PageSpeed report for ${ uri }\n${ output }\n\n`
-        );
-      });
+      this._reports = reports;
       
       return Promise.resolve();
     });
+  }
+  
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  teardown(emitter) {
+    this._reports.map(report => {
+      const uri = this.logger.chalk.gray.bold(report.uri);
+      const output = report.output;
+      
+      process.stdout.write(
+        `${ this.logger.emoji.star } Google PageSpeed report for ${ uri }\n${ output }\n\n`
+      );
+    });
+    
+    return Promise.resolve();
   }
   
   /**

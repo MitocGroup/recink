@@ -35,14 +35,14 @@ class TextReporter extends AbstractReporter {
     let output = `\n  ${ info }\n`;
     
     output += this._chalk.gray.bold('  STATS:\n    ');
-    output += `${ this._stats(data.pageStats).join('\n    ') }\n\n`;
+    output += this._stats(data.pageStats).join('\n    ');
     
     Object.keys(data.formattedResults.ruleResults).map(rule => {
       const ruleOutput = this._rule(
         data.formattedResults.ruleResults[rule]
       ).replace(/\n/g, '\n    ');
       
-      output += `  ${ this.logger.emoji.fire } ${ ruleOutput }\n\n`;
+      output += `\n\n  ${ this.logger.emoji.fire } ${ ruleOutput }`;
     });
     
     return Promise.resolve(output);
@@ -82,6 +82,12 @@ class TextReporter extends AbstractReporter {
    */
   _urlBlock(data) {
     let output = this._chalk.yellow.bold(`${ this.logger.emoji.banana } ${ this._text(data.header) }`);
+    
+    if (Array.isArray(data.urls)) {
+      output += '\n  - ' + data.urls.map(data => {
+        return this._text(data.result);
+      }).join('\n  - ');
+    }
     
     return output;
   }
