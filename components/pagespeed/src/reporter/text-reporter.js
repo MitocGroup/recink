@@ -4,7 +4,7 @@ const AbstractReporter = require('./abstract-reporter');
 const TextBlock = require('./helper/text-block');
 
 /**
- * Text Google PageSpeed reporter
+ * Text PageSpeed reporter
  */
 class TextReporter extends AbstractReporter {
   /**

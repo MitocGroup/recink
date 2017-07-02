@@ -1,13 +1,13 @@
 'use strict';
 
 const ConfigBasedComponent = require('recink/src/component/config-based-component');
-const GooglePageSpeedClient = require('./google-pagespeed-client');
+const PageSpeedClient = require('./pagespeed-client');
 const ReporterFactory = require('./reporter/factory');
 
 /**
- * Google PageSpeed component
+ * PageSpeed component
  */
-class GooglePageSpeedComponent extends ConfigBasedComponent {
+class PageSpeedComponent extends ConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -21,7 +21,7 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
    * @returns {string}
    */
   get name() {
-    return 'google-pagespeed';
+    return 'pagespeed';
   }
   
   /**
@@ -31,7 +31,7 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
    */
   run(emitter) {
     const uris = this.container.get('uri', []);
-    const client = new GooglePageSpeedClient();
+    const client = new PageSpeedClient();
     const options = {
       filter_third_party_resources: this.container.get('filter-third-party', true),
       locale: this.container.get('locale', 'en'),
@@ -40,7 +40,7 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
     
     if (uris.length <= 0) {
       this.logger.info(
-        `${ this.logger.emoji.poop } There are no URIs to be analyzed by Google PageSpeed`
+        `${ this.logger.emoji.poop } There are no URIs to be analyzed by PageSpeed`
       );
       
       return Promise.resolve();
@@ -67,7 +67,7 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
       const output = report.output;
       
       process.stdout.write(
-        `${ this.logger.emoji.star } Google PageSpeed report for ${ uri }\n${ output }\n\n`
+        `${ this.logger.emoji.star } PageSpeed report for ${ uri }\n${ output }\n\n`
       );
     });
     
@@ -92,4 +92,4 @@ class GooglePageSpeedComponent extends ConfigBasedComponent {
   }
 }
 
-module.exports = GooglePageSpeedComponent;
+module.exports = PageSpeedComponent;

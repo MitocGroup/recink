@@ -5,9 +5,9 @@ const pjson = require('../package.json');
 const pify = require('pify');
 
 /**
- * Google PageSpeed http client
+ * PageSpeed http client
  */
-class GooglePageSpeedClient {  
+class PageSpeedClient {
   /**
    * @param {string} url
    * @param {*} options
@@ -32,12 +32,12 @@ class GooglePageSpeedClient {
   _requestOptions(qs) {
     return {
       qs,
-      url: `${ GooglePageSpeedClient.HOST }/pagespeedonline/v2/runPagespeed`,
+      url: `${ PageSpeedClient.HOST }/pagespeedonline/v2/runPagespeed`,
       headers: {
         'User-Agent': `${ pjson.description } (${ pjson.name } v${ pjson.version })`,
         'Content-Type': 'application/json',
       },
-      timeout: GooglePageSpeedClient.TIMEOUT,
+      timeout: PageSpeedClient.TIMEOUT,
     };
   }
   
@@ -56,4 +56,4 @@ class GooglePageSpeedClient {
   }
 }
 
-module.exports = GooglePageSpeedClient;
+module.exports = PageSpeedClient;

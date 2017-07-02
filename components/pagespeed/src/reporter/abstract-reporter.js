@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * Abstract Google PageSpeed reporter
+ * Abstract PageSpeed reporter
  */
 class AbstractReporter {
   /**
-   * @param {GooglePageSpeedComponent} component
+   * @param {PageSpeedComponent} component
    */
   constructor(component) {
     this.component = component;

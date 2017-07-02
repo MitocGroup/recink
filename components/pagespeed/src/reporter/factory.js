@@ -3,7 +3,7 @@
 const AbstractReporter = require('./abstract-reporter');
 
 /**
- * Google PageSpeed reporter factory
+ * PageSpeed reporter factory
  */
 class Factory {
   /**
