@@ -64,7 +64,7 @@ module.exports = availableComponents => {
 
     return Promise.all([
       recink.components(...components),
-      recink.configure(path.join(args.path, ReCInk.CONFIG_FILE_NAME))
+      recink.configureExtend(path.join(args.path, ReCInk.CONFIG_FILE_NAME))
     ])
     .then(() => recink.run());
   };
