@@ -4,6 +4,8 @@ const os = require('os');
 const path = require('path');
 const FileStorage = require('./storage/file-storage');
 const Component = require('./component');
+const fse = require('fs-extra');
+const pify = require('pify');
 
 /**
  * Components Registry
@@ -23,7 +25,39 @@ class Registry {
    * @returns {boolean}
    */
   exists(component) {
-    return this._registry.hasOwnProperty(component);
+    return this.registry.hasOwnProperty(component);
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get registry() {
+    return this._registry;
+  }
+  
+  /**
+   * @returns {Component[]}
+   */
+  list() {
+    return this.listKeys().map(component => this.registry[component]);
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  listKeys() {
+    return Object.keys(this.registry);
+  }
+  
+  /**
+   * @returns {Component}
+   */
+  component(component) {
+    if (!this.exists(component)) {
+      return null;
+    }
+    
+    return this.registry[component];
   }
   
   /**
@@ -32,9 +66,18 @@ class Registry {
    * @returns {Promise}
    */
   add(component) {
-    this._registry[component] = new Component(component);
+    this.registry[component] = new Component(component);
     
-    return this._registry[component].load();
+    return this.registry[component].load();
+  }
+  
+  /**
+   * @returns {string[]}
+   */
+  get configs() {
+    return this.list()
+      .map(component => component.configPath)
+      .filter(Boolean);
   }
   
   /**
@@ -47,7 +90,7 @@ class Registry {
       return this;
     }
     
-    delete this._registry[component];
+    delete this.registry[component];
     
     return this;
   }
@@ -56,7 +99,7 @@ class Registry {
    * @returns {Promise}
    */
   persist() {
-    return this.storage.write(this._registry);
+    return this.storage.write(this.registry);
   }
   
   /**
@@ -67,7 +110,7 @@ class Registry {
       .then(exists => {
         return exists 
           ? Promise.resolve() 
-          : this.storage.write(this._registry);
+          : this.storage.write(this.registry);
       })
       .then(() => this.storage.read())
       .then(registry => {

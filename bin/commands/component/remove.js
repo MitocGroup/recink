@@ -14,11 +14,15 @@ module.exports = (args, options, logger) => {
   
   return registry.load()
     .then(() => {
-      const opType = registry.exists(component) ? 'Updating': 'Adding';
+      if (!registry.exists(component)) {
+        return Promise.reject(new Error(
+          `No such component "${ component }" registered. ` +
+          `In order to register it run ${ logger.chalk.green(`recink add ${ component }`) }`
+        ));
+      }
       
-      logger.info(`${logger.emoji.gift} ${ opType } "${ component }" component`);
+      logger.info(`${logger.emoji.gift} Removing "${ component }" component`);
       
-      return registry.add(component);
-    })
-    .then(() => registry.persist());
+      return registry.remove(component).persist();
+    });
 };

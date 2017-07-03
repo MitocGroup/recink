@@ -1,6 +1,10 @@
 'use strict';
 
 const path = require('path');
+const modulesDir = require('global-modules');
+const fse = require('fs-extra');
+const Install = require('./npm/install');
+const pify = require('pify');
 
 /**
  * Registry Component
@@ -11,21 +15,54 @@ class Component {
    */
   constructor(name) {
     this._name = name;
-    this._path = null;
     this._version = null;
+    this._hasConfig = false;
   }
   
   /**
    * @returns {Promise}
    */
   load() {
-    return Promise.resolve();
+    return pify(fse.pathExists)(this.path)
+      .then(exists => {
+        if (!exists) {
+          return new Install(this.name).run();
+        }
+        
+        return Promise.resolve();
+      })
+      .then(() => {
+        const packageJson = require(this.packagePath);
+        
+        this._version = packageJson.version;
+        
+        return pify(fse.pathExists)(this._configPath)
+          .then(hasConfig => {
+            this._hasConfig = hasConfig;
+          });
+      });
   }
   
   /**
    * @returns {string}
    */
+  get packagePath() {
+    return path.join(this.path, 'package.json');
+  }
+
+  /**
+   * @returns {string}
+   */
   get configPath() {
+    return this._hasConfig ? this._configPath : null;
+  }
+  
+  /**
+  * @returns {string}
+  *
+  * @private
+  */
+  get _configPath() {
     return path.join(this.path, 'template/.recink.yml');
   }
   
@@ -40,7 +77,7 @@ class Component {
    * @returns {string}
    */
   get path() {
-    return this._path;
+    return path.join(modulesDir, this.name);
   }
   
   /**

@@ -124,7 +124,7 @@ class ReCInk extends Emitter {
   }
   
   /**
-   * @param {AbstractComponent[]|AbstractComponent} components
+   * @param {AbstractComponent} components
    *
    * @returns {Promise}
    */
@@ -173,7 +173,7 @@ class ReCInk extends Emitter {
       return this.configure(configFile);
     }
     
-    const promises = [ configFile ].merge(extendConfigs)
+    const promises = extendConfigs.concat([ configFile ])
       .map(cfgFile => configFactory.guess(cfgFile).load());
     
     return Promise.all(promises).then(configVector => {

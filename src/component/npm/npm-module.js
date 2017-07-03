@@ -4,7 +4,7 @@ const packageHash = require('package-hash');
 const path = require('path');
 const fse = require('fs-extra');
 const Spinner = require('../helper/spinner');
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 const md5Hex = require('md5-hex');
 const SequentialPromise = require('../helper/sequential-promise');
 
@@ -148,9 +148,9 @@ class NpmModule {
         stdio: 'ignore',
       };
 
-      const npmInstall = spawn('npm', [ 'run', script ], options);
+      const npmRunScript = spawn('npm', [ 'run', script ], options);
       
-      npmInstall.on('close', code => {
+      npmRunScript.on('close', code => {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to run script ${ script } in ${ this.rootDir }.\n` +
