@@ -20,14 +20,14 @@ module.exports = (args, options, logger) => {
   const readmeTarget = path.join(target, 'README.md');
   const component = path.join(TEMPLATES_BASEPATH, 'src/component.js.twig');
   const componentTarget = path.join(target, `src/${ name.toLowerCase() }-component.js`);
-  const example = path.join(TEMPLATES_BASEPATH, 'example/.recink.yml.twig');
-  const exampleTarget = path.join(target, `example/.recink.yml`);
+  const template = path.join(TEMPLATES_BASEPATH, 'template/.recink.yml.twig');
+  const templateTarget = path.join(target, `template/.recink.yml`);
   
   return Promise.all([
     [ packageJson, packageJsonTarget ],
     [ readme, readmeTarget ],
     [ component, componentTarget ],
-    [ example, exampleTarget ]
+    [ template, templateTarget ]
   ].map(metadata => {
     const [ source, target ] = metadata;
     
@@ -36,7 +36,7 @@ module.exports = (args, options, logger) => {
   }))
   .then(() => {
     logger.info(logger.chalk.green(
-      `\n${ name.toUpperCase() }="John" recink run unit ${ target }/example -c ${ target }`
+      `\n${ name.toUpperCase() }="John" recink run unit ${ target }/template -c ${ target }`
     ));
     
     return Promise.resolve();

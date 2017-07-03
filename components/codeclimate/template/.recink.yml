@@ -1,0 +1,7 @@
+--- 
+$:
+  preprocess:
+    '$.codeclimate.token': 'eval'
+  codeclimate:
+    token: 'process.env.CODECLIMATE_REPO_TOKEN'         # CodeClimate Repo token
+    # skip-certificate: true                            # Skip validating server SSL certificate
