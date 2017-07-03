@@ -19,11 +19,11 @@ before_install:
   - 'npm install -g recink'
   - 'npm install -g recink-codeclimate'
   - 'npm install -g recink-snyk'
-  - 'npm install -g recink-google-pagespeed'
+  - 'npm install -g recink-pagespeed'
 matrix:
   include:
     -
-      env: 'SCRIPT="recink run unit -c recink-codeclimate -c recink-snyk -c recink-google-pagespeed"'
+      env: 'SCRIPT="recink run unit -c recink-codeclimate -c recink-snyk -c recink-pagespeed"'
     -
       env: 'SCRIPT="recink run e2e"'
       addons:
