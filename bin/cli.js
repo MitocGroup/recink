@@ -86,6 +86,10 @@ if (!Env.isCI) {
     .command('travis lint', 'Lint Travis configuration') 
     .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))
     .action(cmd('./commands/travis/lint'))
+    .command('generate component', 'Generate REciNK boilerplate component')
+    .argument('[path]', 'Path to component root', /.+/, process.cwd())
+    .option('--name <name>', 'Component name', /^[a-z][a-z0-9_-]+$/i)
+    .action(cmd('./commands/generate/component'))
   ;
 }
 

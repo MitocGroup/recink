@@ -1,0 +1,39 @@
+'use strict';
+
+const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+
+/**
+ * {{ name|title }} component
+ */
+class {{ name|capitalize }}Component extends DependantConfigBasedComponent {
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return '{{ name|lower }}';
+  }
+  
+  /**
+   * Add the components {{ name|title }} depends on
+   *
+   * @returns {string[]}
+   */
+  get dependencies() {
+    return [];
+  }
+  
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  run(emitter) {
+    const name = this.container.get('name', 'World');
+  
+    this.logger.info(this.logger.chalk.yellow.bold(`Hello ${ name }!`));
+  
+    return Promise.resolve();
+  }
+}
+
+module.exports = {{ name|capitalize }}Component;

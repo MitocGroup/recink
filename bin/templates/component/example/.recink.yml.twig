@@ -1,0 +1,8 @@
+--- 
+$:
+  preprocess:
+    '$.{{ name|lower }}.name': 'eval'
+  {{ name|lower }}:
+    name: 'process.env.{{ name|upper }}'
+main:
+  root: '.'

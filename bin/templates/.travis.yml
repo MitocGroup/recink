@@ -14,7 +14,7 @@ branches:
     - stage
     - test
 before_install:
-  - "npm install -g recink"
+  - "npm install -g recink --production"
 script: $SCRIPT
 matrix:
   include:

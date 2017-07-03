@@ -50,9 +50,9 @@ module.exports = availableComponents => {
         );
         
         const ComponentConstructor =  require(
-          /^[a-z]/i.test(component) 
+          /^recink-/i.test(component) 
             ? component 
-            : path.join(process.cwd(), component)
+            : path.resolve(process.cwd(), component)
         );
         
         const componentInstance =  new ComponentConstructor();
