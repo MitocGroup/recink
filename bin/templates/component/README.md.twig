@@ -25,7 +25,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 `.recink.yml` configuration:
 
-```
+```yaml
 $:
   preprocess:
     '$.{{ name|lower }}.name': 'eval'
@@ -35,7 +35,7 @@ $:
 
 `.travis.yml` configuration:
 
-```
+```yaml
 script: 'recink run unit -c recink-{{ name|lower }}'  
 before_install:
   # other before_install scripts...
@@ -44,7 +44,7 @@ before_install:
 
 Or using the registry: 
 
-```
+```yaml
 before_install:
   # other before_install scripts...
   - 'recink add {{ name|lower }}'

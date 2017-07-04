@@ -30,6 +30,7 @@ you should run the `recink configure travis` command with `--github-token` or `-
 - Run unit tests: `recink run unit`
 - Run end-to-end tests: `recink run e2e`
 
+> If you have to **compile sources** before running tests [see this](https://github.com/MitocGroup/recink/blob/master/docs/compile-es6.md)
 
 #### Reference
 

@@ -27,7 +27,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 `.recink.yml` configuration:
 
-```
+```yaml
 $:
   pagespeed:
     uri:                              # URIs to analyze
@@ -39,7 +39,7 @@ $:
 
 `.travis.yml` configuration:
 
-```
+```yaml
 script: 'recink run unit -c recink-pagespeed'
 before_install:
   # other before_install scripts...
@@ -48,7 +48,7 @@ before_install:
 
 Or using the registry: 
 
-```
+```yaml
 before_install:
   # other before_install scripts...
   - 'recink add pagespeed'
