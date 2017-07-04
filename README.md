@@ -3,7 +3,7 @@ REciNK - Rethink Continuous Integration for JavaScript Applications
 
 [![NPM Version](https://img.shields.io/npm/v/recink.svg?maxAge=0)](https://npmjs.org/package/recink)
 [![Build Status](https://travis-ci.org/MitocGroup/recink.svg?branch=master&maxAge=0)](https://travis-ci.org/MitocGroup/recink)
-[![Code Climate](https://codeclimate.com/github/MitocGroup/recink/badges/gpa.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/recink)
+[![Code Climate](https://codeclimate.com/github/MitocGroup/recink/badges/coverage.svg?maxAge=0)](https://codeclimate.com/github/MitocGroup/recink)
 [![API Docs](https://mitocgroup.github.io/recink/api/badge.svg?maxAge=0)](https://mitocgroup.github.io/recink/api/)
 
 
