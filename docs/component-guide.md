@@ -14,6 +14,18 @@ The most important functions are:
 
 `emitter.onBlocking` - is executed sequentially and is waiting for a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) to be returned.
 
+### Ecosystem
+
+`REciNK` components ecosystem is pretty straightforward - 
+it uses NPM packages (e.g. [recink-codeclimate](https://www.npmjs.com/package/recink-codeclimate)). 
+
+When running `recink component add codeclimate` it installs 
+`recink-codeclimate` package globally (think `npm install -g recink-codeclimate`)
+and adds it to internal registry to have it run on the next `recink run unit` or `recink run e2e`.
+
+> A good practice it to have the component prefixed with `recink-`.
+
+
 ### Generating boilerplate component
 
 To generate a boilerplate component simply run:

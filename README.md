@@ -72,7 +72,9 @@ help <command>                  Display help for a specific command
 
 # Debugging
 
-TestCafe offers amazing debugging capabilities
+Add `-v` flag while running `recink ...` commands to enable debug output.
+
+[TestCafe](https://devexpress.github.io/testcafe) offers amazing debugging capabilities
 [documented here](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
 
 We use [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare)
