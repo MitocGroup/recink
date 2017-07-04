@@ -91,13 +91,16 @@ if (!Env.isCI) {
       .option('--name <name>', 'Component name', /^[a-z][a-z0-9_-]+$/i)
     .action(cmd('./commands/component/generate'))
     .command('component add', 'Adds an REciNK component to the registry')
-      .argument('[name]', 'Component name', /^[a-z][a-z0-9_-]+$/i)
+      .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+      .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
     .action(cmd('./commands/component/add'))
+    .command('component remove', 'Removes an REciNK component from the registry')
+      .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+      .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
+      .option('--purge', 'Remove component NPM package')
+    .action(cmd('./commands/component/remove'))
     .command('component list', 'Lists REciNK components from the registry')
     .action(cmd('./commands/component/list'))
-    .command('component remove', 'Removes an REciNK component from the registry')
-      .argument('[name]', 'Component name', /^[a-z][a-z0-9_-]+$/i)
-    .action(cmd('./commands/component/remove'))
   ;
 }
 

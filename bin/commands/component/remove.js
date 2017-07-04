@@ -1,28 +1,44 @@
 'use strict';
 
 const Registry = require('./registry/registry');
+const SequentialPromise = require('../../../src/component/helper/sequential-promise');
+const Component = require('./registry/component');
 
 module.exports = (args, options, logger) => {
-  if (!args.name) {
-    return Promise.reject(new Error('You must provide component name.'));
+  if (args.name.length <= 0) {
+    return Promise.reject(new Error('You must provide at least one component name.'));
   }
   
-  const component = args.name;
   const registry = Registry.create();
+  const components = args.name.map(name => {
+    return (/^recink-/i.test(name) || options.skipPrefix) ? name : `recink-${ name }`;
+  });
   
   logger.debug(`Initialize components registry in ${ registry.storage.path }`);
   
   return registry.load()
     .then(() => {
-      if (!registry.exists(component)) {
-        return Promise.reject(new Error(
-          `No such component "${ component }" registered. ` +
-          `In order to register it run ${ logger.chalk.green(`recink add ${ component }`) }`
-        ));
-      }
-      
-      logger.info(`${logger.emoji.gift} Removing "${ component }" component`);
-      
-      return registry.remove(component).persist();
+      return SequentialPromise.all(components.map(component => {
+        return () => {
+          if (!registry.exists(component)) {
+            logger.info(
+              `No such component "${ component }" registered. ` +
+              `In order to register it run ${ logger.chalk.green(`recink add ${ component }`) }`
+            );
+            
+            return Promise.resolve();
+          }
+          
+          logger.info(`${logger.emoji.gift} Removing "${ component }" component`);
+          
+          registry.remove(component);
+          
+          if (!options.purge) {
+            return Promise.resolve();
+          }
+          
+          return new Component(component).unload();
+        };
+      })).then(() => registry.persist());
     });
 };

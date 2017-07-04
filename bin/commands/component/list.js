@@ -1,6 +1,7 @@
 'use strict';
 
 const Registry = require('./registry/registry');
+const columnify = require('columnify');
 
 module.exports = (args, options, logger) => {
   const registry = Registry.create();
@@ -20,12 +21,21 @@ module.exports = (args, options, logger) => {
       
       logger.info(`${logger.emoji.gift} Registered components`);
       
+      let data = {};
+      
       registry.list().map(component => {
-        const output = logger.chalk.yellow(`\t${ component.name }@${ component.version }`) + 
-          logger.chalk.gray(`\t${ component.configPath || '<NOCONFIG>' }`);
+        const name = logger.chalk.green(`- ${ component.name }@${ component.version }`);
+        const config = logger.chalk.gray(`${ component.configPath || '<NOCONFIG>' }`);
         
-        logger.info(output);
+        data[name] = config;
       });
+      
+      const outputOptions = {
+        showHeaders: false,
+        truncate: false,
+      };
+      
+      logger.info(columnify(data, outputOptions));
       
       return Promise.resolve();
     });

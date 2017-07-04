@@ -4,6 +4,7 @@ const path = require('path');
 const modulesDir = require('global-modules');
 const fse = require('fs-extra');
 const Install = require('./npm/install');
+const Uninstall = require('./npm/uninstall');
 const pify = require('pify');
 
 /**
@@ -39,6 +40,29 @@ class Component {
         return pify(fse.pathExists)(this._configPath)
           .then(hasConfig => {
             this._hasConfig = hasConfig;
+          });
+      });
+  }
+  
+  /**
+   * @returns {Promise}
+   */
+  unload() {
+    return pify(fse.pathExists)(this.path)
+      .then(exists => {
+        if (!exists) {
+          this._version = null;
+          this._hasConfig = false;
+          
+          return Promise.resolve();
+        }
+        
+        return new Uninstall(this.name).run()
+          .then(() => {
+            this._version = null;
+            this._hasConfig = false;
+            
+            return Promise.resolve();
           });
       });
   }

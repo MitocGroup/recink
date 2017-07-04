@@ -4,9 +4,9 @@ const { spawn } = require('child_process');
 const Spinner = require('../../../../../src/component/helper/spinner');
 
 /**
- * Install NPM package
+ * Uninstall NPM package
  */
-class Install {
+class Uninstall {
   /**
    * @param {string} packageName
    */
@@ -30,19 +30,19 @@ class Install {
    */
   run() {
     return (new Spinner(
-      `Installing "${ this.packageName }" component`
+      `Uninstalling "${ this.packageName }" component`
     )).then(
-      `Component "${ this.packageName }" successfully installed`
+      `Component "${ this.packageName }" successfully uninstalled`
     ).catch(
-      `Failed to install "${ this.packageName }" component`
+      `Failed to uninstall "${ this.packageName }" component`
     ).promise(new Promise((resolve, reject) => {
       const options = { stdio: 'ignore' };
 
-      const npmInstall = spawn('npm', [ 'install', '-g', this.packageName ], options);
+      const npmInstall = spawn('npm', [ 'uninstall', '-g', this.packageName ], options);
       
       npmInstall.on('close', code => {
         if (code !== 0) {          
-          return reject(new Error(`Failed to install ${ this.packageName }`));
+          return reject(new Error(`Failed to uninstall ${ this.packageName }`));
         }
         
         resolve();
@@ -51,4 +51,4 @@ class Install {
   }
 }
 
-module.exports = Install;
+module.exports = Uninstall;
