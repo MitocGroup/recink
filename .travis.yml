@@ -15,6 +15,7 @@ branches:
     - test
 before_install:
   - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
+  - 'npm install --no-peer'
 matrix:
   include:
     -
