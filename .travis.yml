@@ -14,7 +14,8 @@ matrix:
       before_install:
         - 'npm install --no-peer'
         - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
-        - 'find ./components -type "d" -depth "1" -exec "npm install -g {} \;"'
+        - 'npm install -g ./components/codeclimate'
+        - 'npm install -g ./components/snyk'
         - 'recink component add codeclimate snyk'
       script: 'recink run unit'
     -
