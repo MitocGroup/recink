@@ -87,11 +87,18 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance</p
 <h1 id="getting-started">Getting Started</h1>
 <p>@See <a href="https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project">User Guide</a></p>
 <h1 id="usage">Usage</h1>
-<p><code>recink --help</code> # Show help</p>
-<p><code>recink configure recink</code> # Configure <code>REciNK</code></p>
-<p><code>recink run unit</code> # Run unit tests</p>
-<p><code>recink run e2e</code> # Run end-to-end tests</p>
-<h1 id="debugging">Debugging</h1>
+<pre><code><code class="source-code prettyprint">run unit [path]                 Run unit tests                              
+run e2e [path]                  Run end to end tests                        
+configure recink [path]         Configure REciNK                            
+configure travis [path]         Configure Travis                            
+travis encrypt [path]           Encrypt Travis environment variables        
+travis lint [path]              Lint Travis configuration                   
+component generate [path]       Generate REciNK boilerplate component       
+component add [name...]         Add an REciNK component to the registry     
+component remove [name...]      Remove an REciNK component from the registry
+component list                  List REciNK components from the registry    
+help &lt;command&gt;                  Display help for a specific command</code>
+</code></pre><h1 id="debugging">Debugging</h1>
 <p>TestCafe offers amazing debugging capabilities
 <a href="http://devexpress.github.io/testcafe/documentation/test-api/debugging.html">documented here</a>.</p>
 <p>We use <a href="https://github.com/ryx/testcafe-browser-provider-nightmare">Nighmare</a>
@@ -132,7 +139,7 @@ as default browser, which provides native debugging capabilities
 <li>[x] Add support for external components</li>
 <li>[x] Add support for fully automated <code>Travis</code> configuration </li>
 <li>[x] Add support for End-to-End tests</li>
-<li>[ ] Add component development guide</li>
+<li>[x] Add component development guide</li>
 <li>[ ] Add unit tests for critical functionality</li>
 <li>[ ] Add support for different CI platforms</li>
 <li>[ ] Craft a cool logo for the project :alien:</li>
