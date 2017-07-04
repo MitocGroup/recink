@@ -1,5 +1,4 @@
 language: node_js
-node_js: 8
 git:
   depth: 1
 branches:
@@ -11,6 +10,9 @@ branches:
 matrix:
   include:
     -
+      node_js:
+        - 6
+        - 8
       before_install:
         - 'npm install --no-peer'
         - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
@@ -19,6 +21,7 @@ matrix:
         - 'recink component add codeclimate snyk'
       script: 'recink run unit'
     -
+      node_js: 8
       before_install:
         - 'npm install --no-peer'
         - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
