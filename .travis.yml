@@ -17,11 +17,14 @@ branches:
 matrix:
   include:
     -
-      script: './bin/cli.js run unit'
       before_install:
-        - './bin/cli.js component add codeclimate snyk'
+        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
+        - 'recink component add codeclimate snyk'
+      script: 'recink run unit'
     -
-      script: './bin/cli.js run e2e'
+      before_install:
+        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
+      script: 'recink run e2e'
       addons:
         apt:
           packages:
