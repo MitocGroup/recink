@@ -117,7 +117,7 @@ as default browser, which provides native debugging capabilities
 - [x] Add support for external components
 - [x] Add support for fully automated `Travis` configuration 
 - [x] Add support for End-to-End tests
-- [ ] Add component development guide
+- [x] Add component development guide
 - [ ] Add unit tests for critical functionality
 - [ ] Add support for different CI platforms
 - [ ] Craft a cool logo for the project :alien:
