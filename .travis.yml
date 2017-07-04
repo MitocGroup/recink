@@ -14,16 +14,17 @@ branches:
     - dev
     - stage
     - test
-before_install:
-  - 'npm install -g recink'
 matrix:
   include:
     -
       script: 'recink run unit'
       before_install:
+        - 'npm install -g recink'
         - 'recink component add codeclimate snyk'
     -
       script: 'recink run e2e'
+      before_install:
+        - 'npm install -g recink'
       addons:
         apt:
           packages:
