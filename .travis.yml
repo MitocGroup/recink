@@ -15,7 +15,8 @@ matrix:
         - 'npm install -g .'
         - 'npm install -g ./components/codeclimate'
         - 'npm install -g ./components/snyk'
-      script: 'recink run unit -c ./components/codeclimate -c ./components/snyk'
+        - 'recink add codeclimate snyk'
+      script: 'recink run unit'
     -
       before_install:
         - 'npm install -g .'
