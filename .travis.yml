@@ -1,5 +1,4 @@
 language: node_js
-node_js: 8
 git:
   depth: 1
 branches:
@@ -8,18 +7,18 @@ branches:
     - dev
     - stage
     - test
+before_install:
+  - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "Already linked. Skipping..."'
 matrix:
   include:
     -
-      before_install:
-        - 'npm install -g .'
-        - 'npm install -g ./components/codeclimate'
-        - 'npm install -g ./components/snyk'
-        - 'recink component add codeclimate snyk'
+      node_js: 6
       script: 'recink run unit'
     -
-      before_install:
-        - 'npm install -g .'
+      node_js: 8
+      script: 'recink run unit'
+    -
+      node_js: 8
       script: 'recink run e2e'
       addons:
         apt:
@@ -28,11 +27,3 @@ matrix:
       install:
         - 'export DISPLAY='':99.0'''
         - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
-env:
-  global:
-    - # CODECLIMATE_REPO_TOKEN=[secure]
-      secure: UFf/nMM9jgzFhnxWfaws6+0C+tvv0YGjlv2N5ELRmDJHVrITeVFTvH33uquRZd2gHKHOTUrjwllmUcgKAbSwcPXRdK+9lxEjRq3LOCQiCpV5OxAAui+UMdlgU5RGg2KrDPIoeFqFOmRMx7UGgnlbUPs0lHOAytwzRp3X/66jVlQFcfGMMJctKztzTpRy3Y4TMj4wLCfqKVWAEsIanQ6+eq/HgqgY8XGXW5uSX5luPiBTZnZ6zHzqwFj10rz3Myh2eLKG1g/6mPe7HZqx4JgK2g7cf2wDbiFjlCHybQrI+g2JApX0/urXxVvRvrw+NzLz6+udxWFcMRc/ydW+hGFgFTrtZZHMkXjiKA++gcWJlmRzMaqLmDaxCRUyL4oFg4jmvPPoO/U17ipAxJvufgCWEhzuX/W5Y1YWTp7+U15dCYdY7fSsAsWWb+q0TDMZRgzzDRZvDX5gbxsMbndGfPFBG5E0zlna4FbP9mkkgbQLjI31/YGJy4jt/uj1IYez1rZQ0Dyb9hNAcF9XSDDvWvDZgTxSZi2cv97wY7fWw84Mu9wQDOrHHmnAnEBpvl0iiKPUCXBn1kNXFPKLFW4/Y/xwmH6Rzrwfddv6L0HZ5KkiifAHOdrlBkLP1yI6ViupFstfKdfTQLUdxTBkCOJl4DFpiIedAIuvE13qJ4ZcrHN0GNg=
-    - # SNYK_API_TOKEN=[secure]
-      secure: csgNteulfFmRAjcNqdjSoUl7CEfxBTCz0CjxEo/I0LRp4/1wKdBIL6VwbV7Blg6hxF0wRzfEFvBKXlEkbzWMCjqLB3nC+Y7DmCt74cgPAbHjVdFyRu412/POiBBjy9kgdpE7Q2JajqgpIZAxlQNmiim3zeFLdwBmWPdcO+Z/zDCM/kV0nnGoW4WIWj74Dti2YyXZ7jgb5c9H+DjBCgiQhoZRjNSQnkhaeRXttOeNuixRux0vCoW9BhRPg7pPHRKAow7kfGRCniiVOD180Pfc2vWKzpRBUIaQ1aVXYcIxoSmrwbnidLfNFPLJMF/CAjtD2OlVbf450lJJZDzgeDcViVDQH1TqmIglYqD2sbLOrKbeC2LMLSAqsVrmpDaK+7XBvHDNUC3GChPQi0DIZeMvLOHTr5DmUwrIscujYfWpbTPzX8VYfc1c3AvQcP1n3V53FZpsgaMtHVbTeZRyR9nXYhZCJ2VbWWqsGSi9uKx2BKrSGTH9O6nDxR6ej39/KdaVtw5cin+CoJ1l/1qBY+vFov1VPp2v3wvKUzm9fTkck53D40c+egOPV0WiqDWUWm17MOMW3j8l/63fBgzpqd/XhmPTgkTsRpAiijRjES+dSxRoDNUuYPbfw3vUlRtv5BZYeSMbekUswnR+kVyHelCu0s+UtP23xNgAQ0Drmfnaa+0=
-    - # GITHUB_ACCESS_TOKEN=[secure]
-      secure: Wx2aWJ5uOOONY1J/glUw2jlP0Zvlx/DDfd0ZkujEfe7s1HgFJxd/WBF8eVgjJjRSLhUPvYdV9PfnTC6Hx4Y9oJcl3/1yzhKuscHlYjiUqmYpzZqzx4asT1xxNUtjn1dqkUSgb2sHPv7PpDNb0WwVcS3w3FJQ02xwbj4ExjHM3cQjx+S3d9WDRNzK0SyJM1365iYNKO7eQav+ESYYjp+FB3HnnJACO71MkfDg1/ZfGNqiFCk2bHQlolKQmJ7s9DGH5Z/cxkssteoKnhF5cuBS7grCPzGTvVWFVefYkgyZXNSJmneqL9flFMkW3z2zi0erq4QYkqktuBOU/bAUB2hV6ODA0KwIJwWNNenwxGzZzRUkQVtpXQCafISZLGHEtM3MnA8WnAfaLVJ2LkHb4DU5eLgaXSx1Ol9ZewJC2GImlgCJ2/f8god/isKkLf5OiJMxpD8Yc6cVncCOvONlWly2Q4v1GBucAbMZz/jweEx+YW/VfPFaYbkkRIQETuEBVSCLtpdGekikk/8t7cHYP5XC31qUgy5P8G0AdT0N1SWKhseV4U3sWwp6f7LZ7a6kUCYDG026qjnnXR6/Z2g3fBPP+rJFnihXtDAaRG/2ZL+FkH6Wd3vU/0ZJsdY98bDatbkPjTH5rJ5hY06OQjC89N2Trl+X+QKHhoy8mvGGCpiGLQk=
