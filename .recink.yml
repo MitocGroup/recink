@@ -14,17 +14,6 @@ $:
      timeout: 15000                                                         # Timeout to wait for uri's available
      uri:                                                                   # uri's to wait before start running test cases
        - http://devexpress.github.io/testcafe/example/
-  snyk:
-    token: 'process.env.SNYK_API_TOKEN'                                     # Snyk.io API token
-    actionable: true                                                        # Show actionable items
-    dev: false                                                              # Analyze 'devDependencies'
-    reporters:                                                              # Customize Reporters (available: text, github)
-      text: ~
-      github:
-        - token: 'process.env.GITHUB_ACCESS_TOKEN'
-    fail:                                     
-      enabled: true                                                         # Fail on issues found
-      severity: 'medium'                                                    # Minimal severity to handle (available: low, medium, high)
   codeclimate:
     token: 'process.env.CODECLIMATE_REPO_TOKEN'                             # CodeClimate Repo token
   npm:

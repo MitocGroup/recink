@@ -2,11 +2,11 @@ language: node_js
 git:
   depth: 1
 cache:
- bundler: true
- directories:
-   - node_modules
-   - '$(npm root -g)'
-   - '$(npm config get prefix)/bin'
+  bundler: true
+  directories:
+    - node_modules
+    - '$(npm root -g)'
+    - '$(npm config get prefix)/bin'
 branches:
   only:
     - master
@@ -23,7 +23,7 @@ matrix:
       script: 'recink run unit'
     -
       node_js: 8
-      script: 'recink run unit'
+      script: 'npm install ./components/codeclimate && recink run unit -c recink-codeclimate'
     -
       node_js: 8
       script: 'recink run e2e'
@@ -34,3 +34,7 @@ matrix:
       install:
         - 'export DISPLAY='':99.0'''
         - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
+env:
+  global:
+    - # CODECLIMATE_REPO_TOKEN=[secure]
+      secure: F31/r5leUz7LkkGV/jYOcAn7PUZYWA1Ry9l7krIjgsqjuBL4YUwXHkn7lebrYcYOJOoYGj+KKwJ9SJjtsefBBm91Ma16tbH2geq3Uh5GEzfDrU/NbfQT9gUOFb9xn4mejo0YgxPS56BtDsXi+N7EtfT78cGbItfIMa9ouKyAHpPAxKTRnk92pN24fU6VVFMxh4hOR05PHdVCWDzUzeILlNWDq9CKfLak0EK/hTQOIqwUO1+/knNdIVIapJBi7QDEkSjtcLFy1cpfPaiXwM6Nb2PTSyhJ+SB3uUD4hMIhXWmfwea1gBO9X4GKzixbypylbEY1wJnH09oVcPihvQME6j+U2D8P+TtOD0ppNcXeES4QdkJ4e4E+A0LHY1qXqIFFjbDh07/JKL7DisIG1lEJ6Vd2MfKHWiNPhkDcNQSaOepMKE0ZtBpAvwL6E09Izc8r6wgLGGkLfDrTYHm3RsK8IIMe5gBpMHBrP80YLfFT1uakD0JrIN4R1ZvlOmEoMIxhqX2rh/6s+SzoEV4g2gRMgJYgAhaPqnjRboKDHb/K6hfOZM3+sHHEUCDBYNRvQEaQyTprGTY05biGgTy0ma3ICWQ73Iu1ih1P7eBA2ef9xGUer7Yb9WYxL3hgOZemWTc2ZpsfTYqB+h2RqeUo+rlCmfuQWGoWBqoFWOWyiDD1kGM=
