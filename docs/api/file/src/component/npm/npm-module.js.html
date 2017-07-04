@@ -90,7 +90,7 @@ const packageHash = require(&apos;package-hash&apos;);
 const path = require(&apos;path&apos;);
 const fse = require(&apos;fs-extra&apos;);
 const Spinner = require(&apos;../helper/spinner&apos;);
-const spawn = require(&apos;child_process&apos;).spawn;
+const { spawn } = require(&apos;child_process&apos;);
 const md5Hex = require(&apos;md5-hex&apos;);
 const SequentialPromise = require(&apos;../helper/sequential-promise&apos;);
 
@@ -234,9 +234,9 @@ class NpmModule {
         stdio: &apos;ignore&apos;,
       };
 
-      const npmInstall = spawn(&apos;npm&apos;, [ &apos;run&apos;, script ], options);
+      const npmRunScript = spawn(&apos;npm&apos;, [ &apos;run&apos;, script ], options);
       
-      npmInstall.on(&apos;close&apos;, code =&gt; {
+      npmRunScript.on(&apos;close&apos;, code =&gt; {
         if (code !== 0) {          
           return reject(new Error(
             `Failed to run script ${ script } in ${ this.rootDir }.\n` +

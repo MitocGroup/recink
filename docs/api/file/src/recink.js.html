@@ -93,6 +93,7 @@ const configFactory = require(&apos;./config/factory&apos;);
 const Container = require(&apos;./container&apos;);
 const AbstractComponent = require(&apos;./component/abstract-component&apos;);
 const logger = require(&apos;./logger&apos;);
+const merge = require(&apos;merge&apos;);
 
 /**
  * ReCInk entry point
@@ -209,7 +210,7 @@ class ReCInk extends Emitter {
   }
   
   /**
-   * @param {AbstractComponent[]|AbstractComponent} components
+   * @param {AbstractComponent} components
    *
    * @returns {Promise}
    */
@@ -245,6 +246,27 @@ class ReCInk extends Emitter {
           return Promise.resolve(component);
         });
     }));
+  }
+  
+  /**
+   * @param {string} configFile
+   * @param {*} extendConfigs
+   *
+   * @returns {Promise}
+   */
+  configureExtend(configFile, ...extendConfigs) {
+    if (extendConfigs.length &lt;= 0) {
+      return this.configure(configFile);
+    }
+    
+    const promises = extendConfigs.concat([ configFile ])
+      .map(cfgFile =&gt; configFactory.guess(cfgFile).load());
+    
+    return Promise.all(promises).then(configVector =&gt; {
+      const consolidatedConfig = merge.recursive(true, ...configVector);
+      
+      return this._configLoad(consolidatedConfig, configFile);
+    });
   }
   
   /**

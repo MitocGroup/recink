@@ -2202,6 +2202,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/recink.js~recink#configureextend",
+    "class/src/recink.js~ReCInk.html#instance-method-configureExtend",
+    "src/recink.js~ReCInk#configureExtend",
+    "method"
+  ],
+  [
     "src/recink.js~recink#constructor",
     "class/src/recink.js~ReCInk.html#instance-constructor-constructor",
     "src/recink.js~ReCInk#constructor",
