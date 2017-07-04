@@ -20,6 +20,8 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 - `npm install -g recink-snyk`
 
+> Note that the component is installed automatically when running `recink add snyk`
+
 
 # Configuration
 
@@ -50,6 +52,14 @@ script: 'recink run unit -c recink-snyk'
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-snyk'
+```
+
+Or using the registry: 
+
+```
+before_install:
+  # other before_install scripts...
+  - 'recink add snyk'
 ```
 
 Add the [Snyk.io API Token](https://snyk.io/docs/quick-start/#authentication) to `.travis.yml`:

@@ -18,6 +18,8 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 - `npm install -g recink-{{ name|lower }}`
 
+> Note that the component is installed automatically when running `recink add {{ name|lower }}`
+
 
 # Configuration
 
@@ -40,6 +42,14 @@ before_install:
   - 'npm install -g recink-{{ name|lower }}'
 ```
 
+Or using the registry: 
+
+```
+before_install:
+  # other before_install scripts...
+  - 'recink add {{ name|lower }}'
+```
+
 Add the `{{ name|upper }}` to `.travis.yml`:
 
 ```
@@ -47,6 +57,7 @@ recink travis encrypt -x '{{ name|upper }}="John"'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+
 
 # Usage
 

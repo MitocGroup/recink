@@ -20,6 +20,8 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 - `npm install -g recink-codeclimate`
 
+> Note that the component is installed automatically when running `recink add codeclimate`
+
 
 # Configuration
 
@@ -43,6 +45,14 @@ before_install:
   - 'npm install -g recink-codeclimate'
 ```
 
+Or using the registry: 
+
+```
+before_install:
+  # other before_install scripts...
+  - 'recink add codeclimate'
+```
+
 Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-coverage-troubleshooting-tips#section--should-i-keep-my-test-coverage-token-secret-) to `.travis.yml`:
 
 ```
@@ -50,6 +60,7 @@ recink travis encrypt -x 'CODECLIMATE_REPO_TOKEN=1234'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
+
 
 # Usage
 
