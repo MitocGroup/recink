@@ -1,6 +1,12 @@
 language: node_js
 git:
   depth: 1
+cache:
+ bundler: true
+ directories:
+   - node_modules
+   - '$(npm root -g)'
+   - '$(npm config get prefix)/bin'
 branches:
   only:
     - master
@@ -8,7 +14,7 @@ branches:
     - stage
     - test
 before_install:
-  - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "Already linked. Skipping..."'
+  - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
 matrix:
   include:
     -
