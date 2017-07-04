@@ -6,6 +6,7 @@ In order to make it compatible with the `REciNK` running on `Node.js v6.x` or ev
 
 This section is dedicated to compiling the `.es6` sources using [Babel](https://babeljs.io) compiler.
 
+
 ### Compile script
 
 Basic `compile-lib.sh` script:
@@ -42,8 +43,12 @@ done
 
 cd "$_pwd" || (echo "Failed to resume to $_pwd" && exit 1)
 cd "$_lib" || (echo "Failed to pwd to lib path $_pwd" && exit 1)
-babel lib/ --extensions='.js' --plugins="$NPM_GLOBAL_NM/babel-plugin-add-module-exports" --presets="$NPM_GLOBAL_NM/babel-preset-node6" --out-dir="lib.es6" || (echo "Failed to compile $_pwd" && exit 1)
+babel lib/ --extensions='.es6' --plugins="$NPM_GLOBAL_NM/babel-plugin-add-module-exports" --presets="$NPM_GLOBAL_NM/babel-preset-node6" --out-dir="lib.compiled" || (echo "Failed to compile $_pwd" && exit 1)
 ```
+
+
+The script above is compiling `.es6` files from `lib/` to `.js` files compatible with `Node.js >=v6.x` in `lib.compiled/` folder
+
 
 ### Seting up `package.json`
 
@@ -54,6 +59,7 @@ Use the above `compile-lib.sh` script:
   "compile-travis": "bash compile-lib.sh ."
 }
 ```
+
 
 ### Seting up `.recink.yml`
 
