@@ -55,6 +55,17 @@ const commands = prog
     .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
     .complete(() => require('./run/e2e/components'))
   .action(cmd('./commands/run/e2e'))
+  .command('component add', 'Add an REciNK component to the registry')
+    .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+    .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
+  .action(cmd('./commands/component/add'))
+  .command('component remove', 'Remove an REciNK component from the registry')
+    .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+    .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
+    .option('--purge', 'Remove component NPM package')
+  .action(cmd('./commands/component/remove'))
+  .command('component list', 'List REciNK components from the registry')
+  .action(cmd('./commands/component/list'))
 ;
 
 if (!Env.isCI) {
@@ -90,17 +101,6 @@ if (!Env.isCI) {
       .argument('[path]', 'Path to component root', /.+/, process.cwd())
       .option('--name <name>', 'Component name', /^[a-z][a-z0-9_-]+$/i)
     .action(cmd('./commands/component/generate'))
-    .command('component add', 'Add an REciNK component to the registry')
-      .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
-      .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
-    .action(cmd('./commands/component/add'))
-    .command('component remove', 'Remove an REciNK component from the registry')
-      .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
-      .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
-      .option('--purge', 'Remove component NPM package')
-    .action(cmd('./commands/component/remove'))
-    .command('component list', 'List REciNK components from the registry')
-    .action(cmd('./commands/component/list'))
   ;
 }
 
