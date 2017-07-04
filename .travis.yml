@@ -19,14 +19,14 @@ matrix:
     -
       before_install:
         - 'npm install --no-peer'
-        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
+        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || true'
         - 'find ./components -type d -depth 1 -exec npm install -g {} \;'
         - 'recink component add codeclimate snyk'
       script: 'recink run unit'
     -
       before_install:
         - 'npm install --no-peer'
-        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
+        - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || true'
       script: 'recink run e2e'
       addons:
         apt:
