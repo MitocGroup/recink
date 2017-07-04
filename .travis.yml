@@ -12,13 +12,13 @@ matrix:
   include:
     -
       before_install:
-        - 'npm install -g . --no-peer'
+        - 'npm install -g .'
         - 'npm install -g ./components/codeclimate'
         - 'npm install -g ./components/snyk'
       script: 'recink run unit -c ./components/codeclimate -c ./components/snyk'
     -
       before_install:
-        - 'npm install -g . --no-peer'
+        - 'npm install -g .'
       script: 'recink run e2e'
       addons:
         apt:
