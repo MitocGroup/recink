@@ -13,8 +13,8 @@ matrix:
     -
       before_install:
         - 'npm install --no-peer'
-        - '$(cd ./components/codeclimate && npm install)'
-        - '$(cd ./components/snyk && npm install)'
+        - 'npm install ./components/codeclimate'
+        - 'npm install ./components/snyk'
         - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink'
       script: 'recink run unit -c ./components/codeclimate -c ./components/snyk'
     -
