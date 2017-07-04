@@ -1,25 +1,32 @@
 --- 
 $:
-  pagespeed:
-    uri:
-      - https://www-dev.adtechmedia.io
-  snyk:
-    token: 'process.env.SNYK_API_TOKEN'
   preprocess:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'
-  codeclimate:
-    token: 'process.env.CODECLIMATE_REPO_TOKEN'
+    '$.snyk.reporters.github.0.token': 'eval'
   e2e:
     pattern:                                                                # Files to include
       - /.+\.e2e\.js$/i
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
     wait:
-      timeout: 5000                                                        # Timeout to wait for uri's available
-      uri:                                                                  # uri's to wait before start running test cases
-        - http://devexpress.github.io/testcafe/example/
-        - https://www-dev.adtechmedia.io/api/
+     interval: 200                                                          # Interval of running uri checks
+     timeout: 15000                                                         # Timeout to wait for uri's available
+     uri:                                                                   # uri's to wait before start running test cases
+       - http://devexpress.github.io/testcafe/example/
+  snyk:
+    token: 'process.env.SNYK_API_TOKEN'                                     # Snyk.io API token
+    actionable: true                                                        # Show actionable items
+    dev: false                                                              # Analyze 'devDependencies'
+    reporters:                                                              # Customize Reporters (available: text, github)
+      text: ~
+      github:
+        - token: 'process.env.GITHUB_ACCESS_TOKEN'
+    fail:                                     
+      enabled: true                                                         # Fail on issues found
+      severity: 'medium'                                                    # Minimal severity to handle (available: low, medium, high)
+  codeclimate:
+    token: 'process.env.CODECLIMATE_REPO_TOKEN'                             # CodeClimate Repo token
   npm:
     scripts: []                                                             # Scripts to run after installing dependencies
     dependencies:                                                           # Dependencies to add/overwrite
@@ -27,7 +34,10 @@ $:
   emit:
     pattern:                                                                # Files to include
       - /.+\.js$/i
-    ignore:                                                                 # Files to exclude
+    ignore:
+      - /^bin\//i   
+      - /^docs\//i     
+      - /^node-bin\//i
       - /^(.*\/)?node_modules(\/?$)?/i
   test:
     mocha:
@@ -41,12 +51,13 @@ $:
     pattern:                                                                # Files to include
       - /.+\.js$/i
     ignore:                                                                 # Files to exclude
-      - /.+\.e2e\.js$/i
       - /.+\.spec\.js$/i
+      - /.+\.e2e\.js$/i
       - /^(.*\/)?node_modules(\/?$)?/i
     reporters:                                                              # Istanbul reporters
       text-summary: ~
 main:                                                                       # Main module definition
   root: '.'                                                                 # Root package directory (containing package.json and tests)
   dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)
+
 ### Add other modules here...

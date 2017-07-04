@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe';
 
-fixture `Example page`
+fixture `End-to-End Healthcheck`
   .page `http://devexpress.github.io/testcafe/example/`;
 
 test('Check property of element', async t => {
