@@ -6,6 +6,9 @@ const EventEmitter = require('events');
  * Extended Emitter implementation
  */
 class Emitter extends EventEmitter {
+  /**
+   * @param {*} args
+   */
   constructor(...args) {
     super(...args);
     

@@ -252,6 +252,7 @@ class CoverageComponent extends DependantConfigBasedComponent {
       
       emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {
         return new Promise(resolve => {
+          const instrumenterCache = {};
           const coverageVariable = this._coverageVariable(module);
           const instrumenter = new istanbul.Instrumenter({ coverageVariable });
           
@@ -261,41 +262,53 @@ class CoverageComponent extends DependantConfigBasedComponent {
             mocha.loadFiles = (fn => {
               const moduleRoot = module.container.get('root');
               const coverableAssets = assetsToInstrument[module.name] || [];
-              
-              mocha.files.map(file => {
-                let requireHook = null;
-                file = path.resolve(file);
-                mocha.suite.emit('pre-require', global, file, mocha);
+
+              // @todo Fix broken "expect().to.be.an.instanceof()"
+              const requireHook = requireHacker.global_hook('js', (depPath, module) => {
+                if (!/^(\.|\/)/.test(depPath)) {
+                  return;
+                }
                 
-                // @todo add other extensions to be covered
-                try {
-                  requireHook = requireHacker.hook('js', depPath => {
-                    if (coverableAssets.indexOf(depPath) !== -1
-                      && this._match(path.relative(moduleRoot, depPath))) {
-                      
-                      dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                      dispatchedAssets[module.name].push(depPath);
-                      
-                      return instrumenter.instrumentSync(
-                        fs.readFileSync(depPath).toString(), 
-                        depPath
-                      );
-                    }
-                  });
+                const absoluteDepPath = requireHacker.resolve(depPath, module);
+
+                if (coverableAssets.indexOf(absoluteDepPath) !== -1
+                  && this._match(path.relative(moduleRoot, absoluteDepPath))) {
                   
-                  mocha.suite.emit('require', require(file), file, mocha);            
-                  requireHook.unmount();
-                  
-                  mocha.suite.emit('post-require', global, file, mocha);
-                } catch (error) {
-                  try { // ensure we unmounted the js listener
-                    requireHook.unmount();
-                  } catch (error) {
-                    
-                    // do nothing...
+                  if (instrumenterCache.hasOwnProperty(absoluteDepPath)) {
+                    return instrumenterCache[absoluteDepPath];
                   }
+                  
+                  dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                  dispatchedAssets[module.name].push(absoluteDepPath);
+                  
+                  const source = instrumenter.instrumentSync(
+                    fs.readFileSync(absoluteDepPath).toString(), 
+                    depPath
+                  );
+                  
+                  instrumenterCache[absoluteDepPath] = { source, path: absoluteDepPath };
+                  
+                  return instrumenterCache[absoluteDepPath];
                 }
               });
+              
+              try {
+                mocha.files.map(file => {
+                  file = path.resolve(file);
+                  
+                  mocha.suite.emit('pre-require', global, file, mocha);
+                  mocha.suite.emit('require', require(file), file, mocha); 
+                  mocha.suite.emit('post-require', global, file, mocha);
+                });
+                
+                requireHook.unmount();
+              } catch (error) {
+                try {
+                  requireHook.unmount();
+                } catch (error) {   }
+                
+                throw error;
+              }
               
               fn && fn();
             });

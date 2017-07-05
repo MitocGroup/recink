@@ -74,6 +74,8 @@ help <command>                  Display help for a specific command
 
 Add `-v` flag while running `recink ...` commands to enable debug output.
 
+To enable debug mode for [Mocha](http://mochajs.org) use `DEBUG=* ...`.
+
 [TestCafe](https://devexpress.github.io/testcafe) offers amazing debugging capabilities
 [documented here](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
 

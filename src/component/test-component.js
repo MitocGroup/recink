@@ -6,6 +6,7 @@ const events = require('./test/events');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const Mocha = require('mocha');
+const domain = require('domain');
 
 /**
  * Test component
@@ -46,6 +47,7 @@ class TestComponent extends DependantConfigBasedComponent {
   run(emitter) {
     return new Promise((resolve, reject) => {
       const mochas = {};
+      const mochaOptions = this.container.get('mocha.options', {});
       
       emitter.onBlocking(emitEvents.module.emit.asset, payload => {
         if (!this._match(payload)) {
@@ -53,9 +55,9 @@ class TestComponent extends DependantConfigBasedComponent {
         }
         
         const { fileAbs, module } = payload;
-
+        
         mochas[module.name] = mochas[module.name] 
-          || new Mocha(this.container.get('mocha.options', {}));
+          || new Mocha(mochaOptions);
 
         return emitter.emitBlocking(events.asset.test.add, mochas[module.name])
           .then(() => {

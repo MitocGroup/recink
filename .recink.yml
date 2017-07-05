@@ -20,6 +20,7 @@ $:
     scripts: []                                                             # Scripts to run after installing dependencies
     dependencies:                                                           # Dependencies to add/overwrite
       chai: 'latest'
+      sinon: 'latest'
   emit:
     pattern:                                                                # Files to include
       - /.+\.js$/i
