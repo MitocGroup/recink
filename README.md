@@ -72,9 +72,7 @@ help <command>                  Display help for a specific command
 
 # Debugging
 
-Add `-v` flag while running `recink ...` commands to enable debug output.
-
-To enable debug mode for [Mocha](http://mochajs.org) use `DEBUG=* ...`.
+To enable debug mode for [Mocha](http://mochajs.org) use `DEBUG=* recink run unit`.
 
 [TestCafe](https://devexpress.github.io/testcafe) offers amazing debugging capabilities
 [documented here](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
@@ -82,6 +80,8 @@ To enable debug mode for [Mocha](http://mochajs.org) use `DEBUG=* ...`.
 We use [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare)
 as default browser, which provides native debugging capabilities
 [documented here](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
+
+> Use `-v` flag to enable verbose mode on any `recink` command.
 
 
 # Supported CI Platforms
