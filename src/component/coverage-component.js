@@ -262,9 +262,9 @@ class CoverageComponent extends DependantConfigBasedComponent {
             mocha.loadFiles = (fn => {
               const moduleRoot = module.container.get('root');
               const coverableAssets = assetsToInstrument[module.name] || [];
-
+              
               // @todo Fix broken "expect().to.be.an.instanceof()"
-              const requireHook = requireHacker.global_hook('js', (depPath, depModule) => {
+              let requireHook = requireHacker.global_hook(module.name, (depPath, depModule) => {
                 if (!/^(\.|\/)/.test(depPath)) {
                   return;
                 }
@@ -302,10 +302,12 @@ class CoverageComponent extends DependantConfigBasedComponent {
                 });
                 
                 requireHook.unmount();
+                requireHook = null;
               } catch (error) {
-                try {
+                if (requireHook) {
                   requireHook.unmount();
-                } catch (error) {   }
+                  requireHook = null;
+                }
                 
                 throw error;
               }

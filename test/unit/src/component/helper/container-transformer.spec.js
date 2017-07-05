@@ -2,6 +2,7 @@
 
 const Container = require('../../../../../src/container');
 const ContainerTransformer = require('../../../../../src/component/helper/container-transformer');
+const Transformer = require('../../../../../src/component/helper/transformer');
 const chai = require('chai');
 
 describe('Test ContainerTransformer', () => {
@@ -17,7 +18,7 @@ describe('Test ContainerTransformer', () => {
     const containerTransformer = new ContainerTransformer(container);
     const transformer = containerTransformer.create('a', emptyCb);
     
-    chai.expect(transformer.constructor.name).to.be.eql('Transformer');
+    chai.expect(transformer).to.be.an.instanceof(Transformer);
   });
   
   it('Test add()', () => {
@@ -31,15 +32,6 @@ describe('Test ContainerTransformer', () => {
     chai.expect(containerTransformer.transformers[0]).to.be.eql(transformer);
     chai.expect(containerTransformer.transformers[1]).to.have.property('path', 'a');
     chai.expect(containerTransformer.transformers[1]).to.have.property('transformer', emptyCb);
-  });
-  
-  it('Test addPattern()', () => {
-    const containerTransformer = new ContainerTransformer(container);
-    
-    containerTransformer.addPattern('a');
-
-    chai.expect(containerTransformer.transformers).to.have.lengthOf(1);
-    chai.expect(containerTransformer.transformers[0].transformer).to.be.an.instanceof(Function);
   });
   
   it('Test transform()', done => {
