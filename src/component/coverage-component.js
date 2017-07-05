@@ -243,10 +243,10 @@ class CoverageComponent extends DependantConfigBasedComponent {
           dispatchedAssets,
           module
         ).then(() => {
-          
-          // cleanup memory
           delete assetsToInstrument[module.name];
           delete dispatchedAssets[module.name];
+          
+          return Promise.resolve();
         });
       });
       
@@ -264,12 +264,12 @@ class CoverageComponent extends DependantConfigBasedComponent {
               const coverableAssets = assetsToInstrument[module.name] || [];
 
               // @todo Fix broken "expect().to.be.an.instanceof()"
-              const requireHook = requireHacker.global_hook('js', (depPath, module) => {
+              const requireHook = requireHacker.global_hook('js', (depPath, depModule) => {
                 if (!/^(\.|\/)/.test(depPath)) {
                   return;
                 }
                 
-                const absoluteDepPath = requireHacker.resolve(depPath, module);
+                const absoluteDepPath = requireHacker.resolve(depPath, depModule);
 
                 if (coverableAssets.indexOf(absoluteDepPath) !== -1
                   && this._match(path.relative(moduleRoot, absoluteDepPath))) {
@@ -281,10 +281,9 @@ class CoverageComponent extends DependantConfigBasedComponent {
                   dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
                   dispatchedAssets[module.name].push(absoluteDepPath);
                   
-                  // @todo test if "process.cwd()" working for all usecases
                   const source = instrumenter.instrumentSync(
                     fs.readFileSync(absoluteDepPath).toString(), 
-                    path.relative(process.cwd(), absoluteDepPath)
+                    absoluteDepPath
                   );
                   
                   instrumenterCache[absoluteDepPath] = { source, path: absoluteDepPath };
