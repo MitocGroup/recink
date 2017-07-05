@@ -1,6 +1,6 @@
 'use strict';
 
-const ReCInk = require('../../../../src/recink');
+const Recink = require('../../../../src/recink');
 const file = '.travis.yml';
 
 const vars = {
@@ -32,7 +32,7 @@ function dump(varName, value) {
  */
 function help(localVars = null) {
   const output = [
-    `You can use the following variables in your ${ ReCInk.CONFIG_FILE_NAME }:`,
+    `You can use the following variables in your ${ Recink.CONFIG_FILE_NAME }:`,
   ];
   
   output.push('\n');

@@ -2,10 +2,10 @@
 
 const path = require('path');
 const Dumper = require('./helper/dumper');
-const ReCInk = require('../../../src/recink');
+const Recink = require('../../../src/recink');
 
 module.exports = (args, options, logger) => {
-  const configFile = ReCInk.CONFIG_FILE_NAME;
+  const configFile = Recink.CONFIG_FILE_NAME;
   
   return (new Dumper(
     path.join(__dirname, '../../templates', configFile),

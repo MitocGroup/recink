@@ -10,9 +10,9 @@ const logger = require('./logger');
 const merge = require('merge');
 
 /**
- * ReCInk entry point
+ * Recink entry point
  */
-class ReCInk extends Emitter {
+class Recink extends Emitter {
   constructor() {
     super();
     
@@ -188,7 +188,7 @@ class ReCInk extends Emitter {
    *
    * @returns {Promise}
    */
-  configure(configFile = ReCInk.CONFIG_FILE) {
+  configure(configFile = Recink.CONFIG_FILE) {
     return configFactory.guess(configFile)
       .load()
       .then(config => this._configLoad(config, configFile));
@@ -259,4 +259,4 @@ class ReCInk extends Emitter {
   }
 }
 
-module.exports = ReCInk;
+module.exports = Recink;

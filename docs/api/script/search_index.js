@@ -175,8 +175,8 @@ window.esdocSearchIndex = [
   ],
   [
     "recink~recink",
-    "class/src/recink.js~ReCInk.html",
-    "<span>ReCInk</span> <span class=\"search-result-import-path\">recink</span>",
+    "class/src/recink.js~Recink.html",
+    "<span>Recink</span> <span class=\"search-result-import-path\">recink</span>",
     "class"
   ],
   [
@@ -2179,68 +2179,68 @@ window.esdocSearchIndex = [
   ],
   [
     "src/recink.js~recink#component",
-    "class/src/recink.js~ReCInk.html#instance-method-component",
-    "src/recink.js~ReCInk#component",
+    "class/src/recink.js~Recink.html#instance-method-component",
+    "src/recink.js~Recink#component",
     "method"
   ],
   [
     "src/recink.js~recink#components",
-    "class/src/recink.js~ReCInk.html#instance-method-components",
-    "src/recink.js~ReCInk#components",
+    "class/src/recink.js~Recink.html#instance-method-components",
+    "src/recink.js~Recink#components",
     "method"
   ],
   [
     "src/recink.js~recink#config",
-    "class/src/recink.js~ReCInk.html#instance-get-config",
-    "src/recink.js~ReCInk#config",
+    "class/src/recink.js~Recink.html#instance-get-config",
+    "src/recink.js~Recink#config",
     "member"
   ],
   [
     "src/recink.js~recink#configure",
-    "class/src/recink.js~ReCInk.html#instance-method-configure",
-    "src/recink.js~ReCInk#configure",
+    "class/src/recink.js~Recink.html#instance-method-configure",
+    "src/recink.js~Recink#configure",
     "method"
   ],
   [
     "src/recink.js~recink#configureextend",
-    "class/src/recink.js~ReCInk.html#instance-method-configureExtend",
-    "src/recink.js~ReCInk#configureExtend",
+    "class/src/recink.js~Recink.html#instance-method-configureExtend",
+    "src/recink.js~Recink#configureExtend",
     "method"
   ],
   [
     "src/recink.js~recink#constructor",
-    "class/src/recink.js~ReCInk.html#instance-constructor-constructor",
-    "src/recink.js~ReCInk#constructor",
+    "class/src/recink.js~Recink.html#instance-constructor-constructor",
+    "src/recink.js~Recink#constructor",
     "method"
   ],
   [
     "src/recink.js~recink#container",
-    "class/src/recink.js~ReCInk.html#instance-get-container",
-    "src/recink.js~ReCInk#container",
+    "class/src/recink.js~Recink.html#instance-get-container",
+    "src/recink.js~Recink#container",
     "member"
   ],
   [
     "src/recink.js~recink#listcomponents",
-    "class/src/recink.js~ReCInk.html#instance-method-listComponents",
-    "src/recink.js~ReCInk#listComponents",
+    "class/src/recink.js~Recink.html#instance-method-listComponents",
+    "src/recink.js~Recink#listComponents",
     "method"
   ],
   [
     "src/recink.js~recink#run",
-    "class/src/recink.js~ReCInk.html#instance-method-run",
-    "src/recink.js~ReCInk#run",
+    "class/src/recink.js~Recink.html#instance-method-run",
+    "src/recink.js~Recink#run",
     "method"
   ],
   [
     "src/recink.js~recink.config_file",
-    "class/src/recink.js~ReCInk.html#static-get-CONFIG_FILE",
-    "src/recink.js~ReCInk.CONFIG_FILE",
+    "class/src/recink.js~Recink.html#static-get-CONFIG_FILE",
+    "src/recink.js~Recink.CONFIG_FILE",
     "member"
   ],
   [
     "src/recink.js~recink.config_file_name",
-    "class/src/recink.js~ReCInk.html#static-get-CONFIG_FILE_NAME",
-    "src/recink.js~ReCInk.CONFIG_FILE_NAME",
+    "class/src/recink.js~Recink.html#static-get-CONFIG_FILE_NAME",
+    "src/recink.js~Recink.CONFIG_FILE_NAME",
     "member"
   ]
 ]

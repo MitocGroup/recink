@@ -1,6 +1,6 @@
 'use strict';
 
-const ReCInk = require('../../../src/recink');
+const Recink = require('../../../src/recink');
 const componentsFactory = require('../../../src/component/factory');
 const path = require('path');
 const requireHacker = require('require-hacker');
@@ -9,7 +9,7 @@ const ComponentRegistry = require('../component/registry/registry');
 
 module.exports = availableComponents => {
   return (args, options, logger) => {
-    const recink = new ReCInk();
+    const recink = new Recink();
     let disabledComponents = options.s;
     let additionalComponents = options.c;
     
@@ -96,7 +96,7 @@ module.exports = availableComponents => {
         return Promise.all([
           recink.components(...components),
           recink.configureExtend(
-            path.join(args.path, ReCInk.CONFIG_FILE_NAME),
+            path.join(args.path, Recink.CONFIG_FILE_NAME),
             ...componentConfig
           )
         ])
