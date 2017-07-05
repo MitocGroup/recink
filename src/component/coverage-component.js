@@ -281,9 +281,10 @@ class CoverageComponent extends DependantConfigBasedComponent {
                   dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
                   dispatchedAssets[module.name].push(absoluteDepPath);
                   
+                  // @todo test if "process.cwd()" working for all usecases
                   const source = instrumenter.instrumentSync(
                     fs.readFileSync(absoluteDepPath).toString(), 
-                    depPath
+                    path.relative(process.cwd(), absoluteDepPath)
                   );
                   
                   instrumenterCache[absoluteDepPath] = { source, path: absoluteDepPath };
