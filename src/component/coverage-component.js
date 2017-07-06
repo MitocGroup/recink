@@ -262,42 +262,43 @@ class CoverageComponent extends DependantConfigBasedComponent {
           
           if (mocha) {
             mocha.loadFiles = (fn => {
+              const self = this;
               const moduleRoot = module.container.get('root');
               const coverableAssets = assetsToInstrument[module.name] || [];
-              
-              const moduleCompile = new ModuleCompile((content, filename) => {
-                if (coverableAssets.indexOf(filename) !== -1
-                  && this._match(path.relative(moduleRoot, filename))) {
-            
-                  if (instrumenterCache.hasOwnProperty(filename)) {
+
+              const sourceTransformers = {
+                istanbul (source) {
+                  const { filename } = this;
+                  
+                  if (coverableAssets.indexOf(filename) !== -1
+                    && self._match(path.relative(moduleRoot, filename))) {
+                    if (instrumenterCache.hasOwnProperty(filename)) {
+                      return instrumenterCache[filename];
+                    }
+                    
+                    instrumenterCache[filename] = instrumenter.instrumentSync(source, filename);;
+                    dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                    dispatchedAssets[module.name].push(filename);
+                    
                     return instrumenterCache[filename];
                   }
                   
-                  instrumenterCache[filename] = instrumenter.instrumentSync(content, filename);;
-                  dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                  dispatchedAssets[module.name].push(filename);
-                  
-                  return instrumenterCache[filename];
-                }
-                
-                return content;
-              }).register();
+                  return source;
+                },
+              };
               
-              try {
-                mocha.files.map(file => {
-                  file = path.resolve(file);
-                  
-                  mocha.suite.emit('pre-require', global, file, mocha);
-                  mocha.suite.emit('require', require(file), file, mocha); 
-                  mocha.suite.emit('post-require', global, file, mocha);
-                });
+              mocha.files.map(file => {
+                file = path.resolve(file);
                 
-                moduleCompile.restore();
-              } catch (error) {
-                moduleCompile.restore();
-                
-                throw error;
-              }
+                mocha.suite.emit('pre-require', global, file, mocha);
+                mocha.suite.emit(
+                  'require',
+                  ModuleCompile.require(file, { sourceTransformers }),
+                  file,
+                  mocha
+                ); 
+                mocha.suite.emit('post-require', global, file, mocha);
+              });
               
               fn && fn();
             });
@@ -307,7 +308,7 @@ class CoverageComponent extends DependantConfigBasedComponent {
         });
       });
       
-      emitter.onBlocking(testEvents.assets.test.end, () => {
+      emitter.onBlocking(testEvents.assets.test.end, () => {        
         coverageVariables.map(coverageVariable => {
           collector.add(global[coverageVariable] || {});
         });

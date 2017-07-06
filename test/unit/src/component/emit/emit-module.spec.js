@@ -4,9 +4,10 @@ const Container = require('../../../../../src/container');
 const Emitter = require('../../../../../src/emitter');
 const events = require('../../../../../src/component/emit/events');
 const chai = require('chai');
+const path = require('path');
 const sinon = require('sinon');
 const { PassThrough } = require('stream');
-const mock = require('mock');
+const ModuleCompile = require('../../../../../src/component/helper/module-compile');
 
 describe('Test EmitModule', () => {
   const emptyCb = () => {};
@@ -17,10 +18,15 @@ describe('Test EmitModule', () => {
   let pathExists = true;
   
   const stream = new PassThrough();
-  const EmitModule = mock('../../../../../src/component/emit/emit-module', {
-    'fs-extra': { pathExists () { return Promise.resolve(pathExists) } },
-    'readdir-enhanced': { stream() { return stream } },
-  }, require);
+  const EmitModule = ModuleCompile.require(
+    path.join(__dirname, '../../../../../src/component/emit/emit-module'),
+    {
+      requires: {
+        'fs-extra': { pathExists () { return Promise.resolve(pathExists) } },
+        'readdir-enhanced': { stream() { return stream } },
+      },
+    }
+  );
   
   it('Test check()', done => {
     const emitModule = new EmitModule('test', container, emitter, logger);
@@ -34,7 +40,7 @@ describe('Test EmitModule', () => {
       })
       .catch(error => done(error));
   });
-
+  
   it('Test check() with missing module root', done => {
     pathExists = false;
     const emitModule = new EmitModule('test', container, emitter, logger);

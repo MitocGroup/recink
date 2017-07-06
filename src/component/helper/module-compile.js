@@ -1,6 +1,7 @@
 'use strict';
 
 const Module = require('module');
+const SandboxedModule = require('sandboxed-module');
 
 /**
  * Overwrites original Module to apply compilers
@@ -61,7 +62,7 @@ class ModuleCompile {
     const self = this;
     
     if (clearCache) {
-      this.clearCache();
+      ModuleCompile.clearCache();
     }
     
     Module.prototype._compile = function(content, filename) {
@@ -75,11 +76,36 @@ class ModuleCompile {
   }
   
   /**
+   * @param {boolean} clearCache
+   * 
+   * @returns {ModuleCompile}
+   */
+  restore(clearCache = true) {
+    Module.prototype._compile = this.originalCompile;
+    
+    if (clearCache) {
+      ModuleCompile.clearCache();
+    }
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} moduleId
+   * @param {*} options
+   *
+   * @returns {*}
+   */
+  static require(moduleId, options = {}) {
+    return SandboxedModule.require(moduleId, options);
+  }
+  
+  /**
    * @param {string} cacheKey
    * 
    * @returns {ModuleCompile}
    */
-  clearCache(cacheKey = null) {
+  static clearCache(cacheKey = null) {
     if (cacheKey) {
       delete require.cache[cacheKey];
       
@@ -89,15 +115,6 @@ class ModuleCompile {
     Object.keys(require.cache).map(cacheKey => {
       delete require.cache[cacheKey];
     });
-    
-    return this;
-  }
-  
-  /**
-   * @returns {ModuleCompile}
-   */
-  restore() {
-    Module.prototype._compile = this.originalCompile;
     
     return this;
   }

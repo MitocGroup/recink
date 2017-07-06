@@ -75,7 +75,7 @@ class TestComponent extends DependantConfigBasedComponent {
         return emitter.emitBlocking(events.asset.tests.start, mocha, module)
           .then(() => {
             return mocha ? new Promise((resolve, reject) => {
-              mocha.run(failures => {                
+              mocha.run(failures => {
                 if (failures > 0) {
                   return reject(new Error(
                     `Tests failed in module ${ module.name } with ${ failures } failures`

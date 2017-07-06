@@ -49,8 +49,8 @@ describe('Test ContainerTransformer', () => {
     
     containerTransformer.transform()
       .then(container => {
-        chai.expect(container.get('a')).to.be.an.instanceof(Array);
-        chai.expect(container.get('a')[0]).to.be.an.instanceof(RegExp);
+        chai.expect(container.get('a')).to.be.an('array');
+        chai.expect(container.get('a')[0]).to.be.an('regexp');
         chai.expect(container.get('a')[0].test('b')).to.be.true;
         chai.expect(container.get('a')[0].test('0')).to.be.false;
         chai.expect(container.get('b.c')).to.be.eql('test-transformed');
