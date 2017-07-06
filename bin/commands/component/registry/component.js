@@ -24,7 +24,7 @@ class Component {
    * @returns {Promise}
    */
   load() {
-    return pify(fse.pathExists)(this.path)
+    return fse.pathExists(this.path)
       .then(exists => {
         if (!exists) {
           return new Install(this.name).run();
@@ -37,7 +37,7 @@ class Component {
         
         this._version = packageJson.version;
         
-        return pify(fse.pathExists)(this._configPath)
+        return fse.pathExists(this._configPath)
           .then(hasConfig => {
             this._hasConfig = hasConfig;
           });
@@ -48,7 +48,7 @@ class Component {
    * @returns {Promise}
    */
   unload() {
-    return pify(fse.pathExists)(this.path)
+    return fse.pathExists(this.path)
       .then(exists => {
         if (!exists) {
           this._version = null;

@@ -70,6 +70,8 @@ class EmitModule {
       
       readdir.stream(moduleRoot, options)
         .on('data', filePath => {
+          filePath = filePath.toString();
+          
           processing++;
           
           const payload = {

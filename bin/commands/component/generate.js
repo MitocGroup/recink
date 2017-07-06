@@ -32,7 +32,7 @@ module.exports = (args, options, logger) => {
     const [ source, target ] = metadata;
     
     return pify(Twig.renderFile)(source, { name })
-      .then(content => pify(fse.outputFile)(target, content));
+      .then(content => fse.outputFile(target, content));
   }))
   .then(() => {
     logger.info(logger.chalk.green(

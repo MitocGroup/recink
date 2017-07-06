@@ -37,7 +37,7 @@ class FileStorage extends AbstractStorage {
    * @returns {Promise}
    */
   exists() {
-    return pify(fse.pathExists)(this.registryFile);
+    return fse.pathExists(this.registryFile);
   }
   
   /**
@@ -48,7 +48,7 @@ class FileStorage extends AbstractStorage {
    * @private
    */
   _write(rawData) {
-    return pify(fse.outputFile)(this.registryFile, rawData);
+    return fse.outputFile(this.registryFile, rawData);
   }
   
   /**
