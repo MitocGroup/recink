@@ -8,8 +8,8 @@ const ContainerTransformer = require('./helper/container-transformer');
 const path = require('path');
 const fs = require('fs');
 const pify = require('pify');
-const requireHacker = require('require-hacker');
 const storageFactory = require('./coverage/factory');
+const ModuleCompile = require('./helper/module-compile');
 
 /**
  * Coverage component
@@ -205,6 +205,8 @@ class CoverageComponent extends DependantConfigBasedComponent {
    * @param {Emitter} emitter
    * 
    * @returns {Promise}
+   * '
+   * @todo split into several abstractions
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
@@ -263,34 +265,23 @@ class CoverageComponent extends DependantConfigBasedComponent {
               const moduleRoot = module.container.get('root');
               const coverableAssets = assetsToInstrument[module.name] || [];
               
-              // @todo Fix broken "expect().to.be.an.instanceof()"
-              let requireHook = requireHacker.global_hook(module.name, (depPath, depModule) => {
-                if (!/^(\.|\/)/.test(depPath)) {
-                  return;
-                }
-                
-                const absoluteDepPath = requireHacker.resolve(depPath, depModule);
-
-                if (coverableAssets.indexOf(absoluteDepPath) !== -1
-                  && this._match(path.relative(moduleRoot, absoluteDepPath))) {
-                  
-                  if (instrumenterCache.hasOwnProperty(absoluteDepPath)) {
-                    return instrumenterCache[absoluteDepPath];
+              const moduleCompile = new ModuleCompile((content, filename) => {
+                if (coverableAssets.indexOf(filename) !== -1
+                  && this._match(path.relative(moduleRoot, filename))) {
+            
+                  if (instrumenterCache.hasOwnProperty(filename)) {
+                    return instrumenterCache[filename];
                   }
                   
+                  instrumenterCache[filename] = instrumenter.instrumentSync(content, filename);;
                   dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                  dispatchedAssets[module.name].push(absoluteDepPath);
+                  dispatchedAssets[module.name].push(filename);
                   
-                  const source = instrumenter.instrumentSync(
-                    fs.readFileSync(absoluteDepPath).toString(), 
-                    absoluteDepPath
-                  );
-                  
-                  instrumenterCache[absoluteDepPath] = { source, path: absoluteDepPath };
-                  
-                  return instrumenterCache[absoluteDepPath];
+                  return instrumenterCache[filename];
                 }
-              });
+                
+                return content;
+              }).register();
               
               try {
                 mocha.files.map(file => {
@@ -301,13 +292,9 @@ class CoverageComponent extends DependantConfigBasedComponent {
                   mocha.suite.emit('post-require', global, file, mocha);
                 });
                 
-                requireHook.unmount();
-                requireHook = null;
+                moduleCompile.restore();
               } catch (error) {
-                if (requireHook) {
-                  requireHook.unmount();
-                  requireHook = null;
-                }
+                moduleCompile.restore();
                 
                 throw error;
               }
