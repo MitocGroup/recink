@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/component/coverage/volatile-driver.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
+  <title data-ice="title">src/component/helper/module-compile.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -84,65 +84,113 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/component/coverage/volatile-driver.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/helper/module-compile.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const AbstractDriver = require(&apos;./abstract-driver&apos;);
-const path = require(&apos;path&apos;);
-const fse = require(&apos;fs-extra&apos;);
-const os = require(&apos;os&apos;);
-const fs = require(&apos;fs&apos;);
-const pify = require(&apos;pify&apos;);
+const Module = require(&apos;module&apos;);
 
 /**
- * Volatile coverage storage driver
+ * Overwrites original Module to apply compilers
  */
-class VolatileDriver extends AbstractDriver {
+class ModuleCompile {
   /**
-   * @param {string} name
-   * 
-   * @returns {Promise}
-   *
-   * @private
+   * @param {*} compilers
    */
-  _read(name) {
-    const file = this._storageFile(name);
+  constructor(...compilers) {
+    this._compilers = compilers;
+    this._originalCompile = Module.prototype._compile;
+  }
+  
+  /**
+   * @returns {Function}
+   */
+  get originalCompile() {
+    return this._originalCompile;
+  }
+  
+  /**
+   * @returns {Function[]}
+   */
+  get compilers() {
+    return this._compilers
+      .filter(c =&gt; c &amp;&amp; c instanceof Function)
+      .concat([ this.originalCompile ]);
+  }
+  
+  /**
+   * @param {Function} compiler
+   *
+   * @returns {ModuleCompile}
+   */
+  add(compiler) {
+    this._compilers.push(compiler);
     
-    return fse.pathExists(file)
-      .then(exists =&gt; {
-        if (!exists) {
-          return Promise.resolve(null);
-        }
-        
-        return pify(fs.readFile)(file);
-      });
+    return this;
   }
   
   /**
-   * @param {string} name
-   * @param {string} content
-   * 
-   * @returns {Promise}
+   * @param {Function} compiler
    *
-   * @private
+   * @returns {ModuleCompile}
    */
-  _write(name, content) {
-    return fse.outputFile(this._storageFile(name), content);
+  remove(compiler) {
+    delete this._compilers[this._compilers.indexOf(compiler)];
+    
+    return this;
   }
   
   /**
-   * @param {string} name
+   * @param {boolean} clearCache
    * 
-   * @returns {string}
-   *
-   * @private
+   * @returns {ModuleCompile}
    */
-  _storageFile(name) {
-    return path.join(os.tmpDir(), &apos;__recink_coverage_volatile__&apos;, name);
+  register(clearCache = true) {
+    const self = this;
+    
+    if (clearCache) {
+      this.clearCache();
+    }
+    
+    Module.prototype._compile = function(content, filename) {
+      return self.compilers
+        .reduce((content, compiler) =&gt; {
+          return compiler.call(this, content, filename);
+        }, content);
+    };
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} cacheKey
+   * 
+   * @returns {ModuleCompile}
+   */
+  clearCache(cacheKey = null) {
+    if (cacheKey) {
+      delete require.cache[cacheKey];
+      
+      return this;
+    }
+    
+    Object.keys(require.cache).map(cacheKey =&gt; {
+      delete require.cache[cacheKey];
+    });
+    
+    return this;
+  }
+  
+  /**
+   * @returns {ModuleCompile}
+   */
+  restore() {
+    Module.prototype._compile = this.originalCompile;
+    
+    return this;
   }
 }
 
-module.exports = VolatileDriver;
+module.exports = ModuleCompile;
 </code></pre>
 
 </div>

@@ -64,6 +64,7 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/module-compile.js~ModuleCompile.html">ModuleCompile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
@@ -94,8 +95,8 @@ const ContainerTransformer = require(&apos;./helper/container-transformer&apos;)
 const path = require(&apos;path&apos;);
 const fs = require(&apos;fs&apos;);
 const pify = require(&apos;pify&apos;);
-const requireHacker = require(&apos;require-hacker&apos;);
 const storageFactory = require(&apos;./coverage/factory&apos;);
+const ModuleCompile = require(&apos;./helper/module-compile&apos;);
 
 /**
  * Coverage component
@@ -291,6 +292,8 @@ class CoverageComponent extends DependantConfigBasedComponent {
    * @param {Emitter} emitter
    * 
    * @returns {Promise}
+   * &apos;
+   * @todo split into several abstractions
    */
   run(emitter) {
     return new Promise((resolve, reject) =&gt; {
@@ -348,35 +351,24 @@ class CoverageComponent extends DependantConfigBasedComponent {
             mocha.loadFiles = (fn =&gt; {
               const moduleRoot = module.container.get(&apos;root&apos;);
               const coverableAssets = assetsToInstrument[module.name] || [];
-
-              // @todo Fix broken &quot;expect().to.be.an.instanceof()&quot;
-              const requireHook = requireHacker.global_hook(&apos;js&apos;, (depPath, depModule) =&gt; {
-                if (!/^(\.|\/)/.test(depPath)) {
-                  return;
-                }
-                
-                const absoluteDepPath = requireHacker.resolve(depPath, depModule);
-
-                if (coverableAssets.indexOf(absoluteDepPath) !== -1
-                  &amp;&amp; this._match(path.relative(moduleRoot, absoluteDepPath))) {
-                  
-                  if (instrumenterCache.hasOwnProperty(absoluteDepPath)) {
-                    return instrumenterCache[absoluteDepPath];
+              
+              const moduleCompile = new ModuleCompile((content, filename) =&gt; {
+                if (coverableAssets.indexOf(filename) !== -1
+                  &amp;&amp; this._match(path.relative(moduleRoot, filename))) {
+            
+                  if (instrumenterCache.hasOwnProperty(filename)) {
+                    return instrumenterCache[filename];
                   }
                   
+                  instrumenterCache[filename] = instrumenter.instrumentSync(content, filename);;
                   dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                  dispatchedAssets[module.name].push(absoluteDepPath);
+                  dispatchedAssets[module.name].push(filename);
                   
-                  const source = instrumenter.instrumentSync(
-                    fs.readFileSync(absoluteDepPath).toString(), 
-                    absoluteDepPath
-                  );
-                  
-                  instrumenterCache[absoluteDepPath] = { source, path: absoluteDepPath };
-                  
-                  return instrumenterCache[absoluteDepPath];
+                  return instrumenterCache[filename];
                 }
-              });
+                
+                return content;
+              }).register();
               
               try {
                 mocha.files.map(file =&gt; {
@@ -387,11 +379,9 @@ class CoverageComponent extends DependantConfigBasedComponent {
                   mocha.suite.emit(&apos;post-require&apos;, global, file, mocha);
                 });
                 
-                requireHook.unmount();
+                moduleCompile.restore();
               } catch (error) {
-                try {
-                  requireHook.unmount();
-                } catch (error) {   }
+                moduleCompile.restore();
                 
                 throw error;
               }

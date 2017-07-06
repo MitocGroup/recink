@@ -156,6 +156,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "recink/src/component/helper/module-compile.js~modulecompile",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html",
+    "<span>ModuleCompile</span> <span class=\"search-result-import-path\">recink/src/component/helper/module-compile.js</span>",
+    "class"
+  ],
+  [
     "recink/src/component/npm-component.js~npmcomponent",
     "class/src/component/npm-component.js~NpmComponent.html",
     "<span>NpmComponent</span> <span class=\"search-result-import-path\">recink/src/component/npm-component.js</span>",
@@ -1396,6 +1402,60 @@ window.esdocSearchIndex = [
     "class/src/component/helper/container-transformer.js~ContainerTransformer.html#instance-get-transformers",
     "src/component/helper/container-transformer.js~ContainerTransformer#transformers",
     "member"
+  ],
+  [
+    "src/component/helper/module-compile.js",
+    "file/src/component/helper/module-compile.js.html",
+    "src/component/helper/module-compile.js",
+    "file"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#add",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-add",
+    "src/component/helper/module-compile.js~ModuleCompile#add",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#clearcache",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-clearCache",
+    "src/component/helper/module-compile.js~ModuleCompile#clearCache",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#compilers",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-get-compilers",
+    "src/component/helper/module-compile.js~ModuleCompile#compilers",
+    "member"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#constructor",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-constructor-constructor",
+    "src/component/helper/module-compile.js~ModuleCompile#constructor",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#originalcompile",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-get-originalCompile",
+    "src/component/helper/module-compile.js~ModuleCompile#originalCompile",
+    "member"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#register",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-register",
+    "src/component/helper/module-compile.js~ModuleCompile#register",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#remove",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-remove",
+    "src/component/helper/module-compile.js~ModuleCompile#remove",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile#restore",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-restore",
+    "src/component/helper/module-compile.js~ModuleCompile#restore",
+    "method"
   ],
   [
     "src/component/helper/pattern-transformer.js",
