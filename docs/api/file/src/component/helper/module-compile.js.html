@@ -88,6 +88,7 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
 const Module = require(&apos;module&apos;);
+const SandboxedModule = require(&apos;sandboxed-module&apos;);
 
 /**
  * Overwrites original Module to apply compilers
@@ -148,7 +149,7 @@ class ModuleCompile {
     const self = this;
     
     if (clearCache) {
-      this.clearCache();
+      ModuleCompile.clearCache();
     }
     
     Module.prototype._compile = function(content, filename) {
@@ -162,11 +163,36 @@ class ModuleCompile {
   }
   
   /**
+   * @param {boolean} clearCache
+   * 
+   * @returns {ModuleCompile}
+   */
+  restore(clearCache = true) {
+    Module.prototype._compile = this.originalCompile;
+    
+    if (clearCache) {
+      ModuleCompile.clearCache();
+    }
+    
+    return this;
+  }
+  
+  /**
+   * @param {string} moduleId
+   * @param {*} options
+   *
+   * @returns {*}
+   */
+  static require(moduleId, options = {}) {
+    return SandboxedModule.require(moduleId, options);
+  }
+  
+  /**
    * @param {string} cacheKey
    * 
    * @returns {ModuleCompile}
    */
-  clearCache(cacheKey = null) {
+  static clearCache(cacheKey = null) {
     if (cacheKey) {
       delete require.cache[cacheKey];
       
@@ -176,15 +202,6 @@ class ModuleCompile {
     Object.keys(require.cache).map(cacheKey =&gt; {
       delete require.cache[cacheKey];
     });
-    
-    return this;
-  }
-  
-  /**
-   * @returns {ModuleCompile}
-   */
-  restore() {
-    Module.prototype._compile = this.originalCompile;
     
     return this;
   }

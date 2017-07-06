@@ -1416,12 +1416,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/component/helper/module-compile.js~modulecompile#clearcache",
-    "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-clearCache",
-    "src/component/helper/module-compile.js~ModuleCompile#clearCache",
-    "method"
-  ],
-  [
     "src/component/helper/module-compile.js~modulecompile#compilers",
     "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-get-compilers",
     "src/component/helper/module-compile.js~ModuleCompile#compilers",
@@ -1455,6 +1449,18 @@ window.esdocSearchIndex = [
     "src/component/helper/module-compile.js~modulecompile#restore",
     "class/src/component/helper/module-compile.js~ModuleCompile.html#instance-method-restore",
     "src/component/helper/module-compile.js~ModuleCompile#restore",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile.clearcache",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#static-method-clearCache",
+    "src/component/helper/module-compile.js~ModuleCompile.clearCache",
+    "method"
+  ],
+  [
+    "src/component/helper/module-compile.js~modulecompile.require",
+    "class/src/component/helper/module-compile.js~ModuleCompile.html#static-method-require",
+    "src/component/helper/module-compile.js~ModuleCompile.require",
     "method"
   ],
   [
