@@ -7,7 +7,7 @@ $:
   emit:
     pattern:                                                  # Files to include
       - /.+\.js$/i
-    ignore:
+    ignore:                                                   # Files to ignore
       - /^bin\//i   
       - /^docs\//i     
       - /^node-bin\//i
