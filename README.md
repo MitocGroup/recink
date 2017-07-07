@@ -56,17 +56,17 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 # Usage
 
 ```
-run unit [path]                 Run unit tests                              
-run e2e [path]                  Run end to end tests                        
-configure recink [path]         Configure REciNK                            
-configure travis [path]         Configure Travis                            
-travis encrypt [path]           Encrypt Travis environment variables        
-travis lint [path]              Lint Travis configuration                   
-component generate [path]       Generate REciNK boilerplate component       
-component add [name...]         Add an REciNK component to the registry     
-component remove [name...]      Remove an REciNK component from the registry
-component list                  List REciNK components from the registry    
-help <command>                  Display help for a specific command   
+recink run unit [path]                 Run unit tests                              
+recink run e2e [path]                  Run end to end tests                        
+recink configure recink [path]         Configure REciNK                            
+recink configure travis [path]         Configure Travis                            
+recink travis encrypt [path]           Encrypt Travis environment variables        
+recink travis lint [path]              Lint Travis configuration                   
+recink component generate [path]       Generate REciNK boilerplate component       
+recink component add [name...]         Add an REciNK component to the registry     
+recink component remove [name...]      Remove an REciNK component from the registry
+recink component list                  List REciNK components from the registry    
+recink help <command>                  Display help for a specific command   
 ```
 
 
