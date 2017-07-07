@@ -23,7 +23,8 @@ matrix:
       script: 'npm install ./components/codeclimate && recink run unit -c recink-codeclimate'
     -
       node_js: 8
-      script: 'npm install ./components/snyk && recink run unit -c recink-snyk'
+      #script: 'npm install ./components/snyk && recink run unit -c recink-snyk'
+      script: 'recink run unit'
     -
       node_js: 8
       script: 'recink run e2e'
