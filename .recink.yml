@@ -4,50 +4,62 @@ $:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'
     '$.snyk.reporters.github.0.token': 'eval'
-  e2e:
-    pattern:                                                                # Files to include
-      - /.+\.e2e\.js$/i
-    ignore: ~                                                               # Files to exclude
-    reporter: ~                                                             # TestCafe framework reporter
-    wait:
-     interval: 200                                                          # Interval of running uri checks
-     timeout: 15000                                                         # Timeout to wait for uri's available
-     uri:                                                                   # uri's to wait before start running test cases
-       - http://devexpress.github.io/testcafe/example/
-  codeclimate:
-    token: 'process.env.CODECLIMATE_REPO_TOKEN'                             # CodeClimate Repo token
-  npm:
-    scripts: []                                                             # Scripts to run after installing dependencies
-    dependencies:                                                           # Dependencies to add/overwrite
-      chai: 'latest'
-      sinon: 'latest'
   emit:
-    pattern:                                                                # Files to include
+    pattern:                                                  # Files to include
       - /.+\.js$/i
     ignore:
       - /^bin\//i   
       - /^docs\//i     
       - /^node-bin\//i
       - /^(.*\/)?node_modules(\/?$)?/i
+  npm:
+    scripts: []                                               # Scripts to run after installing dependencies
+    dependencies:                                             # Dependencies to add/overwrite
+      chai: 'latest'
+      sinon: 'latest'
+  e2e:
+    pattern:                                                  # Files to include
+      - /.+\.e2e\.js$/i
+    ignore: ~                                                 # Files to exclude
+    reporter: ~                                               # TestCafe framework reporter
+    wait:
+     interval: 200                                            # Interval of running uri checks
+     timeout: 15000                                           # Timeout to wait for uri's available
+     uri:                                                     # uri's to wait before start running test cases
+       - http://devexpress.github.io/testcafe/example/
   test:
     mocha:
-      options:                                                              # Mocha options
+      options:                                                # Mocha options
         ui: 'bdd'
         reporter: 'spec'
-    pattern:                                                                # Files to include
+    pattern:                                                  # Files to include
       - /.+\.spec\.js$/i
-    ignore: ~                                                               # Files to exclude
+    ignore: ~                                                 # Files to exclude
   coverage:
-    pattern:                                                                # Files to include
+    pattern:                                                  # Files to include
       - /.+\.js$/i
-    ignore:                                                                 # Files to exclude
+    ignore:                                                   # Files to exclude
       - /.+\.spec\.js$/i
       - /.+\.e2e\.js$/i
       - /^(.*\/)?node_modules(\/?$)?/i
-    reporters:                                                              # Istanbul reporters
+    reporters:                                                # Istanbul reporters
       text-summary: ~
-main:                                                                       # Main module definition
-  root: '.'                                                                 # Root package directory (containing package.json and tests)
-  dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)
+  codeclimate:
+    token: 'process.env.CODECLIMATE_REPO_TOKEN'               # CodeClimate Repo token
+    # skip-certificate: true                                  # Skip validating server SSL certificate
+  snyk:
+    token: 'process.env.SNYK_API_TOKEN'                       # Snyk.io API token
+    actionable: true                                          # Show actionable items
+    dev: false                                                # Analyze 'devDependencies'
+    reporters:                                                # Customize Reporters (available: text, github)
+      text: ~
+      github:
+        - token: 'process.env.GITHUB_ACCESS_TOKEN'
+    # fail:
+    #   enabled: false                                        # Fail on issues found
+    #   severity: 'medium'                                    # Minimal severity to handle (available: low, medium, high)
 
 ### Add other modules here...
+main:                                                         # Main module definition
+  root: '.'                                                   # Root package directory (containing package.json and tests)
+  dependencies: ~                                             # Dependencies to add/overwrite (over $.npm.dependencies config)
