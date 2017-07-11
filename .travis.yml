@@ -24,8 +24,8 @@ matrix:
     -
       node_js: 8
       install:
-        - '`cd ./components/snyk && npm install`'
-        - '`cd ./components/codeclimate && npm install`'
+        - 'cd ./components/snyk && npm install'
+        - 'cd ./components/codeclimate && npm install'
       script: 'recink run unit -c ./components/snyk -c ./components/codeclimate'
     -
       node_js: 8
