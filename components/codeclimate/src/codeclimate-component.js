@@ -48,6 +48,12 @@ class CodeclimateComponent extends DependantConfigBasedComponent {
       });
       
       emitter.on(coverageEvents.coverage.report.compare, () => {
+        if (!this._lcovBuffer) {
+          this.logger.info(
+            `${ this.logger.emoji.cross } No coverage data. Skipping CodeClimate...`
+          );
+        }
+        
         const formatter = new Formatter();
         
         pify(formatter.format.bind(formatter))(this._lcovBuffer)
