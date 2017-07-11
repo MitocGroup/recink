@@ -52,6 +52,10 @@ class SnykComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   teardown(emitter) {
+    if (!this.isActive) {
+      return Promise.resolve();
+    }
+    
     const token = this.container.get('token', '');
     const dev = this.container.get('dev', false);
     const actionable = this.container.get('actionable', true);

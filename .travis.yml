@@ -20,11 +20,13 @@ matrix:
   include:
     -
       node_js: 6
-      script: 'npm install ./components/codeclimate && recink run unit -c recink-codeclimate'
+      script: 'recink run unit'
     -
       node_js: 8
-      #script: 'npm install ./components/snyk && recink run unit -c recink-snyk'
-      script: 'recink run unit'
+      install:
+        - '`cd ./components/snyk && npm install`'
+        - '`cd ./components/codeclimate && npm install`'
+      script: 'recink run unit -c ./components/snyk -c ./components/codeclimate'
     -
       node_js: 8
       script: 'recink run e2e'

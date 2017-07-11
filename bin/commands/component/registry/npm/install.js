@@ -9,24 +9,22 @@ const Spinner = require('../../../../../src/component/helper/spinner');
 class Install {
   /**
    * @param {string} packageName
+   * @param {string} cwd
    */
-  constructor(packageName) {
+  constructor(packageName, cwd = null) {
     this._packageName = packageName;
+    this._cwd = cwd;
   }
   
   /**
    * @returns {string}
    */
-  get packageName() {
-    return this._packageName;
+  get cwd() {
+    return this._cwd;
   }
   
   /**
-   * @param {string} script
-   * 
    * @returns {Promise}
-   *
-   * @private
    */
   run() {
     return (new Spinner(
@@ -37,8 +35,15 @@ class Install {
       `Failed to install "${ this.packageName }" component`
     ).promise(new Promise((resolve, reject) => {
       const options = { stdio: 'ignore' };
+      const args = [ 'install', this.packageName ];
+      
+      if (this.cwd) {
+        options.cwd = this.cwd;
+      } else {
+        args.push('-g');
+      }
 
-      const npmInstall = spawn('npm', [ 'install', '-g', this.packageName ], options);
+      const npmInstall = spawn('npm', args, options);
       
       npmInstall.on('close', code => {
         if (code !== 0) {          

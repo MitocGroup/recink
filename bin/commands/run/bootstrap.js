@@ -2,10 +2,12 @@
 
 const Recink = require('../../../src/recink');
 const componentsFactory = require('../../../src/component/factory');
+const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const path = require('path');
-const requireHacker = require('require-hacker');
 const fs = require('fs');
 const ComponentRegistry = require('../component/registry/registry');
+const NpmLink = require('./npm/link');
+const pkgDir = require('pkg-dir');
 
 module.exports = availableComponents => {
   return (args, options, logger) => {
@@ -27,66 +29,53 @@ module.exports = availableComponents => {
 
     return componentRegistry.load()
       .then(() => {
+        const additionalComponentsInstances = [];
+        
         componentRegistry.listKeys()
           .map(component => {
             additionalComponents.push(component);
           });
         
-        const components = availableComponents
-          .filter(c => disabledComponents.indexOf(c) === -1)
-          .map(c => componentsFactory[c]())
-          .concat(additionalComponents.map(component => {
-            const hook = requireHacker.global_hook(
-              'js', 
-              depPath => {
-                if (!/^recink/i.test(depPath)) {
-                  return;
-                }
-                
-                const resolvedDepPath = path.join(
-                  __dirname,
-                  '../../..',
-                  path.dirname(depPath).replace(/^recink(.*\/.*)$/i, '$1'),
-                  path.basename(depPath, '.js') + '.js'
-                );
-                
-                if (!fs.existsSync(resolvedDepPath)) {
-                  return;
-                }
-                
-                return {
-                  source: fs.readFileSync(resolvedDepPath).toString(),
-                  path: resolvedDepPath,
-                };
-              }
-            );
-            
+        return SequentialPromise.all(additionalComponents.map(component => {
+          return () => {
             const requirePath = /^recink-/i.test(component) 
               ? component 
               : path.resolve(process.cwd(), component);
             
-            try {
-              const ComponentConstructor =  require(requirePath);
-              const componentInstance =  new ComponentConstructor();
-              
-              hook.unmount();
-              
-              return componentInstance;
-            } catch (error) {
-              if (error.code === 'MODULE_NOT_FOUND') {
-                logger.warn(
-                  logger.chalk.red(`Missing "${ component }" component module -`),
-                  logger.chalk.gray(`require('${ requirePath }')`)
-                );
-              }
-              
-              hook.unmount();
-            }
-            
-            return null;
-          }))
-          .filter(Boolean);
-        
+            return pkgDir(requirePath)
+              .then(requirePackageRoot => {
+                if (!requirePackageRoot) {
+                  return Promise.resolve();
+                }
+                
+                return new NpmLink(
+                  path.resolve(__dirname, '../../../'),
+                  requirePackageRoot
+                ).run();
+              })
+              .then(() => {
+                try {
+                  const ComponentConstructor =  require(requirePath);
+                  
+                  additionalComponentsInstances.push(new ComponentConstructor());
+                } catch (error) {
+                  logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+                  logger.error(error);
+                }
+                
+                return Promise.resolve();
+              });
+          };
+        })).then(() => {
+          const components = availableComponents
+            .filter(c => disabledComponents.indexOf(c) === -1)
+            .map(c => componentsFactory[c]())
+            .concat(additionalComponentsInstances);
+          
+          return Promise.resolve(components);
+        });
+      })
+      .then(components => {
         const componentConfig = componentRegistry.configs;
         
         if (componentConfig.length > 0) {
