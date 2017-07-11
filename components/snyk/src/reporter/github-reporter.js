@@ -83,10 +83,7 @@ class GitHubReporter extends TextReporter {
       );
       
       return Promise.resolve();
-    } else if (!Env.exists('TRAVIS_PULL_REQUEST_SLUG') 
-      || !Env.read('TRAVIS_PULL_REQUEST', false)
-      || !Env.read('TRAVIS_COMMIT', false)) {
-      
+    } else if (!Env.read('TRAVIS_PULL_REQUEST_SLUG')) {
       this.logger.warn(
         `${this.logger.emoji.cross} Not a Pull Request.` +
         ` Skip submitting Snyk.io report to GitHub.`

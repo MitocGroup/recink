@@ -54,6 +54,7 @@ $:
     reporters:                                                # Customize Reporters (available: text, github)
       text: ~
       github:
+        - silent-fail: true
         - token: 'process.env.GITHUB_ACCESS_TOKEN'
     # fail:
     #   enabled: false                                        # Fail on issues found
