@@ -52,6 +52,8 @@ class CodeclimateComponent extends DependantConfigBasedComponent {
           this.logger.info(
             `${ this.logger.emoji.cross } No coverage data. Skipping CodeClimate...`
           );
+          
+          return resolve();
         }
         
         const formatter = new Formatter();
