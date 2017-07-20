@@ -28,7 +28,7 @@ Continuous Integration pipeline (maybe even extend to Continuous Deployment).
 [TestCafe](https://devexpress.github.io/testcafe).
 - Amazon S3 powered
 [caching](https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml#L10).
-- [Extendable](https://github.com/MitocGroup/recink#components-inhouse--3rd-party).
+- [Extendable](https://github.com/MitocGroup/recink#components).
 [Debuggable](https://github.com/MitocGroup/recink#debugging).
 [Documented](https://github.com/MitocGroup/recink#documentation).
 
@@ -55,18 +55,18 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 # Usage
 
-```
-recink run unit [path]                 Run unit tests                              
-recink run e2e [path]                  Run end to end tests                        
-recink configure recink [path]         Configure REciNK                            
-recink configure travis [path]         Configure Travis                            
-recink travis encrypt [path]           Encrypt Travis environment variables        
-recink travis lint [path]              Lint Travis configuration                   
-recink component generate [path]       Generate REciNK boilerplate component       
-recink component add [name...]         Add an REciNK component to the registry     
-recink component remove [name...]      Remove an REciNK component from the registry
-recink component list                  List REciNK components from the registry    
-recink help <command>                  Display help for a specific command   
+```shell
+recink run unit [path]                 # Run unit tests                              
+recink run e2e [path]                  # Run end to end tests                        
+recink configure recink [path]         # Configure REciNK                            
+recink configure travis [path]         # Configure Travis                            
+recink travis encrypt [path]           # Encrypt Travis environment variables        
+recink travis lint [path]              # Lint Travis configuration                   
+recink component generate [path]       # Generate REciNK boilerplate component       
+recink component add [name...]         # Add an REciNK component to the registry     
+recink component remove [name...]      # Remove an REciNK component from the registry
+recink component list                  # List REciNK components from the registry    
+recink help <command>                  # Display help for a specific command   
 ```
 
 
