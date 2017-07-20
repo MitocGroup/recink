@@ -21,7 +21,6 @@ class E2EComponent extends DependantConfigBasedComponent {
     super(...args);
     
     this._testAssets = [];
-    this._testcafe = null;
     this._stats = {
       total: 0,
       processed: 0,
@@ -44,13 +43,6 @@ class E2EComponent extends DependantConfigBasedComponent {
   }
   
   /**
-   * @returns {*}
-   */
-  get testcafe() {
-    return this._testcafe;
-  }
-  
-  /**
    * @param {Emitter} emitter
    * 
    * @returns {Promise}
@@ -63,30 +55,35 @@ class E2EComponent extends DependantConfigBasedComponent {
   _run(emitter) {
     return this._waitUris()
       .then(() => {
-        const runner = this.testcafe.createRunner();
-        const reporter = this.container.get('reporter', E2EComponent.DEFAULT_REPORTER);
-        const browsers = this.container.get('browsers', E2EComponent.DEFAULT_BROWSERS);
-        
-        return emitter.emitBlocking(
-          events.assets.e2e.start, 
-          this.testcafe, 
-          runner, 
-          browsers, 
-          reporter
-        ).then(() => {
-          return runner
-            .src(this._testAssets)
-            .browsers(browsers)
-            .reporter(reporter)
-            .run();
-        }).then(failedCount => {
+        return createTestCafe(
+          E2EComponent.DEFAULT_SERVER_HOSTNAME, 
+          ...E2EComponent.DEFAULT_SERVER_PORTS
+        ).then(testcafe => {
+          const runner = testcafe.createRunner();
+          const reporter = this.container.get('reporter', E2EComponent.DEFAULT_REPORTER);
+          const browsers = this.container.get('browsers', E2EComponent.DEFAULT_BROWSERS);
           
-          // @todo find a smarter way to indent the output (buffer it?)
-          process.stdout.write('\n\n');
-          
-          return this.testcafe.close()
-            .then(() => emitter.emitBlocking(events.assets.e2e.end, this.testcafe, failedCount))
-            .then(() => Promise.resolve(failedCount));
+          return emitter.emitBlocking(
+            events.assets.e2e.start, 
+            testcafe, 
+            runner, 
+            browsers, 
+            reporter
+          ).then(() => {
+            return runner
+              .src(this._testAssets)
+              .browsers(browsers)
+              .reporter(reporter)
+              .run(E2EComponent.RUN_OPTIONS);
+          }).then(failedCount => {
+            
+            // @todo find a smarter way to indent the output (buffer it?)
+            process.stdout.write('\n\n');
+            
+            return testcafe.close()
+              .then(() => emitter.emitBlocking(events.assets.e2e.end, testcafe, failedCount))
+              .then(() => Promise.resolve(failedCount));
+          });
         });
       });
   }
@@ -160,27 +157,22 @@ class E2EComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
-    return createTestCafe(
-      E2EComponent.DEFAULT_SERVER_HOSTNAME, 
-      ...E2EComponent.DEFAULT_SERVER_PORTS
-    ).then(testcafe => {
-      this._testcafe = testcafe;
-      
-      return new Promise((resolve, reject) => {
-        emitter.onBlocking(emitEvents.module.emit.asset, payload => {          
-          if (!this._match(payload)) {
-            return emitter.emitBlocking(events.asset.e2e.skip, payload);
-          }
-          
-          return emitter.emitBlocking(events.asset.e2e.add, payload)
-            .then(() => {
-              const { fileAbs } = payload;
-              
-              this._testAssets.push(fileAbs);
-            });
-        }, E2EComponent.DEFAULT_PRIORITY);
+    return new Promise((resolve, reject) => {
+      emitter.onBlocking(emitEvents.module.emit.asset, payload => {          
+        if (!this._match(payload)) {
+          return emitter.emitBlocking(events.asset.e2e.skip, payload);
+        }
         
-        emitter.on(emitEvents.modules.process.end, () => {
+        return emitter.emitBlocking(events.asset.e2e.add, payload)
+          .then(() => {
+            const { fileAbs } = payload;
+            
+            this._testAssets.push(fileAbs);
+          });
+      }, E2EComponent.DEFAULT_PRIORITY);
+      
+      emitter.on(emitEvents.modules.process.end, () => {
+        process.nextTick(() => {
           if (this._testAssets.length <= 0) {
             this.logger.info(
               this.logger.emoji.beer, 
@@ -293,6 +285,16 @@ class E2EComponent extends DependantConfigBasedComponent {
    */
   static get DEFAULT_SERVER_PORTS() {
     return [ 1337, 1338 ];
+  }
+  
+  /**
+   * @returns {*}
+   */
+  static get RUN_OPTIONS() {
+    return {
+      skipJsErrors: true,
+      assertionTimeout: 20000,
+    };
   }
   
   /**
