@@ -1,23 +1,23 @@
 --- 
 $:
-  # preprocess:
-  #  '$.coverage.compare.storage.options.1.region': 'eval'
-  #  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
-  #  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
-  #  '$.cache.options.1.region': 'eval'
-  #  '$.cache.options.1.accessKeyId': 'eval'
-  #  '$.cache.options.1.secretAccessKey': 'eval'
-  # cache:
-  #   driver: 's3'                                                          # Available drivers: void, s3
-  #   options:
-  #     - 's3://travis-metadata/cache/sample-repo'                          # S3 cache directory
-  #     -                                                                   # S3 client options
-  #       region: 'process.env.AWS_DEFAULT_REGION'
-  #       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-  #       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+# preprocess:
+#  '$.coverage.compare.storage.options.1.region': 'eval'
+#  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
+#  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
+#  '$.cache.options.1.region': 'eval'
+#  '$.cache.options.1.accessKeyId': 'eval'
+#  '$.cache.options.1.secretAccessKey': 'eval'
+# cache:
+#   driver: 's3'                                                            # Available drivers: void, s3
+#   options:
+#     - 's3://travis-metadata/cache/sample-repo'                            # S3 cache directory
+#     -                                                                     # S3 client options
+#       region: 'process.env.AWS_DEFAULT_REGION'
+#       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
   npm:
     scripts: []                                                             # Scripts to run after installing dependencies
-  #   - 'compile'
+#     - 'compile-travis'
     dependencies:                                                           # Dependencies to add/overwrite
       chai: 'latest'
   emit:
@@ -39,14 +39,14 @@ $:
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
     browsers: ~                                                             # Browsers to run the tests against
-    #   - nightmare
-    #   - safari
-    #   - chrome:headless
-    # wait:
-    #   interval: 200                                                       # Interval of running uri checks
-    #   timeout: 15000                                                      # Timeout to wait for uri's available
-    #   uri:                                                                # uri's to wait before start running test cases
-    #     - https://www.example.com
+#     - nightmare
+#     - safari
+#     - chrome:headless
+#   wait:
+#     interval: 200                                                         # Interval of running uri checks
+#     timeout: 15000                                                        # Timeout to wait for uri's available
+#     uri:                                                                  # uri's to wait before start running test cases
+#        - https://www.example.com
   coverage:
     pattern:                                                                # Files to include
       - /.+\.js$/i
@@ -56,16 +56,16 @@ $:
       - /^(.*\/)?node_modules(\/?$)?/i
     reporters:                                                              # Istanbul reporters
       text-summary: ~
-  #   compare:
-  #     negative-delta: 3                                                   # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
-  #     storage:                                              
-  #       driver: 's3'                                                      # Available drivers: s3, volative
-  #       options:
-  #         - 's3://travis-metadata/coverage/sample-repo'                   # S3 storage directory
-  #         -                                                               # S3 storage options
-  #           region: 'process.env.AWS_DEFAULT_REGION'
-  #           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-  #           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+#   compare:
+#     negative-delta: 3                                                     # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
+#     storage:                                              
+#       driver: 's3'                                                        # Available drivers: s3, volative
+#       options:
+#         - 's3://travis-metadata/coverage/sample-repo'                     # S3 storage directory
+#         -                                                                 # S3 storage options
+#           region: 'process.env.AWS_DEFAULT_REGION'
+#           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 main:                                                                       # Main module definition
   root: '.'                                                                 # Root package directory (containing package.json and tests)
   dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)
