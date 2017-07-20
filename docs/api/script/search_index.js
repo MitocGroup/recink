@@ -1134,12 +1134,6 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/component/e2e-component.js~e2ecomponent#testcafe",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-testcafe",
-    "src/component/e2e-component.js~E2EComponent#testcafe",
-    "member"
-  ],
-  [
     "src/component/e2e-component.js~e2ecomponent.default_browsers",
     "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_BROWSERS",
     "src/component/e2e-component.js~E2EComponent.DEFAULT_BROWSERS",
@@ -1179,6 +1173,12 @@ window.esdocSearchIndex = [
     "src/component/e2e-component.js~e2ecomponent.default_wait_timeout",
     "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_WAIT_TIMEOUT",
     "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_TIMEOUT",
+    "member"
+  ],
+  [
+    "src/component/e2e-component.js~e2ecomponent.run_options",
+    "class/src/component/e2e-component.js~E2EComponent.html#static-get-RUN_OPTIONS",
+    "src/component/e2e-component.js~E2EComponent.RUN_OPTIONS",
     "member"
   ],
   [
