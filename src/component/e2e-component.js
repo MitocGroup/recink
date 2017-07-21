@@ -294,6 +294,7 @@ class E2EComponent extends DependantConfigBasedComponent {
     return {
       skipJsErrors: true,
       assertionTimeout: 20000,
+      quarantineMode: true,
     };
   }
   
