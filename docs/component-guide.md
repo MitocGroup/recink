@@ -3,7 +3,7 @@
 A component is about handling a small portion of functionality or
 an integration with a 3'rd party service (e.g. [CodeClimate](https://codeclimate.com), [Snyk.io](https://snyk.io)).
 
-### Before starting
+### Before Starting
 
 All components **MUST** work with event system and avoid
 hooking into codebase, especially private/protected parts of it.
@@ -26,7 +26,7 @@ and adds it to internal registry to have it run on the next `recink run unit` or
 > A good practice it to have the component prefixed with `recink-`.
 
 
-### Generating boilerplate component
+### Generating Boilerplate Component
 
 To generate a boilerplate component simply run:
 

@@ -11,6 +11,7 @@ and configure your GitHub project.
 - Configure `recink`: `recink configure recink`
 - Configure [Travis](https://travis-ci.org): `recink configure travis --aws-access-key-id xxx --aws-secret-access-key xxx` 
 
+> See the [Advanced Configuration Guide](https://github.com/MitocGroup/recink/blob/master/docs/advanced-configuration.md)
 
 ### Adding [Travis](https://travis-ci.org) environment variables
 
@@ -30,9 +31,11 @@ you should run the `recink configure travis` command with `--github-token` or `-
 - Run unit tests: `recink run unit`
 - Run end-to-end tests: `recink run e2e`
 
+> You may want to skip a component hen running locally, let say the S3 cache: `recink run unit -s cache`
+
 > If you have to **compile sources** before running tests [see this](https://github.com/MitocGroup/recink/blob/master/docs/compile-es6.md)
 
-#### Reference
+### Reference
 
 - [Sample configuration](https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml)
 - [Travis variables](https://github.com/MitocGroup/recink/blob/master/bin/commands/configure/helper/travis.js#L7)
