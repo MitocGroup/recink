@@ -112,6 +112,23 @@ get dependencies() {
 
 > Note that your component will be disabled if any of dependencies you've specified is missing or disabled.
 
+### Cleaning up allocated resources
+
+Nowadays a good practive would be cleaning up allocated resources.
+REciNK comes up with a method named `teardown` called after all components
+have finished their execution:
+
+```javascript
+/**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  teardown(emitter) {
+    return Promise.resolve();
+  }
+```
+
 ### Final Notes
 
 In order to get a better understanding of components architecture you could explore [in-house built components](https://github.com/MitocGroup/recink/tree/master/components)

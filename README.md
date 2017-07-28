@@ -104,6 +104,7 @@ as default browser, which provides native debugging capabilities
 - :house: [CodeClimate](https://github.com/MitocGroup/recink/blob/master/components/codeclimate/README.md)
 - :house: [Snyk.io](https://github.com/MitocGroup/recink/blob/master/components/snyk/README.md)
 - :house: [PageSpeed](https://github.com/MitocGroup/recink/blob/master/components/pagespeed/README.md)
+- :house: [Comment](https://github.com/MitocGroup/recink/blob/master/components/comment/README.md)
 
 > Explore in-house built components [here](https://github.com/MitocGroup/recink/tree/master/components)
 
