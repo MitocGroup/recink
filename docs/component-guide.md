@@ -122,8 +122,8 @@ get dependencies() {
 
 ### Cleaning Up Allocated Resources
 
-Nowadays a good practive would be cleaning up allocated resources.
-REciNK comes up with a method named `teardown` called after all components
+A good practive would be cleaning up allocated resources.
+`REciNK` comes up with a method called `teardown()` called after all components
 have finished their execution:
 
 ```javascript
