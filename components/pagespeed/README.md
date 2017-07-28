@@ -21,7 +21,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 - `npm install -g recink-pagespeed`
 
-> Note that the component is installed automatically when running `recink add pagespeed`
+> Note that the component is installed automatically when running `recink component add pagespeed`
 
 # Configuration
 
@@ -51,7 +51,7 @@ Or using the registry:
 ```yaml
 before_install:
   # other before_install scripts...
-  - 'recink add pagespeed'
+  - 'recink component add pagespeed'
 ```
 
 

@@ -20,7 +20,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 - `npm install -g recink-codeclimate`
 
-> Note that the component is installed automatically when running `recink add codeclimate`
+> Note that the component is installed automatically when running `recink component add codeclimate`
 
 
 # Configuration
@@ -50,7 +50,7 @@ Or using the registry:
 ```yaml
 before_install:
   # other before_install scripts...
-  - 'recink add codeclimate'
+  - 'recink component add codeclimate'
 ```
 
 Add the [CodeClimate Repo Token](https://docs.codeclimate.com/v1.0/docs/test-coverage-troubleshooting-tips#section--should-i-keep-my-test-coverage-token-secret-) to `.travis.yml`:
