@@ -29,9 +29,9 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 $:
   preprocess:
     '$.comment.providers.github.0.token': 'eval'
-    '$.comment.listen': 'eval'
+    # '$.comment.listen': 'eval'
   comment:
-    listen: '`${ process.cwd() }/recink.comment`'       # Listen for file input (including initial content; think "tail -f")
+    # listen: '`${ process.cwd() }/recink.comment`'     # Listen for file input (including initial content; think "tail -f")
     providers:                                          # Supported providers: github
       github:
         - token: 'process.env.GITHUB_ACCESS_TOKEN'

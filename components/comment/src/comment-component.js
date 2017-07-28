@@ -115,7 +115,7 @@ class CommentComponent extends DependantConfigBasedComponent {
 
         return pify(fs.readFile)(listenFile)
           .then(initialMessage => {
-            return this.comment(initialMessage)
+            return this.comment(initialMessage.toString())
               .catch(error => {
                 this.logger.warn(
                   `${ this.logger.emoji.poop } Error adding comment: ${ error }`
@@ -129,7 +129,7 @@ class CommentComponent extends DependantConfigBasedComponent {
         this._tail = new Tail(listenFile, { ignoreInitial: true });
         
         this._tail.on('line', line => {
-          this.comment(line)
+          this.comment(line.toString())
             .catch(error => {
               this.logger.warn(
                 `${ this.logger.emoji.poop } Error adding comment: ${ error }`
@@ -147,8 +147,6 @@ class CommentComponent extends DependantConfigBasedComponent {
         });
         
         this._tail.watch();
-
-        return new Promise(() => {});//@todo remove!!!
 
         return Promise.resolve();
       });

@@ -17,12 +17,12 @@ class GitHubProvider extends AbstractProvider {
   }
   
   /**
-   * @returns {Pr}
+   * @returns {Issue}
    *
    * @private
    */
-  get _ghpr() {
-    return github.client(this.options.token || null).pr(
+  get _ghissue() {
+    return github.client(this.options.token || null).issue(
       Env.read('TRAVIS_PULL_REQUEST_SLUG'),
       Env.read('TRAVIS_PULL_REQUEST')
     );
@@ -48,23 +48,16 @@ class GitHubProvider extends AbstractProvider {
       );
 
       return Promise.resolve();
-    } else if (!Env.read('TRAVIS_COMMIT')) {
-      this.logger.warn(
-        `${ this.logger.emoji.cross } Missing commit identifier.` +
-        ` Skip submitting comment to GitHub.`
-      );
-
-      return Promise.resolve();
     }
 
-    const ghpr = this._ghpr;
+    const ghissue = this._ghissue;
 
-    return pify(ghpr.createComment.bind(ghpr))({ body, commit_id: Env.read('TRAVIS_COMMIT') })
+    return pify(ghissue.createComment.bind(ghissue))({ body })
       .catch(error => {
         if (error.statusCode === 404) {
           return Promise.reject(new Error(
             'Failed to submit the comment to GitHub. ' +
-            'It seems the repository, PR or commit does not exist or ' +
+            'It seems the repository or PR does not exist or ' +
             'you don\'t have enough rights to access the repository.'
           ));
         }
