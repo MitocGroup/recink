@@ -12,9 +12,10 @@ const AbstractStorage = require('./abstract-storage');
 class FileStorage extends AbstractStorage {
   /**
    * @param {string} path
+   * @param {*} args
    */
-  constructor(path) {
-    super();
+  constructor(path, ...args) {
+    super(...args);
     
     this._path = path;
   }
@@ -30,7 +31,11 @@ class FileStorage extends AbstractStorage {
    * @returns {string}
    */
   get registryFile() {
-    return path.join(this.path, FileStorage.REGISTRY_FILE_NAME);
+    return path.join(
+      this.path, 
+      this.namespace || '', 
+      FileStorage.REGISTRY_FILE_NAME
+    );
   }
   
   /**

@@ -3,4 +3,4 @@
 const bootstrap = require('./bootstrap');
 const availableComponents = require('./e2e/components');
 
-module.exports = bootstrap(availableComponents);
+module.exports = bootstrap('e2e', availableComponents);

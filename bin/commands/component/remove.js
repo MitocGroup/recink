@@ -9,12 +9,17 @@ module.exports = (args, options, logger) => {
     return Promise.reject(new Error('You must provide at least one component name.'));
   }
   
-  const registry = Registry.create();
+  const registry = Registry.create(
+    Registry.DEFAULT_STORAGE_PATH,
+    options.namespace.toLowerCase()
+  );
   const components = args.name.map(name => {
     return (/^recink-/i.test(name) || options.skipPrefix) ? name : `recink-${ name }`;
   });
   
-  logger.debug(`Initialize components registry in ${ registry.storage.path }`);
+  logger.debug(
+    `Initialize components registry in ${ registry.storage.registryFile }`
+  );
   
   return registry.load()
     .then(() => {
@@ -23,7 +28,7 @@ module.exports = (args, options, logger) => {
           if (!registry.exists(component)) {
             logger.info(
               `No such component "${ component }" registered. ` +
-              `In order to register it run ${ logger.chalk.green(`recink add ${ component }`) }`
+              `In order to register it run ${ logger.chalk.green(`recink component add ${ component }`) }`
             );
             
             return Promise.resolve();

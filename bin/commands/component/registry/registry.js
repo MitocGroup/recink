@@ -129,11 +129,12 @@ class Registry {
   
   /**
    * @param {string} storagePath
+   * @param {string} namespace
    *
    * @returns {Registry}
    */
-  static create(storagePath = Registry.DEFAULT_STORAGE_PATH) {
-    return new Registry(new FileStorage(storagePath));
+  static create(storagePath = Registry.DEFAULT_STORAGE_PATH, namespace = null) {
+    return new Registry(new FileStorage(storagePath, namespace));
   }
   
   /**

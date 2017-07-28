@@ -4,16 +4,21 @@ const Registry = require('./registry/registry');
 const columnify = require('columnify');
 
 module.exports = (args, options, logger) => {
-  const registry = Registry.create();
+  const registry = Registry.create(
+    Registry.DEFAULT_STORAGE_PATH,
+    options.namespace.toLowerCase()
+  );
   
-  logger.debug(`Initialize components registry in ${ registry.storage.path }`);
+  logger.debug(
+    `Initialize components registry in ${ registry.storage.registryFile }`
+  );
   
   return registry.load()
     .then(() => {
       if (registry.listKeys().length <= 0) {
         logger.info(
           `There are no registered components. In order to register ` +
-          `a component run ${ logger.chalk.green('recink add <component>') }`
+          `a component run ${ logger.chalk.green('recink component add <component>') }`
         );
         
         return Promise.resolve();

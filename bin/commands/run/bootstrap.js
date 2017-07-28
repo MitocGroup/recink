@@ -9,7 +9,7 @@ const ComponentRegistry = require('../component/registry/registry');
 const NpmLink = require('./npm/link');
 const pkgDir = require('pkg-dir');
 
-module.exports = availableComponents => {
+module.exports = (namespace, availableComponents) => {
   return (args, options, logger) => {
     const recink = new Recink();
     let disabledComponents = options.s;
@@ -23,9 +23,14 @@ module.exports = availableComponents => {
       additionalComponents = [ additionalComponents ].filter(Boolean);
     }
     
-    const componentRegistry = ComponentRegistry.create();
+    const componentRegistry = ComponentRegistry.create(
+      ComponentRegistry.DEFAULT_STORAGE_PATH,
+      namespace.toLowerCase()
+    );
     
-    logger.debug(`Initialize components registry in ${ componentRegistry.storage.path }`);
+    logger.debug(
+      `Initialize components registry in ${ componentRegistry.storage.registryFile }`
+    );
 
     return componentRegistry.load()
       .then(() => {

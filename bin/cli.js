@@ -57,19 +57,26 @@ const commands = prog
   .action(cmd('./commands/run/e2e'))
   .command('component add', 'Add an REciNK component to the registry')
     .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+    .option('--namespace', 'Component namespace (unit|e2e)', /^unit|e2e$/i, 'unit')
     .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
   .action(cmd('./commands/component/add'))
   .command('component remove', 'Remove an REciNK component from the registry')
     .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
+    .option('--namespace', 'Component namespace (unit|e2e)', /^unit|e2e$/i, 'unit')
     .option('--skip-prefix', 'Skip adding "recink-" prefix to the components')
     .option('--purge', 'Remove component NPM package')
   .action(cmd('./commands/component/remove'))
   .command('component list', 'List REciNK components from the registry')
+  .option('--namespace', 'Component namespace (unit|e2e)', /^unit|e2e$/i, 'unit')
   .action(cmd('./commands/component/list'))
 ;
 
 if (!Env.isCI) {
   commands
+    .command('component generate', 'Generate REciNK boilerplate component')
+      .argument('[path]', 'Path to component root', /.+/, process.cwd())
+      .option('--name <name>', 'Component name', /^[a-z][a-z0-9_-]+$/i)
+    .action(cmd('./commands/component/generate'))
     .command('configure recink', 'Configure REciNK')
       .argument('[path]', 'Path to package root', /.+/, process.cwd())
       .option('--overwrite', 'Overwrites existing configuration file')
@@ -97,10 +104,6 @@ if (!Env.isCI) {
     .command('travis lint', 'Lint Travis configuration') 
       .argument('[path]', 'Path to .travis.yml', /.+/, path.join(process.cwd(), '.travis.yml'))
     .action(cmd('./commands/travis/lint'))
-    .command('component generate', 'Generate REciNK boilerplate component')
-      .argument('[path]', 'Path to component root', /.+/, process.cwd())
-      .option('--name <name>', 'Component name', /^[a-z][a-z0-9_-]+$/i)
-    .action(cmd('./commands/component/generate'))
   ;
 }
 

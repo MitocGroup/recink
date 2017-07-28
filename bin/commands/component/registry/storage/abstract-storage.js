@@ -5,6 +5,20 @@
  */
 class AbstractStorage {
   /**
+   * @param {string} namespace 
+   */
+  constructor(namespace = null) {
+    this._namespace = namespace;
+  }
+
+  /**
+   * @returns {string}
+   */
+  get namespace() {
+    return this._namespace;
+  }
+
+  /**
    * @returns {Promise}
    */
   exists() {
