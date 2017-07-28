@@ -13,7 +13,8 @@ and configure your GitHub project.
 
 > See the [Advanced Configuration Guide](https://github.com/MitocGroup/recink/blob/master/docs/advanced-configuration.md)
 
-### Adding [Travis](https://travis-ci.org) environment variables
+
+### Adding [Travis](https://travis-ci.org) Environment Variables
 
 ```
 recink travis encrypt -x 'EXAMPLE_ENV_VAR=1234' -x 'ANOTHER_EXAMPLE_ENV_VAR=4321'
@@ -26,14 +27,31 @@ you should run the `recink configure travis` command with `--github-token` or `-
 > To ensure your [Travis](https://travis-ci.org) configuration is valid use `recink travis lint`
 
 
-### Running tests
+### Running Tests
 
 - Run unit tests: `recink run unit`
 - Run end-to-end tests: `recink run e2e`
 
-> You may want to skip a component hen running locally, let say the S3 cache: `recink run unit -s cache`
-
 > If you have to **compile sources** before running tests [see this](https://github.com/MitocGroup/recink/blob/master/docs/compile-es6.md)
+
+
+### Leveraging The Power of Components
+
+According to the ["Everything is a component" mantra](https://github.com/MitocGroup/recink/blob/master/docs/component-guide.md#before-starting) you have full
+control over any single component used by recink, in other words you can disable all components, add some 3'rd part
+ones and do whatever makes sense for your setup.
+
+Examples:
+
+- `recink run unit -s npm` Run unit tests with disabled `npm` component
+- `recink run unit -s emit -c pagespeed` Run unit tests with disabled `emit` component and additional `pagespeed` component enabled
+
+> Note that any components dependant on the disabled one will be implicit disabled by `REciNK`.
+> For example by disabling `npm` component you'll have the `cache` component disabled,
+> by disabling `emit`- `test`, `coverage`, `npm` etc. will be implicit disabled!
+
+You may also use the `REciNK` [component registry](https://github.com/MitocGroup/recink/blob/master/docs/component-registry.md) to manage components.
+
 
 ### Reference
 
@@ -41,7 +59,7 @@ you should run the `recink configure travis` command with `--github-token` or `-
 - [Travis variables](https://github.com/MitocGroup/recink/blob/master/bin/commands/configure/helper/travis.js#L7)
 
 
-### Shell autocompletion
+### Shell Autocompletion
 
 We're using [Caporal](https://github.com/mattallty/Caporal.js) as command line framework.
 In order to enable autocompletion see `Caporal`'s [shell auto completion](https://github.com/mattallty/Caporal.js#shell-auto-completion) section
