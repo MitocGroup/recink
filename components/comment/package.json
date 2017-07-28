@@ -1,0 +1,47 @@
+{
+  "name": "recink-comment",
+  "version": "1.0.0",
+  "description": "REciNK Component for Comment",
+  "keywords": [
+    "REciNK",
+    "Testing",
+    "Unit",
+    "Development",
+    "Travis",
+    "Tools"
+  ],
+  "homepage": "https://github.com/MitocGroup/recink",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/recink/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "https://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "main": "src/comment-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/recink.git"
+  },
+  "dependencies": {
+    "octonode": "^0.7.13",
+    "pify": "^3.0.0",
+    "nodejs-tail": "^1.0.2"
+  },
+  "peerDependencies": {
+    "recink": "^1.x.x"
+  },
+  "engines": {
+    "node": ">=6.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

@@ -220,7 +220,7 @@ class Recink extends Emitter {
    * @returns {AbstractComponent}
    */
   component(name) {
-    return this._components.filter(c => c.name === name)[0];
+    return this._components.filter(c => c.name === name)[0] || null;
   }
   
   /**
