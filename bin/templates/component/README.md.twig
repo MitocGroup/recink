@@ -36,7 +36,7 @@ $:
 `.travis.yml` configuration:
 
 ```yaml
-script: 'recink run unit -c recink-{{ name|lower }}'  
+script: 'recink run unit -c {{ name|lower }}'  
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-{{ name|lower }}'
@@ -62,5 +62,11 @@ recink travis encrypt -x '{{ name|upper }}="John"'
 # Usage
 
 ```
-{{ name|upper }}="John" recink run unit -c recink-{{ name|lower }}
+{{ name|upper }}="John" recink run unit -c {{ name|lower }}
+```
+
+Or the generic way:
+
+```
+{{ name|upper }}="John" recink run {{ name|lower }}
 ```

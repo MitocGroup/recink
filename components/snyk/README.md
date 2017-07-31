@@ -48,7 +48,7 @@ $:
 `.travis.yml` configuration:
 
 ```yaml
-script: 'recink run unit -c recink-snyk'  
+script: 'recink run snyk'  
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-snyk'
@@ -74,7 +74,7 @@ recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
 # Usage
 
 ```
-GITHUB_ACCESS_TOKEN=1234 SNYK_API_TOKEN=1234 recink run unit -c recink-snyk
+GITHUB_ACCESS_TOKEN=1234 SNYK_API_TOKEN=1234 recink run snyk
 ```
 
 

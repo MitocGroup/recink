@@ -1,6 +1,7 @@
 'use strict';
 
-module.exports = [
-  'preprocess', 'test', 'coverage', 
-  'cache', 'emit', 'npm',
-];
+const genericComponents = require('../generic/components');
+
+module.exports = genericComponents.concat([
+  'emit', 'npm', 'test', 'coverage',
+]);

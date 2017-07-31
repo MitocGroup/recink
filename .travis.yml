@@ -13,21 +13,17 @@ branches:
     - stage
     - test
     - dev
+node_js:
+  - 6
+  - 8
+stage: 'Run Unit Tests :clipboard:'
 before_install:
   - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
   - 'npm install --no-peer'
-matrix:
+script: 'recink run unit'
+jobs:
   include:
-    -
-      node_js: 6
-      script: 'recink run unit'
-    -
-      node_js: 8
-      install:
-        - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"'
-        - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
-      script: 'recink run unit -c ./components/snyk -c ./components/codeclimate'
-    -
+    - stage: 'Run Unit E2E :page_facing_up:'
       node_js: 8
       script: 'recink run e2e'
       addons:
@@ -37,6 +33,21 @@ matrix:
       install:
         - 'export DISPLAY='':99.0'''
         - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
+    - stage: 'Run Snyk :fire:'
+      node_js: 8
+      script: 'recink run ./components/snyk'
+      install:
+        - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"'
+    - stage: 'Run CodeClimate :mask:'
+      node_js: 8
+      script: 'recink run ./components/codeclimate'
+      install:
+        - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'     
+    - stage: 'Run PageSpeed :chart_with_upwards_trend:'
+      node_js: 8
+      script: 'recink run ./components/pagespeed'
+      install:
+        - 'cd ./components/pagespeed && npm install && cd "$TRAVIS_BUILD_DIR"'  
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]

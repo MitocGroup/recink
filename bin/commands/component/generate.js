@@ -36,7 +36,7 @@ module.exports = (args, options, logger) => {
   }))
   .then(() => {
     logger.info(logger.chalk.green(
-      `\n${ name.toUpperCase() }="John" recink run unit ${ target }/template -c ${ target }`
+      `\n${ name.toUpperCase() }="John" recink run ${ target } ${ target }/template`
     ));
     
     return Promise.resolve();

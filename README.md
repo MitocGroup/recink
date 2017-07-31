@@ -56,6 +56,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 # Usage
 
 ```shell
+recink run [name] [path]               # Run a generic component
 recink run unit [path]                 # Run unit tests                              
 recink run e2e [path]                  # Run end to end tests                        
 recink configure recink [path]         # Configure REciNK                            

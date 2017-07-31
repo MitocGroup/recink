@@ -39,7 +39,7 @@ $:
 `.travis.yml` configuration:
 
 ```yaml
-script: 'recink run unit -c recink-codeclimate'  
+script: 'recink run unit -c codeclimate'  
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-codeclimate'

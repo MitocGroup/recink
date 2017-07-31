@@ -54,7 +54,7 @@ $:
 `.travis.yml` configuration:
 
 ```yaml
-script: 'recink run unit -c recink-pagespeed'
+script: 'recink run pagespeed'
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-pagespeed'
@@ -72,5 +72,5 @@ before_install:
 # Usage
 
 ```
-recink run unit -c recink-pagespeed
+recink run pagespeed
 ```

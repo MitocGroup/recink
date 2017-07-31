@@ -22,6 +22,11 @@ module.exports = (namespace, availableComponents) => {
     if (!Array.isArray(additionalComponents)) {
       additionalComponents = [ additionalComponents ].filter(Boolean);
     }
+
+    // in case we have generic runtime
+    if (args.name) {
+      additionalComponents.push(args.name);
+    }
     
     const componentRegistry = ComponentRegistry.create(
       ComponentRegistry.DEFAULT_STORAGE_PATH,
