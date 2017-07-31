@@ -77,3 +77,5 @@ Let's assume that `~/recink.comment` is the input stream `comment component` is 
 ```
 echo "Test message" >> ~/recink.comment
 ```
+
+> Note that the initial `~/recink.comment` content would be submitted as a single comment.
