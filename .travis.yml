@@ -34,7 +34,7 @@ jobs:
       install:
         - 'export DISPLAY='':99.0'''
         - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
-    - stage: 'Run Snyk :fire:'
+    - stage: 'Run Snyk.io :fire:'
       node_js: 8
       script: 'recink run ./components/snyk'
       install:
