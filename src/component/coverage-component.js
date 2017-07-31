@@ -8,7 +8,7 @@ const ContainerTransformer = require('./helper/container-transformer');
 const path = require('path');
 const fs = require('fs');
 const pify = require('pify');
-const storageFactory = require('./coverage/factory');
+const StorageFactory = require('./coverage/factory');
 const ModuleCompile = require('./helper/module-compile');
 
 /**
@@ -51,7 +51,7 @@ class CoverageComponent extends DependantConfigBasedComponent {
     const driver = this.container.get('compare.storage.driver', 'volatile');
     const options = this.container.get('compare.storage.options', []);
     
-    this._storage = storageFactory[driver](...options);
+    this._storage = StorageFactory.create(driver, ...options);
     
     return this._storage;
   }
@@ -85,7 +85,10 @@ class CoverageComponent extends DependantConfigBasedComponent {
         const newCoverage = collector.getFinalCoverage();
         
         if (!coverage) {
-          this.logger.debug('No saved coverage info, saving the new one...');
+          this.logger.info(
+            this.logger.emoji.bicycle,
+            'No previous coverage info saved...'
+          );
           
           return storage.write(
             CoverageComponent.COVERAGE_FILE, 

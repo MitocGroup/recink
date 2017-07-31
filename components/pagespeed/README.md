@@ -30,15 +30,25 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 ```yaml 
 $:
   pagespeed:
-    uri:                              # URIs to analyze
+    uri:                                                                      # URIs to analyze
       - https://www-test.adtechmedia.io
-    # reporters:                      # Customize Reporters (available: text, summary)
+    # strategy: desktop                                                       # Available: desktop, mobile
+    # filter-third-party: true                                                # Filter 3'rd party assets
+    # locale: en                                                              # @see https://developers.google.com/speed/docs/insights/languagesx
+    # reporters:                                                              # Customize Reporters (available: text, summary)
     #   summary: ~
     #   text: 
-    #     - minimal: true             # Skip showing detailed statistics
-    # strategy: desktop               # Available: desktop, mobile
-    # filter-third-party: true        # Filter 3'rd party assets
-    # locale: en                      # @see https://developers.google.com/speed/docs/insights/languagesx
+    #     - minimal: true                                                     # Skip showing detailed statistics
+    # compare:
+    #   negative-delta: 3                                                     # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
+    #   storage:                                              
+    #     driver: 's3'                                                        # Available drivers: s3, volative
+    #     options:
+    #       - 's3://travis-metadata/pagespeed/sample-repo'                    # S3 storage directory
+    #       -                                                                 # S3 storage options
+    #         region: 'process.env.AWS_DEFAULT_REGION'
+    #         accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+    #         secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 ```
 
 `.travis.yml` configuration:
