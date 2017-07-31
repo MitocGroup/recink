@@ -128,13 +128,13 @@ have finished their execution:
 
 ```javascript
 /**
-   * @param {Emitter} emitter
-   * 
-   * @returns {Promise}
-   */
-  teardown(emitter) {
-    return Promise.resolve();
-  }
+  * @param {Emitter} emitter
+  * 
+  * @returns {Promise}
+  */
+teardown(emitter) {
+  return Promise.resolve();
+}
 ```
 
 
