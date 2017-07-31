@@ -16,7 +16,7 @@ branches:
 node_js:
   - 6
   - 8
-stage: 'Run Unit Tests :clipboard:'
+stage: 'Run Unit Tests :computer:'
 before_install:
   - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
   - 'npm install --no-peer'
@@ -24,7 +24,7 @@ before_install:
 script: 'recink run unit -c ./components/codeclimate'
 jobs:
   include:
-    - stage: 'Run Unit E2E :page_facing_up:'
+    - stage: 'Run Unit E2E :iphone:'
       node_js: 8
       script: 'recink run e2e'
       addons:
