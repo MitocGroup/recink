@@ -69,6 +69,24 @@ recink travis encrypt -x 'GITHUB_ACCESS_TOKEN=1234'
 GITHUB_ACCESS_TOKEN=1234 recink run unit -c recink-comment
 ```
 
+# Pushing Messages Using Programatic API
+
+Let's assume you're in a component context (e.g. `pagespeed-component.js`):
+
+```javascript
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  run(emitter) {
+    const commentComponent = emitter.component('comment');
+
+    return commentComponent 
+      ? commentComponent.comment(`Hello from ${ Date() }`) 
+      : Promise.resolve();
+  } 
+```
 
 # Pushing Messages to Input Stream
 
