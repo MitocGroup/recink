@@ -85,9 +85,17 @@ class PageSpeedComponent extends ConfigBasedComponent {
   _report(uri, data) {
     this.logger.debug(JSON.stringify(data, null, '  '));
     
-    return ReporterFactory
-      .text(this)
-      .report(data)
+    const reporters = this.container.get('reporters', { text: [ { minimal: true } ] });
+    const multiReporter = ReporterFactory.multi(this);
+    
+    Object.keys(reporters).map(name => {
+      const args = [ this ].concat(reporters[name] || []);
+      const reporter = ReporterFactory.create(name, ...args);
+      
+      multiReporter.add(reporter);
+    });
+    
+    return multiReporter.report(data)
       .then(output => Promise.resolve({ uri, output }));
   }
 }

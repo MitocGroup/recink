@@ -22,6 +22,24 @@ class Factory {
     
     return reporter;
   }
+
+  /**
+   * @param {*} args
+   *
+   * @returns {MultiReporter}
+   */
+  static multi(...args) {
+    return this.create('multi', ...args);
+  }
+
+  /**
+   * @param {*} args
+   *
+   * @returns {SummaryReporter}
+   */
+  static summary(...args) {
+    return this.create('summary', ...args);
+  }
   
   /**
    * @param {*} args

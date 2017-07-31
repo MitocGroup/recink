@@ -27,11 +27,15 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 
 `.recink.yml` configuration:
 
-```yaml
+```yaml 
 $:
   pagespeed:
     uri:                              # URIs to analyze
-      - https://www.example.com
+      - https://www-test.adtechmedia.io
+    # reporters:                      # Customize Reporters (available: text, summary)
+    #   summary: ~
+    #   text: 
+    #     - minimal: true             # Skip showing detailed statistics
     # strategy: desktop               # Available: desktop, mobile
     # filter-third-party: true        # Filter 3'rd party assets
     # locale: en                      # @see https://developers.google.com/speed/docs/insights/languagesx

@@ -9,17 +9,51 @@ const pify = require('pify');
  */
 class PageSpeedClient {
   /**
+   * @param {number} retries 
+   */
+  constructor(retries = PageSpeedClient.MAX_RETRIES) {
+    this._retries = retries;
+  }
+
+  /**
    * @param {string} url
    * @param {*} options
    *
    * @returns {Promise}
    */
   analyze(url, options) {
-    return pify(request.get)(
-      this._requestOptions(Object.assign({ url }, options))
-    ).then(response => {
-      return Promise.resolve(JSON.parse(response.body));
-    });
+    return this._analyze(url, options)
+      .then(response => {
+        return Promise.resolve(JSON.parse(response.body));
+      });
+  }
+
+  /**
+   * @param {string} url
+   * @param {*} options
+   * @param {number} _retries
+   *
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _analyze(url, options, _retries = 0) {
+    const requestOptions = this._requestOptions(Object.assign({ url }, options));
+
+    return pify(request.get)(requestOptions)
+      .catch(error => {
+        if (_retries > this.retries) {
+          return Promise.reject(error);
+        }
+        
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            this._analyze(url, options, _retries + 1)
+              .then(result => resolve(result))
+              .catch(error => reject(error));
+          }, PageSpeedClient.RETRY_INTERVAL);
+        });
+      });
   }
   
   /**
@@ -40,7 +74,39 @@ class PageSpeedClient {
       timeout: PageSpeedClient.TIMEOUT,
     };
   }
+
+  /**
+   * @param {number} retries 
+   * 
+   * @returns {PageSpeedClient}
+   */
+  maxRetries(retries) {
+    this._retries = retries;
+
+    return this;
+  }
+
+  /**
+   * @returns {number}
+   */
+  get retries() {
+    return this._retries;
+  }
   
+  /**
+   * @returns {number}
+   */
+  static get RETRY_INTERVAL() {
+    return 300;
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get MAX_RETRIES() {
+    return 3;
+  }
+
   /**
    * @returns {number}
    */

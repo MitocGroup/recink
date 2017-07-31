@@ -1,17 +1,27 @@
 'use strict';
 
-const AbstractReporter = require('./abstract-reporter');
+const SummaryReporter = require('./summary-reporter');
 const TextBlock = require('./helper/text-block');
 
 /**
  * Text PageSpeed reporter
  */
-class TextReporter extends AbstractReporter {
+class TextReporter extends SummaryReporter {
   /**
-   * @param {*} args
+   * @param {PageSpeedComponent} component 
+   * @param {*} minoptionsimal 
    */
-  constructor(...args) {
-    super(...args);
+  constructor(component, options = {}) {
+    super(component);
+
+    this._options = options;
+  }
+
+  /**
+   * @returns {*}
+   */
+  get options() {
+    return this._options;
   }
 
   /**
@@ -27,25 +37,18 @@ class TextReporter extends AbstractReporter {
    * @returns {Promise}
    */
   report(data) {
-    const info = Object.keys(data.ruleGroups).map(ruleGroup => {
-      return this._chalk.gray.bold(`${ ruleGroup } SCORE: `) + 
-        data.ruleGroups[ruleGroup].score;
-    }).join('\n  ');
-    
-    let output = `\n  ${ info }\n`;
-    
-    output += this._chalk.gray.bold('  STATS:\n    ');
-    output += this._stats(data.pageStats).join('\n    ');
-    
-    Object.keys(data.formattedResults.ruleResults).map(rule => {
-      const ruleOutput = this._rule(
-        data.formattedResults.ruleResults[rule]
-      ).replace(/\n/g, '\n    ');
-      
-      output += `\n\n  ${ this.logger.emoji.fire } ${ ruleOutput }`;
-    });
-    
-    return Promise.resolve(output);
+    return super.report(data)
+      .then(output => {
+        Object.keys(data.formattedResults.ruleResults).map(rule => {
+          const ruleOutput = this._rule(data.formattedResults.ruleResults[rule]);
+
+          if (ruleOutput) {
+            output += `\n\n  ${ this.logger.emoji.fire } ${ ruleOutput.replace(/\n/g, '\n    ') }`;
+          }
+        });
+        
+        return Promise.resolve(output);
+      });
   }
   
   /**
@@ -56,13 +59,17 @@ class TextReporter extends AbstractReporter {
    * @private
    */
   _rule(data) {
+    if (data.ruleImpact <= 0) {
+      return null;
+    }
+
     let output = this._chalk.red.bold(`${ data.localizedRuleName }:\n`);
 
     output += `  ${ this._chalk.white.bold('Impact:') } ${ data.ruleImpact }\n`;
     output += `  ${ this._chalk.white.bold('Groups:') } ${ data.groups.join(', ') }\n`;
     output += `  ${ this._chalk.white.bold('Summary:') } ${ this._text(data.summary) }`;
     
-    if (Array.isArray(data.urlBlocks)) {
+    if (!this.options.minimal && Array.isArray(data.urlBlocks)) {
       output += `\n  ${ this._chalk.white.bold('Advices:') }\n    `;
       output += data.urlBlocks.map(urlBlock => {
         return this._urlBlock(urlBlock)
@@ -90,59 +97,6 @@ class TextReporter extends AbstractReporter {
     }
     
     return output;
-  }
-  
-  /**
-   * @param {*} stats
-   *
-   * @returns {string[]}
-   *
-   * @private
-   */
-  _stats(stats) {
-    return Object.keys(stats).map(key => {
-      let name;
-      
-      switch(key) {
-        case 'numberResources':
-          name = 'Total Assets';
-          break;
-        case 'numberHosts':
-          name = 'Assets Hosts';
-          break;
-        case 'numberStaticResources':
-          name = 'Static Assets';
-          break;
-        case 'numberJsResources':
-          name = 'Javascript Assets';
-          break;
-        case 'numberCssResources':
-          name = 'Css Assets';
-          break;
-        case 'totalRequestBytes':
-          name = 'Metadata Transfered (in bytes)';
-          break;
-        case 'htmlResponseBytes':
-          name = 'Html Content (in bytes)';
-          break;
-        case 'cssResponseBytes':
-          name = 'Css Content (in bytes)';
-          break;
-        case 'imageResponseBytes':
-          name = 'Image Content (in bytes)';
-          break;
-        case 'javascriptResponseBytes':
-          name = 'Javascript Content (in bytes)';
-          break;
-        case 'otherResponseBytes':
-          name = 'Other Content (in bytes)';
-          break;
-        default:
-          name = key;
-      }
-      
-      return `${ this._chalk.white.bold(name) }: ${ stats[key] }`;
-    });
   }
   
   /**
