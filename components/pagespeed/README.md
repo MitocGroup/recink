@@ -31,7 +31,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 $:
   pagespeed:
     uri:                                                                      # URIs to analyze
-      - https://www-test.adtechmedia.io
+      - https://www.example.com
     # strategy: desktop                                                       # Available: desktop, mobile
     # filter-third-party: true                                                # Filter 3'rd party assets
     # locale: en                                                              # @see https://developers.google.com/speed/docs/insights/languagesx
