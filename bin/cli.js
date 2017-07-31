@@ -43,7 +43,6 @@ if (Env.isCI) {
 const commands = prog
   .version(pkg.version)
   .description(description)
-  .action(cmd('./commands/run/generic'))
   .command('run unit', 'Run unit tests') 
     .argument('[path]', 'Path to tests', /.+/, process.cwd())
     .option('-s <component>', 'Skip component', prog.REPEATABLE)
@@ -62,6 +61,7 @@ const commands = prog
     .option('-s <component>', 'Skip component', prog.REPEATABLE)
     .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
     .complete(() => require('./run/generic/components'))
+  .action(cmd('./commands/run/generic'))
   .command('component add', 'Add an REciNK component to the registry')
     .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
     .option('--namespace', 'Component namespace (unit|e2e|generic)', /^unit|e2e|generic$/i, 'unit')
