@@ -24,7 +24,7 @@ before_install:
 script: 'recink run unit -c ./components/codeclimate'
 jobs:
   include:
-    - stage: 'Run Unit E2E :iphone:'
+    - stage: 'Run E2E Tests :iphone:'
       node_js: 8
       script: 'recink run e2e'
       addons:
