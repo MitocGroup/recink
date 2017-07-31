@@ -4,6 +4,8 @@ $:
     '$.codeclimate.token': 'eval'
     '$.snyk.token': 'eval'
     '$.snyk.reporters.github.0.token': 'eval'
+  cache:
+    driver: 'void' 
   emit:
     pattern:                                                  # Files to include
       - /.+\.js$/i

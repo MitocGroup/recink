@@ -196,6 +196,15 @@ class AbstractDriver extends EventEmitter {
   }
   
   /**
+   * @throws {Error}
+   */
+  get name() {
+    throw new Error(
+      `${ this.constructor.name }.name not implemented!`
+    );
+  }
+
+  /**
    * @returns {Promise}
    *
    * @private

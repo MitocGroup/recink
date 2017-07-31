@@ -7,6 +7,13 @@ const AbstractDriver = require('./abstract-driver');
  */
 class VoidDriver extends AbstractDriver {
   /**
+   * @returns {string}
+   */
+  get name() {
+    return 'void';
+  }
+
+  /**
    * @returns {Promise}
    *
    * @private

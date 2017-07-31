@@ -18,7 +18,7 @@ class CacheComponent extends DependantConfigBasedComponent {
   constructor(...args) {
     super(...args);
     
-    this._cache = null;
+    this._npmCache = null;
   }
   
   /**
@@ -32,16 +32,34 @@ class CacheComponent extends DependantConfigBasedComponent {
    * @returns {string[]}
    */
   get dependencies() {
-    return [ 'npm' ];
+    return [];
   }
   
   /**
    * @returns {AbstractDriver}
    */
-  get cache() {
-    return this._cache;
+  get npmCache() {
+    return this._npmCache;
   }
-  
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  run(emitter) {
+    return this._handleNpmCache(emitter);
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  teardown(emitter) {
+    return this._teardownNpmCache(emitter);
+  }
+
   /**
    * @param {string} cacheDriver
    * @param {string} cacheDir
@@ -50,62 +68,92 @@ class CacheComponent extends DependantConfigBasedComponent {
    *
    * @private
    */
-  _initCache(cacheDriver, cacheDir) {
-    this._cache = cacheFactory[cacheDriver](
+  _initNpmCache(cacheDriver, cacheDir) {
+    this._npmCache = cacheFactory[cacheDriver](
       cacheDir,
       ...this.container.get('options', [])
     );
     
     return this;
   }
-  
+
   /**
    * @param {Emitter} emitter
    * 
    * @returns {Promise}
+   * 
+   * @private
    */
-  run(emitter) {
-    return new Promise(resolve => {
-      const cacheDriver = this.container.get('driver');
-      
-      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {
-        const spinner = new Spinner(`Downloading caches from #${ cacheDriver }`);
-        
-        return spinner.then(
-          'Caches downloaded.'
-        ).catch(
-          'Caches failed to download!'
-        ).promise(
-          this._initCache(cacheDriver, cacheDir)
-            ._trackProgress(this.cache, spinner)
-            .cache.download()
-        )
-      });
-      
-      emitter.onBlocking(emitEvents.modules.process.end, () => {
-        if (!this.cache) {
-          resolve();
-          return Promise.resolve();
-        }
-        
-        const spinner = new Spinner(`Uploading caches to #${ cacheDriver }`);
+  _handleNpmCache(emitter) {
+    if (!emitter.component('npm')) {
+      return Promise.resolve();
+    }
 
-        return spinner.then(
-          'Caches uploaded.'
-        ).catch(
-          'Caches failed to upload!'
-        ).promise(
-          this._trackProgress(this.cache, spinner).cache.upload()
-        ).then(() => resolve());
-      });
+    const cacheDriver = this.container.get('driver');
+
+    emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {
+      return this
+        ._initNpmCache(cacheDriver, cacheDir)
+        ._downloadCache(this.npmCache);
     });
+
+    return Promise.resolve();
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _teardownNpmCache(emitter) {
+    if (!this.npmCache || !emitter.component('npm')) {
+      return Promise.resolve();
+    }
+
+    return this._uploadCache(this.npmCache);
+  }
+
+  /**
+   * @param {AbstractDriver} cache 
+   * 
+   * @private
+   */
+  _downloadCache(cache) {
+    const spinner = new Spinner(`Downloading caches from #${ cache.name }`);
+      
+    return spinner.then(
+      `Caches downloaded to ${ cache.cacheDir }`
+    ).catch(
+      `Failed to download caches to ${ cache.cacheDir }`
+    ).promise(
+      this._trackProgress(cache, spinner).download()
+    );
+  }
+
+  /**
+   * @param {AbstractDriver} cache 
+   * 
+   * @private
+   */
+  _uploadCache(cache) {
+    const spinner = new Spinner(`Uploading caches to #${ cache.name }`);
+      
+    return spinner.then(
+      `Caches uploaded from ${ cache.cacheDir }`
+    ).catch(
+      `Failed to upload caches from ${ cache.cacheDir }`
+    ).promise(
+      this._trackProgress(cache, spinner).upload()
+    );
   }
   
   /**
    * @param {EventEmitter} emitter
    * @param {ora} spinner
    *
-   * @returns {CacheComponent}
+   * @returns {EventEmitter}
    *
    * @private
    */
@@ -118,7 +166,7 @@ class CacheComponent extends DependantConfigBasedComponent {
     
     spinner.prepend(`[0/0]`);
     
-    return this;
+    return emitter;
   }
 }
 
