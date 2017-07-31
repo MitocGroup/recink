@@ -68,3 +68,12 @@ recink travis encrypt -x 'GITHUB_ACCESS_TOKEN=1234'
 ```
 GITHUB_ACCESS_TOKEN=1234 recink run unit -c recink-comment
 ```
+
+
+# Pushing Messages to Input Stream
+
+Let's assume that `~/recink.comment` is the input stream `comment component` is listening to:
+
+```
+echo "Test message" >> ~/recink.comment
+```
