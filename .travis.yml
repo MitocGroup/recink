@@ -20,7 +20,8 @@ stage: 'Run Unit Tests :clipboard:'
 before_install:
   - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
   - 'npm install --no-peer'
-script: 'recink run unit'
+  - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DI'
+script: 'recink run unit -c ./components/codeclimate'
 jobs:
   include:
     - stage: 'Run Unit E2E :page_facing_up:'
@@ -37,12 +38,7 @@ jobs:
       node_js: 8
       script: 'recink run ./components/snyk'
       install:
-        - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"'
-    - stage: 'Run CodeClimate :mask:'
-      node_js: 8
-      script: 'recink run ./components/codeclimate'
-      install:
-        - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'     
+        - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"' 
     - stage: 'Run PageSpeed :chart_with_upwards_trend:'
       node_js: 8
       script: 'recink run ./components/pagespeed'
