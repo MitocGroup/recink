@@ -43,7 +43,7 @@ class Link {
     )).then(
       `Package ${ pkgInfo } successfully linked in ${ infoCwd }`
     ).catch(
-      `Failed to install ${ pkgInfo } component in ${ infoCwd }`
+      `Failed to link ${ pkgInfo } package in ${ infoCwd }`
     ).promise(new Promise((resolve, reject) => {
       const options = { stdio: 'ignore' };
       const args = [ 'link', this.packageName ];
@@ -58,7 +58,7 @@ class Link {
       
       npmLink.on('close', code => {
         if (code !== 0) {          
-          return reject(new Error(`Failed to link ${ pkgInfo } in ${ infoCwd }`));
+          return reject(new Error(`Failed to link ${ pkgInfo } package in ${ infoCwd }`));
         }
         
         resolve();
