@@ -642,6 +642,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/component/abstract-component.js~abstractcomponent#init",
+    "class/src/component/abstract-component.js~AbstractComponent.html#instance-method-init",
+    "src/component/abstract-component.js~AbstractComponent#init",
+    "method"
+  ],
+  [
     "src/component/abstract-component.js~abstractcomponent#isactive",
     "class/src/component/abstract-component.js~AbstractComponent.html#instance-get-isActive",
     "src/component/abstract-component.js~AbstractComponent#isActive",
@@ -726,9 +732,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/component/cache-component.js~cachecomponent#cache",
-    "class/src/component/cache-component.js~CacheComponent.html#instance-get-cache",
-    "src/component/cache-component.js~CacheComponent#cache",
+    "src/component/cache-component.js~cachecomponent#caches",
+    "class/src/component/cache-component.js~CacheComponent.html#instance-get-caches",
+    "src/component/cache-component.js~CacheComponent#caches",
     "member"
   ],
   [
@@ -744,15 +750,21 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/component/cache-component.js~cachecomponent#init",
+    "class/src/component/cache-component.js~CacheComponent.html#instance-method-init",
+    "src/component/cache-component.js~CacheComponent#init",
+    "method"
+  ],
+  [
     "src/component/cache-component.js~cachecomponent#name",
     "class/src/component/cache-component.js~CacheComponent.html#instance-get-name",
     "src/component/cache-component.js~CacheComponent#name",
     "member"
   ],
   [
-    "src/component/cache-component.js~cachecomponent#run",
-    "class/src/component/cache-component.js~CacheComponent.html#instance-method-run",
-    "src/component/cache-component.js~CacheComponent#run",
+    "src/component/cache-component.js~cachecomponent#teardown",
+    "class/src/component/cache-component.js~CacheComponent.html#instance-method-teardown",
+    "src/component/cache-component.js~CacheComponent#teardown",
     "method"
   ],
   [
@@ -778,6 +790,12 @@ window.esdocSearchIndex = [
     "class/src/component/cache/abstract-driver.js~AbstractDriver.html#instance-method-download",
     "src/component/cache/abstract-driver.js~AbstractDriver#download",
     "method"
+  ],
+  [
+    "src/component/cache/abstract-driver.js~abstractdriver#name",
+    "class/src/component/cache/abstract-driver.js~AbstractDriver.html#instance-get-name",
+    "src/component/cache/abstract-driver.js~AbstractDriver#name",
+    "member"
   ],
   [
     "src/component/cache/abstract-driver.js~abstractdriver#upload",
@@ -846,6 +864,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/component/cache/s3-driver.js~s3driver#name",
+    "class/src/component/cache/s3-driver.js~S3Driver.html#instance-get-name",
+    "src/component/cache/s3-driver.js~S3Driver#name",
+    "member"
+  ],
+  [
     "src/component/cache/s3-driver.js~s3driver#options",
     "class/src/component/cache/s3-driver.js~S3Driver.html#instance-get-options",
     "src/component/cache/s3-driver.js~S3Driver#options",
@@ -862,6 +886,12 @@ window.esdocSearchIndex = [
     "file/src/component/cache/void-driver.js.html",
     "src/component/cache/void-driver.js",
     "file"
+  ],
+  [
+    "src/component/cache/void-driver.js~voiddriver#name",
+    "class/src/component/cache/void-driver.js~VoidDriver.html#instance-get-name",
+    "src/component/cache/void-driver.js~VoidDriver#name",
+    "member"
   ],
   [
     "src/component/config-based-component.js",

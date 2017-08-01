@@ -89,11 +89,12 @@
 
 const npmEvents = require(&apos;./npm/events&apos;);
 const emitEvents = require(&apos;./emit/events&apos;);
-const cacheFactory = require(&apos;./cache/factory&apos;);
+const CacheFactory = require(&apos;./cache/factory&apos;);
 const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
 const Spinner = require(&apos;./helper/spinner&apos;);
 const cacheEvents = require(&apos;./cache/events&apos;);
 const prettyBytes = require(&apos;pretty-bytes&apos;);
+const SequentialPromise = require(&apos;./helper/sequential-promise&apos;);
 
 /**
  * Cache component
@@ -105,7 +106,7 @@ class CacheComponent extends DependantConfigBasedComponent {
   constructor(...args) {
     super(...args);
     
-    this._cache = null;
+    this._caches = [];
   }
   
   /**
@@ -119,80 +120,147 @@ class CacheComponent extends DependantConfigBasedComponent {
    * @returns {string[]}
    */
   get dependencies() {
-    return [ &apos;npm&apos; ];
+    return [];
   }
-  
+
   /**
-   * @returns {AbstractDriver}
+   * @returns {AbstractDriver[]}
    */
-  get cache() {
-    return this._cache;
+  get caches() {
+    return this._caches;
   }
-  
-  /**
-   * @param {string} cacheDriver
-   * @param {string} cacheDir
-   *
-   * @returns {CacheComponent}
-   *
-   * @private
-   */
-  _initCache(cacheDriver, cacheDir) {
-    this._cache = cacheFactory[cacheDriver](
-      cacheDir,
-      ...this.container.get(&apos;options&apos;, [])
-    );
-    
-    return this;
-  }
-  
+
   /**
    * @param {Emitter} emitter
    * 
    * @returns {Promise}
    */
-  run(emitter) {
-    return new Promise(resolve =&gt; {
-      const cacheDriver = this.container.get(&apos;driver&apos;);
-      
-      emitter.onBlocking(npmEvents.npm.cache.init, cacheDir =&gt; {
-        const spinner = new Spinner(`Downloading caches from #${ cacheDriver }`);
-        
-        return spinner.then(
-          &apos;Caches downloaded.&apos;
-        ).catch(
-          &apos;Caches failed to download!&apos;
-        ).promise(
-          this._initCache(cacheDriver, cacheDir)
-            ._trackProgress(this.cache, spinner)
-            .cache.download()
-        )
-      });
-      
-      emitter.onBlocking(emitEvents.modules.process.end, () =&gt; {
-        if (!this.cache) {
-          resolve();
-          return Promise.resolve();
-        }
-        
-        const spinner = new Spinner(`Uploading caches to #${ cacheDriver }`);
+  init(emitter) {
+    return Promise.all([
+      this._initCaches(emitter),
+      this._initNpmCache(emitter)
+    ]);
+  }
 
-        return spinner.then(
-          &apos;Caches uploaded.&apos;
-        ).catch(
-          &apos;Caches failed to upload!&apos;
-        ).promise(
-          this._trackProgress(this.cache, spinner).cache.upload()
-        ).then(() =&gt; resolve());
-      });
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  teardown(emitter) {
+    if (this.caches.length &lt;= 0) {
+      return Promise.resolve();
+    }
+
+    return SequentialPromise.all(this.caches.map(cache =&gt; {
+      return () =&gt; this._uploadCache(cache);
+    }));
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _initCaches(emitter) {
+    const cachePaths = this.container.get(&apos;paths&apos;, []);
+
+    if (cachePaths.length &lt;= 0) {
+      return Promise.resolve();
+    }
+
+    return SequentialPromise.all(cachePaths.map(cacheDir =&gt; {
+      return () =&gt; {
+        const cache = this._createCache(cacheDir);
+
+        this.caches.push(cache);
+
+        return this._downloadCache(cache);
+      };
+    }));
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _initNpmCache(emitter) {
+    const enabled = this.container.get(&apos;npm&apos;, true);
+
+    if (!enabled || !emitter.component(&apos;npm&apos;)) {
+      return Promise.resolve();
+    }
+
+    emitter.onBlocking(npmEvents.npm.cache.init, cacheDir =&gt; {
+      const npmCache = this._createCache(cacheDir);
+
+      this.caches.push(npmCache);
+
+      return this._downloadCache(npmCache);
     });
+
+    return Promise.resolve();
+  }
+
+  /**
+   * @param {string} cacheDir
+   *
+   * @returns {AbstractDriver}
+   *
+   * @private
+   */
+  _createCache(cacheDir) {
+    return CacheFactory.create(
+      this.container.get(&apos;driver&apos;),
+      cacheDir,
+      ...this.container.get(&apos;options&apos;, [])
+    );
+  }
+
+  /**
+   * @param {AbstractDriver} cache 
+   * 
+   * @private
+   */
+  _downloadCache(cache) {
+    const spinner = new Spinner(`Downloading caches from #${ cache.name }`);
+      
+    return spinner.then(
+      `Caches downloaded to ${ cache.cacheDir }`
+    ).catch(
+      `Failed to download caches to ${ cache.cacheDir }`
+    ).promise(
+      this._trackProgress(cache, spinner).download()
+    );
+  }
+
+  /**
+   * @param {AbstractDriver} cache 
+   * 
+   * @private
+   */
+  _uploadCache(cache) {
+    const spinner = new Spinner(`Uploading caches to #${ cache.name }`);
+      
+    return spinner.then(
+      `Caches uploaded from ${ cache.cacheDir }`
+    ).catch(
+      `Failed to upload caches from ${ cache.cacheDir }`
+    ).promise(
+      this._trackProgress(cache, spinner).upload()
+    );
   }
   
   /**
    * @param {EventEmitter} emitter
    * @param {ora} spinner
    *
-   * @returns {CacheComponent}
+   * @returns {EventEmitter}
    *
    * @private
    */
@@ -205,7 +273,7 @@ class CacheComponent extends DependantConfigBasedComponent {
     
     spinner.prepend(`[0/0]`);
     
-    return this;
+    return emitter;
   }
 }
 

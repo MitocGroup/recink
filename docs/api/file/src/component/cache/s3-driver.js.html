@@ -113,6 +113,13 @@ class S3Driver extends AbstractDriver {
     this._includeNodeVersion = includeNodeVersion;
     this._client = new S3(this.options);
   }
+
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return &apos;s3&apos;;
+  }
   
   /**
    * @returns {boolean}

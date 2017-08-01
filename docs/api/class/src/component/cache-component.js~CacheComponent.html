@@ -85,13 +85,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import CacheComponent from &apos;<span><a href="file/src/component/cache-component.js.html#lineNumber14">recink/src/component/cache-component.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import CacheComponent from &apos;<span><a href="file/src/component/cache-component.js.html#lineNumber15">recink/src/component/cache-component.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/component/cache-component.js.html#lineNumber14">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/component/cache-component.js.html#lineNumber15">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -177,7 +177,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-get-cache">cache</a></span></span><span data-ice="signature">: <span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span>: <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-get-caches">caches</a></span></span><span data-ice="signature">: <span><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span><span>[]</span></span>: <span>*</span></span>
         </p>
       </div>
       <div>
@@ -204,7 +204,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-get-dependencies">dependencies</a></span></span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span>: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span></span>
+          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-get-dependencies">dependencies</a></span></span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span>: <span><span>*</span><span>[]</span></span></span>
         </p>
       </div>
       <div>
@@ -265,7 +265,34 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-method-run">run</a></span></span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-method-init">init</a></span></span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html#instance-method-teardown">teardown</a></span></span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
         </p>
       </div>
       <div>
@@ -301,7 +328,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber18">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber19">source</a></span></span>
     </span>
   </h3>
 
@@ -352,18 +379,18 @@
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-get-cache">
+  <h3 data-ice="anchor" id="instance-get-caches">
     <span class="access" data-ice="access">public</span>
     
     <span class="kind" data-ice="kind">get</span>
     
     
     
-    <span data-ice="name">cache</span><span data-ice="signature">: <span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span>: <span>*</span></span>
+    <span data-ice="name">caches</span><span data-ice="signature">: <span><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span><span>[]</span></span>: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber41">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber42">source</a></span></span>
     </span>
   </h3>
 
@@ -382,7 +409,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></td>
+          <td class="return-type" data-ice="returnType"><span><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span><span>[]</span></span></td>
           
         </tr>
       </tbody>
@@ -414,11 +441,11 @@
     
     
     
-    <span data-ice="name">dependencies</span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span>: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span></span>
+    <span data-ice="name">dependencies</span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span><span>[]</span></span>: <span><span>*</span><span>[]</span></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber34">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber35">source</a></span></span>
     </span>
   </h3>
 
@@ -473,7 +500,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber27">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber28">source</a></span></span>
     </span>
   </h3>
 
@@ -520,18 +547,89 @@
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-run">
+  <h3 data-ice="anchor" id="instance-method-init">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">run</span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span data-ice="name">init</span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber67">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber51">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">emitter</td>
+      <td data-ice="type"><span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-teardown">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">teardown</span><span data-ice="signature">(emitter: <span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/component/cache-component.js.html#lineNumber63">source</a></span></span>
     </span>
   </h3>
 
