@@ -8,6 +8,8 @@ $:
 #  '$.cache.options.1.accessKeyId': 'eval'
 #  '$.cache.options.1.secretAccessKey': 'eval'
 # cache:
+#   paths: []                                                               # Additional paths to be cached
+#   npm: true                                                               # Cache NPM dependencies
 #   driver: 's3'                                                            # Available drivers: void, s3
 #   options:
 #     - 's3://travis-metadata/cache/sample-repo'                            # S3 cache directory

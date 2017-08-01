@@ -2,11 +2,12 @@
 
 const npmEvents = require('./npm/events');
 const emitEvents = require('./emit/events');
-const cacheFactory = require('./cache/factory');
+const CacheFactory = require('./cache/factory');
 const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const Spinner = require('./helper/spinner');
 const cacheEvents = require('./cache/events');
 const prettyBytes = require('pretty-bytes');
+const SequentialPromise = require('./helper/sequential-promise');
 
 /**
  * Cache component
@@ -18,7 +19,7 @@ class CacheComponent extends DependantConfigBasedComponent {
   constructor(...args) {
     super(...args);
     
-    this._npmCache = null;
+    this._caches = [];
   }
   
   /**
@@ -34,12 +35,12 @@ class CacheComponent extends DependantConfigBasedComponent {
   get dependencies() {
     return [];
   }
-  
+
   /**
-   * @returns {AbstractDriver}
+   * @returns {AbstractDriver[]}
    */
-  get npmCache() {
-    return this._npmCache;
+  get caches() {
+    return this._caches;
   }
 
   /**
@@ -47,8 +48,11 @@ class CacheComponent extends DependantConfigBasedComponent {
    * 
    * @returns {Promise}
    */
-  run(emitter) {
-    return this._handleNpmCache(emitter);
+  init(emitter) {
+    return Promise.all([
+      this._initCaches(emitter),
+      this._initNpmCache(emitter)
+    ]);
   }
 
   /**
@@ -57,24 +61,13 @@ class CacheComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   teardown(emitter) {
-    return this._teardownNpmCache(emitter);
-  }
+    if (this.caches.length <= 0) {
+      return Promise.resolve();
+    }
 
-  /**
-   * @param {string} cacheDriver
-   * @param {string} cacheDir
-   *
-   * @returns {CacheComponent}
-   *
-   * @private
-   */
-  _initNpmCache(cacheDriver, cacheDir) {
-    this._npmCache = cacheFactory[cacheDriver](
-      cacheDir,
-      ...this.container.get('options', [])
-    );
-    
-    return this;
+    return SequentialPromise.all(this.caches.map(cache => {
+      return () => this._uploadCache(cache);
+    }));
   }
 
   /**
@@ -84,35 +77,58 @@ class CacheComponent extends DependantConfigBasedComponent {
    * 
    * @private
    */
-  _handleNpmCache(emitter) {
-    if (!emitter.component('npm')) {
+  _initCaches(emitter) {
+    const cachePaths = this.container.get('paths', []);
+
+    return SequentialPromise.all(cachePaths.map(cacheDir => {
+      return () => {
+        const cache = this._createCache(cacheDir);
+
+        this.caches.push(cache);
+
+        return this._downloadCache(cache);
+      };
+    }));
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _initNpmCache(emitter) {
+    const enabled = this.container.get('npm', true);
+
+    if (!enabled || !emitter.component('npm')) {
       return Promise.resolve();
     }
 
-    const cacheDriver = this.container.get('driver');
-
     emitter.onBlocking(npmEvents.npm.cache.init, cacheDir => {
-      return this
-        ._initNpmCache(cacheDriver, cacheDir)
-        ._downloadCache(this.npmCache);
+      const npmCache = this._createCache(cacheDir);
+
+      this.caches.push(npmCache);
+
+      return this._downloadCache(npmCache);
     });
 
     return Promise.resolve();
   }
 
   /**
-   * @param {Emitter} emitter
-   * 
-   * @returns {Promise}
-   * 
+   * @param {string} cacheDir
+   *
+   * @returns {AbstractDriver}
+   *
    * @private
    */
-  _teardownNpmCache(emitter) {
-    if (!this.npmCache || !emitter.component('npm')) {
-      return Promise.resolve();
-    }
-
-    return this._uploadCache(this.npmCache);
+  _createCache(cacheDir) {
+    return CacheFactory.create(
+      this.container.get('driver'),
+      cacheDir,
+      ...this.container.get('options', [])
+    );
   }
 
   /**

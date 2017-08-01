@@ -119,6 +119,22 @@ get dependencies() {
 
 > Note that your component will be disabled if any of dependencies you've specified is missing or disabled.
 
+### Preparing for `run()`
+
+`REciNK` allows the components prepare for `run()` by implemeting `init()` method:
+
+```javascript
+/**
+  * @param {Emitter} emitter
+  * 
+  * @returns {Promise}
+  */
+init(emitter) {
+  return Promise.resolve();
+}
+```
+
+> `REciNK` will wait for all `init()` calls resolved before invoking `run()`
 
 ### Cleaning Up Allocated Resources
 

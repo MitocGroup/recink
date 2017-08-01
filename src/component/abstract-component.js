@@ -119,6 +119,15 @@ class AbstractComponent {
    * 
    * @returns {Promise}
    */
+  init(emitter) {
+    return Promise.resolve();
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
   run(emitter) {
     return Promise.resolve();
   }

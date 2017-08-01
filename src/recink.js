@@ -59,13 +59,6 @@ class Recink extends Emitter {
         );
       });
     });
-    
-    this.on(events.components.teardown, (...components) => {
-      logger.debug(
-        'Teardown components -',
-        components.map(c => c.name).join(', ') || 'None'
-      );
-    });
   }
   
   /**
@@ -80,14 +73,20 @@ class Recink extends Emitter {
     if (activeComponents.length <= 0) {
       return Promise.resolve();
     }
-    
+
     return Promise.all(activeComponents.map(component => {
-      this.emit(events.component.run, component);
+      this.emit(events.component.init, component);
       
-      return component.run(this);
-    })).then(() => {
-      this.emit(events.components.teardown, ...this._components);
-      
+      return component.init(this);
+    }))
+    .then(() => {
+      return Promise.all(activeComponents.map(component => {
+        this.emit(events.component.run, component);
+        
+        return component.run(this);
+      }));
+    })
+    .then(() => {
       return Promise.all(this._components.map(component => {
         this.emit(events.component.teardown, component);
         
