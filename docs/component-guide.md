@@ -55,7 +55,7 @@ drwxr-xr-x   3 AlexanderC  staff   102 Jul  4 10:29 template
 
 To test your component run:
 
-`HELLO="John" recink run unit ~/Desktop/hello/template -c ~/Desktop/hello`
+`HELLO="John" recink run ~/Desktop/hello ~/Desktop/hello/template`
 
 
 ### Component Interface
@@ -140,8 +140,8 @@ init(emitter) {
 ### Cleaning Up Allocated Resources
 
 A good practive would be cleaning up allocated resources.
-`REciNK` comes up with a method called `teardown()` called after all components
-have finished their execution:
+`REciNK` comes up with a method called `teardown()` that is invoked 
+after all components have finished their execution:
 
 ```javascript
 /**
