@@ -13,9 +13,7 @@ branches:
     - stage
     - test
     - dev
-node_js:
-  - 6
-  - 8
+node_js: 8
 stage: 'Run Unit Tests :computer:'
 before_install:
   - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
