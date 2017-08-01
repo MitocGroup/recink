@@ -13,13 +13,13 @@ branches:
     - stage
     - test
     - dev
-node_js: 8
-stage: 'Run Unit Tests :computer:'
-before_install:
-  - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
-script: './bin/cli.js run unit -c ./components/codeclimate'
 jobs:
   include:
+    - stage: 'Run Unit Tests :computer:'
+      node_js: 8
+      script: './bin/cli.js run unit -c ./components/codeclimate'
+      before_install:
+        - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - stage: 'Run E2E Tests :iphone:'
       node_js: 8
       script: './bin/cli.js run e2e'
