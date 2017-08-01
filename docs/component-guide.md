@@ -136,6 +136,7 @@ init(emitter) {
 
 > `REciNK` will wait for all `init()` calls resolved before invoking `run()`
 
+
 ### Cleaning Up Allocated Resources
 
 A good practive would be cleaning up allocated resources.
@@ -152,6 +153,8 @@ teardown(emitter) {
   return Promise.resolve();
 }
 ```
+
+> Note that `teardown()` is called even if the component is **not** active
 
 
 ### Final Notes

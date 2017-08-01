@@ -80,6 +80,10 @@ class CacheComponent extends DependantConfigBasedComponent {
   _initCaches(emitter) {
     const cachePaths = this.container.get('paths', []);
 
+    if (cachePaths.length <= 0) {
+      return Promise.resolve();
+    }
+
     return SequentialPromise.all(cachePaths.map(cacheDir => {
       return () => {
         const cache = this._createCache(cacheDir);
