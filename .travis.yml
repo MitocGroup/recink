@@ -19,7 +19,6 @@ node_js:
 stage: 'Run Unit Tests :computer:'
 before_install:
   - 'ln -s $(pwd)/bin/cli.js $(npm bin -g)/recink || echo "recink already linked..."'
-  - 'npm install --no-peer'
   - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
 script: 'recink run unit -c ./components/codeclimate'
 jobs:
