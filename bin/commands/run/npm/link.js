@@ -58,7 +58,9 @@ class Link {
       
       npmLink.on('close', code => {
         if (code !== 0) {          
-          return reject(new Error(`Failed to link ${ pkgInfo } package in ${ infoCwd }`));
+          return reject(new Error(
+            `Failed to link ${ pkgInfo } package in ${ infoCwd } with code ${ code }`
+          ));
         }
         
         resolve();
