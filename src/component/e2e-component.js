@@ -7,9 +7,13 @@ const NighmareBrowserProvider = require('./e2e/testcafe/nighmare-browser-provide
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const createTestCafe = require('testcafe');
+const testCafeBrowserProviderPool = require('testcafe/lib/browser/provider/pool');
 const Spinner = require('./helper/spinner');
 const urlExists = require('url-exists');
 const pify = require('pify');
+
+// Register nighmare browser provider
+testCafeBrowserProviderPool.addProvider('nightmare:', new NighmareBrowserProvider());
 
 /**
  * End2End component
@@ -71,8 +75,6 @@ class E2EComponent extends DependantConfigBasedComponent {
             browsers, 
             reporter
           ).then(() => {
-            NighmareBrowserProvider.register();
-            
             return runner
               .src(this._testAssets)
               .browsers(browsers)

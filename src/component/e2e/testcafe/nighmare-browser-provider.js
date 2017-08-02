@@ -2,7 +2,6 @@
 
 const Nightmare = require('nightmare');
 const debug = require('debug');
-const testCafeBrowserProviderPool = require('testcafe/lib/browser/provider/pool');
 
 class NighmareBrowserProvider {
   constructor() {
@@ -102,13 +101,6 @@ class NighmareBrowserProvider {
    */
   takeScreenshot(id, screenshotPath) {
     return this.nightmare.screenshot(screenshotPath);
-  }
-
-  /**
-   * @returns {*}
-   */
-  static register() {
-    return testCafeBrowserProviderPool.addProvider('nightmare:', new NighmareBrowserProvider());
   }
 }
 
