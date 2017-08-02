@@ -1,3 +1,3 @@
-import Chance from 'chance';
+const Chance = require('chance');
 
-export default { chance: new Chance() };
+module.exports = { chance: new Chance() };

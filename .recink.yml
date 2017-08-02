@@ -39,6 +39,7 @@ $:
     pattern:                                                  # Files to include
       - /.+\.js$/i
     ignore:                                                   # Files to exclude
+      - /^test\//i
       - /.+\.spec\.js$/i
       - /.+\.e2e\.js$/i
       - /^(.*\/)?node_modules(\/?$)?/i
