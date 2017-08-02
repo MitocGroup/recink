@@ -12,9 +12,6 @@ const Spinner = require('./helper/spinner');
 const urlExists = require('url-exists');
 const pify = require('pify');
 
-// Register nighmare browser provider
-testCafeBrowserProviderPool.addProvider('nightmare:', new NighmareBrowserProvider());
-
 /**
  * End2End component
  */
@@ -75,6 +72,10 @@ class E2EComponent extends DependantConfigBasedComponent {
             browsers, 
             reporter
           ).then(() => {
+            
+            // Register nighmare browser provider
+            testCafeBrowserProviderPool.addProvider('nightmare:', new NighmareBrowserProvider());
+
             return runner
               .src(this._testAssets)
               .browsers(browsers)
