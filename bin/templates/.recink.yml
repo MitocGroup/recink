@@ -18,7 +18,7 @@ $:
 #       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
 #       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
   npm:
-    scripts: []                                                             # Scripts to run after installing dependencies
+    scripts: ~                                                              # Scripts to run after installing dependencies
 #     - 'compile-travis'
     dependencies:                                                           # Dependencies to add/overwrite
       chai: 'latest'
@@ -70,6 +70,7 @@ $:
 #           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 main:                                                                       # Main module definition
   root: '.'                                                                 # Root package directory (containing package.json and tests)
+  scripts: ~                                                                # Scripts to run after installing dependencies (over $.npm.scripts config)
   dependencies: ~                                                           # Dependencies to add/overwrite (over $.npm.dependencies config)
 
 ### Add other modules here...

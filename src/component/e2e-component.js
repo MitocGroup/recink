@@ -3,6 +3,7 @@
 const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./e2e/events');
+const NighmareBrowserProvider = require('./e2e/testcafe/nighmare-browser-provider');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const createTestCafe = require('testcafe');
@@ -70,6 +71,8 @@ class E2EComponent extends DependantConfigBasedComponent {
             browsers, 
             reporter
           ).then(() => {
+            NighmareBrowserProvider.register();
+            
             return runner
               .src(this._testAssets)
               .browsers(browsers)
@@ -293,7 +296,7 @@ class E2EComponent extends DependantConfigBasedComponent {
   static get RUN_OPTIONS() {
     return {
       skipJsErrors: true,
-      assertionTimeout: 20000,
+      assertionTimeout: 60000,
       quarantineMode: true,
     };
   }
