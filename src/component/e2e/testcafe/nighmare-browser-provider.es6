@@ -20,7 +20,7 @@ module.exports = {
    * @type {boolean}
    */
   isMultiBrowser: false,
-  
+
   /**
    * Reference to Nightmare instance
    * 
@@ -44,9 +44,6 @@ module.exports = {
     gotoTimeout: 60000,
     loadTimeout: 60000,
     executionTimeout: 60000,
-    webPreferences: {
-      partition: `partition-${ Date.now() }`,
-    },
     switches: {
       'ignore-certificate-errors': true,
     },
