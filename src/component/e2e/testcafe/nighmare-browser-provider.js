@@ -4,29 +4,72 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const Nightmare = require('nightmare');
 const debug = require('debug');
+const pify = require('pify');
 
+/**
+ * Nighmare browser provider
+ */
 module.exports = {
-  // reference to Nightmare instance
-  nightmare: null,
-
-  // map with open page references
+  /**
+   * Map with open page references
+   * 
+   * @type {*}
+   */
   openedPages: {},
 
-  // multiple browsers support
+  /**
+   * Multiple browsers support
+   * 
+   * @type {boolean}
+   */
   isMultiBrowser: false,
 
-  // open new page in browser
+  /**
+   * Nightmare initialization options
+   * 
+   * @type {*}
+   * 
+   * @private
+   */
+  _nightmareOptions: {
+    show: debug.enabled(),
+    openDevTools: debug.enabled(),
+    waitTimeout: 60000,
+    gotoTimeout: 60000,
+    loadTimeout: 60000,
+    executionTimeout: 60000,
+    switches: {
+      'ignore-certificate-errors': true
+    }
+  },
+
+  /**
+   * Open new page in browser
+   * 
+   * @param {string} id 
+   * @param {string} pageUrl 
+   * 
+   * @returns {Promise}
+   */
   openBrowser(id, pageUrl) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const page = yield _this.nightmare.goto(pageUrl);
+      const nightmare = Nightmare(_this._nightmareOptions).goto(pageUrl);
 
-      _this.openedPages[id] = page;
+      yield pify(nightmare.run.bind(nightmare))();
+
+      _this.openedPages[id] = nightmare;
     })();
   },
 
-  // close given page in browser
+  /**
+   * Close given page in browser
+   * 
+   * @param {string} id
+   * 
+   * @returns {Promise}
+   */
   closeBrowser(id) {
     var _this2 = this;
 
@@ -38,44 +81,58 @@ module.exports = {
     })();
   },
 
-  // init browser
+  /**
+   * Init browser
+   * 
+   * @returns {Promise}
+   */
   init() {
-    var _this3 = this;
-
     return _asyncToGenerator(function* () {
-      const conf = {
-        show: debug.enabled(),
-        openDevTools: debug.enabled(),
-        webPreferences: {
-          partition: `partition-${Date.now()}`
-        }
-      };
-
-      _this3.nightmare = Nightmare(conf);
+      return;
     })();
   },
 
+  /**
+   * Dispose browser
+   * 
+   * @returns {Promise}
+   */
   dispose() {
     return _asyncToGenerator(function* () {
       return;
     })();
   },
 
-  // resize browser window to given size
+  /**
+   * resize browser window to given size
+   * 
+   * @param {string} id 
+   * @param {number} width 
+   * @param {number} height 
+   * 
+   * @returns {Promise}
+   */
   resizeWindow(id, width, height) {
-    var _this4 = this;
+    var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this4.nightmare.viewport(width, height);
+      yield _this3._nightmare.viewport(width, height);
     })();
   },
 
-  // take screenshot of given page in browser
+  /**
+   * take screenshot of given page in browser
+   * 
+   * @param {string} id 
+   * @param {string} screenshotPath 
+   * 
+   * @returns {Promise}
+   */
   takeScreenshot(id, screenshotPath) {
-    var _this5 = this;
+    var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this5.nightmare.screenshot(screenshotPath);
+      yield _this4._nightmare.screenshot(screenshotPath);
     })();
   }
 };

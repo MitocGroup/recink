@@ -2,6 +2,7 @@
 
 const Nightmare = require('nightmare');
 const debug = require('debug');
+const pify = require('pify');
 
 /**
  * Nighmare browser provider
@@ -20,15 +21,6 @@ module.exports = {
    * @type {boolean}
    */
   isMultiBrowser: false,
-
-  /**
-   * Reference to Nightmare instance
-   * 
-   * @type {Nightmare}
-   * 
-   * @private
-   */
-  _nightmare: null,
 
   /**
    * Nightmare initialization options
@@ -58,9 +50,11 @@ module.exports = {
    * @returns {Promise}
    */
   async openBrowser(id, pageUrl) {
-    const page = await this._nightmare.goto(pageUrl);
+    const nightmare = Nightmare(this._nightmareOptions).goto(pageUrl);
 
-    this.openedPages[id] = page;
+    await pify(nightmare.run.bind(nightmare))();
+
+    this.openedPages[id] = nightmare;
   },
 
   /**
@@ -83,7 +77,7 @@ module.exports = {
    * @returns {Promise}
    */
   async init() {
-    this._nightmare = Nightmare(this._nightmareOptions);
+    return;
   },
 
   /**
