@@ -20,7 +20,7 @@ jobs:
       script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
-    - stage: 'Run E2E Tests :iphone:'
+    - stage: '[HEALTHCHECK] Run E2E Tests :iphone:'
       node_js: 8
       script: './bin/cli.js run e2e'
       addons:
@@ -30,12 +30,12 @@ jobs:
       install:
         - 'export DISPLAY='':99.0'''
         - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
-    - stage: 'Run Snyk.io :fire:'
+    - stage: '[HEALTHCHECK] Run Snyk.io :fire:'
       node_js: 8
       script: './bin/cli.js run ./components/snyk'
       install:
         - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"' 
-    - stage: 'Run PageSpeed :chart_with_upwards_trend:'
+    - stage: '[HEALTHCHECK] Run PageSpeed :chart_with_upwards_trend:'
       node_js: 8
       script: './bin/cli.js run ./components/pagespeed'
       install:
