@@ -22,7 +22,7 @@ jobs:
     #     - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - stage: 'Run E2E Tests :iphone:'
       node_js: 8
-      script: 'DEBUG=* ./bin/cli.js run e2e'
+      script: './bin/cli.js run e2e'
       addons:
         apt:
           packages:
