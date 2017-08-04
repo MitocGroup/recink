@@ -40,7 +40,9 @@
     "docs": "npm run docs:diagram && npm run docs:api",
     "docs:diagram": "node node_modules/.bin/dependo -f cjs src/ > docs/module-diagram.html",
     "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc",
-    "postinstall": "node node-bin/ensure-peer-dependencies.js"
+    "postinstall": "node node-bin/ensure-peer-dependencies.js",
+    "prepublish": "npm run transpile",
+    "transpile": "node `npm bin`/babel ./src -d ./src"
   },
   "dependencies": {
     "aws-sdk": "^2.49.0",
@@ -80,6 +82,8 @@
     "parse-github-repo-url": "^1.4.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "dependo": "^0.1.6",
     "esdoc": "^0.5.2",
     "esdoc-node": "^1.0.2"

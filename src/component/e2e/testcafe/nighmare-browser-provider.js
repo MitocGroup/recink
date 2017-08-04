@@ -1,107 +1,81 @@
 'use strict';
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 const Nightmare = require('nightmare');
 const debug = require('debug');
 
-class NighmareBrowserProvider {
-  constructor() {
-    this._nightmare = null;
-    this._openedPages = {};
-  }
+module.exports = {
+  // reference to Nightmare instance
+  nightmare: null,
 
-  /**
-   * @return {Nightmare}
-   */
-  get nightmare() {
-    return this._nightmare;
-  }
+  // map with open page references
+  openedPages: {},
 
-  /**
-   * @returns {*}
-   */
-  get openedPages() {
-    return this._openedPages;
-  }
+  // multiple browsers support
+  isMultiBrowser: false,
 
-  /**
-   * @returns {boolean}
-   */
-  get isMultiBrowser() {
-    return false;
-  }
-
-  /**
-   * @param {string} id 
-   * @param {string} pageUrl 
-   * 
-   * @returns {Promise}
-   */
+  // open new page in browser
   openBrowser(id, pageUrl) {
-    return this.nightmare.goto(pageUrl)
-      .then(page => {
-        this.openedPages[id] = page;
+    var _this = this;
 
-        return Promise.resolve();
-      });
-  }
+    return _asyncToGenerator(function* () {
+      const page = yield _this.nightmare.goto(pageUrl);
 
-  /**
-   * @param {string} id 
-   * 
-   * @returns {Promise}
-   */
+      _this.openedPages[id] = page;
+    })();
+  },
+
+  // close given page in browser
   closeBrowser(id) {
-    const page = this.openedPages[id];
+    var _this2 = this;
 
-    delete this.openedPages[id];
+    return _asyncToGenerator(function* () {
+      const page = _this2.openedPages[id];
 
-    return page.end();
-  }
+      delete _this2.openedPages[id];
+      yield page.end();
+    })();
+  },
 
-  /**
-   * @returns {Promise}
-   */
+  // init browser
   init() {
-    const config = {
-      show: debug.enabled(),
-      openDevTools: debug.enabled(),
-      webPreferences: {
-        partition: `partition-${ Date.now() }`,
-      },
-    };
+    var _this3 = this;
 
-    this._nightmare = Nightmare(config);
+    return _asyncToGenerator(function* () {
+      const conf = {
+        show: debug.enabled(),
+        openDevTools: debug.enabled(),
+        webPreferences: {
+          partition: `partition-${Date.now()}`
+        }
+      };
 
-    return Promise.resolve();
-  }
+      _this3.nightmare = Nightmare(conf);
+    })();
+  },
 
-  /**
-   * @returns {Promise}
-   */
   dispose() {
-    return Promise.resolve();
-  }
+    return _asyncToGenerator(function* () {
+      return;
+    })();
+  },
 
-  /**
-   * @param {string} id 
-   * @param {number} width 
-   * @param {number} height 
-   * 
-   * @returns {Promise}
-   */
+  // resize browser window to given size
   resizeWindow(id, width, height) {
-    return this.nightmare.viewport(width, height);
-  }
+    var _this4 = this;
 
-  /**
-   * @param {string} id 
-   * @param {string} screenshotPath 
-   * 
-   * @returns {Promise}
-   */
+    return _asyncToGenerator(function* () {
+      yield _this4.nightmare.viewport(width, height);
+    })();
+  },
+
+  // take screenshot of given page in browser
   takeScreenshot(id, screenshotPath) {
-    return this.nightmare.screenshot(screenshotPath);
-  }
-}
+    var _this5 = this;
 
-module.exports = NighmareBrowserProvider;
+    return _asyncToGenerator(function* () {
+      yield _this5.nightmare.screenshot(screenshotPath);
+    })();
+  }
+};
