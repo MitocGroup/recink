@@ -21,8 +21,7 @@ $:
   e2e:
     pattern:                                                  # Files to include
       - /.+\.e2e\.js$/i
-    ignore:
-      - assert-challenges-page.e2e.js                                                 # Files to exclude
+    ignore: ~                                                 # Files to exclude
     reporter: ~                                               # TestCafe framework reporter
     wait:
      interval: 200                                            # Interval of running uri checks

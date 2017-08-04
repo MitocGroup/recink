@@ -3,24 +3,76 @@
 const Nightmare = require('nightmare');
 const debug = require('debug');
 
+/**
+ * Nighmare browser provider
+ */
 module.exports = {
-  // reference to Nightmare instance
-  nightmare: null,
-
-  // map with open page references
+  /**
+   * Map with open page references
+   * 
+   * @type {*}
+   */
   openedPages: {},
 
-  // multiple browsers support
+  /**
+   * Multiple browsers support
+   * 
+   * @type {boolean}
+   */
   isMultiBrowser: false,
+  
+  /**
+   * Reference to Nightmare instance
+   * 
+   * @type {Nightmare}
+   * 
+   * @private
+   */
+  _nightmare: null,
 
-  // open new page in browser
+  /**
+   * Nightmare initialization options
+   * 
+   * @type {*}
+   * 
+   * @private
+   */
+  _nightmareOptions: {
+    show: debug.enabled(),
+    openDevTools: debug.enabled(),
+    waitTimeout: 60000,
+    gotoTimeout: 60000,
+    loadTimeout: 60000,
+    executionTimeout: 60000,
+    webPreferences: {
+      partition: `partition-${ Date.now() }`,
+    },
+    switches: {
+      'ignore-certificate-errors': true,
+    },
+  },
+
+  /**
+   * Open new page in browser
+   * 
+   * @param {string} id 
+   * @param {string} pageUrl 
+   * 
+   * @returns {Promise}
+   */
   async openBrowser(id, pageUrl) {
-    const page = await this.nightmare.goto(pageUrl);
+    const page = await this._nightmare.goto(pageUrl);
 
     this.openedPages[id] = page;
   },
 
-  // close given page in browser
+  /**
+   * Close given page in browser
+   * 
+   * @param {string} id
+   * 
+   * @returns {Promise}
+   */
   async closeBrowser(id) {
     const page = this.openedPages[id];
 
@@ -28,30 +80,46 @@ module.exports = {
     await page.end();
   },
 
-  // init browser
+  /**
+   * Init browser
+   * 
+   * @returns {Promise}
+   */
   async init() {
-    const conf = {
-      show: debug.enabled(),
-      openDevTools: debug.enabled(),
-      webPreferences: {
-        partition: `partition-${ Date.now() }`,
-      },
-    };
-
-    this.nightmare = Nightmare(conf);
+    this._nightmare = Nightmare(this._nightmareOptions);
   },
 
+  /**
+   * Dispose browser
+   * 
+   * @returns {Promise}
+   */
   async dispose() {
     return;
   },
 
-  // resize browser window to given size
+  /**
+   * resize browser window to given size
+   * 
+   * @param {string} id 
+   * @param {number} width 
+   * @param {number} height 
+   * 
+   * @returns {Promise}
+   */
   async resizeWindow(id, width, height) {
-    await this.nightmare.viewport(width, height);
+    await this._nightmare.viewport(width, height);
   },
 
-  // take screenshot of given page in browser
+  /**
+   * take screenshot of given page in browser
+   * 
+   * @param {string} id 
+   * @param {string} screenshotPath 
+   * 
+   * @returns {Promise}
+   */
   async takeScreenshot(id, screenshotPath) {
-    await this.nightmare.screenshot(screenshotPath);
+    await this._nightmare.screenshot(screenshotPath);
   },
 };
