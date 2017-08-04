@@ -61,6 +61,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
@@ -90,6 +91,7 @@
 const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
 const emitEvents = require(&apos;./emit/events&apos;);
 const events = require(&apos;./e2e/events&apos;);
+const registerNightmareBrowserProvider = require(&apos;./e2e/testcafe/nightmare-browser-provider-registrar&apos;);
 const print = require(&apos;print&apos;);
 const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
 const createTestCafe = require(&apos;testcafe&apos;);
@@ -146,6 +148,8 @@ class E2EComponent extends DependantConfigBasedComponent {
           E2EComponent.DEFAULT_SERVER_HOSTNAME, 
           ...E2EComponent.DEFAULT_SERVER_PORTS
         ).then(testcafe =&gt; {
+          registerNightmareBrowserProvider();
+
           const runner = testcafe.createRunner();
           const reporter = this.container.get(&apos;reporter&apos;, E2EComponent.DEFAULT_REPORTER);
           const browsers = this.container.get(&apos;browsers&apos;, E2EComponent.DEFAULT_BROWSERS);
@@ -380,7 +384,7 @@ class E2EComponent extends DependantConfigBasedComponent {
   static get RUN_OPTIONS() {
     return {
       skipJsErrors: true,
-      assertionTimeout: 20000,
+      assertionTimeout: 60000,
       quarantineMode: true,
     };
   }

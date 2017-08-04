@@ -288,6 +288,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "recink/src/component/e2e/testcafe/nightmare-browser-provider-registrar.js~register",
+    "function/index.html#static-function-register",
+    "<span>register</span> <span class=\"search-result-import-path\">recink/src/component/e2e/testcafe/nightmare-browser-provider-registrar.js</span>",
+    "function"
+  ],
+  [
     "builtinexternal/ecmascriptexternal.js~array",
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     "BuiltinExternal/ECMAScriptExternal.js~Array",
@@ -1215,6 +1221,12 @@ window.esdocSearchIndex = [
     "src/component/e2e/events.js",
     "file/src/component/e2e/events.js.html",
     "src/component/e2e/events.js",
+    "file"
+  ],
+  [
+    "src/component/e2e/testcafe/nightmare-browser-provider-registrar.js",
+    "file/src/component/e2e/testcafe/nightmare-browser-provider-registrar.js.html",
+    "src/component/e2e/testcafe/nightmare-browser-provider-registrar.js",
     "file"
   ],
   [
