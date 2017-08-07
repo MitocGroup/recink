@@ -158,16 +158,25 @@ class SnykComponent extends DependantConfigBasedComponent {
    */
   _createReport(npmModule, emitModule, result, options) {
     if (result && typeof result === 'object' && result instanceof Error) {
+      if (/package\.json\sis\snot\sa\snode\sproject/i.test(result.message)) {
+        this.logger.info(
+          this.logger.emoji.cross,
+          `Skipping Snyk.io analyze ${ npmModule.rootDir }. Not a node project.`
+        );
+
+        return Promise.resolve();
+      }
+
       try {
         result = JSON.parse(result.message);
       } catch (error) {
         if (result.code === 'NO_API_TOKEN') {
-          throw new Error('Missing Snyk.io API token.');
+          return Promise.reject(new Error('Missing Snyk.io API token.'));
         } else if (result.code === 401) {
-          throw new Error('Snyk.io API token is invalid.');
+          return Promise.reject(new Error('Snyk.io API token is invalid.'));
         }
         
-        throw result;
+        return Promise.reject(result);
       }
     } else {
       result = JSON.parse(result);
