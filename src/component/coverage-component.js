@@ -269,25 +269,22 @@ class CoverageComponent extends DependantConfigBasedComponent {
               const moduleRoot = module.container.get('root');
               const coverableAssets = assetsToInstrument[module.name] || [];
 
-              const sourceTransformers = {
-                istanbul (source) {
-                  const { filename } = this;
-                  
-                  if (coverableAssets.indexOf(filename) !== -1
-                    && self._match(path.relative(moduleRoot, filename))) {
-                    if (instrumenterCache.hasOwnProperty(filename)) {
-                      return instrumenterCache[filename];
-                    }
-                    
-                    instrumenterCache[filename] = instrumenter.instrumentSync(source, filename);;
-                    dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
-                    dispatchedAssets[module.name].push(filename);
-                    
+              const preprocessor = (source, filename) => {
+                if (coverableAssets.indexOf(filename) !== -1
+                  && self._match(path.relative(moduleRoot, filename))) {
+
+                  if (instrumenterCache.hasOwnProperty(filename)) {
                     return instrumenterCache[filename];
                   }
                   
-                  return source;
-                },
+                  instrumenterCache[filename] = instrumenter.instrumentSync.call(instrumenter, source, filename);
+                  dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];
+                  dispatchedAssets[module.name].push(filename);
+                  
+                  return instrumenterCache[filename];
+                }
+                
+                return source;
               };
               
               mocha.files.map(file => {
@@ -296,10 +293,10 @@ class CoverageComponent extends DependantConfigBasedComponent {
                 mocha.suite.emit('pre-require', global, file, mocha);
                 mocha.suite.emit(
                   'require',
-                  ModuleCompile.require(file, { sourceTransformers }),
+                  ModuleCompile.require(file, {}, preprocessor),
                   file,
                   mocha
-                ); 
+                );
                 mocha.suite.emit('post-require', global, file, mocha);
               });
               
