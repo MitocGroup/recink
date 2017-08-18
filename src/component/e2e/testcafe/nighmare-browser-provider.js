@@ -13,21 +13,21 @@ module.exports = {
   /**
    * Map with open page references
    * 
-   * @type {*}
+   * @var {*}
    */
   openedPages: {},
 
   /**
    * Multiple browsers support
    * 
-   * @type {boolean}
+   * @var {boolean}
    */
   isMultiBrowser: false,
 
   /**
    * Nightmare initialization options
    * 
-   * @type {*}
+   * @var {*}
    * 
    * @private
    */
