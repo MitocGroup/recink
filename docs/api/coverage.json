@@ -1,7 +1,7 @@
 {
-  "coverage": "98.27%",
-  "expectCount": 290,
-  "actualCount": 285,
+  "coverage": "98.22%",
+  "expectCount": 282,
+  "actualCount": 277,
   "files": {
     "src/logger.js": {
       "expectCount": 17,
@@ -91,14 +91,14 @@
       "actualCount": 6,
       "undocumentLines": []
     },
-    "src/component/test-component.js": {
-      "expectCount": 9,
-      "actualCount": 9,
-      "undocumentLines": []
-    },
     "src/emitter.js": {
       "expectCount": 7,
       "actualCount": 7,
+      "undocumentLines": []
+    },
+    "src/component/test-component.js": {
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     },
     "src/component/dependant-config-based-component.js": {
@@ -126,6 +126,21 @@
       "actualCount": 2,
       "undocumentLines": []
     },
+    "src/config/factory.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/component/factory.js": {
+      "expectCount": 9,
+      "actualCount": 9,
+      "undocumentLines": []
+    },
+    "src/component/cache/factory.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
     "src/component/coverage/factory.js": {
       "expectCount": 4,
       "actualCount": 4,
@@ -136,29 +151,14 @@
       "actualCount": 3,
       "undocumentLines": []
     },
-    "src/component/factory.js": {
-      "expectCount": 9,
-      "actualCount": 9,
-      "undocumentLines": []
-    },
-    "src/config/factory.js": {
-      "expectCount": 4,
-      "actualCount": 4,
-      "undocumentLines": []
-    },
-    "src/component/cache/factory.js": {
-      "expectCount": 4,
-      "actualCount": 4,
-      "undocumentLines": []
-    },
     "src/config/yaml-config.js": {
       "expectCount": 5,
       "actualCount": 5,
       "undocumentLines": []
     },
     "src/component/helper/module-compile.js": {
-      "expectCount": 10,
-      "actualCount": 10,
+      "expectCount": 2,
+      "actualCount": 2,
       "undocumentLines": []
     },
     "src/component/npm-component.js": {
@@ -201,17 +201,12 @@
       "actualCount": 1,
       "undocumentLines": []
     },
-    "src/component/e2e/events.js": {
+    "src/component/emit/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
     },
-    "src/component/coverage/events.js": {
-      "expectCount": 1,
-      "actualCount": 1,
-      "undocumentLines": []
-    },
-    "src/component/npm/events.js": {
+    "src/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
@@ -221,17 +216,22 @@
       "actualCount": 1,
       "undocumentLines": []
     },
+    "src/component/npm/events.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
     "src/component/cache/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
     },
-    "src/component/emit/events.js": {
+    "src/component/coverage/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
     },
-    "src/events.js": {
+    "src/component/e2e/events.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
