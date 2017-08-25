@@ -1,4 +1,5 @@
 dist: trusty
+node_js: 8
 language: node_js
 git:
   depth: 1
@@ -14,15 +15,13 @@ branches:
     - stage
     - test
     - dev
-jobs:
+matrix:
   include:
     - stage: 'Run Unit Tests :computer:'
-      node_js: 8
       script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - stage: '[HEALTHCHECK] Run E2E Tests :iphone:'
-      node_js: 8
       script: './bin/cli.js run e2e'
 env:
   global:
