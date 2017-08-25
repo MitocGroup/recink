@@ -101,12 +101,12 @@ recink component list                  # List REciNK components from the registr
 recink help &lt;command&gt;                  # Display help for a specific command</code>
 </code></pre>
 <h1 id="debugging">Debugging</h1>
-<p>To enable debug mode for <a href="http://mochajs.org">Mocha</a> use <code>DEBUG=* recink run unit</code>.</p>
+<p>To enable debug mode for both <code>unit</code> and <code>e2e</code> runtimes use <code>DEBUG=* recink run unit|e2e</code>.</p>
 <p><a href="https://devexpress.github.io/testcafe">TestCafe</a> offers amazing debugging capabilities
 <a href="http://devexpress.github.io/testcafe/documentation/test-api/debugging.html">documented here</a>.</p>
-<p>We use <a href="https://github.com/ryx/testcafe-browser-provider-nightmare">Nighmare</a>
+<p>We are using <a href="https://github.com/GoogleChrome/puppeteer">Puppeteer</a>
 as default browser, which provides native debugging capabilities
-<a href="https://github.com/ryx/testcafe-browser-provider-nightmare#debugging">documented here</a>.</p>
+<a href="https://github.com/GoogleChrome/puppeteer#debugging-tips">documented here</a>.</p>
 <blockquote>
 <p>Use <code>-v</code> flag to enable verbose mode on any <code>recink</code> command.</p>
 </blockquote>

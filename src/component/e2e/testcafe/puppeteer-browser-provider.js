@@ -4,6 +4,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const puppeteer = require('puppeteer');
 const debug = require('debug');
+const Env = require('../../../helper/env');
 
 // Register Object.entries shim
 require('object.entries').shim();
@@ -38,7 +39,10 @@ module.exports = {
     headless: !debug.enabled(),
     slowMo: debug.enabled() ? 250 : 0,
     timeout: 60000,
-    dumpio: debug.enabled()
+    dumpio: debug.enabled(),
+
+    // avoid issues in Travis
+    args: Env.isCI ? ['--no-sandbox', '--disable-setuid-sandbox'] : []
   },
 
   /**

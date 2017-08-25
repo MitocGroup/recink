@@ -8,6 +8,8 @@ const pify = require('pify');
 
 /**
  * Nighmare browser provider
+ * 
+ * @deprecated
  */
 module.exports = {
   /**
