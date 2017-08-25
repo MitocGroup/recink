@@ -41,9 +41,11 @@ $:
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
     browsers: ~                                                             # Browsers to run the tests against
+#     - puppeteer                                                           # The default one...
 #     - nightmare
 #     - safari
-#     - chrome:headless
+#     - chrome
+#     - firefox
 #   wait:
 #     interval: 200                                                         # Interval of running uri checks
 #     timeout: 15000                                                        # Timeout to wait for uri's available

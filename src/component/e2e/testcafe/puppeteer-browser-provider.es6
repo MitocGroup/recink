@@ -1,13 +1,13 @@
 'use strict';
 
-const Nightmare = require('nightmare');
+const puppeteer = require('puppeteer');
 const debug = require('debug');
-const pify = require('pify');
+
+// Register Object.entries shim
+require('object.entries').shim();
 
 /**
  * Nighmare browser provider
- * 
- * @deprecated
  */
 module.exports = {
   /**
@@ -25,22 +25,18 @@ module.exports = {
   isMultiBrowser: false,
 
   /**
-   * Nightmare initialization options
+   * Puppeteer initialization options
    * 
    * @type {*}
    * 
    * @private
    */
   _options: {
-    show: debug.enabled(),
-    openDevTools: debug.enabled(),
-    waitTimeout: 60000,
-    gotoTimeout: 60000,
-    loadTimeout: 60000,
-    executionTimeout: 60000,
-    switches: {
-      'ignore-certificate-errors': true,
-    },
+    ignoreHTTPSErrors: true,
+    headless: !debug.enabled(),
+    slowMo: debug.enabled() ? 250 : 0,
+    timeout: 60000,
+    dumpio: debug.enabled(),
   },
 
   /**
@@ -52,11 +48,12 @@ module.exports = {
    * @returns {Promise}
    */
   async openBrowser(id, pageUrl) {
-    const nightmare = Nightmare(this._options).goto(pageUrl);
+    const browser = await puppeteer.launch(this._options);
+    const page = await browser.newPage();
 
-    await pify(nightmare.run.bind(nightmare))();
+    this.openedPages[id] = { browser, page };
 
-    this.openedPages[id] = nightmare;
+    await page.goto(pageUrl);
   },
 
   /**
@@ -67,11 +64,11 @@ module.exports = {
    * @returns {Promise}
    */
   async closeBrowser(id) {
-    const page = this.openedPages[id];
+    const { browser } = this.openedPages[id];
 
     delete this.openedPages[id];
-    
-    await page.end();
+
+    await browser.close();
   },
 
   /**
@@ -102,7 +99,9 @@ module.exports = {
    * @returns {Promise}
    */
   async resizeWindow(id, width, height) {
-    await this._nightmare.viewport(width, height);
+    const { page } = this.openedPages[id];
+
+    await page.setViewport({ width, height });
   },
 
   /**
@@ -114,6 +113,8 @@ module.exports = {
    * @returns {Promise}
    */
   async takeScreenshot(id, screenshotPath) {
-    await this._nightmare.screenshot(screenshotPath);
+    const { page } = this.openedPages[id];
+
+    await page.screenshot({ path: screenshotPath });
   },
 };

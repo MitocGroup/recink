@@ -2,9 +2,11 @@
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const Nightmare = require('nightmare');
+const puppeteer = require('puppeteer');
 const debug = require('debug');
-const pify = require('pify');
+
+// Register Object.entries shim
+require('object.entries').shim();
 
 /**
  * Nighmare browser provider
@@ -25,22 +27,18 @@ module.exports = {
   isMultiBrowser: false,
 
   /**
-   * Nightmare initialization options
+   * Puppeteer initialization options
    * 
    * @type {*}
    * 
    * @private
    */
   _options: {
-    show: debug.enabled(),
-    openDevTools: debug.enabled(),
-    waitTimeout: 60000,
-    gotoTimeout: 60000,
-    loadTimeout: 60000,
-    executionTimeout: 60000,
-    switches: {
-      'ignore-certificate-errors': true
-    }
+    ignoreHTTPSErrors: true,
+    headless: !debug.enabled(),
+    slowMo: debug.enabled() ? 250 : 0,
+    timeout: 60000,
+    dumpio: debug.enabled()
   },
 
   /**
@@ -55,11 +53,12 @@ module.exports = {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const nightmare = Nightmare(_this._options).goto(pageUrl);
+      const browser = yield puppeteer.launch(_this._options);
+      const page = yield browser.newPage();
 
-      yield pify(nightmare.run.bind(nightmare))();
+      _this.openedPages[id] = { browser, page };
 
-      _this.openedPages[id] = nightmare;
+      yield page.goto(pageUrl);
     })();
   },
 
@@ -74,11 +73,11 @@ module.exports = {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      const page = _this2.openedPages[id];
+      const { browser } = _this2.openedPages[id];
 
       delete _this2.openedPages[id];
 
-      yield page.end();
+      yield browser.close();
     })();
   },
 
@@ -117,7 +116,9 @@ module.exports = {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this3._nightmare.viewport(width, height);
+      const { page } = _this3.openedPages[id];
+
+      yield page.setViewport({ width, height });
     })();
   },
 
@@ -133,7 +134,9 @@ module.exports = {
     var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this4._nightmare.screenshot(screenshotPath);
+      const { page } = _this4.openedPages[id];
+
+      yield page.screenshot({ path: screenshotPath });
     })();
   }
 };
