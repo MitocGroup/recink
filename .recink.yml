@@ -2,8 +2,6 @@
 $:
   preprocess:
     '$.codeclimate.token': 'eval'
-    '$.snyk.token': 'eval'
-    '$.snyk.reporters.github.0.token': 'eval'
   emit:
     pattern:                                                  # Files to include
       - /.+\.js$/i
@@ -48,22 +46,6 @@ $:
   codeclimate:
     token: 'process.env.CODECLIMATE_REPO_TOKEN'               # CodeClimate Repo token
     # skip-certificate: true                                  # Skip validating server SSL certificate
-  pagespeed:
-    uri:                                                      # URIs to analyze
-      - https://mitocgroup.github.io/recink/api/
-      - https://mitocgroup.github.io/recink/module-diagram.html
-  snyk:
-    token: 'process.env.SNYK_API_TOKEN'                       # Snyk.io API token
-    actionable: true                                          # Show actionable items
-    dev: false                                                # Analyze 'devDependencies'
-    reporters:                                                # Customize Reporters (available: text, github)
-      text: ~
-      github:
-        - silent-fail: true
-        - token: 'process.env.GITHUB_ACCESS_TOKEN'
-    # fail:
-    #   enabled: false                                        # Fail on issues found
-    #   severity: 'medium'                                    # Minimal severity to handle (available: low, medium, high)
 
 ### Add other modules here...
 main:                                                         # Main module definition
