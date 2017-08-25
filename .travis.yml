@@ -17,12 +17,10 @@ branches:
     - dev
 matrix:
   include:
-    - stage: 'Run Unit Tests :computer:'
-      script: './bin/cli.js run unit -c ./components/codeclimate'
+    - script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
-    - stage: '[HEALTHCHECK] Run E2E Tests :iphone:'
-      script: './bin/cli.js run e2e'
+    - script: './bin/cli.js run e2e'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
