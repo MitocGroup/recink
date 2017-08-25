@@ -22,8 +22,6 @@ $:
       - /.+\.e2e\.js$/i
     ignore: ~                                                 # Files to exclude
     reporter: ~                                               # TestCafe framework reporter
-    browsers:
-      - puppeteer
     wait:
      interval: 200                                            # Interval of running uri checks
      timeout: 15000                                           # Timeout to wait for uri's available
