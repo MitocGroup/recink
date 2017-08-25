@@ -73,14 +73,14 @@ recink help <command>                  # Display help for a specific command
 
 # Debugging
 
-To enable debug mode for [Mocha](http://mochajs.org) use `DEBUG=* recink run unit`.
+To enable debug mode for both `unit` and `e2e` runtimes use `DEBUG=* recink run unit|e2e`.
 
 [TestCafe](https://devexpress.github.io/testcafe) offers amazing debugging capabilities
 [documented here](http://devexpress.github.io/testcafe/documentation/test-api/debugging.html).
 
-We use [Nighmare](https://github.com/ryx/testcafe-browser-provider-nightmare)
+We are using [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 as default browser, which provides native debugging capabilities
-[documented here](https://github.com/ryx/testcafe-browser-provider-nightmare#debugging).
+[documented here](https://github.com/GoogleChrome/puppeteer#debugging-tips).
 
 > Use `-v` flag to enable verbose mode on any `recink` command.
 

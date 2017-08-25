@@ -1,4 +1,5 @@
 language: node_js
+dist: trusty
 git:
   depth: 1
 cache:
@@ -24,10 +25,12 @@ matrix:
       env: SCRIPT="recink run unit"
     - node_js: 8
       env: SCRIPT="recink run e2e"
-      addons:
-        apt:
-          packages:
-            - xvfb
-      install:
-        - "export DISPLAY=':99.0'"
-        - "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
+# Uncomment this to virtualize the X instance for non headless browsers
+# E.g. Electron based (Nightmare etc.)
+#     addons:
+#       apt:
+#         packages:
+#           - xvfb
+#     install:
+#       - "export DISPLAY=':99.0'"
+#       - "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"

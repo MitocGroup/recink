@@ -1,3 +1,5 @@
+dist: trusty
+node_js: 8
 language: node_js
 git:
   depth: 1
@@ -13,38 +15,13 @@ branches:
     - stage
     - test
     - dev
-jobs:
+matrix:
   include:
-    - stage: 'Run Unit Tests :computer:'
-      node_js: 8
-      script: './bin/cli.js run unit -c ./components/codeclimate'
+    - script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
-    - stage: '[HEALTHCHECK] Run E2E Tests :iphone:'
-      node_js: 8
-      script: './bin/cli.js run e2e'
-      addons:
-        apt:
-          packages:
-            - xvfb
-      install:
-        - 'export DISPLAY='':99.0'''
-        - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
-    - stage: '[HEALTHCHECK] Run Snyk.io :fire:'
-      node_js: 8
-      script: './bin/cli.js run ./components/snyk'
-      install:
-        - 'cd ./components/snyk && npm install && cd "$TRAVIS_BUILD_DIR"' 
-    - stage: '[HEALTHCHECK] Run PageSpeed :chart_with_upwards_trend:'
-      node_js: 8
-      script: './bin/cli.js run ./components/pagespeed'
-      install:
-        - 'cd ./components/pagespeed && npm install && cd "$TRAVIS_BUILD_DIR"'  
+    - script: './bin/cli.js run e2e'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
     - secure: "F31/r5leUz7LkkGV/jYOcAn7PUZYWA1Ry9l7krIjgsqjuBL4YUwXHkn7lebrYcYOJOoYGj+KKwJ9SJjtsefBBm91Ma16tbH2geq3Uh5GEzfDrU/NbfQT9gUOFb9xn4mejo0YgxPS56BtDsXi+N7EtfT78cGbItfIMa9ouKyAHpPAxKTRnk92pN24fU6VVFMxh4hOR05PHdVCWDzUzeILlNWDq9CKfLak0EK/hTQOIqwUO1+/knNdIVIapJBi7QDEkSjtcLFy1cpfPaiXwM6Nb2PTSyhJ+SB3uUD4hMIhXWmfwea1gBO9X4GKzixbypylbEY1wJnH09oVcPihvQME6j+U2D8P+TtOD0ppNcXeES4QdkJ4e4E+A0LHY1qXqIFFjbDh07/JKL7DisIG1lEJ6Vd2MfKHWiNPhkDcNQSaOepMKE0ZtBpAvwL6E09Izc8r6wgLGGkLfDrTYHm3RsK8IIMe5gBpMHBrP80YLfFT1uakD0JrIN4R1ZvlOmEoMIxhqX2rh/6s+SzoEV4g2gRMgJYgAhaPqnjRboKDHb/K6hfOZM3+sHHEUCDBYNRvQEaQyTprGTY05biGgTy0ma3ICWQ73Iu1ih1P7eBA2ef9xGUer7Yb9WYxL3hgOZemWTc2ZpsfTYqB+h2RqeUo+rlCmfuQWGoWBqoFWOWyiDD1kGM="
-    # GITHUB_ACCESS_TOKEN=[secure]
-    - secure: "QUCcyvT+HxYi7onRbnTDQLvJwAQ292a1V7/ShGxPY2bQlqp+o6k85FOb8NnG5AZBVga9jU5/Y832W7O2mLNlvhXPeo+yAyNz1+I5zWPj2UQsuP8qzhxmdukMtBs9eEzyvHqJ8dEopGf6HDYGdPQgihAQ8VE4wJt0tv9lMNkwybEEGAdnfLV8cXcLbkar8Gl/5oQ2pnZt79wvcXq/VcnvJaU1jnSByc1CCPlPFADsZkeqlkni0I7ViH+5zj0qvKOjC2F1H0FFSqXfm1Ikd1iZIAgfmnKhrs4IUaQLMIEcpsiJrjIJml97IKhcGvtRTS2Aqpu8oENjIMbIH+k3CtSvz9jJeVKvbZ/JkvftjJcQogHn9mBLA/vPML8uUHquQ678GiuSoKvZtQCc0Bf4x1OjrD7m41YnTujPscm8X/VKQsW8n6xPpfk+dCr3LxBnweC50R46V36VGFeyqEDn4yIY60JyHPxT4AQp2bam0PuDDUVFfNp445KOBSy0FqiEcf/0WkwmtesSFqbr1ZB8VFNMvab8owltiwHeZ2+cBV04JHshGJruCZt9i1zPpSqSxgS7p29I1RakSBGx0gJra1I1ndM5/sIv2b4+hlvOKB9kCN/rAnOUC86YzIL6/ZqxIpyqVPy3sV8IJ9HWNl9qT0wFMnwspDE6Je3bR84qC8SQ76g="
-    # SNYK_API_TOKEN=[secure]
-    - secure: "cFz7h/NHP65zTyhs4g1qwsXIkcenqzYS4ffcraXfqZTsIAS9Ev19rAUmX6w8L91DOH9RqttgMVsan3qWL9FfwXLYrEbZ6WaxCcNZ4fXKb8NVCqsOWcOqxnbXJkwspvp2+bkLYxY8w2q/E6LHGjx/p4ZLRRjAgLe507/HWqj9amU5XMg9JdvoH9SgHqF7D9JY43ER2yx4XFr/q+lR15WCxC5t8c2hiNA5ZgRPqAPNBZEX5zWcjlVK912bein2sQZS5cJq81/fBH26XSuYI/2yxAWuQFQdfAEHTTcKIymZ/QVZHZHDJi5hHcoH0wLbxBTNZNqLnhhe5h1ZUExIDSUEkpWcsEfCXdYo9vEagnGPPMPwsvzWZsSUmmO9A1TPwQR4q6WfgYj/OVJRdGpjzHEXw4fAS81XoAze/2IndGXAcofCbNiImv2rhb7m3/7PDc/x1pR7Huqwqnu4k1Kr9hRqbAAWTCcy0aGdoYD/cOa4xUXnOmbS7dyzNxhpvLI+7qYEgvhntpS8L0QWvJjE+FDBYoTLqd9xu1nWQQhWsYMPoCiyJKFgnS7cdFm2RHL82umk8f+WiQo1Gid6AVQjidY8qOrvaaV+Hw7NgXEkqQzxFmkO+koVy3T0k/IdQmq3a3ii8tXoxDlVUM+AcXhduq2XGlaPULBjEIM2DwZ1CtlEVuk="
