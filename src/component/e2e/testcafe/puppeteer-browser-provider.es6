@@ -2,6 +2,7 @@
 
 const puppeteer = require('puppeteer');
 const debug = require('debug');
+const Env = require('../../../helper/env');
 
 // Register Object.entries shim
 require('object.entries').shim();
@@ -37,6 +38,9 @@ module.exports = {
     slowMo: debug.enabled() ? 250 : 0,
     timeout: 60000,
     dumpio: debug.enabled(),
+
+    // avoid issues in Travis
+    args: Env.isCI ? [ '--no-sandbox', '--disable-setuid-sandbox' ] : [],
   },
 
   /**
