@@ -56,7 +56,7 @@ You may also use the `REciNK` [component registry](https://github.com/MitocGroup
 ### Reference
 
 - [Sample REciNK configuration](https://github.com/MitocGroup/recink/blob/master/bin/templates/.recink.yml)
-- [Sample Travis configuration](https://github.com/MitocGroup/recink/blob/master/bin/commands/configure/helper/travis.js)
+- [Sample Travis configuration](https://github.com/MitocGroup/recink/blob/master/bin/templates/.travis.yml)
 
 
 ### Shell Autocompletion
