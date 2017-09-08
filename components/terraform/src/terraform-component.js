@@ -29,43 +29,79 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
-    const plan = this.container.get('plan', true);
-    const apply = this.container.get('apply', true);
-    const terraform = new Terraform(this.container.get('vars', {}));
-  
-    return terraform.init()
-      .then(() => this._plan(terraform))
-      .then(() => this._apply(terraform));
+    return this._terraformate('./example');
   }
 
   /**
-   * @param {Terraform} terraform 
+   * @param {string} dir
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _plan(terraform) {
+  _terraformate(dir) {
+    const vars = this.container.get('vars', {});
+    const binary = this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+    const terraform = new Terraform(vars, binary);
+  
+    return terraform.ensure()
+      .then(() => this._init(terraform, dir))
+      .then(() => this._plan(terraform, dir))
+      .then(() => this._apply(terraform, dir));
+  }
+
+  /**
+   * @param {Terraform} terraform 
+   * @param {string} dir
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _init(terraform, dir) {
+    if (!this.container.get('init', true)) {
+      return Promise.resolve();
+    }
+
+    return terraform.init(dir);
+  }
+
+  /**
+   * @param {Terraform} terraform 
+   * @param {string} dir
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _plan(terraform, dir) {
     if (!this.container.get('plan', true)) {
       return Promise.resolve();
     }
 
-    return terraform.plan();
+    return terraform.plan(dir)
+      .then(plan => {
+        console.log('plan', plan);
+      });
   }
 
   /**
    * @param {Terraform} terraform 
+   * @param {string} dir
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _apply(terraform) {
+  _apply(terraform, dir) {
     if (!this.container.get('apply', false)) {
       return Promise.resolve();
     }
 
-    return terraform.apply();
+    return terraform.apply(dir)
+      .then(state => {
+        console.log('state', state);
+      });
   }
 }
 

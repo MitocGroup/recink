@@ -1,0 +1,32 @@
+--- 
+$:
+  preprocess:
+    '$.terraform.vars.access_key': 'eval'
+    '$.terraform.vars.secret_key': 'eval'
+    '$.terraform.vars.region': 'eval'
+    '$.cache.options.0': 'eval'
+    '$.cache.options.1.region': 'eval'
+    '$.cache.options.1.accessKeyId': 'eval'
+    '$.cache.options.1.secretAccessKey': 'eval'
+  cache:
+    paths:                                                  
+      - './example/resource'                                                               
+    driver: 's3'
+    options:
+      - '"s3://travis-metadata/terraform/test/" + process.env.TRAVIS_BRANCH'
+      -
+        region: 'process.env.AWS_DEFAULT_REGION'
+        accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+        secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+  emit:
+    pattern:
+      - main.tf                                                             # Terraform will use directories where main.tf found
+  terraform:
+#   binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
+    init: true                                                              # Initialize Terraform setup (default "true")
+    plan:  true                                                             # Terraform validate .tf and make a provision plan (default "true")
+    apply: false                                                            # Terraform provision infrastructure (default "false")
+    vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
+      access_key: 'process.env.AWS_ACCESS_KEY_ID'
+      secret_key: 'process.env.AWS_SECRET_ACCESS_KEY'
+      region: 'process.env.AWS_DEFAULT_REGION'

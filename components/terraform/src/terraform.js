@@ -1,9 +1,11 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs');
+const fse = require('fs-extra');
 const execa = require('execa');
 const Downloader = require('./downloader');
+const Plan = require('./terraform/plan');
+const State = require('./terraform/state');
 
 /**
  * Terraform wrapper
@@ -12,15 +14,9 @@ class Terraform {
   /**
    * @param {*} vars
    * @param {string} binaryPath 
-   * @param {string} resourcePath
    */
-  constructor(
-    vars = {}, 
-    binaryPath = Terraform.DEFAULT_BINARY_PATH, 
-    resourcePath = Terraform.RESOURCE_PATH
-  ) {
+  constructor(vars = {}, binaryPath = Terraform.DEFAULT_BINARY_PATH) {
     this._binaryPath = binaryPath;
-    this._resourcePath = resourcePath;
     this._vars = vars;
   }
 
@@ -83,13 +79,6 @@ class Terraform {
   }
 
   /**
-   * @returns {string}
-   */
-  get resourcePath() {
-    return this._resourcePath;
-  }
-
-  /**
    * @returns {*}
    */
   get env() {
@@ -103,79 +92,61 @@ class Terraform {
   }
 
   /**
-   * @returns {string}
+   * https://www.terraform.io/docs/commands/init.html
+   * 
+   * @param {string} dir
+   * 
+   * @returns {Promise} 
    */
-  get planPath() {
-    return path.join(this.resourcePath, Terraform.PLAN);
-  }
-
-  /**
-   * @returns {string}
-   */
-  get statePath() {
-    return path.join(this.resourcePath, Terraform.STATE);
-  }
-
-  /**
-   * @returns {string}
-   */
-  get stateBackupPath() {
-    return path.join(this.resourcePath, Terraform.BACKUP_STATE);
+  init(dir) {
+    return this.run('init', [
+      '-no-color',
+      '.',
+    ], dir).then(result => Promise.resolve());
   }
 
   /**
    * https://www.terraform.io/docs/commands/plan.html
    * 
-   * @param {string} statePath
-   * @param {string} planPath
+   * @param {string} dir
    * 
    * @returns {Promise} 
    */
-  plan(statePath = null, planPath = null) {
+  plan(dir) {
     return this.run('plan', [
-      `-out="${ planPath || this.planPath }"`,
-      `-state="${ statePath || this.statePath }"`,
       '-detailed-exitcode',
       '-no-color',
-    ]).then(result => {
-      result.diff = result.code === 2;
-console.log('-->', result)//@todo remove
-      return Promise.resolve(result);
-    });
+    ], dir).then(result => Plan.create(dir, result.code === 2));
   }
 
   /**
    * https://www.terraform.io/docs/commands/apply.html
    * 
-   * @param {string} statePath
-   * @param {string} planPath
-   * @param {string} stateBackupPath
+   * @param {string} dir
    * 
    * @returns {Promise} 
    */
-  apply(planPath = null, statePath = null, stateBackupPath = null) {
+  apply(dir) {
     return this.run('apply', [
-      planPath || this.planPath,
-      `-state="${ statePath || this.statePath }"`,
-      `-backup="${ stateBackupPath || this.stateBackupPath }"`,
       '-auto-approve=true',
       '-no-color',
-    ]);
+    ], dir).then(result => State.create(dir));
   }
 
   /**
    * @param {string} command 
    * @param {Array} args
+   * @param {string} cwd
    * 
    * @returns {Promise} 
    */
-  run(command, args = []) {
+  run(command, args = [], cwd = process.cwd()) {
     const { env } = this;
 
     return execa(
       this.binaryPath, 
       [ command ].concat(args),
-      { env }
+      { env, cwd }
     ).then(result => {
       const { stdout, code } = result;
 
@@ -186,21 +157,27 @@ console.log('-->', result)//@todo remove
   /**
    * @returns {Promise}
    */
-  init() {
-    const downloader = new Downloader();
+  ensure() {
+    return fse.pathExists(this.binaryPath)
+      .then(exists => {
+        if (exists) {
+          return Promise.resolve();
+        }
 
-    return new Promise(resolve => {
-      fs.exists(
-        Terraform.DEFAULT_BINARY_PATH, 
-        exists => resolve(exists)
-      );
-    }).then(exists => {
-      if (exists) {
-        return Promise.resolve();
-      }
+        const downloader = new Downloader();
+        const dir = path.dirname(this.binaryPath);
 
-      return downloader.download(Terraform.BIN_PATH);
-    });
+        return downloader.download(dir)
+          .then(() => {
+            const realPath = path.join(dir, Terraform.BINARY);
+
+            if (realPath === this.binaryPath) {
+              return Promise.resolve();
+            }
+
+            return fse.move(realPath, this.binaryPath);
+          });
+      });
   }
 
   /**
@@ -227,13 +204,6 @@ console.log('-->', result)//@todo remove
   /**
    * @returns {string}
    */
-  static get DEFAULT_BINARY_PATH() {
-    return path.join(Terraform.BIN_PATH, Terraform.BINARY);
-  }
-
-  /**
-   * @returns {string}
-   */
   static get BINARY() {
     return 'terraform';
   }
@@ -242,14 +212,14 @@ console.log('-->', result)//@todo remove
    * @returns {string}
    */
   static get BIN_PATH() {
-    return path.resolve(__dirname, '../bin');
+    return path.resolve(process.cwd(), 'bin');
   }
 
   /**
    * @returns {string}
    */
-  static get RESOURCE_PATH() {
-    return path.resolve(__dirname, '../resource');
+  static get DEFAULT_BINARY_PATH() {
+    return path.join(Terraform.BIN_PATH, Terraform.BINARY);
   }
 }
 
