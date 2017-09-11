@@ -1,6 +1,7 @@
 'use strict';
 
 const Terraform = require('../terraform');
+const fse = require('fs-extra');
 
 /**
  * Terraform state
@@ -27,6 +28,20 @@ class State {
    */
   get backupPath() {
     return this._backupPath;
+  }
+
+  /**
+   * @returns {Promise}
+   */
+  state() {
+    return fse.readJson(this._path);
+  }
+
+  /**
+   * @returns {Promise}
+   */
+  backupState() {
+    return fse.readJson(this._backupPath);
   }
 }
 

@@ -14,9 +14,15 @@ class Terraform {
   /**
    * @param {*} vars
    * @param {string} binaryPath 
+   * @param {string} resourceDirname
    */
-  constructor(vars = {}, binaryPath = Terraform.DEFAULT_BINARY_PATH) {
+  constructor(
+    vars = {}, 
+    binaryPath = Terraform.DEFAULT_BINARY_PATH, 
+    resourceDirname = Terraform.RESOURCE_DIRNAME
+  ) {
     this._binaryPath = binaryPath;
+    this._resourceDirname = resourceDirname;
     this._vars = vars;
   }
 
@@ -79,6 +85,13 @@ class Terraform {
   }
 
   /**
+   * @returns {string}
+   */
+  get resourceDirname() {
+    return this._resourceDirname;
+  }
+
+  /**
    * @returns {*}
    */
   get env() {
@@ -113,15 +126,15 @@ class Terraform {
    * @returns {Promise} 
    */
   plan(dir) {
-    return this.run('plan', [
-      '-no-color',
-      `-out=${ Terraform.PLAN }`,
-    ], dir).then(result => {
-      return new Plan(
-        path.resolve(dir, Terraform.PLAN),
-        result.output
-      );
-    });
+    return this._ensureResourceDir(dir)
+      .then(() => {
+        const planPath = path.join(dir, this.resourceDirname, Terraform.PLAN);
+        
+            return this.run('plan', [
+              '-no-color',
+              `-out=${ planPath }`,
+            ], dir).then(result =>  new Plan(planPath, result.output));
+      });
   }
 
   /**
@@ -132,18 +145,30 @@ class Terraform {
    * @returns {Promise} 
    */
   apply(dir) {
-    return this.run('apply', [
-      '-auto-approve=true',
-      '-no-color',
-      `-state=${ Terraform.STATE }`,
-      `-state-out=${ Terraform.STATE }`,
-      `-backup=${ Terraform.BACKUP_STATE }`,
-    ], dir).then(result => {
-      return new State(
-        path.resolve(dir, Terraform.STATE),
-        path.resolve(dir, Terraform.BACKUP_STATE)
-      );
-    });
+    return this._ensureResourceDir(dir)
+      .then(() => {
+        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
+    
+        return this.run('apply', [
+          '-auto-approve=true',
+          '-no-color',
+          `-state=${ statePath }`,
+          `-state-out=${ statePath }`,
+          `-backup=${ backupStatePath }`,
+        ], dir).then(result => new State(statePath, backupStatePath));
+      });
+  }
+
+  /**
+   * @param {string} dir
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _ensureResourceDir(dir) {
+    return fse.ensureDir(path.join(dir, this.resourceDirname));
   }
 
   /**
@@ -157,7 +182,7 @@ class Terraform {
     const { env } = this;
 
     return execa(
-      this.binaryPath, 
+      path.resolve(this.binaryPath), 
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
@@ -197,7 +222,7 @@ class Terraform {
    * @returns {string}
    */
   static get BACKUP_STATE() {
-    return 'terraform.tfstate.backup';
+    return `terraform.tfstate.${ new Date().getTime() }.backup`;
   }
 
   /**
@@ -219,6 +244,13 @@ class Terraform {
    */
   static get BINARY() {
     return 'terraform';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get RESOURCE_DIRNAME() {
+    return '.resource';
   }
 
   /**

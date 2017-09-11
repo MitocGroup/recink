@@ -93,7 +93,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _terraformate(dir) {
     const vars = this.container.get('vars', {});
     const binary = this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
-    const terraform = new Terraform(vars, binary);
+    const resourceDirname = this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
+    const terraform = new Terraform(vars, binary, resourceDirname);
   
     return terraform.ensure()
       .then(() => this._init(terraform, dir))
@@ -150,9 +151,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     }
 
     return terraform.apply(dir)
-      .then(state => {
-        console.log('state', state);
-      })
+      .then(state => this._handleApply(state))
       .catch(error => this._handleError('apply', error));
   }
 
@@ -171,7 +170,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 \`\`\`
 ${ error.toString().trim() }
 \`\`\`
-    `);
+    `).then(() => Promise.reject(error));
   }
 
   /**
@@ -204,6 +203,26 @@ Skip \`terraform ${ command }\`...
 ${ JSON.stringify(plan.diff, null, '  ') }
 \`\`\`
     `);
+  }
+
+  /**
+   * @param {State} state
+   * 
+   * @returns {Promise}
+   * 
+   * @private 
+   */
+  _handleApply(state) {
+    return state.state()
+      .then(stateObj => {
+        return this._reporter.report(`
+### Terraform APPLY
+
+\`\`\`json
+${ JSON.stringify(stateObj, null, '  ') }
+\`\`\`
+        `);
+      });
   }
 
   /**

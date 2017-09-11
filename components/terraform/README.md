@@ -17,6 +17,7 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 # Installation
 
 - `npm install -g recink-terraform`
+- `npm install -g recink-comment` *Only necessary when GitHub commenting support needed*
 
 > Note that the component is installed automatically when running `recink component add terraform`
 
@@ -28,32 +29,35 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 ```yaml
 $:
   preprocess:
-    '$.terraform.name': 'eval'
+    '$.terraform.vars.sample': 'eval'
   terraform:
-    name: 'process.env.TERRAFORM'      # Name to output
+#   resource-dirname: '.resource'                                           # Resource dirname relative to the module root directory (default ".resource")
+#   binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
+    init: true                                                              # Initialize Terraform setup (default "true")
+    plan: true                                                              # Terraform validate .tf and make a provision plan (default "true")
+    apply: false                                                            # Terraform provision infrastructure (default "false")
+    vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
+      sample: 'process.env.SAMPLE_VAR'
+  comment:
+    providers:                                                              # Supported providers: github
+      github:
+        - token: 'process.env.GITHUB_ACCESS_TOKEN'
 ```
 
 `.travis.yml` configuration:
 
 ```yaml
-script: 'recink run unit -c terraform'  
+script: 'recink run terraform -c comment'  
 before_install:
   # other before_install scripts...
   - 'npm install -g recink-terraform'
+  - 'npm install -g recink-comment'
 ```
 
-Or using the registry: 
-
-```yaml
-before_install:
-  # other before_install scripts...
-  - 'recink component add terraform'
-```
-
-Add the `TERRAFORM` to `.travis.yml`:
+Add the `SAMPLE_VAR` and `GITHUB_ACCESS_TOKEN` to `.travis.yml`:
 
 ```
-recink travis encrypt -x 'TERRAFORM="John"'
+recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_ACCESS_TOKEN=xxxxxxx'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
@@ -62,11 +66,5 @@ recink travis encrypt -x 'TERRAFORM="John"'
 # Usage
 
 ```
-TERRAFORM="John" recink run unit -c terraform
-```
-
-Or the generic way:
-
-```
-TERRAFORM="John" recink run terraform
+SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform
 ```
