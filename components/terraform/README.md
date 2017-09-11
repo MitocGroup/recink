@@ -22,12 +22,6 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 > Note that the component is installed automatically when running `recink component add terraform`
 
 
-# How it works
-
-[REciNK](https://github.com/MitocGroup/recink) is looking into configured modules (@see [example](https://github.com/MitocGroup/recink/components/terraform/example)) and is listening for triggered
-ones having a `main.tf` file inside (e.g. `./example/main.tf`)
-
-
 # Configuration
 
 `.recink.yml` configuration:
@@ -74,3 +68,15 @@ recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_ACCESS_TOKEN=xxx
 ```
 SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform
 ```
+
+# How it works
+
+[REciNK](https://github.com/MitocGroup/recink) and is listening for modules configured in `.recink.yml`
+(@see [example](https://github.com/MitocGroup/recink/components/terraform/example)) having a `${module.root}/main.tf` file inside and triggering the configured operations (e.g. `terraform init`, `terraform plan` and `terraform apply`).
+
+
+# Gotchas
+
+ - `terraform destroy` is not supported due to security reasons.
+ - If `recink-comment` is neither installed or configured the reporter will fall back to `logger.info()` and output the message in console
+ 
