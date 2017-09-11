@@ -128,12 +128,14 @@ class Terraform {
   plan(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
+        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const planPath = path.join(dir, this.resourceDirname, Terraform.PLAN);
         
-            return this.run('plan', [
-              '-no-color',
-              `-out=${ planPath }`,
-            ], dir).then(result =>  new Plan(planPath, result.output));
+        return this.run('plan', [
+          '-no-color',
+          `-state=${ statePath }`,
+          `-out=${ planPath }`,
+        ], dir).then(result =>  new Plan(planPath, result.output));
       });
   }
 
