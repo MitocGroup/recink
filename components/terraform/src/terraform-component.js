@@ -18,6 +18,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     super(...args);
 
     this._reporter = null;
+    this._noChanges = true;
   }
 
   /**
@@ -148,6 +149,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _apply(terraform, dir) {
     if (!this.container.get('apply', false)) {
       return this._handleSkip('apply');
+    } else if (this._noChanges) {
+      return this._handleSkip('apply', 'No Changes Detected');
     }
 
     return terraform.apply(dir)
@@ -175,16 +178,19 @@ ${ error.toString().trim() }
 
   /**
    * @param {string} command
+   * @param {string} reason
    * 
    * @returns {Promise}
    * 
    * @private 
    */
-  _handleSkip(command) {
+  _handleSkip(command, reason = null) {
+    const reasonMsg = reason ? `. Reason - "${ reason }"` : '';
+
     return this._reporter.report(`
 ### Terraform ${ command.toUpperCase() }
 
-Skip \`terraform ${ command }\`...
+Skip \`terraform ${ command }\`${ reasonMsg }...
     `);
   }
 
@@ -196,6 +202,10 @@ Skip \`terraform ${ command }\`...
    * @private 
    */
   _handlePlan(plan) {
+
+    // @todo move this...
+    this._noChanges = !plan.changed;
+
     return this._reporter.report(`
 ### Terraform PLAN (${ plan.changed ? '' : 'UN' }CHANGED)
 

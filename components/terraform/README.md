@@ -22,6 +22,12 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 > Note that the component is installed automatically when running `recink component add terraform`
 
 
+# How it works
+
+[REciNK](https://github.com/MitocGroup/recink) is looking into configured modules (@see [example](https://github.com/MitocGroup/recink/components/terraform/example)) and is listening for triggered
+ones having a `main.tf` file inside (e.g. `./example/main.tf`)
+
+
 # Configuration
 
 `.recink.yml` configuration:
