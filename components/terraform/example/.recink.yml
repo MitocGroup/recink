@@ -18,9 +18,7 @@ $:
         region: 'process.env.AWS_DEFAULT_REGION'
         accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
         secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
-  emit:
-    pattern:
-      - main.tf                                                             # Terraform will use directories where main.tf found
+  emit: ~
   terraform:
 #   binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
     init: true                                                              # Initialize Terraform setup (default "true")
@@ -30,3 +28,5 @@ $:
       access_key: 'process.env.AWS_ACCESS_KEY_ID'
       secret_key: 'process.env.AWS_SECRET_ACCESS_KEY'
       region: 'process.env.AWS_DEFAULT_REGION'
+example:
+  root: '.'

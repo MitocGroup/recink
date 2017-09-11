@@ -114,9 +114,14 @@ class Terraform {
    */
   plan(dir) {
     return this.run('plan', [
-      '-detailed-exitcode',
       '-no-color',
-    ], dir).then(result => Plan.create(dir, result.code === 2));
+      `-out=${ Terraform.PLAN }`,
+    ], dir).then(result => {
+      return new Plan(
+        path.resolve(dir, Terraform.PLAN),
+        result.output
+      );
+    });
   }
 
   /**
@@ -130,7 +135,15 @@ class Terraform {
     return this.run('apply', [
       '-auto-approve=true',
       '-no-color',
-    ], dir).then(result => State.create(dir));
+      `-state=${ Terraform.STATE }`,
+      `-state-out=${ Terraform.STATE }`,
+      `-backup=${ Terraform.BACKUP_STATE }`,
+    ], dir).then(result => {
+      return new State(
+        path.resolve(dir, Terraform.STATE),
+        path.resolve(dir, Terraform.BACKUP_STATE)
+      );
+    });
   }
 
   /**

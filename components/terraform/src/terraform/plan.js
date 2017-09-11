@@ -1,7 +1,7 @@
 'use strict';
 
-const path = require('path');
 const Terraform = require('../terraform');
+const PlanParser = require('tf-parse').Plan;
 
 /**
  * Terraform plan
@@ -9,11 +9,12 @@ const Terraform = require('../terraform');
 class Plan {
   /**
    * @param {string} path 
-   * @param {boolean} diff
+   * @param {string} output
    */
-  constructor(path, diff) {
+  constructor(path, output) {
     this._path = path;
-    this._diff = diff;
+    this._output = output;
+    this._diff = new PlanParser().parse(this.output);
   }
 
   /**
@@ -26,18 +27,27 @@ class Plan {
   /**
    * @returns {string}
    */
+  get output() {
+    return this._output;
+  }
+
+  /**
+   * @returns {*}
+   */
   get diff() {
     return this._diff;
   }
 
   /**
-   * @param {string} dir 
-   * @param {boolean} diff 
-   * 
-   * @returns {Plan}
+   * @returns {boolean}
    */
-  static create(dir, diff) {
-    return new Plan(path.resolve(dir, Terraform.PLAN), diff);
+  get changed() {
+    return !(Object.keys(this._diff.mod.prev).length <= 0
+      && Object.keys(this._diff.mod.next).length <= 0
+      && Object.keys(this._diff.rep.prev).length <= 0
+      && Object.keys(this._diff.rep.next).length <= 0
+      && Object.keys(this._diff.add).length <= 0
+      && Object.keys(this._diff.del).length <= 0);
   }
 }
 

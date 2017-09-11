@@ -1,12 +1,25 @@
 'use strict';
 
 const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const emitEvents = require('recink/src/component/emit/events');
 const Terraform = require('./terraform');
+const Reporter = require('./reporter');
+const fse = require('fs-extra');
+const path = require('path');
 
 /**
  * Terraform component
  */
 class TerraformComponent extends DependantConfigBasedComponent {
+  /**
+   * @param {*} args 
+   */
+  constructor(...args) {
+    super(...args);
+
+    this._reporter = null;
+  }
+
   /**
    * @returns {string}
    */
@@ -29,7 +42,45 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
-    return this._terraformate('./example');
+    this._reporter = new Reporter(emitter, this.logger);
+
+    emitter.onBlocking(emitEvents.module.process.start, emitModule => {
+      return this._isTerraformModule(emitModule)
+        .then(isTerraform => {
+          if (!isTerraform) {
+            return Promise.resolve();
+          }
+
+          return this._terraformate(this._moduleRoot(emitModule));
+        });
+    });
+  }
+
+  /**
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {string}
+   * 
+   * @private
+   */
+  _moduleRoot(emitModule) {
+    return emitModule.container.get('root', null);
+  }
+
+  /**
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _isTerraformModule(emitModule) {
+    const terraformEntryPoint = path.join(
+      this._moduleRoot(emitModule), 
+      TerraformComponent.TERRAFORM_MAIN
+    );
+
+    return fse.pathExists(terraformEntryPoint);
   }
 
   /**
@@ -60,10 +111,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
    */
   _init(terraform, dir) {
     if (!this.container.get('init', true)) {
-      return Promise.resolve();
+      return this._handleSkip('init');
     }
 
-    return terraform.init(dir);
+    return terraform.init(dir)
+      .catch(error => this._handleError('init', error));
   }
 
   /**
@@ -76,13 +128,12 @@ class TerraformComponent extends DependantConfigBasedComponent {
    */
   _plan(terraform, dir) {
     if (!this.container.get('plan', true)) {
-      return Promise.resolve();
+      return this._handleSkip('plan');
     }
 
     return terraform.plan(dir)
-      .then(plan => {
-        console.log('plan', plan);
-      });
+      .then(plan => this._handlePlan(plan))
+      .catch(error => this._handleError('plan', error));
   }
 
   /**
@@ -95,13 +146,71 @@ class TerraformComponent extends DependantConfigBasedComponent {
    */
   _apply(terraform, dir) {
     if (!this.container.get('apply', false)) {
-      return Promise.resolve();
+      return this._handleSkip('apply');
     }
 
     return terraform.apply(dir)
       .then(state => {
         console.log('state', state);
-      });
+      })
+      .catch(error => this._handleError('apply', error));
+  }
+
+  /**
+   * @param {string} command
+   * @param {Error} error
+   * 
+   * @returns {Promise}
+   * 
+   * @private 
+   */
+  _handleError(command, error) {
+    return this._reporter.report(`
+### Terraform ${ command.toUpperCase() } -> *ERROR*
+
+\`\`\`
+${ error.toString().trim() }
+\`\`\`
+    `);
+  }
+
+  /**
+   * @param {string} command
+   * 
+   * @returns {Promise}
+   * 
+   * @private 
+   */
+  _handleSkip(command) {
+    return this._reporter.report(`
+### Terraform ${ command.toUpperCase() }
+
+Skip \`terraform ${ command }\`...
+    `);
+  }
+
+  /**
+   * @param {Plan} plan
+   * 
+   * @returns {Promise}
+   * 
+   * @private 
+   */
+  _handlePlan(plan) {
+    return this._reporter.report(`
+### Terraform PLAN (${ plan.changed ? '' : 'UN' }CHANGED)
+
+\`\`\`json
+${ JSON.stringify(plan.diff, null, '  ') }
+\`\`\`
+    `);
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get TERRAFORM_MAIN() {
+    return 'main.tf';
   }
 }
 
