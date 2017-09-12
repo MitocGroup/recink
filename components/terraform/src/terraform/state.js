@@ -31,34 +31,34 @@ class State {
   }
 
   /**
-   * @param {boolean} stripPrivateData
+   * @param {boolean} stripSensitiveData
    * 
    * @returns {Promise}
    */
-  state(stripPrivateData = true) {
+  state(stripSensitiveData = true) {
     return fse.readJson(this._path)
       .then(stateObj => {
-        if (!stripPrivateData) {
+        if (!stripSensitiveData) {
           return Promise.resolve(stateObj);
         }
 
-        return Promise.resolve(this._stripePrivateData(stateObj));
+        return Promise.resolve(this._ensureNoPrivateData(stateObj));
       });
   }
 
   /**
-   * @param {boolean} stripPrivateData
+   * @param {boolean} stripSensitiveData
    * 
    * @returns {Promise}
    */
-  backupState(stripPrivateData = true) {
+  backupState(stripSensitiveData = true) {
     return fse.readJson(this._backupPath)
       .then(stateObj => {
-        if (!stripPrivateData) {
+        if (!stripSensitiveData) {
           return Promise.resolve(stateObj);
         }
 
-        return Promise.resolve(this._stripPrivateData(stateObj));
+        return Promise.resolve(this._ensureNoPrivateData(stateObj));
       });
   }
 
@@ -69,13 +69,13 @@ class State {
    * 
    * @private
    */
-  _stripPrivateData(obj) {
+  _ensureNoPrivateData(obj) {
     if (obj && typeof obj === 'object') {
       Object.keys(obj).forEach(key => {
         if (typeof obj[key] === 'string') {
           obj[key] = this._stripSensitiveData(obj[key]);
         } else if (obj[key] && typeof obj[key] === 'object') {
-          obj[key] = this._stripPrivateData(obj[key]);
+          obj[key] = this._ensureNoPrivateData(obj[key]);
         }
       });
     }
