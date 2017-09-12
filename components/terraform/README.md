@@ -63,6 +63,20 @@ recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_ACCESS_TOKEN=xxx
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
 
 
+# Overwrite setting per module basis
+
+You can control the `recink-terraform` behavior using per module 
+configuration feature as simple as shown in the example below:
+
+```yaml
+example_module:
+  root: './example'
+  terraform:
+    vars:
+      sample: 'hardcoded value here...'
+```
+
+
 # Usage
 
 ```

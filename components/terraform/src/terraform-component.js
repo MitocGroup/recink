@@ -36,26 +36,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
   get dependencies() {
     return [ 'emit' ];
   }
-  
-  /**
-   * @param {Emitter} emitter
-   * 
-   * @returns {Promise}
-   */
-  run(emitter) {
-    this._reporter = new Reporter(emitter, this.logger);
-
-    emitter.onBlocking(emitEvents.module.process.start, emitModule => {
-      return this._isTerraformModule(emitModule)
-        .then(isTerraform => {
-          if (!isTerraform) {
-            return Promise.resolve();
-          }
-
-          return this._terraformate(this._moduleRoot(emitModule));
-        });
-    });
-  }
 
   /**
    * @param {EmitModule} emitModule 
@@ -83,82 +63,123 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return fse.pathExists(terraformEntryPoint);
   }
+  
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {Promise}
+   */
+  run(emitter) {
+    this._reporter = new Reporter(emitter, this.logger);
+
+    emitter.onBlocking(emitEvents.module.process.start, emitModule => {
+      return this._isTerraformModule(emitModule)
+        .then(isTerraform => {
+          if (!isTerraform) {
+            return Promise.resolve();
+          }
+
+          return this._terraformate(emitModule);
+        });
+    });
+  }
 
   /**
-   * @param {string} dir
+   * @param {EmitModule} emitModule
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _terraformate(dir) {
-    const vars = this.container.get('vars', {});
-    const binary = this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
-    const resourceDirname = this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
+  _terraformate(emitModule) {
+    const vars = Object.assign(
+      this.container.get('vars', {}), 
+      emitModule.container.get('vars', {})
+    );
+    const binary = emitModule.container.get('binary', Terraform.DEFAULT_BINARY_PATH) 
+      || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+    const resourceDirname = emitModule.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME)
+      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
     const terraform = new Terraform(vars, binary, resourceDirname);
   
     return terraform.ensure()
-      .then(() => this._init(terraform, dir))
-      .then(() => this._plan(terraform, dir))
-      .then(() => this._apply(terraform, dir));
+      .then(() => this._init(terraform, emitModule))
+      .then(() => this._plan(terraform, emitModule))
+      .then(() => this._apply(terraform, emitModule));
   }
 
   /**
    * @param {Terraform} terraform 
-   * @param {string} dir
+   * @param {EmitModule} emitModule
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _init(terraform, dir) {
-    if (!this.container.get('init', true)) {
-      return this._handleSkip('init');
+  _init(terraform, emitModule) {
+    const dir = this._moduleRoot(emitModule);
+    const enabled = emitModule.container.has('init') 
+      ? emitModule.container.get('init')
+      : this.container.get('init', true);
+
+    if (!enabled) {
+      return this._handleSkip(emitModule, 'init');
     }
 
     return terraform.init(dir)
-      .catch(error => this._handleError('init', error));
+      .catch(error => this._handleError(emitModule, 'init', error));
   }
 
   /**
    * @param {Terraform} terraform 
-   * @param {string} dir
+   * @param {EmitModule} emitModule
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _plan(terraform, dir) {
-    if (!this.container.get('plan', true)) {
-      return this._handleSkip('plan');
+  _plan(terraform, emitModule) {
+    const dir = this._moduleRoot(emitModule);
+    const enabled = emitModule.container.has('plan') 
+      ? emitModule.container.get('plan')
+      : this.container.get('plan', true);
+
+    if (!enabled) {
+      return this._handleSkip(emitModule, 'plan');
     }
 
     return terraform.plan(dir)
-      .then(plan => this._handlePlan(plan))
-      .catch(error => this._handleError('plan', error));
+      .then(plan => this._handlePlan(emitModule, plan))
+      .catch(error => this._handleError(emitModule, 'plan', error));
   }
 
   /**
    * @param {Terraform} terraform 
-   * @param {string} dir
+   * @param {EmitModule} emitModule
    * 
    * @returns {Promise}
    * 
    * @private
    */
-  _apply(terraform, dir) {
-    if (!this.container.get('apply', false)) {
-      return this._handleSkip('apply');
+  _apply(terraform, emitModule) {
+    const dir = this._moduleRoot(emitModule);
+    const enabled = emitModule.container.has('apply') 
+      ? emitModule.container.get('apply')
+      : this.container.get('apply', false);
+
+    if (!enabled) {
+      return this._handleSkip(emitModule, 'apply');
     } else if (this._noChanges) {
-      return this._handleSkip('apply', 'No Changes Detected');
+      return this._handleSkip(emitModule, 'apply', 'No Changes Detected');
     }
 
     return terraform.apply(dir)
-      .then(state => this._handleApply(state))
-      .catch(error => this._handleError('apply', error));
+      .then(state => this._handleApply(emitModule, state))
+      .catch(error => this._handleError(emitModule, 'apply', error));
   }
 
   /**
+   * @param {EmitModule} emitModule
    * @param {string} command
    * @param {Error} error
    * 
@@ -166,9 +187,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * 
    * @private 
    */
-  _handleError(command, error) {
+  _handleError(emitModule, command, error) {
     return this._reporter.report(`
-### Terraform ${ command.toUpperCase() } -> *ERROR*
+### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\` *-> ERROR*
 
 \`\`\`
 ${ error.toString().trim() }
@@ -177,6 +198,7 @@ ${ error.toString().trim() }
   }
 
   /**
+   * @param {EmitModule} emitModule
    * @param {string} command
    * @param {string} reason
    * 
@@ -184,30 +206,31 @@ ${ error.toString().trim() }
    * 
    * @private 
    */
-  _handleSkip(command, reason = null) {
+  _handleSkip(emitModule, command, reason = null) {
     const reasonMsg = reason ? `. Reason - "${ reason }"` : '';
 
     return this._reporter.report(`
-### Terraform ${ command.toUpperCase() }
+### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\`
 
 Skip \`terraform ${ command }\`${ reasonMsg }...
     `);
   }
 
   /**
+   * @param {EmitModule} emitModule
    * @param {Plan} plan
    * 
    * @returns {Promise}
    * 
    * @private 
    */
-  _handlePlan(plan) {
+  _handlePlan(emitModule, plan) {
 
     // @todo move this...
     this._noChanges = !plan.changed;
 
     return this._reporter.report(`
-### Terraform PLAN (${ plan.changed ? '' : 'UN' }CHANGED)
+### Terraform PLAN \`${ emitModule.name }\` *-> ${ plan.changed ? '' : 'UN' }CHANGED*
 
 \`\`\`json
 ${ JSON.stringify(plan.diff, null, '  ') }
@@ -216,17 +239,18 @@ ${ JSON.stringify(plan.diff, null, '  ') }
   }
 
   /**
+   * @param {EmitModule} emitModule
    * @param {State} state
    * 
    * @returns {Promise}
    * 
    * @private 
    */
-  _handleApply(state) {
+  _handleApply(emitModule, state) {
     return state.state()
       .then(stateObj => {
         return this._reporter.report(`
-### Terraform APPLY
+### Terraform APPLY \`${ emitModule.name }\`
 
 \`\`\`json
 ${ JSON.stringify(stateObj, null, '  ') }
