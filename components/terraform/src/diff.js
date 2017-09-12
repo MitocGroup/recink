@@ -25,8 +25,6 @@ class Diff {
       return true;
     }
 
-    console.log('...assets', ...assets);//@todo remove
-
     return assets.filter(asset => {
       return this.diff.filter(changesAsset => {
         return changesAsset.indexOf(asset) === 0;
@@ -58,13 +56,16 @@ class Diff {
             .filter(Boolean)
             .map(file => path.resolve(path.dirname(gitRootPath), file));
     
-          console.log('path.dirname(gitRootPath)', path.dirname(gitRootPath));//@todo remove
-          console.log('stdout', stdout);//@todo remove
-          console.log('this._diff', this._diff);//@todo remove
-    
           return Promise.resolve();
         });
       });
+  }
+
+  /**
+   * @returns {string[]}
+   */
+  get diff() {
+    return this._diff;
   }
 
   /**

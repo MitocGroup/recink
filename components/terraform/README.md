@@ -70,12 +70,15 @@ configuration feature as simple as shown in the example below:
 
 ```yaml
 example_module:
-  root: './example'
+  root: './example'                         # Module root folder containing "main.tf" file inside
   terraform:
-    vars:
+    dependencies:                           # Global dependencies that should be considered when mathing changeset
+      - '../../global-modules'
+    vars:                                   # Local module variables and global overwrites
       sample: 'hardcoded value here...'
 ```
 
+> `terraform.dependencies` key is available as local module configuration options to match the changed files affecting the module that allows Terraform commands to be launched on global modules changes.
 
 # Usage
 

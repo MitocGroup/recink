@@ -138,9 +138,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return diff.load()
       .then(() => {
-        const assets = [ this._moduleRoot(emitModule) ];
+        const rootPath = this._moduleRoot(emitModule);
+        const dependencies = emitModule.container.get('terraform.dependencies', [])
+          .map(dep => path.isAbsolute(dep) ? dep : path.resolve(rootPath, dep));
 
-        return Promise.resolve(diff.match(...assets));
+        return Promise.resolve(
+          diff.match(...[ rootPath ].concat(dependencies))
+        );
       });
   }
 
