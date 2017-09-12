@@ -6,6 +6,7 @@ const Terraform = require('./terraform');
 const Reporter = require('./reporter');
 const fse = require('fs-extra');
 const path = require('path');
+const Diff = require('./diff');
 
 /**
  * Terraform component
@@ -92,20 +93,55 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _terraformate(emitModule) {
-    const vars = Object.assign(
-      this.container.get('vars', {}), 
-      emitModule.container.get('vars', {})
-    );
-    const binary = emitModule.container.get('binary', Terraform.DEFAULT_BINARY_PATH) 
-      || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
-    const resourceDirname = emitModule.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME)
-      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
-    const terraform = new Terraform(vars, binary, resourceDirname);
-  
-    return terraform.ensure()
-      .then(() => this._init(terraform, emitModule))
-      .then(() => this._plan(terraform, emitModule))
-      .then(() => this._apply(terraform, emitModule));
+    return this._hasChanges(emitModule)
+      .then(changed => {
+        if (!changed) {
+          this.logger.info(
+            this.logger.emoji.cross,
+            `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
+          );
+
+          return Promise.resolve();
+        }
+
+        this.logger.info(
+          this.logger.emoji.check,
+          `Starting Terraform in module "${ emitModule.name }".`
+        );
+
+        const vars = Object.assign(
+          this.container.get('vars', {}), 
+          emitModule.container.get('vars', {})
+        );
+        const binary = emitModule.container.get('binary', Terraform.DEFAULT_BINARY_PATH) 
+          || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+        const resourceDirname = emitModule.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME)
+          || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
+        const terraform = new Terraform(vars, binary, resourceDirname);
+      
+        return terraform.ensure()
+          .then(() => this._init(terraform, emitModule))
+          .then(() => this._plan(terraform, emitModule))
+          .then(() => this._apply(terraform, emitModule));
+      });
+  }
+
+  /**
+   * @param {EmitModule} emitModule
+   * 
+   * @returns {Promise}
+   * 
+   * @private 
+   */
+  _hasChanges(emitModule) {
+    const diff = new Diff();
+
+    return diff.load()
+      .then(() => {
+        const assets = [ this._moduleRoot(emitModule) ];
+
+        return Promise.resolve(diff.match(...assets));
+      });
   }
 
   /**
@@ -117,6 +153,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform init" in "${ emitModule.name }".`
+    );
+
     const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('init') 
       ? emitModule.container.get('init')
@@ -139,6 +180,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _plan(terraform, emitModule) {
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform plan" in "${ emitModule.name }".`
+    );
+
     const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('plan') 
       ? emitModule.container.get('plan')
@@ -162,6 +208,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _apply(terraform, emitModule) {
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform apply" in "${ emitModule.name }".`
+    );
+
     const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('apply') 
       ? emitModule.container.get('apply')
