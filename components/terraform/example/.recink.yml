@@ -36,3 +36,9 @@ $:
         - token: 'process.env.GITHUB_ACCESS_TOKEN'
 example:
   root: '.'
+  # terraform:
+  #   # run-after:
+  #   #   - 'example_0'
+  #   #   - 'prepare'
+  #   vars:
+  #     region: 'us-east-1'

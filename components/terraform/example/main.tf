@@ -16,6 +16,6 @@ resource "aws_kinesis_stream" "test_recink_stream" {
 
   tags {
     Environment   = "dev"
-    Application   = "recink"
+    Application   = "recink2"
   }
 }
