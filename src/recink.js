@@ -79,20 +79,20 @@ class Recink extends Emitter {
       
       return component.init(this);
     }))
-    .then(() => {
-      return Promise.all(activeComponents.map(component => {
-        this.emit(events.component.run, component);
+      .then(() => {
+        return Promise.all(activeComponents.map(component => {
+          this.emit(events.component.run, component);
         
-        return component.run(this);
-      }));
-    })
-    .then(() => {
-      return Promise.all(this._components.map(component => {
-        this.emit(events.component.teardown, component);
+          return component.run(this);
+        }));
+      })
+      .then(() => {
+        return Promise.all(this._components.map(component => {
+          this.emit(events.component.teardown, component);
         
-        return component.teardown(this);
-      }));
-    });
+          return component.teardown(this);
+        }));
+      });
   }
   
   /**

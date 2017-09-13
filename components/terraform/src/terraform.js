@@ -63,6 +63,8 @@ class Terraform {
 
   /**
    * @param {*} vars 
+   * 
+   * @returns {Terraform}
    */
   setVars(vars) {
     this._vars = vars;

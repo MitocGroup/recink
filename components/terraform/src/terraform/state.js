@@ -1,6 +1,5 @@
 'use strict';
 
-const Terraform = require('../terraform');
 const fse = require('fs-extra');
 
 /**

@@ -72,11 +72,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
   * 
   * @returns {Promise}
   */
-init(emitter) {
-  this._reporter = new Reporter(emitter, this.logger);
+  init(emitter) {
+    this._reporter = new Reporter(emitter, this.logger);
 
-  return Promise.resolve();
-}
+    return Promise.resolve();
+  }
   
   /**
    * @param {Emitter} emitter
@@ -120,8 +120,8 @@ init(emitter) {
             };
           })
         )
-        .then(() => resolve())
-        .catch(error => reject(error));
+          .then(() => resolve())
+          .catch(error => reject(error));
       });
     });
   }

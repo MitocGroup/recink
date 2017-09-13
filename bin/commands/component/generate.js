@@ -34,11 +34,11 @@ module.exports = (args, options, logger) => {
     return pify(Twig.renderFile)(source, { name })
       .then(content => fse.outputFile(target, content));
   }))
-  .then(() => {
-    logger.info(logger.chalk.green(
-      `\n${ name.toUpperCase() }="John" recink run ${ target } ${ target }/template`
-    ));
+    .then(() => {
+      logger.info(logger.chalk.green(
+        `\n${ name.toUpperCase() }="John" recink run ${ target } ${ target }/template`
+      ));
     
-    return Promise.resolve();
-  });
+      return Promise.resolve();
+    });
 };
