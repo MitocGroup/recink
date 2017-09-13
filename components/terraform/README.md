@@ -93,6 +93,14 @@ example_module:
 SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform -c comment
 ```
 
+# Running example project
+
+The following example will create 2 AWS VPCs with a peering connection between them:
+
+`AWS_DEFAULT_REGION='${region}' AWS_ACCESS_KEY_ID='${access-key-id}' AWS_SECRET_ACCESS_KEY='${secret-access-key}' recink run terraform example/ -s cache`
+
+> Note that `example/` directory is relative to the `recink-terraform` module root.
+
 # How it works
 
 [REciNK](https://github.com/MitocGroup/recink) and is listening for modules configured in `.recink.yml`
