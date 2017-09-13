@@ -31,10 +31,10 @@ $:
     providers:                                                              # Supported providers: github
       github:
         - token: 'process.env.GITHUB_ACCESS_TOKEN'
-main:
-  root: './main'
+vpc:
+  root: './vpc'
   terraform:
     run-after:
-      - pre
-pre:
-  root: './pre'
+      - vpc-peer
+vpc-peer:
+  root: './vpc-peer'
