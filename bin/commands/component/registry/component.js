@@ -5,7 +5,6 @@ const modulesDir = require('global-modules');
 const fse = require('fs-extra');
 const Install = require('./npm/install');
 const Uninstall = require('./npm/uninstall');
-const pify = require('pify');
 
 /**
  * Registry Component

@@ -1,7 +1,6 @@
 'use strict';
 
 const npmEvents = require('./npm/events');
-const emitEvents = require('./emit/events');
 const CacheFactory = require('./cache/factory');
 const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const Spinner = require('./helper/spinner');
@@ -138,6 +137,8 @@ class CacheComponent extends DependantConfigBasedComponent {
   /**
    * @param {AbstractDriver} cache 
    * 
+   * @returns {Promise}
+   * 
    * @private
    */
   _downloadCache(cache) {
@@ -154,6 +155,8 @@ class CacheComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {AbstractDriver} cache 
+   * 
+   * @returns {Promise}
    * 
    * @private
    */

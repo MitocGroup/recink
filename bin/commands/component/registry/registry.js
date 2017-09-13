@@ -4,8 +4,6 @@ const os = require('os');
 const path = require('path');
 const FileStorage = require('./storage/file-storage');
 const Component = require('./component');
-const fse = require('fs-extra');
-const pify = require('pify');
 
 /**
  * Components Registry
@@ -50,6 +48,8 @@ class Registry {
   }
   
   /**
+   * @param {string} component
+   * 
    * @returns {Component}
    */
   component(component) {

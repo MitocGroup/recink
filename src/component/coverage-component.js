@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint no-useless-call: 0 */
+
 const DependantConfigBasedComponent = require('./dependant-config-based-component');
 const istanbul = require('istanbul');
 const testEvents = require('./test/events');
@@ -319,16 +321,16 @@ class CoverageComponent extends DependantConfigBasedComponent {
           reporter, 
           collector
         )
-        .then(() => this._dumpCoverageStats(collector, reporter))
-        .then(() => {
-          return emitter.emitBlocking(
-            events.coverage.report.compare, 
-            istanbul, 
-            reporter, 
-            collector
-          );
-        })
-        .then(() => this._doCompare(collector));
+          .then(() => this._dumpCoverageStats(collector, reporter))
+          .then(() => {
+            return emitter.emitBlocking(
+              events.coverage.report.compare, 
+              istanbul, 
+              reporter, 
+              collector
+            );
+          })
+          .then(() => this._doCompare(collector));
       });
       
       emitter.on(testEvents.assets.test.end, () => resolve());

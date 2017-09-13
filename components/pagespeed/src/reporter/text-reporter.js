@@ -9,7 +9,7 @@ const TextBlock = require('./helper/text-block');
 class TextReporter extends SummaryReporter {
   /**
    * @param {PageSpeedComponent} component 
-   * @param {*} minoptionsimal 
+   * @param {*} options 
    */
   constructor(component, options = {}) {
     super(component);

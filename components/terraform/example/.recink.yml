@@ -1,0 +1,40 @@
+--- 
+$:
+  preprocess:
+    '$.terraform.vars.access_key': 'eval'
+    '$.terraform.vars.secret_key': 'eval'
+    '$.terraform.vars.region': 'eval'
+    '$.cache.options.0': 'eval'
+    '$.cache.options.1.region': 'eval'
+    '$.cache.options.1.accessKeyId': 'eval'
+    '$.cache.options.1.secretAccessKey': 'eval'
+    '$.comment.providers.github.0.token': 'eval'
+  cache:
+    paths:
+      - './example/main/.resource'        
+      - './example/pre/.resource'                                                               
+    driver: 's3'
+    options:
+      - '"s3://travis-metadata/terraform/recink-example/" + process.env.TRAVIS_BRANCH'
+      -
+        region: 'process.env.AWS_DEFAULT_REGION'
+        accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+        secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+  emit: ~
+  terraform:                                                            # Terraform validate .tf and make a provision plan (default "true")
+    apply: true                                                             # Terraform provision infrastructure (default "false")
+    vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
+      access_key: 'process.env.AWS_ACCESS_KEY_ID'
+      secret_key: 'process.env.AWS_SECRET_ACCESS_KEY'
+      region: 'process.env.AWS_DEFAULT_REGION'
+  comment:
+    providers:                                                              # Supported providers: github
+      github:
+        - token: 'process.env.GITHUB_ACCESS_TOKEN'
+vpc:
+  root: './vpc'
+  terraform:
+    run-after:
+      - vpc-peer
+vpc-peer:
+  root: './vpc-peer'

@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint max-len: 0 */
+
 const travis = require('./helper/travis');
 const path = require('path');
 const Dumper = require('./helper/dumper');
@@ -58,7 +60,7 @@ module.exports = (args, options, logger) => {
           .catch(error => {
             return Promise.reject(new Error(
               `Unable to guess GitHub repository in ${ args.path }.\n` +
-                  'Please specify the GitHub repository by using "--github-repository" option'
+              'Please specify the GitHub repository by using "--github-repository" option'
             ));
           });
       

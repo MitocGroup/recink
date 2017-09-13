@@ -6,7 +6,6 @@ const events = require('./test/events');
 const print = require('print');
 const ContainerTransformer = require('./helper/container-transformer');
 const Mocha = require('mocha');
-const domain = require('domain');
 
 /**
  * Test component
