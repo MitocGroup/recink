@@ -63,22 +63,29 @@ recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_ACCESS_TOKEN=xxx
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
 
 
-# Overwrite setting per module basis
+# Per module settings
 
 You can control the `recink-terraform` behavior using per module 
 configuration feature as simple as shown in the example below:
 
 ```yaml
+example_prepare:
+  root: './prepare'                         # Module root folder containing "main.tf" file inside
 example_module:
   root: './example'                         # Module root folder containing "main.tf" file inside
   terraform:
+    run-after:                              # Other Terraform modules to run before dispatching "example_module"
+      - example_prepare
     dependencies:                           # Global dependencies that should be considered when mathing changeset
       - '../../global-modules'
     vars:                                   # Local module variables and global overwrites
-      sample: 'hardcoded value here...'
+      sample: 'overwrite default value!'
+      new_one: 'define a new variable here.'
 ```
 
-> `terraform.dependencies` key is available as local module configuration options to match the changed files affecting the module that allows Terraform commands to be launched on global modules changes.
+> `terraform.dependencies` key is available as local module configuration option only and matches the changed files affecting the module that allows Terraform commands to be launched on global modules changes.
+
+> `run-after` key is available as local module configuration option only and allows running desired Terraform modules after other modules dispatched (e.g. run `example_prepare` before starting `example_module`)
 
 # Usage
 

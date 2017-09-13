@@ -10,8 +10,9 @@ $:
     '$.cache.options.1.secretAccessKey': 'eval'
     '$.comment.providers.github.0.token': 'eval'
   cache:
-    paths:                                                  
-      - './example/.resource'                                                               
+    paths:
+      - './example/main/.resource'        
+      - './example/pre/.resource'                                                               
     driver: 's3'
     options:
       - '"s3://travis-metadata/terraform/recink-example/" + process.env.TRAVIS_BRANCH'
@@ -20,11 +21,7 @@ $:
         accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
         secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
   emit: ~
-  terraform:
-    resource-dirname: '.resource'                                           # Resource dirname relative to the module root directory (default ".resource")
-    binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
-    init: true                                                              # Initialize Terraform setup (default "true")
-    plan: true                                                              # Terraform validate .tf and make a provision plan (default "true")
+  terraform:                                                            # Terraform validate .tf and make a provision plan (default "true")
     apply: true                                                             # Terraform provision infrastructure (default "false")
     vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
       access_key: 'process.env.AWS_ACCESS_KEY_ID'
@@ -34,11 +31,10 @@ $:
     providers:                                                              # Supported providers: github
       github:
         - token: 'process.env.GITHUB_ACCESS_TOKEN'
-example:
-  root: '.'
-  # terraform:
-  #   # run-after:
-  #   #   - 'example_0'
-  #   #   - 'prepare'
-  #   vars:
-  #     region: 'us-east-1'
+main:
+  root: './main'
+pre:
+  root: './pre'
+  terraform:
+    run-after:
+      - main
