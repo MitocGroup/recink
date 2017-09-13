@@ -104,7 +104,7 @@ The following example will create 2 AWS VPCs with a peering connection between t
 # How it works
 
 [REciNK](https://github.com/MitocGroup/recink) and is listening for modules configured in `.recink.yml`
-(@see [example](https://github.com/MitocGroup/recink/components/terraform/example)) having a `${module.root}/main.tf` file inside and triggering the configured operations (e.g. `terraform init`, `terraform plan` and `terraform apply`).
+(@see [example](https://github.com/MitocGroup/recink/blob/master/components/terraform/example/.recink.yml)) having a `${module.root}/main.tf` file inside and triggering the configured operations (e.g. `terraform init`, `terraform plan` and `terraform apply`).
 
 
 # Gotchas
