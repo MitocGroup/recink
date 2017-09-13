@@ -2,6 +2,7 @@
 
 const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
 const emitEvents = require('recink/src/component/emit/events');
+const SequentialPromise = require('recink/src/component/helper/sequential-promise');
 const Terraform = require('./terraform');
 const Reporter = require('./reporter');
 const fse = require('fs-extra');
@@ -20,6 +21,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     this._reporter = null;
     this._noChanges = true;
+    this._runStack = {};
   }
 
   /**
@@ -64,6 +66,17 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return fse.pathExists(terraformEntryPoint);
   }
+
+  /**
+  * @param {Emitter} emitter
+  * 
+  * @returns {Promise}
+  */
+init(emitter) {
+  this._reporter = new Reporter(emitter, this.logger);
+
+  return Promise.resolve();
+}
   
   /**
    * @param {Emitter} emitter
@@ -71,18 +84,137 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
-    this._reporter = new Reporter(emitter, this.logger);
+    return new Promise((resolve, reject) => {
+      emitter.onBlocking(emitEvents.module.process.start, emitModule => {
+        return this._isTerraformModule(emitModule)
+          .then(isTerraform => {
+            if (!isTerraform) {
+              return Promise.resolve();
+            }
+  
+            return this._terraformate(emitModule);
+          });
+      });
 
-    emitter.onBlocking(emitEvents.module.process.start, emitModule => {
-      return this._isTerraformModule(emitModule)
-        .then(isTerraform => {
-          if (!isTerraform) {
-            return Promise.resolve();
-          }
+      emitter.on(emitEvents.modules.process.end, () => {
+        SequentialPromise.all(
+          this._normalizedRunStack.map(item => {
+            const { emitModule, changed } = item;
 
-          return this._terraformate(emitModule);
-        });
+            return () => {
+              if (changed) {
+                this.logger.info(
+                  this.logger.emoji.check,
+                  `Starting Terraform in module "${ emitModule.name }".`
+                );
+
+                return this._dispatchModule(emitModule);
+              } else {
+                this.logger.info(
+                  this.logger.emoji.cross,
+                  `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
+                );
+
+                return Promise.resolve();
+              }
+            };
+          })
+        )
+        .then(() => resolve())
+        .catch(error => reject(error));
+      });
     });
+  }
+
+  /**
+  * @param {Emitter} emitter
+  * 
+  * @returns {Promise}
+  */
+  teardown(emitter) {
+    this._noChanges = true;
+    this._runStack = {};
+
+    return Promise.resolve();
+  }
+
+  /**
+   * @returns {Function[]}
+   * 
+   * @private
+   */
+  get _normalizedRunStack() {
+    this._validateRunStack();
+
+    let it;
+    const maxIt = 9999999;
+    const modulesNames = Object.keys(this._runStack);
+
+    for(it = 0; it < maxIt; it++) {
+      let normalized = false;
+
+      for (let i = 0; i < modulesNames.length; i++) {
+        const { after } = this._runStack[modulesNames[i]];
+        const checkVector = modulesNames.slice(i);
+        const moveModuleName = after.filter(m => checkVector.includes(m)).pop();
+
+        if (moveModuleName) {
+          normalized = true;
+          const moveIndex = modulesNames.indexOf(moveModuleName);
+          const originModuleName = modulesNames[i];
+
+          modulesNames[i] = moveModuleName;
+          modulesNames[moveIndex] = originModuleName;
+
+          break;
+        }
+      }
+
+      if (!normalized) {
+        break;
+      }
+    }
+
+    if (it >= maxIt) {
+      throw new Error(
+        `Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`
+      );
+    }
+
+    return modulesNames.map(moduleName => {
+      return this._runStack[moduleName];
+    });
+  }
+
+  /**
+   * @throws {Error}
+   * 
+   * @private
+   */
+  _validateRunStack() {
+    const extraneous = {};
+    const available = Object.keys(this._runStack);
+
+    available.forEach(moduleName => {
+      const { after } = this._runStack[moduleName];
+
+      const extraneousModules = after.filter(m => !available.includes(m));
+
+      if (extraneousModules.length > 0) {
+        extraneous[moduleName] = extraneousModules;
+      }
+    });
+
+    if (Object.keys(extraneous).length > 0) {
+      const extraneousVector = Object.keys(extraneous).map(moduleName => {
+        return `<[${ moduleName }]> ${ extraneous[moduleName].join(', ') }`;
+      });
+      const extraneousInfo = extraneousVector.join('\n\t');
+
+      throw new Error(
+        `Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`
+      );
+    }
   }
 
   /**
@@ -95,35 +227,36 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _terraformate(emitModule) {
     return this._hasChanges(emitModule)
       .then(changed => {
-        if (!changed) {
-          this.logger.info(
-            this.logger.emoji.cross,
-            `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
-          );
+        const after = emitModule.container.get('terraform.run-after', []);
 
-          return Promise.resolve();
-        }
+        this._runStack[emitModule.name] = { emitModule, after, changed };
 
-        this.logger.info(
-          this.logger.emoji.check,
-          `Starting Terraform in module "${ emitModule.name }".`
-        );
-
-        const vars = Object.assign(
-          this.container.get('vars', {}), 
-          emitModule.container.get('vars', {})
-        );
-        const binary = emitModule.container.get('binary', Terraform.DEFAULT_BINARY_PATH) 
-          || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
-        const resourceDirname = emitModule.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME)
-          || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
-        const terraform = new Terraform(vars, binary, resourceDirname);
-      
-        return terraform.ensure()
-          .then(() => this._init(terraform, emitModule))
-          .then(() => this._plan(terraform, emitModule))
-          .then(() => this._apply(terraform, emitModule));
+        return Promise.resolve();
       });
+  }
+
+  /** 
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _dispatchModule(emitModule) {
+    const vars = Object.assign(
+      this.container.get('vars', {}), 
+      emitModule.container.get('terraform.vars', {})
+    );
+    const binary = emitModule.container.get('terraform.binary', Terraform.DEFAULT_BINARY_PATH) 
+      || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+    const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
+      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
+    const terraform = new Terraform(vars, binary, resourceDirname);
+  
+    return terraform.ensure()
+      .then(() => this._init(terraform, emitModule))
+      .then(() => this._plan(terraform, emitModule))
+      .then(() => this._apply(terraform, emitModule));
   }
 
   /**
@@ -163,8 +296,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
     );
 
     const dir = this._moduleRoot(emitModule);
-    const enabled = emitModule.container.has('init') 
-      ? emitModule.container.get('init')
+    const enabled = emitModule.container.has('terraform.init') 
+      ? emitModule.container.get('terraform.init')
       : this.container.get('init', true);
 
     if (!enabled) {
@@ -190,8 +323,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
     );
 
     const dir = this._moduleRoot(emitModule);
-    const enabled = emitModule.container.has('plan') 
-      ? emitModule.container.get('plan')
+    const enabled = emitModule.container.has('terraform.plan') 
+      ? emitModule.container.get('terraform.plan')
       : this.container.get('plan', true);
 
     if (!enabled) {
@@ -218,8 +351,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
     );
 
     const dir = this._moduleRoot(emitModule);
-    const enabled = emitModule.container.has('apply') 
-      ? emitModule.container.get('apply')
+    const enabled = emitModule.container.has('terraform.apply') 
+      ? emitModule.container.get('terraform.apply')
       : this.container.get('apply', false);
 
     if (!enabled) {

@@ -33,8 +33,8 @@ $:
         - token: 'process.env.GITHUB_ACCESS_TOKEN'
 main:
   root: './main'
-pre:
-  root: './pre'
   terraform:
     run-after:
-      - main
+      - pre
+pre:
+  root: './pre'

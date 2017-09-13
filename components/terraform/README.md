@@ -90,7 +90,7 @@ example_module:
 # Usage
 
 ```
-SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform
+SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform -c comment
 ```
 
 # How it works

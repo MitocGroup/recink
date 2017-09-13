@@ -1,6 +1,7 @@
 'use strict';
 
 const Recink = require('../../../src/recink');
+const Env = require('../../../src/helper/env');
 const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const path = require('path');
@@ -65,7 +66,7 @@ module.exports = (args, options, logger) => {
                   return Promise.resolve();
                 }
                 
-                return new NpmLink(
+                return Env.exists('RECINK_SKIP_SELF_LINKING') ? Promise.resolve() : new NpmLink(
                   path.resolve(__dirname, '../../../'),
                   requirePackageRoot
                 ).run();
