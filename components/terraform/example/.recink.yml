@@ -21,7 +21,7 @@ $:
   #       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
   #       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
   emit: ~
-  terraform:                                                            # Terraform validate .tf and make a provision plan (default "true")
+  terraform:
     apply: true                                                             # Terraform provision infrastructure (default "false")
     vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
       access_key: 'process.env.AWS_ACCESS_KEY_ID'
