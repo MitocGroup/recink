@@ -295,9 +295,10 @@ class E2EComponent extends DependantConfigBasedComponent {
    */
   static get RUN_OPTIONS() {
     return {
-      skipJsErrors: true,
-      assertionTimeout: 60000,
-      quarantineMode: true,
+
+      // @todo figure out options that really matters!
+      // skipJsErrors: true,
+      // quarantineMode: true,
     };
   }
   
