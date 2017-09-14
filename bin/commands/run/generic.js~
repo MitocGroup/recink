@@ -6,7 +6,7 @@ const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const path = require('path');
 const ComponentRegistry = require('../component/registry/registry');
-const resolvePackage = require('resolve-package');
+const pkgDir = require('pkg-dir');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
@@ -62,8 +62,8 @@ module.exports = (args, options, logger) => {
             if (component.indexOf('recink') !== 0) {
               componentName = `recink-${ component }`;
             }
-
-            componentPromise = resolvePackage(componentName);
+console.log('componentName', componentName);
+            componentPromise = pkgDir(componentName);
           } else {
             componentPromise = Promise.resolve(path.resolve(
               process.cwd(),
@@ -72,7 +72,7 @@ module.exports = (args, options, logger) => {
           }
 
           return componentPromise.then(componentPath => {
-
+console.log('componentPath', componentPath);
             if (!componentPath) {
               logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
               logger.error(new Error(`Unable to resolve path to ${ component } component`));
