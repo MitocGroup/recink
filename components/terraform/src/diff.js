@@ -4,6 +4,9 @@ const Env = require('recink/src/helper/env');
 const execa = require('execa');
 const path = require('path');
 
+/**
+ * Calculate Git Changeset
+ */
 class Diff {
   /**
    * @param {string} gitBinary 
@@ -74,7 +77,6 @@ class Diff {
    * @private
    */
   _gitRoot() {
-    //git rev-parse --git-dir
     return execa(
       this.gitBinary === Diff.GIT_BINARY 
         ? this.gitBinary 
