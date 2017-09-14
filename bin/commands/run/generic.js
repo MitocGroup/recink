@@ -6,6 +6,7 @@ const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const path = require('path');
 const ComponentRegistry = require('../component/registry/registry');
+const pkgDir = require('pkg-dir');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
@@ -53,26 +54,42 @@ module.exports = (args, options, logger) => {
       
       return SequentialPromise.all(additionalComponents.map(component => {
         return () => {
-          let requirePath = component;
+          let componentPromise;
 
           if (/^[a-z0-9]/i.test(component)) {
+            let componentName = component;
+
             if (component.indexOf('recink') !== 0) {
-              requirePath = `recink-${ component }`;
+              componentName = `recink-${ component }`;
             }
+
+            componentPromise = pkgDir(componentPromise);
           } else {
-            requirePath = path.resolve(process.cwd(), component);
+            componentPromise = Promise.resolve(path.resolve(
+              process.cwd(),
+              component
+            ));
           }
-        
-          try {
-            const ComponentConstructor = require(requirePath);
+
+          return componentPromise.then(componentPath => {
+            if (!componentPath) {
+              logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+              logger.error(new Error(`Unable to resolve path to ${ component } component`));
+
+              return Promise.resolve();
+            }
+
+            try {
+              const ComponentConstructor = require(componentPath);
+                
+              additionalComponentsInstances.push(new ComponentConstructor());
+            } catch (error) {
+              logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+              logger.error(error);
+            }
               
-            additionalComponentsInstances.push(new ComponentConstructor());
-          } catch (error) {
-            logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
-            logger.error(error);
-          }
-            
-          return Promise.resolve();
+            return Promise.resolve();
+          });
         };
       })).then(() => {
         const components = availableComponents
