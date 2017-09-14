@@ -6,8 +6,6 @@ const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const path = require('path');
 const ComponentRegistry = require('../component/registry/registry');
-const NpmLink = require('./npm/link');
-const pkgDir = require('pkg-dir');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
@@ -52,36 +50,29 @@ module.exports = (args, options, logger) => {
         .map(component => {
           additionalComponents.push(component);
         });
-        
+      
       return SequentialPromise.all(additionalComponents.map(component => {
         return () => {
-          const requirePath = /^recink-/i.test(component) 
-            ? component 
-            : path.resolve(process.cwd(), component);
+          let requirePath = component;
+
+          if (/^[a-z0-9]/i.test(component)) {
+            if (component.indexOf('recink') !== 0) {
+              requirePath = `recink-${ component }`;
+            }
+          } else {
+            requirePath = path.resolve(process.cwd(), component);
+          }
+        
+          try {
+            const ComponentConstructor = require(requirePath);
+              
+            additionalComponentsInstances.push(new ComponentConstructor());
+          } catch (error) {
+            logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+            logger.error(error);
+          }
             
-          return pkgDir(requirePath)
-            .then(requirePackageRoot => {
-              if (!requirePackageRoot) {
-                return Promise.resolve();
-              }
-                
-              return Env.exists('RECINK_SKIP_SELF_LINKING') ? Promise.resolve() : new NpmLink(
-                path.resolve(__dirname, '../../../'),
-                requirePackageRoot
-              ).run();
-            })
-            .then(() => {
-              try {
-                const ComponentConstructor =  require(requirePath);
-                  
-                additionalComponentsInstances.push(new ComponentConstructor());
-              } catch (error) {
-                logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
-                logger.error(error);
-              }
-                
-              return Promise.resolve();
-            });
+          return Promise.resolve();
         };
       })).then(() => {
         const components = availableComponents
