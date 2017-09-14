@@ -89,7 +89,6 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
 const npmEvents = require(&apos;./npm/events&apos;);
-const emitEvents = require(&apos;./emit/events&apos;);
 const CacheFactory = require(&apos;./cache/factory&apos;);
 const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
 const Spinner = require(&apos;./helper/spinner&apos;);
@@ -226,6 +225,8 @@ class CacheComponent extends DependantConfigBasedComponent {
   /**
    * @param {AbstractDriver} cache 
    * 
+   * @returns {Promise}
+   * 
    * @private
    */
   _downloadCache(cache) {
@@ -242,6 +243,8 @@ class CacheComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {AbstractDriver} cache 
+   * 
+   * @returns {Promise}
    * 
    * @private
    */

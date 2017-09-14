@@ -88,6 +88,8 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/component/coverage-component.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
+/* eslint no-useless-call: 0 */
+
 const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
 const istanbul = require(&apos;istanbul&apos;);
 const testEvents = require(&apos;./test/events&apos;);
@@ -407,16 +409,16 @@ class CoverageComponent extends DependantConfigBasedComponent {
           reporter, 
           collector
         )
-        .then(() =&gt; this._dumpCoverageStats(collector, reporter))
-        .then(() =&gt; {
-          return emitter.emitBlocking(
-            events.coverage.report.compare, 
-            istanbul, 
-            reporter, 
-            collector
-          );
-        })
-        .then(() =&gt; this._doCompare(collector));
+          .then(() =&gt; this._dumpCoverageStats(collector, reporter))
+          .then(() =&gt; {
+            return emitter.emitBlocking(
+              events.coverage.report.compare, 
+              istanbul, 
+              reporter, 
+              collector
+            );
+          })
+          .then(() =&gt; this._doCompare(collector));
       });
       
       emitter.on(testEvents.assets.test.end, () =&gt; resolve());
