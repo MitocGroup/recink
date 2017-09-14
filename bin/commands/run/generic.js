@@ -63,7 +63,7 @@ module.exports = (args, options, logger) => {
               componentName = `recink-${ component }`;
             }
 
-            componentPromise = pkgDir(componentPromise);
+            componentPromise = pkgDir(componentName);
           } else {
             componentPromise = Promise.resolve(path.resolve(
               process.cwd(),
@@ -81,7 +81,7 @@ module.exports = (args, options, logger) => {
 
             try {
               const ComponentConstructor = require(componentPath);
-                
+              
               additionalComponentsInstances.push(new ComponentConstructor());
             } catch (error) {
               logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
