@@ -3,6 +3,7 @@
 const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
 const emitEvents = require('recink/src/component/emit/events');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
+const CacheFactory = require('recink/src/component/cache/factory');
 const Terraform = require('./terraform');
 const Reporter = require('./reporter');
 const fse = require('fs-extra');
@@ -23,6 +24,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     this._noChanges = true;
     this._runStack = {};
     this._diff = new Diff();
+    this._caches = {};
   }
 
   /**
@@ -85,6 +87,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
+    const terraformModules = [];
+
     return new Promise((resolve, reject) => {
       emitter.onBlocking(emitEvents.module.process.start, emitModule => {
         return this._isTerraformModule(emitModule)
@@ -92,8 +96,10 @@ class TerraformComponent extends DependantConfigBasedComponent {
             if (!isTerraform) {
               return Promise.resolve();
             }
+
+            terraformModules.push(emitModule);
   
-            return this._terraformate(emitModule);
+            return Promise.resolve();
           });
       });
 
@@ -103,6 +109,15 @@ class TerraformComponent extends DependantConfigBasedComponent {
             this.logger.warn(
               this.logger.emoji.cross,
               `Failed to calculate git diff: ${ error }.`
+            );
+          })
+          .then(() => this._initCaches(emitter, terraformModules))
+          .then(() => {
+            return Promise.all(
+              terraformModules.map(emitModule => {
+                return this._loadCache(emitModule)
+                  .then(() => this._terraformate(emitModule))
+              })
             );
           })
           .then(() => {
@@ -117,7 +132,32 @@ class TerraformComponent extends DependantConfigBasedComponent {
                       `Starting Terraform in module "${ emitModule.name }".`
                     );
     
-                    return this._dispatchModule(emitModule);
+                    return this._dispatchModule(emitModule)
+                      .then(() => {
+                        return this._uploadCache(emitModule)
+                          .catch(error => {
+                            this.logger.warn(
+                              this.logger.emoji.cross,
+                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ error }.`
+                            );
+
+                            return Promise.resolve();
+                          });
+                      })
+                      .catch(error => {
+
+                        // Upload caches even if apply failed
+                        return this._uploadCache(emitModule)
+                          .then(() => Promise.reject(error))
+                          .catch(cacheError => {
+                            this.logger.warn(
+                              this.logger.emoji.cross,
+                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ cacheError }.`
+                            );
+
+                            return Promise.reject(error);
+                          });
+                      });
                   } else {
                     this.logger.info(
                       this.logger.emoji.cross,
@@ -137,6 +177,110 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
+   * @param {Emitter} emitter
+   * @param {EmitModule[]} terraformModules
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _initCaches(emitter, terraformModules) {
+    if (!this._cacheEnabled) {
+      return Promise.resolve();
+    }
+
+    terraformModules.forEach(emitModule => {
+      this._caches[emitModule.name] = this._cache(emitter, emitModule);
+    });
+
+    return Promise.resolve();
+  }
+
+  /**
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _loadCache(emitModule) {
+    if (!this._caches.hasOwnProperty(emitModule.name)) {
+      return Promise.resolve();
+    }
+
+    this.logger.info(
+      this.logger.emoji.check,
+      `Downloading caches for Terraform module "${ emitModule.name }".`
+    );
+
+    return this._caches[emitModule.name].download();
+  }
+
+  /**
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {Promise}
+   * 
+   * @private
+   */
+  _uploadCache(emitModule) {
+    if (!this._caches.hasOwnProperty(emitModule.name)) {
+      return Promise.resolve();
+    }
+
+    this.logger.info(
+      this.logger.emoji.check,
+      `Uploading caches for Terraform module "${ emitModule.name }".`
+    );
+
+    return this._caches[emitModule.name].upload();
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * @param {EmitModule} emitModule 
+   * 
+   * @returns {AbstractDriver|S3Driver}
+   * 
+   * @private
+   */
+  _cache(emitter, emitModule) {
+    const rootPath = this._moduleRoot(emitModule);
+    const cacheComponent = emitter.component('cache');
+    const options = [].concat(cacheComponent.container.get('options', []));
+    const driverName = cacheComponent.container.get('driver');
+    const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
+      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
+    const resourcesPath = path.join(rootPath, resourceDirname);
+
+    // @todo abstract the way cache behavior hooked
+    if (driverName === 's3' && options.length >= 1) {
+      options[0] = `${ options[0] }/${ emitModule.name }`;
+    }
+
+    const driver = CacheFactory.create(driverName, resourcesPath, ...options);
+
+    // @todo abstract the way cache behavior hooked
+    if (driverName === 's3') {
+      driver._includeNodeVersion = false;
+    }
+
+    return driver;
+  }
+
+  /**
+   * @param {Emitter} emitter
+   * 
+   * @returns {boolean}
+   * 
+   * @private
+   */
+  _cacheEnabled(emitter) {
+    return this.container.get('use-cache', true)
+      && !!emitter.component('cache');
+  }
+
+  /**
   * @param {Emitter} emitter
   * 
   * @returns {Promise}
@@ -144,6 +288,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   teardown(emitter) {
     this._noChanges = true;
     this._runStack = {};
+    this._caches = {};
 
     return Promise.resolve();
   }
