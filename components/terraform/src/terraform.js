@@ -6,6 +6,7 @@ const execa = require('execa');
 const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
+const SecureOutput = require('./secure-output');
 
 /**
  * Terraform wrapper
@@ -162,6 +163,27 @@ class Terraform {
           `-backup=${ backupStatePath }`,
         ], dir).then(result => new State(statePath, backupStatePath));
       });
+  }
+
+  /**
+   * https://www.terraform.io/docs/commands/show.html
+   * 
+   * @param {Plan|State} planOrState
+   * @param {boolean} secureOutput
+   * 
+   * @returns {Promise} 
+   */
+  show(planOrState, secureOutput = true) {
+    return this.run('show', [
+      '-no-color',
+      planOrState.path,
+    ]).then(result => {
+      return Promise.resolve(
+        secureOutput 
+          ? SecureOutput.secure(result.output) 
+          : result.output
+      );
+    });
   }
 
   /**

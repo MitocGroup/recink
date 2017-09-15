@@ -22,6 +22,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     this._reporter = null;
     this._noChanges = true;
     this._runStack = {};
+    this._diff = new Diff();
   }
 
   /**
@@ -97,29 +98,38 @@ class TerraformComponent extends DependantConfigBasedComponent {
       });
 
       emitter.on(emitEvents.modules.process.end, () => {
-        SequentialPromise.all(
-          this._normalizedRunStack.map(item => {
-            const { emitModule, changed } = item;
-
-            return () => {
-              if (changed) {
-                this.logger.info(
-                  this.logger.emoji.check,
-                  `Starting Terraform in module "${ emitModule.name }".`
-                );
-
-                return this._dispatchModule(emitModule);
-              } else {
-                this.logger.info(
-                  this.logger.emoji.cross,
-                  `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
-                );
-
-                return Promise.resolve();
-              }
-            };
+        this._diff.load()
+          .catch(error => {
+            this.logger.warn(
+              this.logger.emoji.cross,
+              `Failed to calculate git diff: ${ error }.`
+            );
           })
-        )
+          .then(() => {
+            return SequentialPromise.all(
+              this._normalizedRunStack.map(item => {
+                const { emitModule, changed } = item;
+    
+                return () => {
+                  if (changed) {
+                    this.logger.info(
+                      this.logger.emoji.check,
+                      `Starting Terraform in module "${ emitModule.name }".`
+                    );
+    
+                    return this._dispatchModule(emitModule);
+                  } else {
+                    this.logger.info(
+                      this.logger.emoji.cross,
+                      `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
+                    );
+    
+                    return Promise.resolve();
+                  }
+                };
+              })
+            );
+          })
           .then(() => resolve())
           .catch(error => reject(error));
       });
@@ -267,18 +277,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private 
    */
   _hasChanges(emitModule) {
-    const diff = new Diff();
+    const rootPath = this._moduleRoot(emitModule);
+    const dependencies = emitModule.container.get('terraform.dependencies', [])
+      .map(dep => path.isAbsolute(dep) ? dep : path.resolve(rootPath, dep));
 
-    return diff.load()
-      .then(() => {
-        const rootPath = this._moduleRoot(emitModule);
-        const dependencies = emitModule.container.get('terraform.dependencies', [])
-          .map(dep => path.isAbsolute(dep) ? dep : path.resolve(rootPath, dep));
-
-        return Promise.resolve(
-          diff.match(...[ rootPath ].concat(dependencies))
-        );
-      });
+    return Promise.resolve(
+      this._diff.match(...[ rootPath ].concat(dependencies))
+    );
   }
 
   /**
@@ -332,7 +337,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     }
 
     return terraform.plan(dir)
-      .then(plan => this._handlePlan(emitModule, plan))
+      .then(plan => this._handlePlan(terraform, emitModule, plan))
       .catch(error => this._handleError(emitModule, 'plan', error));
   }
 
@@ -362,7 +367,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     }
 
     return terraform.apply(dir)
-      .then(state => this._handleApply(emitModule, state))
+      .then(state => this._handleApply(terraform, emitModule, state))
       .catch(error => this._handleError(emitModule, 'apply', error));
   }
 
@@ -398,13 +403,14 @@ ${ error.toString().trim() }
     const reasonMsg = reason ? `. Reason - "${ reason }"` : '';
 
     return this._reporter.report(`
-### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\`
+### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\` *-> SKIP*
 
 Skip \`terraform ${ command }\`${ reasonMsg }...
     `);
   }
 
   /**
+   * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {Plan} plan
    * 
@@ -412,21 +418,24 @@ Skip \`terraform ${ command }\`${ reasonMsg }...
    * 
    * @private 
    */
-  _handlePlan(emitModule, plan) {
-
+  _handlePlan(terraform, emitModule, plan) {
     // @todo move this...
     this._noChanges = !plan.changed;
 
-    return this._reporter.report(`
+    return terraform.show(plan)
+      .then(output => {
+        return this._reporter.report(`
 ### Terraform PLAN \`${ emitModule.name }\` *-> ${ plan.changed ? '' : 'UN' }CHANGED*
 
-\`\`\`json
-${ JSON.stringify(plan.diff, null, '  ') }
 \`\`\`
-    `);
+${ output }
+\`\`\`
+        `);
+      });
   }
 
   /**
+   * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {State} state
    * 
@@ -434,14 +443,14 @@ ${ JSON.stringify(plan.diff, null, '  ') }
    * 
    * @private 
    */
-  _handleApply(emitModule, state) {
-    return state.state()
-      .then(stateObj => {
+  _handleApply(terraform, emitModule, state) {
+    return terraform.show(state)
+      .then(output => {
         return this._reporter.report(`
-### Terraform APPLY \`${ emitModule.name }\`
+### Terraform APPLY \`${ emitModule.name }\` *-> SUCCEED*
 
-\`\`\`json
-${ JSON.stringify(stateObj, null, '  ') }
+\`\`\`
+${ output }
 \`\`\`
         `);
       });
