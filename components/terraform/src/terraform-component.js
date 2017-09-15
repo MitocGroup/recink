@@ -592,7 +592,7 @@ ${ output }
     return terraform.show(state)
       .then(output => {
         return this._reporter.report(`
-### Terraform APPLY \`${ emitModule.name }\` *-> SUCCEED*
+### Terraform APPLY \`${ emitModule.name }\` *-> SUCCEEDED*
 
 \`\`\`
 ${ output }
