@@ -148,7 +148,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
                         // Upload caches even if apply failed
                         return this._uploadCache(emitModule)
-                          .then(() => Promise.reject(error))
                           .catch(cacheError => {
                             this.logger.warn(
                               this.logger.emoji.cross,
@@ -156,7 +155,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
                             );
 
                             return Promise.reject(error);
-                          });
+                          })
+                          .then(() => Promise.reject(error));
                       });
                   } else {
                     this.logger.info(
