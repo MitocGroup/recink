@@ -98,6 +98,7 @@ const createTestCafe = require(&apos;testcafe&apos;);
 const Spinner = require(&apos;./helper/spinner&apos;);
 const urlExists = require(&apos;url-exists&apos;);
 const pify = require(&apos;pify&apos;);
+const path = require(&apos;path&apos;);
 
 /**
  * End2End component
@@ -154,6 +155,13 @@ class E2EComponent extends DependantConfigBasedComponent {
           const reporter = this.container.get(&apos;reporter&apos;, E2EComponent.DEFAULT_REPORTER);
           const browsers = this.container.get(&apos;browsers&apos;, E2EComponent.DEFAULT_BROWSERS);
           
+          if (this.container.get(&apos;screenshot.enabled&apos;, false)) {
+            runner.screenshots(
+              path.resolve(this.container.get(&apos;screenshot.path&apos;, process.cwd())), 
+              this.container.get(&apos;screenshot.take-on-fail&apos;, false)
+            );
+          }
+
           return emitter.emitBlocking(
             events.assets.e2e.start, 
             testcafe, 
