@@ -40,6 +40,10 @@ $:
       - /.+\.e2e\.js$/i
     ignore: ~                                                               # Files to exclude
     reporter: ~                                                             # TestCafe framework reporter
+#   screenshot:                                                             # TestCafe allow taking screenshots
+#     enabled: false                  
+#     path: 'path/to/screenshots'
+#     take-on-fail: false
 #   browsers:                                                               # Browsers to run the tests against
 #     - puppeteer                                                           # The default one...
 #     - nightmare
