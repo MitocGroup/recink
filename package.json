@@ -41,8 +41,9 @@
     "docs:diagram": "node node_modules/.bin/dependo -f cjs src/ > docs/module-diagram.html",
     "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc",
     "postinstall": "node node-bin/ensure-peer-dependencies.js",
-    "prepublish": "npm run transpile",
-    "transpile": "node `npm bin`/babel ./src -d ./src"
+    "prepublish": "npm run snyk-protect; npm run transpile",
+    "transpile": "node `npm bin`/babel ./src -d ./src",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "aws-sdk": "^2.49.0",
@@ -71,10 +72,11 @@
     "readdir-enhanced": "^1.5.2",
     "resolve-package": "^1.0.1",
     "sandboxed-module": "MitocGroup/node-sandboxed-module",
-    "testcafe": "^0.16.0",
+    "testcafe": "^13.1.1",
     "url-exists": "^1.0.3",
     "yaml-js": "^0.1.5",
-    "yamljs": "^0.2.10"
+    "yamljs": "^0.2.10",
+    "snyk": "^1.41.1"
   },
   "peerDependencies": {
     "twig": "^1.10.5",
@@ -94,5 +96,6 @@
     "node": ">=6.0",
     "npm": ">=3.0"
   },
-  "preferGlobal": true
+  "preferGlobal": true,
+  "snyk": true
 }
