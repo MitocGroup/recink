@@ -21,6 +21,8 @@ matrix:
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
+      before_install:
+        - 'cd "$TRAVIS_BUILD_DIR"'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
