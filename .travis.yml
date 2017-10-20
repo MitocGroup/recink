@@ -22,7 +22,7 @@ matrix:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
       before_install:
-        - 'cd `npm root`/testcafe/lib/browser && ls -alR -I "node_modules" && cd "$TRAVIS_BUILD_DIR"'
+        - 'echo $(cd `npm root`/testcafe/lib/browser && ls -aR) || echo "No such dependency" && cd "$TRAVIS_BUILD_DIR"'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
