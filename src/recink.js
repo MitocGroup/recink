@@ -17,6 +17,7 @@ class Recink extends Emitter {
     super();
     
     this._config = {};
+    this._skipModules = [];
     this._components = [];
     this._container = new Container();
     
@@ -67,9 +68,8 @@ class Recink extends Emitter {
   run() {
     this.emit(events.components.run, ...this._components);
     
-    const activeComponents = this._components
-      .filter(component => component.isActive);
-      
+    const activeComponents = this._components.filter(component => component.isActive);
+
     if (activeComponents.length <= 0) {
       return Promise.resolve();
     }
@@ -172,16 +172,24 @@ class Recink extends Emitter {
       return this.configure(configFile);
     }
     
-    const promises = extendConfigs.concat([ configFile ])
+    const promises = extendConfigs
+      .concat([ configFile ])
       .map(cfgFile => configFactory.guess(cfgFile).load());
-    
+
     return Promise.all(promises).then(configVector => {
       const consolidatedConfig = merge.recursive(true, ...configVector);
       
       return this._configLoad(consolidatedConfig, configFile);
     });
   }
-  
+
+  /**
+   * @param {Array} modules
+   */
+  skipModules(modules) {
+    this._skipModules = modules;
+  }
+
   /**
    * @param {string} configFile
    *
@@ -204,15 +212,28 @@ class Recink extends Emitter {
   _configLoad(config, configFile) {
     return this.emitBlocking(events.config.preprocess, config)
       .then(() => {
-        this._config = config;
+        this._config = this.filteredConfig(config);
         this._container.reload(this._config);
         
         this.emit(events.config.load, this.container, configFile);
         
-        return Promise.resolve(config);
+        return Promise.resolve(this._config);
       });
   }
-  
+
+  /**
+   * Filter origin config
+   * @param {Object} config
+   * @return {Object}
+   */
+  filteredConfig(config) {
+    this._skipModules.forEach(module => {
+      delete config[module];
+    });
+
+    return config;
+  }
+
   /**
    * @param {string} name
    *
