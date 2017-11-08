@@ -42,7 +42,6 @@ dist: trusty
 
 ___
 
-# Travis
 
 Q: _Tests failing when using Nightmare browser for e2e test suites in `Travis`. How can i fix it?_
 
@@ -56,4 +55,39 @@ A: Make sure you've `xvfb` up and running to have the X instance virtualized for
   install:
     - "export DISPLAY=':99.0'"
     - "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
+```
+
+# Runner
+
+Q: _How to skip some of the modules?_
+
+A: Let's assume that we use following config:
+
+```yaml
+# Config
+$:
+  preprocess:
+    ...
+  emit:
+    ...
+  test:
+    ...
+
+# List of application modules
+lib:
+  root: 'lib'
+  dependencies: ~
+api:
+  root: 'api'
+  dependencies: ~
+core:
+  root: 'core'
+  dependencies: ~
+```
+
+And you want to run only api module - just use `--skip-modules` flag
+
+
+```bash
+recink run unit --skip-modules="lib, core"
 ```

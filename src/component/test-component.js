@@ -54,9 +54,8 @@ class TestComponent extends DependantConfigBasedComponent {
         }
         
         const { fileAbs, module } = payload;
-        
-        mochas[module.name] = mochas[module.name] 
-          || new Mocha(mochaOptions);
+
+        mochas[module.name] = mochas[module.name] || new Mocha(mochaOptions);
 
         return emitter.emitBlocking(events.asset.test.add, mochas[module.name])
           .then(() => {
