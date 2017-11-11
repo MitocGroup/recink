@@ -411,7 +411,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
     return terraform.ensure()
       .then(() => this._init(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
-      .then(() => this._apply(terraform, emitModule));
+      .then(() => this._apply(terraform, emitModule))
+      .then(() => this._destroy(terraform, emitModule));
   }
 
   /**
@@ -517,6 +518,36 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _destroy(terraform, emitModule) {
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform destroy" in "${ emitModule.name }".`
+    );
+
+    const dir = this._moduleRoot(emitModule);
+    const enabled = emitModule.container.has('terraform.destroy')
+      ? emitModule.container.get('terraform.destroy')
+      : this.container.get('destroy', false);
+
+    if (!enabled) {
+      return this._handleSkip(emitModule, 'destroy');
+    } else if (this._noChanges) {
+      return this._handleSkip(emitModule, 'destroy', 'No Changes Detected');
+    }
+
+    return terraform.destroy(dir)
+      .then(state => this._handleDestroy(terraform, emitModule, state))
+      .catch(error => this._handleError(emitModule, 'destroy', error));
+  }
+
+  /**
    * @param {EmitModule} emitModule
    * @param {string} command
    * @param {Error} error
@@ -593,6 +624,28 @@ ${ output }
       .then(output => {
         return this._reporter.report(`
 ### Terraform APPLY \`${ emitModule.name }\` *-> SUCCEEDED*
+
+\`\`\`
+${ output }
+\`\`\`
+        `);
+      });
+  }
+
+  /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   * @param {State} state
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _handleDestroy(terraform, emitModule, state) {
+    return terraform.show(state)
+      .then(output => {
+        return this._reporter.report(`
+### Terraform DESTROY \`${ emitModule.name }\` *-> SUCCEEDED*
 
 \`\`\`
 ${ output }
