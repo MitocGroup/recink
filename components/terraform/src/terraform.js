@@ -166,6 +166,30 @@ class Terraform {
   }
 
   /**
+   * https://www.terraform.io/docs/commands/destroy.html
+   *
+   * @param {string} dir
+   *
+   * @returns {Promise}
+   */
+  destroy(dir) {
+    return this._ensureResourceDir(dir)
+      .then(() => {
+        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
+
+        return this.run('destroy', [
+          '-auto-approve=true',
+          '-no-color',
+          '-force',
+          `-state=${ statePath }`,
+          `-state-out=${ statePath }`,
+          `-backup=${ backupStatePath }`,
+        ], dir).then(result => new State(statePath, backupStatePath));
+      });
+  }
+
+  /**
    * https://www.terraform.io/docs/commands/show.html
    * 
    * @param {Plan|State} planOrState

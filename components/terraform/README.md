@@ -37,6 +37,7 @@ $:
     init: true                                                              # Initialize Terraform setup (default "true")
     plan: true                                                              # Terraform validate .tf and make a provision plan (default "true")
     apply: false                                                            # Terraform provision infrastructure (default "false")
+    destroy: false                                                          # Terraform destroy provisioned infrastructure in previous step (default "false")
     vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
       sample: 'process.env.SAMPLE_VAR'
   comment:
@@ -105,7 +106,7 @@ The following example will create 2 AWS VPCs with a peering connection between t
 # How it works
 
 [REciNK](https://github.com/MitocGroup/recink) and is listening for modules configured in `.recink.yml`
-(@see [example](https://github.com/MitocGroup/recink/blob/master/components/terraform/example/.recink.yml)) having a `${module.root}/main.tf` file inside and triggering the configured operations (e.g. `terraform init`, `terraform plan` and `terraform apply`).
+(@see [example](https://github.com/MitocGroup/recink/blob/master/components/terraform/example/.recink.yml)) having a `${module.root}/main.tf` file inside and triggering the configured operations (e.g. `terraform init`, `terraform plan`, `terraform apply` and `terraform destroy`).
 
 
 # Gotchas
