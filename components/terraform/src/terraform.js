@@ -179,7 +179,6 @@ class Terraform {
         const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
 
         return this.run('destroy', [
-          '-auto-approve=true',
           '-no-color',
           '-force',
           `-state=${ statePath }`,

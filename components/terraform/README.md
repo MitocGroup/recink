@@ -111,6 +111,5 @@ The following example will create 2 AWS VPCs with a peering connection between t
 
 # Gotchas
 
- - `terraform destroy` is not supported due to security reasons.
  - If `recink-comment` is neither installed or configured the reporter will fall back to `logger.info()` and output the message in console
  
