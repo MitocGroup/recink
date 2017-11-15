@@ -47,7 +47,7 @@ const commands = prog
   .argument('[path]', 'Path to tests', /.+/, process.cwd())
   .option('--exclude-modules [modules]', 'List of modules to exclude', prog.LIST, [])
   .option('--include-modules [modules]', 'List of modules to run', prog.LIST, [])
-  .option('--custom-config', 'Custom configuration', (arg) => JSON.parse(arg), {})
+  .option('--custom-config', 'Custom configuration', (arg) => { return JSON.parse(arg) || {} })
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
   .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'e2e', 'test', 'coverage' ])
   .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
