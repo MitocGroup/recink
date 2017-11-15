@@ -89,13 +89,13 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
 const path = require(&apos;path&apos;);
+const merge = require(&apos;merge&apos;);
 const Emitter = require(&apos;./emitter&apos;);
 const events = require(&apos;./events&apos;);
-const configFactory = require(&apos;./config/factory&apos;);
-const Container = require(&apos;./container&apos;);
-const AbstractComponent = require(&apos;./component/abstract-component&apos;);
 const logger = require(&apos;./logger&apos;);
-const merge = require(&apos;merge&apos;);
+const Container = require(&apos;./container&apos;);
+const configFactory = require(&apos;./config/factory&apos;);
+const AbstractComponent = require(&apos;./component/abstract-component&apos;);
 
 /**
  * Recink entry point
@@ -107,7 +107,6 @@ class Recink extends Emitter {
     this._config = {};
     this._components = [];
     this._container = new Container();
-    
     this._registerDebugers();
   }
   
@@ -122,8 +121,7 @@ class Recink extends Emitter {
     
     this.on(events.components.load, (...components) =&gt; {
       logger.debug(
-        &apos;Loading components -&apos;,
-        components.map(c =&gt; c.name).join(&apos;, &apos;) || &apos;None&apos;
+        &apos;Loading components -&apos;, components.map(c =&gt; c.name).join(&apos;, &apos;) || &apos;None&apos;
       );
     });
     
@@ -155,9 +153,8 @@ class Recink extends Emitter {
   run() {
     this.emit(events.components.run, ...this._components);
     
-    const activeComponents = this._components
-      .filter(component =&gt; component.isActive);
-      
+    const activeComponents = this._components.filter(component =&gt; component.isActive);
+
     if (activeComponents.length &lt;= 0) {
       return Promise.resolve();
     }
@@ -260,16 +257,24 @@ class Recink extends Emitter {
       return this.configure(configFile);
     }
     
-    const promises = extendConfigs.concat([ configFile ])
+    const promises = extendConfigs
+      .concat([ configFile ])
       .map(cfgFile =&gt; configFactory.guess(cfgFile).load());
-    
+
     return Promise.all(promises).then(configVector =&gt; {
       const consolidatedConfig = merge.recursive(true, ...configVector);
       
       return this._configLoad(consolidatedConfig, configFile);
     });
   }
-  
+
+  /**
+   * @param {Array} modules
+   */
+  skipModules(modules) {
+    this._skipModules = modules;
+  }
+
   /**
    * @param {string} configFile
    *
@@ -294,13 +299,12 @@ class Recink extends Emitter {
       .then(() =&gt; {
         this._config = config;
         this._container.reload(this._config);
-        
         this.emit(events.config.load, this.container, configFile);
         
-        return Promise.resolve(config);
+        return Promise.resolve(this._config);
       });
   }
-  
+
   /**
    * @param {string} name
    *

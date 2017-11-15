@@ -8313,7 +8313,7 @@
     "__docId__": 287,
     "kind": "file",
     "name": "src/component/emit-component.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst ConfigBasedComponent = require('./config-based-component');\nconst EmitModule = require('./emit/emit-module');\nconst events = require('./emit/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst SequentialPromise = require('./helper/sequential-promise');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n        \n        if (moduleKeys.length <= 0 || !container) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   *\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      this.logger.info(\n        this.logger.emoji.diamond, \n        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      this.logger.info(\n        this.logger.emoji.magic, \n        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst ConfigBasedComponent = require('./config-based-component');\nconst EmitModule = require('./emit/emit-module');\nconst events = require('./emit/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst SequentialPromise = require('./helper/sequential-promise');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n\n        if (moduleKeys.length <= 0 || !container) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   *\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      this.logger.info(\n        this.logger.emoji.diamond, \n        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      this.logger.info(\n        this.logger.emoji.magic, \n        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
     "static": true,
     "longname": "src/component/emit-component.js",
     "access": null,
@@ -13419,7 +13419,7 @@
     "__docId__": 464,
     "kind": "file",
     "name": "src/component/test-component.js",
-    "content": "'use strict';\n\nconst DependantConfigBasedComponent = require('./dependant-config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./test/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst Mocha = require('mocha');\n\n/**\n * Test component\n */\nclass TestComponent extends DependantConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'test';\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [ 'emit' ];\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const mochas = {};\n      const mochaOptions = this.container.get('mocha.options', {});\n      \n      emitter.onBlocking(emitEvents.module.emit.asset, payload => {\n        if (!this._match(payload)) {\n          return emitter.emitBlocking(events.asset.test.skip, payload);\n        }\n        \n        const { fileAbs, module } = payload;\n        \n        mochas[module.name] = mochas[module.name] \n          || new Mocha(mochaOptions);\n\n        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])\n          .then(() => {\n            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);\n            \n            mochas[module.name].addFile(fileAbs);\n            \n            return Promise.resolve();\n          });\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.onBlocking(emitEvents.module.process.end, module => {\n        const mocha = mochas[module.name] || null;\n        \n        return emitter.emitBlocking(events.asset.tests.start, mocha, module)\n          .then(() => {\n            return mocha ? new Promise((resolve, reject) => {\n              mocha.run(failures => {\n                if (failures > 0) {\n                  return reject(new Error(\n                    `Tests failed in module ${ module.name } with ${ failures } failures`\n                  ));\n                }\n                \n                resolve();\n              });\n            }) : Promise.resolve();\n          })\n          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        this.waitProcessing()\n          .then(() => emitter.emitBlocking(events.assets.test.end, this))\n          .then(() => {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            \n            resolve();\n          })\n          .catch(error => reject(error));\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = TestComponent;\n",
+    "content": "'use strict';\n\nconst DependantConfigBasedComponent = require('./dependant-config-based-component');\nconst emitEvents = require('./emit/events');\nconst events = require('./test/events');\nconst print = require('print');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst Mocha = require('mocha');\n\n/**\n * Test component\n */\nclass TestComponent extends DependantConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._stats = {\n      total: 0,\n      processed: 0,\n      ignored: 0,\n    };\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'test';\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [ 'emit' ];\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const mochas = {};\n      const mochaOptions = this.container.get('mocha.options', {});\n      \n      emitter.onBlocking(emitEvents.module.emit.asset, payload => {\n        if (!this._match(payload)) {\n          return emitter.emitBlocking(events.asset.test.skip, payload);\n        }\n        \n        const { fileAbs, module } = payload;\n\n        mochas[module.name] = mochas[module.name] || new Mocha(mochaOptions);\n\n        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])\n          .then(() => {\n            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);\n            \n            mochas[module.name].addFile(fileAbs);\n            \n            return Promise.resolve();\n          });\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.onBlocking(emitEvents.module.process.end, module => {\n        const mocha = mochas[module.name] || null;\n        \n        return emitter.emitBlocking(events.asset.tests.start, mocha, module)\n          .then(() => {\n            return mocha ? new Promise((resolve, reject) => {\n              mocha.run(failures => {\n                if (failures > 0) {\n                  return reject(new Error(\n                    `Tests failed in module ${ module.name } with ${ failures } failures`\n                  ));\n                }\n                \n                resolve();\n              });\n            }) : Promise.resolve();\n          })\n          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));\n      }, TestComponent.DEFAULT_PRIORITY);\n      \n      emitter.on(emitEvents.modules.process.end, () => {\n        this.waitProcessing()\n          .then(() => emitter.emitBlocking(events.assets.test.end, this))\n          .then(() => {\n            this.logger.info(\n              this.logger.emoji.beer, \n              `Finished processing ${ this.stats.processed } test assets`\n            );\n            this.logger.debug(this.dumpStats());\n            \n            resolve();\n          })\n          .catch(error => reject(error));\n      });\n    });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} payload\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(payload) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, payload.file)).length > 0\n      && ignore.filter(i => this._test(i, payload.file)).length <= 0;\n    \n    if (result) {\n      this.stats.processed++;\n    } else {\n      this.stats.ignored++;\n    }\n    \n    this.stats.total++;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get stats() {\n    return this._stats;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dumpStats() {\n    return print(this.stats, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 10;\n  }\n}\n\nmodule.exports = TestComponent;\n",
     "static": true,
     "longname": "src/component/test-component.js",
     "access": null,
@@ -13762,7 +13762,7 @@
     "longname": "src/component/test-component.js~TestComponent#prepareConfig",
     "access": null,
     "description": "",
-    "lineNumber": 114,
+    "lineNumber": 113,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13811,7 +13811,7 @@
     "longname": "src/component/test-component.js~TestComponent#_match",
     "access": "private",
     "description": "",
-    "lineNumber": 131,
+    "lineNumber": 130,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13850,7 +13850,7 @@
     "longname": "src/component/test-component.js~TestComponent#_test",
     "access": "private",
     "description": "",
-    "lineNumber": 157,
+    "lineNumber": 156,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13900,7 +13900,7 @@
     "longname": "src/component/test-component.js~TestComponent#stats",
     "access": null,
     "description": "",
-    "lineNumber": 168,
+    "lineNumber": 167,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13932,7 +13932,7 @@
     "longname": "src/component/test-component.js~TestComponent#dumpStats",
     "access": null,
     "description": "",
-    "lineNumber": 175,
+    "lineNumber": 174,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13960,7 +13960,7 @@
     "longname": "src/component/test-component.js~TestComponent.DEFAULT_PRIORITY",
     "access": null,
     "description": "",
-    "lineNumber": 186,
+    "lineNumber": 185,
     "unknown": [
       {
         "tagName": "@returns",
@@ -14763,7 +14763,7 @@
     "__docId__": 510,
     "kind": "file",
     "name": "src/container.js",
-    "content": "'use strict';\n\nconst print = require('print');\nconst dot = require('dot-object');\ndot.overwrite = true;\n\n/**\n * Configuration container\n */\nclass Container {\n  /**\n   * @param {*} config\n   */\n  constructor(config = {}) {\n    this._config = config;\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Container}\n   */\n  reload(config) {\n    this._config = config;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  listKeys() {\n    return Object.keys(this._config);\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} value\n   *\n   * @returns {Container}\n   */\n  set(path, value) {\n    dot.str(path, value, this._config);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} defaultValue\n   *\n   * @returns {*}\n   */\n  get(path, defaultValue = null) {\n    if (!this.has(path)) {\n      return defaultValue;\n    }\n    \n    return dot.pick(path, this._config);\n  }\n  \n  /**\n   * @param {string} path\n   *\n   * @returns {boolean}\n   */\n  has(path) {\n    return typeof dot.pick(path, this._config) !== 'undefined';\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dump() {\n    return print(this.raw, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get raw() {\n    return this._config;\n  }\n}\n\nmodule.exports = Container;\n",
+    "content": "'use strict';\n\nconst print = require('print');\nconst dot = require('dot-object');\ndot.overwrite = true;\n\n/**\n * Configuration container\n */\nclass Container {\n  /**\n   * @param {*} config\n   */\n  constructor(config = {}) {\n    this._config = config;\n  }\n  \n  /**\n   * @param {*} config\n   *\n   * @returns {Container}\n   */\n  reload(config) {\n    this._config = config;\n    \n    return this;\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  listKeys() {\n    return Object.keys(this._config);\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} value\n   *\n   * @returns {Container}\n   */\n  set(path, value) {\n    dot.str(path, value, this._config);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} path\n   * @param {*} defaultValue\n   *\n   * @returns {*}\n   */\n  get(path, defaultValue = null) {\n    if (!this.has(path)) {\n      return defaultValue;\n    }\n    \n    return dot.pick(path, this._config);\n  }\n  \n  /**\n   * @param {string} path\n   *\n   * @returns {boolean}\n   */\n  has(path) {\n    return typeof dot.pick(path, this._config) !== 'undefined';\n  }\n\n  /**\n   * Remove the value\n   * @param {String} path\n   * @return {Container}\n   */\n  del(path) {\n    dot.del(path, this._config);\n\n    return this;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  dump() {\n    return print(this.raw, {\n      showArrayIndices: true,\n      showArrayLength: true,\n      sortProps: false,\n    }).replace(/\\t/g, '   ');\n  }\n  \n  /**\n   * @returns {*}\n   */\n  get raw() {\n    return this._config;\n  }\n}\n\nmodule.exports = Container;\n",
     "static": true,
     "longname": "src/container.js",
     "access": null,
@@ -15115,6 +15115,39 @@
   {
     "__docId__": 522,
     "kind": "method",
+    "name": "del",
+    "memberof": "src/container.js~Container",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/container.js~Container#del",
+    "access": null,
+    "description": "Remove the value",
+    "lineNumber": 76,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "path",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Container"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 523,
+    "kind": "method",
     "name": "dump",
     "memberof": "src/container.js~Container",
     "generator": false,
@@ -15123,7 +15156,7 @@
     "longname": "src/container.js~Container#dump",
     "access": null,
     "description": "",
-    "lineNumber": 74,
+    "lineNumber": 85,
     "unknown": [
       {
         "tagName": "@returns",
@@ -15141,7 +15174,7 @@
     }
   },
   {
-    "__docId__": 523,
+    "__docId__": 524,
     "kind": "get",
     "name": "raw",
     "memberof": "src/container.js~Container",
@@ -15151,7 +15184,7 @@
     "longname": "src/container.js~Container#raw",
     "access": null,
     "description": "",
-    "lineNumber": 85,
+    "lineNumber": 96,
     "unknown": [
       {
         "tagName": "@returns",
@@ -15173,7 +15206,7 @@
     }
   },
   {
-    "__docId__": 524,
+    "__docId__": 525,
     "kind": "file",
     "name": "src/emitter.js",
     "content": "'use strict';\n\nconst EventEmitter = require('events');\n\n/**\n * Extended Emitter implementation\n */\nclass Emitter extends EventEmitter {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._blockingListeners = {};\n    this._processing = {};\n    this._parallel = {};\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} count\n   *\n   * @returns {Emitter}\n   */\n  maxParallel(event, count) {\n    this._parallel[event] = count;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   *\n   * @returns {Promise}\n   */\n  emitBlocking(event, ...args) {\n    return this._waitAllowParallel(event)\n      .then(() => this._dispatch(event, args))\n      .then(() => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event)\n          .emit(event, ...args);\n        \n        return Promise.resolve();\n      })\n      .catch(error => {\n        this\n          ._cleanupListeners(event)\n          ._removeParallel(event);\n        \n        return Promise.reject(error);\n      });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'on');\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   *\n   * @returns {Emitter}\n   */\n  onceBlocking(event, listener, priority = Emitter.DEFAULT_PRIORITY) {\n    return this._pushListener(event, listener, priority, 'once');\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _removeParallel(event) {\n    if (!this._processing.hasOwnProperty(event)) {\n      return this;\n    }\n    \n    this._processing[event]--;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _addParallel(event) {\n    this._processing[event] = this._processing[event] || 0;\n    this._processing[event]++;\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _allowParallel(event) {\n    return !this._parallel.hasOwnProperty(event)\n      || !this._processing.hasOwnProperty(event)\n      || this._processing[event] < this._parallel[event];\n  }\n  \n  /**\n   * @param {string} event\n   * @param {number} interval\n   *\n   * @returns {Promise}\n   *\n   * @private\n   */\n  _waitAllowParallel(event, interval = 100) {\n    if (this._allowParallel(event)) {\n      this._addParallel(event);\n      return Promise.resolve();\n    }\n    \n    return new Promise(resolve => {\n      const id = setInterval(() => {\n        if (this._allowParallel(event)) {\n          this._addParallel(event);\n          clearInterval(id);\n          process.nextTick(() => resolve());\n        }\n      }, interval);\n    });\n  }\n  \n  /**\n   * @param {string} event\n   * @param {function} listener\n   * @param {number} priority\n   * @param {string} method\n   *\n   * @returns {Emitter}\n   *\n   * @private\n   */\n  _pushListener(event, listener, priority, method) {\n    this._blockingListeners[event] = this._blockingListeners[event] || [];\n    this._blockingListeners[event].push({ listener, priority, method });\n    this._blockingListeners[event].sort((a, b) => {\n      return b.priority - a.priority;\n    });\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   *\n   * @returns {Emitter}\n   * \n   * @private\n   */\n  _cleanupListeners(event) {\n    if (!this._blockingListeners.hasOwnProperty(event) ) {\n      return this;\n    }\n    \n    this._blockingListeners[event] = this._blockingListeners[event].filter(l => !!l);\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} event\n   * @param {*} args\n   * @param {number} _i\n   * \n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dispatch(event, args, _i = 0) {    \n    if (!this._blockingListeners.hasOwnProperty(event) \n      || this._blockingListeners[event].length < _i + 1) {\n      return Promise.resolve();\n    }\n    \n    const dispatcher = this._blockingListeners[event][_i];\n    const result = dispatcher.listener(...args);\n    \n    if (dispatcher.method === 'once') {\n      delete this._blockingListeners[event][_i];\n    }\n    \n    if (!result || typeof result !== 'object' || !(result instanceof Promise)) {\n      return this._dispatch(event, args, _i + 1);\n    }\n    \n    return result.then(() => this._dispatch(event, args, _i + 1));\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEFAULT_PRIORITY() {\n    return 0;\n  }\n}\n\nmodule.exports = Emitter;\n",
@@ -15184,7 +15217,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 525,
+    "__docId__": 526,
     "kind": "variable",
     "name": "EventEmitter",
     "memberof": "src/emitter.js",
@@ -15210,7 +15243,7 @@
     }
   },
   {
-    "__docId__": 526,
+    "__docId__": 527,
     "kind": "class",
     "name": "Emitter",
     "memberof": "src/emitter.js",
@@ -15228,7 +15261,7 @@
     ]
   },
   {
-    "__docId__": 527,
+    "__docId__": 528,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/emitter.js~Emitter",
@@ -15253,7 +15286,7 @@
     ]
   },
   {
-    "__docId__": 528,
+    "__docId__": 529,
     "kind": "member",
     "name": "_blockingListeners",
     "memberof": "src/emitter.js~Emitter",
@@ -15276,7 +15309,7 @@
     }
   },
   {
-    "__docId__": 529,
+    "__docId__": 530,
     "kind": "member",
     "name": "_processing",
     "memberof": "src/emitter.js~Emitter",
@@ -15299,7 +15332,7 @@
     }
   },
   {
-    "__docId__": 530,
+    "__docId__": 531,
     "kind": "member",
     "name": "_parallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15322,7 +15355,7 @@
     }
   },
   {
-    "__docId__": 531,
+    "__docId__": 532,
     "kind": "method",
     "name": "maxParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15371,7 +15404,7 @@
     }
   },
   {
-    "__docId__": 532,
+    "__docId__": 533,
     "kind": "method",
     "name": "emitBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -15420,7 +15453,7 @@
     }
   },
   {
-    "__docId__": 533,
+    "__docId__": 534,
     "kind": "method",
     "name": "onBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -15479,7 +15512,7 @@
     }
   },
   {
-    "__docId__": 534,
+    "__docId__": 535,
     "kind": "method",
     "name": "onceBlocking",
     "memberof": "src/emitter.js~Emitter",
@@ -15538,7 +15571,7 @@
     }
   },
   {
-    "__docId__": 535,
+    "__docId__": 536,
     "kind": "method",
     "name": "_removeParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15577,7 +15610,7 @@
     }
   },
   {
-    "__docId__": 536,
+    "__docId__": 537,
     "kind": "method",
     "name": "_addParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15616,7 +15649,7 @@
     }
   },
   {
-    "__docId__": 537,
+    "__docId__": 538,
     "kind": "method",
     "name": "_allowParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15655,7 +15688,7 @@
     }
   },
   {
-    "__docId__": 538,
+    "__docId__": 539,
     "kind": "method",
     "name": "_waitAllowParallel",
     "memberof": "src/emitter.js~Emitter",
@@ -15704,7 +15737,7 @@
     }
   },
   {
-    "__docId__": 539,
+    "__docId__": 540,
     "kind": "method",
     "name": "_pushListener",
     "memberof": "src/emitter.js~Emitter",
@@ -15773,7 +15806,7 @@
     }
   },
   {
-    "__docId__": 540,
+    "__docId__": 541,
     "kind": "method",
     "name": "_cleanupListeners",
     "memberof": "src/emitter.js~Emitter",
@@ -15812,7 +15845,7 @@
     }
   },
   {
-    "__docId__": 541,
+    "__docId__": 542,
     "kind": "method",
     "name": "_dispatch",
     "memberof": "src/emitter.js~Emitter",
@@ -15871,7 +15904,7 @@
     }
   },
   {
-    "__docId__": 542,
+    "__docId__": 543,
     "kind": "get",
     "name": "DEFAULT_PRIORITY",
     "memberof": "src/emitter.js~Emitter",
@@ -15903,7 +15936,7 @@
     }
   },
   {
-    "__docId__": 543,
+    "__docId__": 544,
     "kind": "file",
     "name": "src/events.js",
     "content": "'use strict';\n\nconst dot = require('dot-object');\n\n/**\n * REciNK main events\n */\nconst events = {};\n\nevents.$ = [\n  'config.preprocess',\n  'config.load',\n  'components.load',\n  'components.run',\n  'component.load',\n  'component.init',\n  'component.run',\n  'component.teardown',\n  'component.ready',\n  'component.subscribe',\n].map(eventPath => {\n  dot.str(eventPath, eventPath, events);\n  \n  return eventPath;\n});\n\nmodule.exports = events;\n",
@@ -15914,7 +15947,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 544,
+    "__docId__": 545,
     "kind": "variable",
     "name": "dot",
     "memberof": "src/events.js",
@@ -15940,7 +15973,7 @@
     }
   },
   {
-    "__docId__": 545,
+    "__docId__": 546,
     "kind": "variable",
     "name": "events",
     "memberof": "src/events.js",
@@ -15959,7 +15992,7 @@
     }
   },
   {
-    "__docId__": 546,
+    "__docId__": 547,
     "kind": "file",
     "name": "src/helper/env.js",
     "content": "'use strict';\n\n/**\n * Environment helpers\n */\nclass Env {\n  /**\n   * @returns {boolean}\n   */\n  static get isCI() {\n    return Env.isTravis;\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isTravis() {\n    const isCI = !!(Env.read('CI', false) || Env.read('CONTINUOUS_INTEGRATION', false));\n    \n    return !!(isCI && Env.read('TRAVIS', false));\n  }\n  \n  /**\n   * @returns {boolean}\n   */\n  static get isGlobalInstallation() {\n    return !!Env.read('npm_config_global', false);\n  }\n  \n  /**\n   * @param {string} name\n   * \n   * @returns {*}\n   */\n  static exists(name) {\n    return process.env.hasOwnProperty(name);\n  }\n  \n  /**\n   * @param {string} name\n   * @param {*} defaultValue\n   * \n   * @returns {*}\n   */\n  static read(name, defaultValue = null) {\n    if (!Env.exists(name)) {\n      return defaultValue;\n    }\n    \n    return process.env[name];\n  }\n}\n\nmodule.exports = Env;\n",
@@ -15970,7 +16003,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 547,
+    "__docId__": 548,
     "kind": "class",
     "name": "Env",
     "memberof": "src/helper/env.js",
@@ -15985,7 +16018,7 @@
     "interface": false
   },
   {
-    "__docId__": 548,
+    "__docId__": 549,
     "kind": "get",
     "name": "isCI",
     "memberof": "src/helper/env.js~Env",
@@ -16017,7 +16050,7 @@
     }
   },
   {
-    "__docId__": 549,
+    "__docId__": 550,
     "kind": "get",
     "name": "isTravis",
     "memberof": "src/helper/env.js~Env",
@@ -16049,7 +16082,7 @@
     }
   },
   {
-    "__docId__": 550,
+    "__docId__": 551,
     "kind": "get",
     "name": "isGlobalInstallation",
     "memberof": "src/helper/env.js~Env",
@@ -16081,7 +16114,7 @@
     }
   },
   {
-    "__docId__": 551,
+    "__docId__": 552,
     "kind": "method",
     "name": "exists",
     "memberof": "src/helper/env.js~Env",
@@ -16120,7 +16153,7 @@
     }
   },
   {
-    "__docId__": 552,
+    "__docId__": 553,
     "kind": "method",
     "name": "read",
     "memberof": "src/helper/env.js~Env",
@@ -16169,7 +16202,7 @@
     }
   },
   {
-    "__docId__": 553,
+    "__docId__": 554,
     "kind": "file",
     "name": "src/logger.js",
     "content": "'use strict';\n\nconst chalk = require('chalk');\n\n/**\n * Logger abstraction\n */\nclass Logger {\n  /**\n   * @returns {chalk} chalk\n   */\n  static get chalk() {\n    return chalk;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {Logger}\n   */\n  static customLogger(logger) {\n    this._customLogger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static level(level) {\n    this._dbgLevel = level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static addLevel(level) {\n    this._dbgLevel = this._level | level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static debug(...args) {\n    return this._exec('debug', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static log(...args) {\n    return this._exec('log', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static info(...args) {\n    return this._exec('info', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static warn(...args) {\n    return this._exec('warn', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static error(...args) {\n    return this._exec('error', ...args);\n  }\n  \n  /**\n   * @returns {*}\n   *\n   * @private\n   */\n  static get _logger() {\n    return this._customLogger || console;\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @private\n   */\n  static get _level() {\n    return this._dbgLevel || (this.WARN | this.ERROR);\n  }\n  \n  /**\n   * @param {string} method\n   * @param {*} args\n   *\n   * @returns {Logger}\n   * \n   * @private\n   */\n  static _exec(method, ...args) {\n    if (this._logger instanceof console.constructor) {\n      if (this._level & this[method.toUpperCase()]) {\n        if (method === 'debug') {\n          method = 'log';\n        }\n        \n        this._logger[method](\n          this._color(method).open,\n          ...args,\n          this._color(method).close\n        );\n      }\n    } else { // rely on winston compatible logger\n      this._logger[method](...args);\n    }\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} method\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  static _color(method) {\n    let color;\n    \n    switch (method) {\n      case 'info':\n        color = 'green';\n        break;  \n      case 'warn':\n        color = 'yellow';\n        break;   \n      case 'error':\n        color = 'red';\n        break;    \n      case 'log':\n      default:\n        color = 'white';\n        break;\n    }\n    \n    return chalk.styles[color];\n  }\n  \n  /**\n   * @returns {*}\n   */\n  static get emoji() {\n    return {\n      rocket: '🚀 ',\n      cross: '❌ ',\n      check: '✅ ',\n      banana: '🍌 ',\n      smiley: '😃 ',\n      fire: '🔥 ',\n      diamond: '💎 ',\n      gift: '🎁 ',\n      poop: '💩 ',\n      magic: '✨ ',\n      hat: '🎩 ',\n      new: '🆕 ',\n      fist: '👊 ',\n      beer: '🍺 ',\n      bicycle: '🚲 ',\n      star: '⭐️ ',\n      moon_full: '🌔 ',\n      moon_half: '🌓 ',\n      moon_empty: '🌘 ',\n    };\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ALL() {\n    return this.LOG | this.DEBUG | this.INFO | this.WARN | this.ERROR;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get LOG() {\n    return 1;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEBUG() {\n    return 2;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INFO() {\n    return 4;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get WARN() {\n    return 8;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ERROR() {\n    return 16;\n  }\n}\n\nmodule.exports = Logger;\n",
@@ -16180,7 +16213,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 554,
+    "__docId__": 555,
     "kind": "variable",
     "name": "chalk",
     "memberof": "src/logger.js",
@@ -16206,7 +16239,7 @@
     }
   },
   {
-    "__docId__": 555,
+    "__docId__": 556,
     "kind": "class",
     "name": "Logger",
     "memberof": "src/logger.js",
@@ -16221,7 +16254,7 @@
     "interface": false
   },
   {
-    "__docId__": 556,
+    "__docId__": 557,
     "kind": "get",
     "name": "chalk",
     "memberof": "src/logger.js~Logger",
@@ -16253,7 +16286,7 @@
     }
   },
   {
-    "__docId__": 557,
+    "__docId__": 558,
     "kind": "method",
     "name": "customLogger",
     "memberof": "src/logger.js~Logger",
@@ -16292,7 +16325,7 @@
     }
   },
   {
-    "__docId__": 558,
+    "__docId__": 559,
     "kind": "member",
     "name": "_customLogger",
     "memberof": "src/logger.js~Logger",
@@ -16315,7 +16348,7 @@
     }
   },
   {
-    "__docId__": 559,
+    "__docId__": 560,
     "kind": "method",
     "name": "level",
     "memberof": "src/logger.js~Logger",
@@ -16354,7 +16387,7 @@
     }
   },
   {
-    "__docId__": 560,
+    "__docId__": 561,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -16377,7 +16410,7 @@
     }
   },
   {
-    "__docId__": 561,
+    "__docId__": 562,
     "kind": "method",
     "name": "addLevel",
     "memberof": "src/logger.js~Logger",
@@ -16416,7 +16449,7 @@
     }
   },
   {
-    "__docId__": 562,
+    "__docId__": 563,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -16439,7 +16472,7 @@
     }
   },
   {
-    "__docId__": 563,
+    "__docId__": 564,
     "kind": "method",
     "name": "debug",
     "memberof": "src/logger.js~Logger",
@@ -16478,7 +16511,7 @@
     }
   },
   {
-    "__docId__": 564,
+    "__docId__": 565,
     "kind": "method",
     "name": "log",
     "memberof": "src/logger.js~Logger",
@@ -16517,7 +16550,7 @@
     }
   },
   {
-    "__docId__": 565,
+    "__docId__": 566,
     "kind": "method",
     "name": "info",
     "memberof": "src/logger.js~Logger",
@@ -16556,7 +16589,7 @@
     }
   },
   {
-    "__docId__": 566,
+    "__docId__": 567,
     "kind": "method",
     "name": "warn",
     "memberof": "src/logger.js~Logger",
@@ -16595,7 +16628,7 @@
     }
   },
   {
-    "__docId__": 567,
+    "__docId__": 568,
     "kind": "method",
     "name": "error",
     "memberof": "src/logger.js~Logger",
@@ -16634,7 +16667,7 @@
     }
   },
   {
-    "__docId__": 568,
+    "__docId__": 569,
     "kind": "get",
     "name": "_logger",
     "memberof": "src/logger.js~Logger",
@@ -16666,7 +16699,7 @@
     }
   },
   {
-    "__docId__": 569,
+    "__docId__": 570,
     "kind": "get",
     "name": "_level",
     "memberof": "src/logger.js~Logger",
@@ -16698,7 +16731,7 @@
     }
   },
   {
-    "__docId__": 570,
+    "__docId__": 571,
     "kind": "method",
     "name": "_exec",
     "memberof": "src/logger.js~Logger",
@@ -16747,7 +16780,7 @@
     }
   },
   {
-    "__docId__": 571,
+    "__docId__": 572,
     "kind": "method",
     "name": "_color",
     "memberof": "src/logger.js~Logger",
@@ -16786,7 +16819,7 @@
     }
   },
   {
-    "__docId__": 572,
+    "__docId__": 573,
     "kind": "get",
     "name": "emoji",
     "memberof": "src/logger.js~Logger",
@@ -16818,7 +16851,7 @@
     }
   },
   {
-    "__docId__": 573,
+    "__docId__": 574,
     "kind": "get",
     "name": "ALL",
     "memberof": "src/logger.js~Logger",
@@ -16850,7 +16883,7 @@
     }
   },
   {
-    "__docId__": 574,
+    "__docId__": 575,
     "kind": "get",
     "name": "LOG",
     "memberof": "src/logger.js~Logger",
@@ -16882,7 +16915,7 @@
     }
   },
   {
-    "__docId__": 575,
+    "__docId__": 576,
     "kind": "get",
     "name": "DEBUG",
     "memberof": "src/logger.js~Logger",
@@ -16914,7 +16947,7 @@
     }
   },
   {
-    "__docId__": 576,
+    "__docId__": 577,
     "kind": "get",
     "name": "INFO",
     "memberof": "src/logger.js~Logger",
@@ -16946,7 +16979,7 @@
     }
   },
   {
-    "__docId__": 577,
+    "__docId__": 578,
     "kind": "get",
     "name": "WARN",
     "memberof": "src/logger.js~Logger",
@@ -16978,7 +17011,7 @@
     }
   },
   {
-    "__docId__": 578,
+    "__docId__": 579,
     "kind": "get",
     "name": "ERROR",
     "memberof": "src/logger.js~Logger",
@@ -17010,10 +17043,10 @@
     }
   },
   {
-    "__docId__": 579,
+    "__docId__": 580,
     "kind": "file",
     "name": "src/recink.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst configFactory = require('./config/factory');\nconst Container = require('./container');\nconst AbstractComponent = require('./component/abstract-component');\nconst logger = require('./logger');\nconst merge = require('merge');\n\n/**\n * Recink entry point\n */\nclass Recink extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    \n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -',\n        components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components\n      .filter(component => component.isActive);\n      \n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.init, component);\n      \n      return component.init(this);\n    }))\n      .then(() => {\n        return Promise.all(activeComponents.map(component => {\n          this.emit(events.component.run, component);\n        \n          return component.run(this);\n        }));\n      })\n      .then(() => {\n        return Promise.all(this._components.map(component => {\n          this.emit(events.component.teardown, component);\n        \n          return component.teardown(this);\n        }));\n      });\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   * @param {*} extendConfigs\n   *\n   * @returns {Promise}\n   */\n  configureExtend(configFile, ...extendConfigs) {\n    if (extendConfigs.length <= 0) {\n      return this.configure(configFile);\n    }\n    \n    const promises = extendConfigs.concat([ configFile ])\n      .map(cfgFile => configFactory.guess(cfgFile).load());\n    \n    return Promise.all(promises).then(configVector => {\n      const consolidatedConfig = merge.recursive(true, ...configVector);\n      \n      return this._configLoad(consolidatedConfig, configFile);\n    });\n  }\n  \n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = Recink.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        \n        this.emit(events.config.load, this.container, configFile);\n        \n        return Promise.resolve(config);\n      });\n  }\n  \n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0] || null;\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = Recink;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst merge = require('merge');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst logger = require('./logger');\nconst Container = require('./container');\nconst configFactory = require('./config/factory');\nconst AbstractComponent = require('./component/abstract-component');\n\n/**\n * Recink entry point\n */\nclass Recink extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -', components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components.filter(component => component.isActive);\n\n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.init, component);\n      \n      return component.init(this);\n    }))\n      .then(() => {\n        return Promise.all(activeComponents.map(component => {\n          this.emit(events.component.run, component);\n        \n          return component.run(this);\n        }));\n      })\n      .then(() => {\n        return Promise.all(this._components.map(component => {\n          this.emit(events.component.teardown, component);\n        \n          return component.teardown(this);\n        }));\n      });\n  }\n  \n  /**\n   * @param {Function} targetClass\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          \n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   * @param {*} extendConfigs\n   *\n   * @returns {Promise}\n   */\n  configureExtend(configFile, ...extendConfigs) {\n    if (extendConfigs.length <= 0) {\n      return this.configure(configFile);\n    }\n    \n    const promises = extendConfigs\n      .concat([ configFile ])\n      .map(cfgFile => configFactory.guess(cfgFile).load());\n\n    return Promise.all(promises).then(configVector => {\n      const consolidatedConfig = merge.recursive(true, ...configVector);\n      \n      return this._configLoad(consolidatedConfig, configFile);\n    });\n  }\n\n  /**\n   * @param {Array} modules\n   */\n  skipModules(modules) {\n    this._skipModules = modules;\n  }\n\n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = Recink.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config)\n      .then(() => {\n        this._config = config;\n        this._container.reload(this._config);\n        this.emit(events.config.load, this.container, configFile);\n        \n        return Promise.resolve(this._config);\n      });\n  }\n\n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0] || null;\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n  \n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n  \n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = Recink;\n",
     "static": true,
     "longname": "src/recink.js",
     "access": null,
@@ -17021,7 +17054,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 580,
+    "__docId__": 581,
     "kind": "variable",
     "name": "path",
     "memberof": "src/recink.js",
@@ -17047,12 +17080,12 @@
     }
   },
   {
-    "__docId__": 581,
+    "__docId__": 582,
     "kind": "variable",
-    "name": "Emitter",
+    "name": "merge",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~Emitter",
+    "longname": "src/recink.js~merge",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17073,12 +17106,12 @@
     }
   },
   {
-    "__docId__": 582,
+    "__docId__": 583,
     "kind": "variable",
-    "name": "events",
+    "name": "Emitter",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~events",
+    "longname": "src/recink.js~Emitter",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17099,12 +17132,12 @@
     }
   },
   {
-    "__docId__": 583,
+    "__docId__": 584,
     "kind": "variable",
-    "name": "configFactory",
+    "name": "events",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~configFactory",
+    "longname": "src/recink.js~events",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17125,12 +17158,12 @@
     }
   },
   {
-    "__docId__": 584,
+    "__docId__": 585,
     "kind": "variable",
-    "name": "Container",
+    "name": "logger",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~Container",
+    "longname": "src/recink.js~logger",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17151,12 +17184,12 @@
     }
   },
   {
-    "__docId__": 585,
+    "__docId__": 586,
     "kind": "variable",
-    "name": "AbstractComponent",
+    "name": "Container",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~AbstractComponent",
+    "longname": "src/recink.js~Container",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17177,12 +17210,12 @@
     }
   },
   {
-    "__docId__": 586,
+    "__docId__": 587,
     "kind": "variable",
-    "name": "logger",
+    "name": "configFactory",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~logger",
+    "longname": "src/recink.js~configFactory",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17203,12 +17236,12 @@
     }
   },
   {
-    "__docId__": 587,
+    "__docId__": 588,
     "kind": "variable",
-    "name": "merge",
+    "name": "AbstractComponent",
     "memberof": "src/recink.js",
     "static": true,
-    "longname": "src/recink.js~merge",
+    "longname": "src/recink.js~AbstractComponent",
     "access": null,
     "export": false,
     "importPath": "recink",
@@ -17229,7 +17262,7 @@
     }
   },
   {
-    "__docId__": 588,
+    "__docId__": 589,
     "kind": "class",
     "name": "Recink",
     "memberof": "src/recink.js",
@@ -17247,7 +17280,7 @@
     ]
   },
   {
-    "__docId__": 589,
+    "__docId__": 590,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/recink.js~Recink",
@@ -17268,7 +17301,7 @@
     "params": []
   },
   {
-    "__docId__": 590,
+    "__docId__": 591,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~Recink",
@@ -17291,7 +17324,7 @@
     }
   },
   {
-    "__docId__": 591,
+    "__docId__": 592,
     "kind": "member",
     "name": "_components",
     "memberof": "src/recink.js~Recink",
@@ -17314,7 +17347,7 @@
     }
   },
   {
-    "__docId__": 592,
+    "__docId__": 593,
     "kind": "member",
     "name": "_container",
     "memberof": "src/recink.js~Recink",
@@ -17337,7 +17370,7 @@
     }
   },
   {
-    "__docId__": 593,
+    "__docId__": 594,
     "kind": "method",
     "name": "_registerDebugers",
     "memberof": "src/recink.js~Recink",
@@ -17347,11 +17380,11 @@
     "longname": "src/recink.js~Recink#_registerDebugers",
     "access": "private",
     "description": "",
-    "lineNumber": 29,
+    "lineNumber": 28,
     "params": []
   },
   {
-    "__docId__": 594,
+    "__docId__": 595,
     "kind": "method",
     "name": "run",
     "memberof": "src/recink.js~Recink",
@@ -17361,7 +17394,7 @@
     "longname": "src/recink.js~Recink#run",
     "access": null,
     "description": "",
-    "lineNumber": 67,
+    "lineNumber": 65,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17379,7 +17412,7 @@
     }
   },
   {
-    "__docId__": 595,
+    "__docId__": 596,
     "kind": "method",
     "name": "_getBaseClass",
     "memberof": "src/recink.js~Recink",
@@ -17389,7 +17422,7 @@
     "longname": "src/recink.js~Recink#_getBaseClass",
     "access": "private",
     "description": "",
-    "lineNumber": 105,
+    "lineNumber": 102,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17418,7 +17451,7 @@
     }
   },
   {
-    "__docId__": 596,
+    "__docId__": 597,
     "kind": "method",
     "name": "components",
     "memberof": "src/recink.js~Recink",
@@ -17428,7 +17461,7 @@
     "longname": "src/recink.js~Recink#components",
     "access": null,
     "description": "",
-    "lineNumber": 130,
+    "lineNumber": 127,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17457,7 +17490,7 @@
     }
   },
   {
-    "__docId__": 597,
+    "__docId__": 598,
     "kind": "method",
     "name": "configureExtend",
     "memberof": "src/recink.js~Recink",
@@ -17467,7 +17500,7 @@
     "longname": "src/recink.js~Recink#configureExtend",
     "access": null,
     "description": "",
-    "lineNumber": 170,
+    "lineNumber": 167,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17506,7 +17539,55 @@
     }
   },
   {
-    "__docId__": 598,
+    "__docId__": 599,
+    "kind": "method",
+    "name": "skipModules",
+    "memberof": "src/recink.js~Recink",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/recink.js~Recink#skipModules",
+    "access": null,
+    "description": "",
+    "lineNumber": 186,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Array"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "modules",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "__docId__": 600,
+    "kind": "member",
+    "name": "_skipModules",
+    "memberof": "src/recink.js~Recink",
+    "static": false,
+    "longname": "src/recink.js~Recink#_skipModules",
+    "access": null,
+    "description": null,
+    "lineNumber": 187,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 601,
     "kind": "method",
     "name": "configure",
     "memberof": "src/recink.js~Recink",
@@ -17516,7 +17597,7 @@
     "longname": "src/recink.js~Recink#configure",
     "access": null,
     "description": "",
-    "lineNumber": 190,
+    "lineNumber": 195,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17545,7 +17626,7 @@
     }
   },
   {
-    "__docId__": 599,
+    "__docId__": 602,
     "kind": "method",
     "name": "_configLoad",
     "memberof": "src/recink.js~Recink",
@@ -17555,7 +17636,7 @@
     "longname": "src/recink.js~Recink#_configLoad",
     "access": "private",
     "description": "",
-    "lineNumber": 204,
+    "lineNumber": 209,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17594,7 +17675,7 @@
     }
   },
   {
-    "__docId__": 600,
+    "__docId__": 603,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~Recink",
@@ -17602,7 +17683,7 @@
     "longname": "src/recink.js~Recink#_config",
     "access": null,
     "description": null,
-    "lineNumber": 207,
+    "lineNumber": 212,
     "undocument": true,
     "unknown": [
       {
@@ -17617,7 +17698,7 @@
     }
   },
   {
-    "__docId__": 601,
+    "__docId__": 604,
     "kind": "method",
     "name": "component",
     "memberof": "src/recink.js~Recink",
@@ -17627,7 +17708,7 @@
     "longname": "src/recink.js~Recink#component",
     "access": null,
     "description": "",
-    "lineNumber": 221,
+    "lineNumber": 225,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17656,7 +17737,7 @@
     }
   },
   {
-    "__docId__": 602,
+    "__docId__": 605,
     "kind": "method",
     "name": "listComponents",
     "memberof": "src/recink.js~Recink",
@@ -17666,7 +17747,7 @@
     "longname": "src/recink.js~Recink#listComponents",
     "access": null,
     "description": "",
-    "lineNumber": 228,
+    "lineNumber": 232,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17684,7 +17765,7 @@
     }
   },
   {
-    "__docId__": 603,
+    "__docId__": 606,
     "kind": "get",
     "name": "container",
     "memberof": "src/recink.js~Recink",
@@ -17694,7 +17775,7 @@
     "longname": "src/recink.js~Recink#container",
     "access": null,
     "description": "",
-    "lineNumber": 235,
+    "lineNumber": 239,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17716,7 +17797,7 @@
     }
   },
   {
-    "__docId__": 604,
+    "__docId__": 607,
     "kind": "get",
     "name": "config",
     "memberof": "src/recink.js~Recink",
@@ -17726,7 +17807,7 @@
     "longname": "src/recink.js~Recink#config",
     "access": null,
     "description": "",
-    "lineNumber": 242,
+    "lineNumber": 246,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17748,7 +17829,7 @@
     }
   },
   {
-    "__docId__": 605,
+    "__docId__": 608,
     "kind": "get",
     "name": "CONFIG_FILE",
     "memberof": "src/recink.js~Recink",
@@ -17758,7 +17839,7 @@
     "longname": "src/recink.js~Recink.CONFIG_FILE",
     "access": null,
     "description": "",
-    "lineNumber": 249,
+    "lineNumber": 253,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17780,7 +17861,7 @@
     }
   },
   {
-    "__docId__": 606,
+    "__docId__": 609,
     "kind": "get",
     "name": "CONFIG_FILE_NAME",
     "memberof": "src/recink.js~Recink",
@@ -17790,7 +17871,7 @@
     "longname": "src/recink.js~Recink.CONFIG_FILE_NAME",
     "access": null,
     "description": "",
-    "lineNumber": 256,
+    "lineNumber": 260,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17812,7 +17893,7 @@
     }
   },
   {
-    "__docId__": 608,
+    "__docId__": 611,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -17824,7 +17905,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 609,
+    "__docId__": 612,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -17836,7 +17917,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 610,
+    "__docId__": 613,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -17848,7 +17929,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 611,
+    "__docId__": 614,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -17860,7 +17941,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 612,
+    "__docId__": 615,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -17872,7 +17953,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 613,
+    "__docId__": 616,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -17884,7 +17965,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 614,
+    "__docId__": 617,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -17896,7 +17977,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 615,
+    "__docId__": 618,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -17908,7 +17989,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 616,
+    "__docId__": 619,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -17920,7 +18001,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 617,
+    "__docId__": 620,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -17932,7 +18013,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 618,
+    "__docId__": 621,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -17944,7 +18025,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 619,
+    "__docId__": 622,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -17956,7 +18037,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 620,
+    "__docId__": 623,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -17968,7 +18049,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 621,
+    "__docId__": 624,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -17980,7 +18061,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 622,
+    "__docId__": 625,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -17992,7 +18073,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 623,
+    "__docId__": 626,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -18004,7 +18085,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 624,
+    "__docId__": 627,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -18016,7 +18097,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 625,
+    "__docId__": 628,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -18028,7 +18109,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 626,
+    "__docId__": 629,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -18040,7 +18121,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 627,
+    "__docId__": 630,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -18052,7 +18133,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 628,
+    "__docId__": 631,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -18064,7 +18145,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 629,
+    "__docId__": 632,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -18076,7 +18157,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 630,
+    "__docId__": 633,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -18088,7 +18169,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 631,
+    "__docId__": 634,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -18100,7 +18181,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 632,
+    "__docId__": 635,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -18112,7 +18193,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 633,
+    "__docId__": 636,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -18124,7 +18205,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 634,
+    "__docId__": 637,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -18136,7 +18217,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 635,
+    "__docId__": 638,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -18148,7 +18229,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 636,
+    "__docId__": 639,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -18160,7 +18241,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 637,
+    "__docId__": 640,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -18172,7 +18253,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 638,
+    "__docId__": 641,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -18184,7 +18265,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 639,
+    "__docId__": 642,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -18196,7 +18277,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 640,
+    "__docId__": 643,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -18208,7 +18289,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 641,
+    "__docId__": 644,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -18220,7 +18301,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 642,
+    "__docId__": 645,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -18232,7 +18313,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 643,
+    "__docId__": 646,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -18244,7 +18325,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 644,
+    "__docId__": 647,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -18256,7 +18337,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 645,
+    "__docId__": 648,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -18268,7 +18349,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 646,
+    "__docId__": 649,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -18280,7 +18361,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 647,
+    "__docId__": 650,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -18292,7 +18373,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 648,
+    "__docId__": 651,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -18304,7 +18385,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 649,
+    "__docId__": 652,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -18316,7 +18397,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 650,
+    "__docId__": 653,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -18328,7 +18409,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 651,
+    "__docId__": 654,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -18340,7 +18421,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 652,
+    "__docId__": 655,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -18352,7 +18433,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 653,
+    "__docId__": 656,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -18364,7 +18445,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 654,
+    "__docId__": 657,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -18377,7 +18458,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 656,
+    "__docId__": 659,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -18389,7 +18470,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 657,
+    "__docId__": 660,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -18401,7 +18482,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 658,
+    "__docId__": 661,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -18413,7 +18494,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 659,
+    "__docId__": 662,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -18425,7 +18506,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 660,
+    "__docId__": 663,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -18437,7 +18518,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 661,
+    "__docId__": 664,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -18449,7 +18530,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 662,
+    "__docId__": 665,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -18461,7 +18542,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 663,
+    "__docId__": 666,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",

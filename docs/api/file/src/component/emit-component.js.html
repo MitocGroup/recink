@@ -147,7 +147,7 @@ class EmitComponent extends ConfigBasedComponent {
       .then(container =&gt; {
         const moduleKeys = emitter.container.listKeys()
           .filter(key =&gt; key !== ConfigBasedComponent.MAIN_CONFIG_KEY);
-        
+
         if (moduleKeys.length &lt;= 0 || !container) {
           return Promise.resolve(container);
         }

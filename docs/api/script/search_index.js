@@ -2004,6 +2004,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/container.js~container#del",
+    "class/src/container.js~Container.html#instance-method-del",
+    "src/container.js~Container#del",
+    "method"
+  ],
+  [
     "src/container.js~container#dump",
     "class/src/container.js~Container.html#instance-method-dump",
     "src/container.js~Container#dump",
@@ -2289,6 +2295,12 @@ window.esdocSearchIndex = [
     "src/recink.js~recink#run",
     "class/src/recink.js~Recink.html#instance-method-run",
     "src/recink.js~Recink#run",
+    "method"
+  ],
+  [
+    "src/recink.js~recink#skipmodules",
+    "class/src/recink.js~Recink.html#instance-method-skipModules",
+    "src/recink.js~Recink#skipModules",
     "method"
   ],
   [
