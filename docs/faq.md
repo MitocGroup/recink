@@ -42,7 +42,6 @@ dist: trusty
 
 ___
 
-
 Q: _Tests failing when using Nightmare browser for e2e test suites in `Travis`. How can i fix it?_
 
 A: Make sure you've `xvfb` up and running to have the X instance virtualized for non headless browsers, e.g.:
@@ -59,7 +58,7 @@ A: Make sure you've `xvfb` up and running to have the X instance virtualized for
 
 # Runner
 
-Q: _How to skip some of the modules?_
+Q: _How to run modules partially?_
 
 A: Let's assume that we use following config:
 
@@ -85,9 +84,35 @@ core:
   dependencies: ~
 ```
 
-And you want to run only api module - just use `--skip-modules` flag
+And you want to run only `api` module - just use `--exclude-modules`/`--include-modules` option
 
 
 ```bash
-recink run unit --skip-modules="lib, core"
+recink run unit --exclude-modules="lib, core"
+```
+
+or
+
+```bash
+recink run unit --include-modules="api"
+```
+
+___
+
+Q: _How can I overwrite parameters?_
+
+A: Let's assume that we use following config:
+
+```yaml
+$:
+  preprocess:
+    ...
+  pagespeed:
+    uri: 'www.example.com'
+```
+
+We can overwrite it like this:
+
+```bash
+recink run unit --custom-config='{"$.pagespeed.uri":"www-test.example.com"}'
 ```

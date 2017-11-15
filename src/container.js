@@ -67,6 +67,17 @@ class Container {
   has(path) {
     return typeof dot.pick(path, this._config) !== 'undefined';
   }
+
+  /**
+   * Remove the value
+   * @param {String} path
+   * @return {Container}
+   */
+  del(path) {
+    dot.del(path, this._config);
+
+    return this;
+  }
   
   /**
    * @returns {string}

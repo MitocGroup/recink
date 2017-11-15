@@ -2,15 +2,14 @@
 
 'use strict';
 
-const logger = require('../src/logger');
-const Env = require('../src/helper/env');
+const path = require('path');
 const prog = require('caporal');
 const pkg = require('../package.json');
-const path = require('path');
+const Env = require('../src/helper/env');
+const logger = require('../src/logger');
 
 /**
  * @param {string} path
- *
  * @returns {function}
  */
 function cmd(path) {
@@ -46,7 +45,9 @@ const commands = prog
   .command('run', 'Run unit, e2e or an generic component') 
   .argument('[name]', 'Generic component name')
   .argument('[path]', 'Path to tests', /.+/, process.cwd())
-  .option('--skip-modules [modules]', 'List of modules to skip', prog.LIST)
+  .option('--exclude-modules [modules]', 'List of modules to exclude', prog.LIST, [])
+  .option('--include-modules [modules]', 'List of modules to run', prog.LIST, [])
+  .option('--custom-config', 'Custom configuration', (arg) => { return JSON.parse(arg) || {} })
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
   .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'e2e', 'test', 'coverage' ])
   .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
