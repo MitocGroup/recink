@@ -18,6 +18,7 @@ class Recink extends Emitter {
     
     this._config = {};
     this._components = [];
+    this._skipModules = [];
     this._container = new Container();
     this._registerDebugers();
   }
@@ -181,6 +182,26 @@ class Recink extends Emitter {
   }
 
   /**
+   * Filter origin config
+   * @param {Object} config
+   * @return {Object}
+   */
+  filteredConfig(config) {
+    this._skipModules.forEach(module => {
+      delete config[module];
+    });
+
+    return config;
+  }
+
+  /**
+   * @param {Array} modules
+   */
+  skipModules(modules) {
+    this._skipModules = modules;
+  }
+
+  /**
    * @param {string} configFile
    *
    * @returns {Promise}
@@ -202,7 +223,7 @@ class Recink extends Emitter {
   _configLoad(config, configFile) {
     return this.emitBlocking(events.config.preprocess, config)
       .then(() => {
-        this._config = config;
+        this._config = this.filteredConfig(config);
         this._container.reload(this._config);
         this.emit(events.config.load, this.container, configFile);
         
@@ -239,6 +260,16 @@ class Recink extends Emitter {
   get config() {
     return this._config;
   }
+
+  // /**
+  //  * @param {Object} config
+  //  * @return {*}
+  //  */
+  // setConfig(config) {
+  //   this._config = config;
+  //
+  //   return Promise.resolve(this._config);
+  // }
   
   /**
    * @returns {string}
