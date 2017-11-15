@@ -1,13 +1,13 @@
 'use strict';
 
 const path = require('path');
+const merge = require('merge');
 const Emitter = require('./emitter');
 const events = require('./events');
-const configFactory = require('./config/factory');
-const Container = require('./container');
-const AbstractComponent = require('./component/abstract-component');
 const logger = require('./logger');
-const merge = require('merge');
+const Container = require('./container');
+const configFactory = require('./config/factory');
+const AbstractComponent = require('./component/abstract-component');
 
 /**
  * Recink entry point
@@ -17,10 +17,8 @@ class Recink extends Emitter {
     super();
     
     this._config = {};
-    this._skipModules = [];
     this._components = [];
     this._container = new Container();
-    
     this._registerDebugers();
   }
   
@@ -35,8 +33,7 @@ class Recink extends Emitter {
     
     this.on(events.components.load, (...components) => {
       logger.debug(
-        'Loading components -',
-        components.map(c => c.name).join(', ') || 'None'
+        'Loading components -', components.map(c => c.name).join(', ') || 'None'
       );
     });
     
@@ -184,13 +181,6 @@ class Recink extends Emitter {
   }
 
   /**
-   * @param {Array} modules
-   */
-  skipModules(modules) {
-    this._skipModules = modules;
-  }
-
-  /**
    * @param {string} configFile
    *
    * @returns {Promise}
@@ -212,26 +202,12 @@ class Recink extends Emitter {
   _configLoad(config, configFile) {
     return this.emitBlocking(events.config.preprocess, config)
       .then(() => {
-        this._config = this.filteredConfig(config);
+        this._config = config;
         this._container.reload(this._config);
-        
         this.emit(events.config.load, this.container, configFile);
         
         return Promise.resolve(this._config);
       });
-  }
-
-  /**
-   * Filter origin config
-   * @param {Object} config
-   * @return {Object}
-   */
-  filteredConfig(config) {
-    this._skipModules.forEach(module => {
-      delete config[module];
-    });
-
-    return config;
   }
 
   /**

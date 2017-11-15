@@ -1,18 +1,15 @@
 'use strict';
 
 const path = require('path');
+const resolvePackage = require('resolve-package');
 const Recink = require('../../../src/recink');
+const ComponentRegistry = require('../component/registry/registry');
 const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
-const ComponentRegistry = require('../component/registry/registry');
-const resolvePackage = require('resolve-package');
+const ConfigBasedComponent = require('../../../src/component/config-based-component');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
-
-  if (options.skipModules) {
-    recink.skipModules(options.skipModules.map(t => t.trim()));
-  }
 
   let namespace = args.name;
   let disabledComponents = options.s;
@@ -42,9 +39,50 @@ module.exports = (args, options, logger) => {
     namespace.toLowerCase()
   );
 
-  logger.debug(
-    `Initialize components registry in ${ componentRegistry.storage.registryFile }`
-  );
+  logger.debug(`Initialize components registry in ${ componentRegistry.storage.registryFile }`);
+
+  /**
+   * @param {Array} modules
+   * @param {Array} availableModules
+   * @return {Array}
+   */
+  function prepareList(modules, availableModules) {
+    return modules
+      .map(key => key.trim())
+      .filter(key => availableModules.includes(key.trim()));
+  }
+
+  /**
+   * Pre-run reconfiguration
+   * @param {Container} container
+   * @return {Object}
+   */
+  function beforeRunConfiguration(container) {
+    let modules = container.listKeys();
+    let customConfig = options.customConfig;
+    let excludeModules = prepareList(options.excludeModules, modules);
+    let includeModules = prepareList(options.includeModules, modules);
+
+    if (includeModules.length) {
+      excludeModules = modules
+        .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY)
+        .filter(key => !includeModules.includes(key));
+    }
+
+    excludeModules.forEach(module => {
+      container.del(module)
+    });
+
+    for (let property in customConfig) {
+      if (customConfig.hasOwnProperty(property)) {
+        if (container.has(property)) {
+          container.set(property, customConfig[property]);
+        }
+      }
+    }
+
+    return container.raw;
+  }
 
   return componentRegistry.load()
     .then(() => {
@@ -117,7 +155,8 @@ module.exports = (args, options, logger) => {
           path.join(args.path, Recink.CONFIG_FILE_NAME),
           ...componentConfig
         )
-      ])
-        .then(() => recink.run());
+      ]).then(() => {
+        return Promise.resolve(beforeRunConfiguration(recink.container));
+      }).then(() => recink.run());
     });
 };
