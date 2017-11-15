@@ -6,7 +6,7 @@ const Recink = require('../../../src/recink');
 const ComponentRegistry = require('../component/registry/registry');
 const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
-const ConfigBasedComponent = require('../../../src/component/config-based-component');
+// const ConfigBasedComponent = require('../../../src/component/config-based-component');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
@@ -41,16 +41,16 @@ module.exports = (args, options, logger) => {
 
   logger.debug(`Initialize components registry in ${ componentRegistry.storage.registryFile }`);
 
-  /**
-   * @param {Array} modules
-   * @param {Array} availableModules
-   * @return {Array}
-   */
-  function prepareList(modules, availableModules) {
-    return modules
-      .map(key => key.trim())
-      .filter(key => availableModules.includes(key.trim()));
-  }
+  // /**
+  //  * @param {Array} modules
+  //  * @param {Array} availableModules
+  //  * @return {Array}
+  //  */
+  // function prepareList(modules, availableModules) {
+  //   return modules
+  //     .map(key => key.trim())
+  //     .filter(key => availableModules.includes(key.trim()));
+  // }
 
   /**
    * @param {Array} opts
@@ -73,7 +73,7 @@ module.exports = (args, options, logger) => {
    * @return {Object}
    */
   function beforeRunConfiguration(container) {
-    let modules = container.listKeys();
+    // let modules = container.listKeys();
     let tfVars = optionsToObject(options.tfVars);
     let customConfig = optionsToObject(options.customConfig);
     // let excludeModules = prepareList(options.excludeModules, modules);
