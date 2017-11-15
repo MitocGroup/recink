@@ -181,6 +181,13 @@ class Recink extends Emitter {
   }
 
   /**
+   * @param {Array} modules
+   */
+  skipModules(modules) {
+    this._skipModules = modules;
+  }
+
+  /**
    * @param {string} configFile
    *
    * @returns {Promise}

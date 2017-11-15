@@ -6,7 +6,7 @@ const Recink = require('../../../src/recink');
 const ComponentRegistry = require('../component/registry/registry');
 const componentsFactory = require('../../../src/component/factory');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
-const ConfigBasedComponent = require('../../../src/component/config-based-component');
+// const ConfigBasedComponent = require('../../../src/component/config-based-component');
 
 module.exports = (args, options, logger) => {
   const recink = new Recink();
@@ -41,15 +41,30 @@ module.exports = (args, options, logger) => {
 
   logger.debug(`Initialize components registry in ${ componentRegistry.storage.registryFile }`);
 
+  // /**
+  //  * @param {Array} modules
+  //  * @param {Array} availableModules
+  //  * @return {Array}
+  //  */
+  // function prepareList(modules, availableModules) {
+  //   return modules
+  //     .map(key => key.trim())
+  //     .filter(key => availableModules.includes(key.trim()));
+  // }
+
   /**
-   * @param {Array} modules
-   * @param {Array} availableModules
-   * @return {Array}
+   * @param {Array} opts
+   * @returns {Object}
    */
-  function prepareList(modules, availableModules) {
-    return modules
-      .map(key => key.trim())
-      .filter(key => availableModules.includes(key.trim()));
+  function optionsToObject(opts) {
+    let result = {};
+
+    opts.map(key => key.trim()).forEach(item => {
+      let res = item.split(':');
+      result[res[0].trim()] = res[1].trim();
+    });
+
+    return result;
   }
 
   /**
@@ -58,26 +73,31 @@ module.exports = (args, options, logger) => {
    * @return {Object}
    */
   function beforeRunConfiguration(container) {
-    let modules = container.listKeys();
-    let customConfig = options.customConfig;
-    let excludeModules = prepareList(options.excludeModules, modules);
-    let includeModules = prepareList(options.includeModules, modules);
-
-    if (includeModules.length) {
-      excludeModules = modules
-        .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY)
-        .filter(key => !includeModules.includes(key));
-    }
-
-    excludeModules.forEach(module => {
-      container.del(module)
-    });
+    // let modules = container.listKeys();
+    let tfVars = optionsToObject(options.tfVars);
+    let customConfig = optionsToObject(options.customConfig);
+    // let excludeModules = prepareList(options.excludeModules, modules);
+    // let includeModules = prepareList(options.includeModules, modules);
+    //
+    // if (includeModules.length) {
+    //   excludeModules = modules
+    //     .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY)
+    //     .filter(key => !includeModules.includes(key));
+    // }
+    //
+    // excludeModules.forEach(module => {
+    //   container.del(module)
+    // });
 
     for (let property in customConfig) {
       if (customConfig.hasOwnProperty(property)) {
-        if (container.has(property)) {
-          container.set(property, customConfig[property]);
-        }
+        container.set(property, customConfig[property]);
+      }
+    }
+
+    for (let property in tfVars) {
+      if (tfVars.hasOwnProperty(property)) {
+        container.set(`$.terraform.vars.${property}`, tfVars[property]);
       }
     }
 
