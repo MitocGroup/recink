@@ -538,8 +538,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     if (!enabled) {
       return this._handleSkip(emitModule, 'destroy');
-    } else if (this._noChanges) {
-      return this._handleSkip(emitModule, 'destroy', 'No Changes Detected');
     }
 
     return terraform.destroy(dir)
