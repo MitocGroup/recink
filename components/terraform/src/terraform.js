@@ -113,14 +113,12 @@ class Terraform {
    * https://www.terraform.io/docs/commands/init.html
    * 
    * @param {string} dir
-   * 
-   * @returns {Promise} 
+   * @returns {Promise}
    */
   init(dir) {
-    return this.run('init', [
-      '-no-color',
-      '.',
-    ], dir).then(result => Promise.resolve());
+    return this
+      .run('init', ['-no-color', '.',], dir)
+      .then(result => Promise.resolve());
   }
 
   /**
@@ -209,10 +207,11 @@ class Terraform {
    * @returns {Promise} 
    */
   show(planOrState, secureOutput = true) {
-    let options = [
-      '-no-color',
-      planOrState.path
-    ];
+    let options = ['-no-color'];
+
+    if (planOrState instanceof Plan) {
+      options.push(planOrState.path)
+    }
 
     return this.run('show', options).then(result => {
       return Promise.resolve(
@@ -225,9 +224,7 @@ class Terraform {
 
   /**
    * @param {string} dir
-   * 
    * @returns {Promise}
-   * 
    * @private
    */
   _ensureResourceDir(dir) {
