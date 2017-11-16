@@ -135,12 +135,16 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const planPath = path.join(dir, this.resourceDirname, Terraform.PLAN);
-        
-        return this.run('plan', [
+        let options = [
           '-no-color',
-          `-state=${ statePath }`,
-          `-out=${ planPath }`,
-        ], dir).then(result =>  new Plan(planPath, result.output));
+          `-out=${ planPath }`
+        ];
+
+        if (fse.existsSync(statePath)) {
+          options.push(`-state=${ statePath }`);
+        }
+
+        return this.run('plan', options, dir).then(result =>  new Plan(planPath, result.output));
       });
   }
 
@@ -156,14 +160,17 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-    
-        return this.run('apply', [
+        let options = [
           '-auto-approve=true',
           '-no-color',
-          `-state=${ statePath }`,
-          `-state-out=${ statePath }`,
-          `-backup=${ backupStatePath }`,
-        ], dir).then(result => new State(statePath, backupStatePath));
+          `-state-out=${ statePath }`
+        ];
+
+        if (fse.existsSync(statePath)) {
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+        }
+    
+        return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
       });
   }
 
@@ -179,14 +186,17 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-
-        return this.run('destroy', [
+        let options = [
           '-no-color',
           '-force',
-          `-state=${ statePath }`,
-          `-state-out=${ statePath }`,
-          `-backup=${ backupStatePath }`,
-        ], dir).then(result => new State(statePath, backupStatePath));
+          `-state-out=${ statePath }`
+        ];
+
+        if (fse.existsSync(statePath)) {
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+        }
+
+        return this.run('destroy', options, dir).then(result => new State(statePath, backupStatePath));
       });
   }
 
@@ -199,10 +209,12 @@ class Terraform {
    * @returns {Promise} 
    */
   show(planOrState, secureOutput = true) {
-    return this.run('show', [
+    let options = [
       '-no-color',
-      planOrState.path,
-    ]).then(result => {
+      planOrState.path
+    ];
+
+    return this.run('show', options).then(result => {
       return Promise.resolve(
         secureOutput 
           ? SecureOutput.secure(result.output) 
