@@ -17,14 +17,17 @@ class Terraform {
    * @param {*} vars
    * @param {string} binaryPath 
    * @param {string} resourceDirname
+   * @param {string} terraformDirname
    */
   constructor(
     vars = {}, 
     binaryPath = Terraform.DEFAULT_BINARY_PATH, 
-    resourceDirname = Terraform.RESOURCE_DIRNAME
+    resourceDirname = Terraform.RESOURCE_DIRNAME,
+    terraformDirname = Terraform.TERRAFORM_DIRNAME
   ) {
     this._binaryPath = binaryPath;
     this._resourceDirname = resourceDirname;
+    this._terraformDirname = terraformDirname;
     this._vars = vars;
     this._logger = false;
   }
@@ -97,6 +100,13 @@ class Terraform {
   }
 
   /**
+   * @returns {string}
+   */
+  get terraformDirname() {
+    return this._terraformDirname;
+  }
+
+  /**
    * @returns {*}
    */
   get env() {
@@ -158,14 +168,17 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
+        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
+
         let options = [
           '-auto-approve=true',
-          '-no-color',
-          `-state-out=${ statePath }`
+          '-no-color'
         ];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
+        } else if (fse.existsSync(remoteStatePath)) {
+          options.push(`-state=${ remoteStatePath }`);
         }
     
         return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
@@ -184,14 +197,13 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
         const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-        let options = [
-          '-no-color',
-          '-force',
-          `-state-out=${ statePath }`
-        ];
+        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
+        let options = ['-no-color', '-force'];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
+        } else if (fse.existsSync(remoteStatePath)) {
+          options.push(`-state=${remoteStatePath}`)
         }
 
         return this.run('destroy', options, dir).then(result => new State(statePath, backupStatePath));
@@ -341,6 +353,13 @@ class Terraform {
    */
   static get RESOURCE_DIRNAME() {
     return '.resource';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get TERRAFORM_DIRNAME() {
+    return '.terraform';
   }
 
   /**
