@@ -3,6 +3,7 @@
 const path = require('path');
 const fse = require('fs-extra');
 const execa = require('execa');
+const pjson = require('../package');
 const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
@@ -278,9 +279,11 @@ class Terraform {
   }
 
   /**
+   * @param {string} version
+   *
    * @returns {Promise}
    */
-  ensure() {
+  ensure(version = Terraform.VERSION) {
     return fse.pathExists(this.binaryPath)
       .then(exists => {
         if (exists) {
@@ -290,7 +293,7 @@ class Terraform {
         const downloader = new Downloader();
         const dir = path.dirname(this.binaryPath);
 
-        return downloader.download(dir)
+        return downloader.download(dir, version)
           .then(() => {
             const realPath = path.join(dir, Terraform.BINARY);
 
@@ -346,6 +349,14 @@ class Terraform {
    */
   static get BINARY() {
     return 'terraform';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get VERSION() {
+    const { version } = pjson.terraform;
+    return version;
   }
 
   /**

@@ -1,7 +1,6 @@
 'use strict';
 
 const os = require('os');
-const pjson = require('../package');
 const download = require('download');
 
 /**
@@ -16,7 +15,7 @@ class Downloader {
    * 
    * @returns {Promise} 
    */
-  download(binPath, version = Downloader.VERSION, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
+  download(binPath, version, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
     const url = Downloader.urlTemplate(version, platform, arch);
 
     return download(url, binPath, { extract: true });
@@ -55,14 +54,6 @@ class Downloader {
     }
 
     return `https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${platformVar}_${archVar}.zip`;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get VERSION() {
-    const { version } = pjson.terraform;
-    return version;
   }
 
   /**
