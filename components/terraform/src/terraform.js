@@ -7,6 +7,7 @@ const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
 const SecureOutput = require('./secure-output');
+const { walkDir } = require('./helper/util');
 
 /**
  * Terraform wrapper
@@ -232,12 +233,16 @@ class Terraform {
     const { env } = this;
 
     if (this.logger) {
+      let fileNames = [];
+      walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
+
       this.logger.debug({
         binary: this.binaryPath,
         command: command,
         args: args,
-        cwd: cwd
-      })
+        cwd: cwd,
+        fileNames: fileNames
+      });
     }
 
     return execa(
