@@ -404,15 +404,17 @@ class TerraformComponent extends DependantConfigBasedComponent {
       this.container.get('vars', {}), 
       emitModule.container.get('terraform.vars', {})
     );
-    const binary = emitModule.container.get('terraform.binary', Terraform.DEFAULT_BINARY_PATH) 
+    const binary = emitModule.container.get('terraform.binary', Terraform.DEFAULT_BINARY_PATH)
       || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+    const version = emitModule.container.get('terraform.version', Terraform.VERSION)
+      || this.container.get('version', Terraform.VERSION);
     const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
       || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
     const terraformDirname = emitModule.container.get('terraform.terraform-dirname', Terraform.TERRAFORM_DIRNAME)
       || this.container.get('terraform-dirname', Terraform.TERRAFORM_DIRNAME);
     const terraform = new Terraform(vars, binary, resourceDirname, terraformDirname);
 
-    return terraform.ensure()
+    return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._apply(terraform, emitModule))
