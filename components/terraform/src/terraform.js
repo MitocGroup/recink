@@ -22,7 +22,7 @@ class Terraform {
    */
   constructor(
     vars = {}, 
-    binary = Terraform.TERRAFORM_EXEC,
+    binary = Terraform.BINARY,
     resourcePath = Terraform.RESOURCE_PATH,
     terraformPath = Terraform.TERRAFORM_PATH
   ) {
@@ -378,15 +378,15 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BINARY() {
+  static get BIN_FILE() {
     return 'terraform';
   }
 
   /**
    * @returns {string}
    */
-  static get TERRAFORM_EXEC() {
-    return path.join(Terraform.BIN_PATH, Terraform.BINARY);
+  static get BINARY() {
+    return path.join(Terraform.BIN_PATH, Terraform.BIN_FILE);
   }
 }
 
