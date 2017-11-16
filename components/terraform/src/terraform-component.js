@@ -251,9 +251,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
     const cacheComponent = emitter.component('cache');
     const options = [].concat(cacheComponent.container.get('options', []));
     const driverName = cacheComponent.container.get('driver');
-    const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
-      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
-    const resourcesPath = path.join(rootPath, resourceDirname);
+    const resourcePath = emitModule.container.get('terraform.resource-path', Terraform.RESOURCE_PATH)
+      || this.container.get('resource-path', Terraform.RESOURCE_PATH);
+    const resourcesPath = path.join(rootPath, resourcePath);
 
     // @todo abstract the way cache behavior hooked
     if (driverName === 's3' && options.length >= 1) {
@@ -404,15 +404,15 @@ class TerraformComponent extends DependantConfigBasedComponent {
       this.container.get('vars', {}), 
       emitModule.container.get('terraform.vars', {})
     );
-    const binary = emitModule.container.get('terraform.binary', Terraform.DEFAULT_BINARY_PATH)
-      || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
+    const binary = emitModule.container.get('terraform.binary', Terraform.TERRAFORM_EXEC)
+      || this.container.get('binary', Terraform.TERRAFORM_EXEC);
     const version = emitModule.container.get('terraform.version', Terraform.VERSION)
       || this.container.get('version', Terraform.VERSION);
-    const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
-      || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
-    const terraformDirname = emitModule.container.get('terraform.terraform-dirname', Terraform.TERRAFORM_DIRNAME)
-      || this.container.get('terraform-dirname', Terraform.TERRAFORM_DIRNAME);
-    const terraform = new Terraform(vars, binary, resourceDirname, terraformDirname);
+    const resourcePath = emitModule.container.get('terraform.resource-path', Terraform.RESOURCE_PATH)
+      || this.container.get('resource-path', Terraform.RESOURCE_PATH);
+    const terraformPath = emitModule.container.get('terraform.terraform-path', Terraform.TERRAFORM_PATH)
+      || this.container.get('terraform-path', Terraform.TERRAFORM_PATH);
+    const terraform = new Terraform(vars, binary, resourcePath, terraformPath);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))

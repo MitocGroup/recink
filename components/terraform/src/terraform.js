@@ -16,19 +16,19 @@ const { walkDir } = require('./helper/util');
 class Terraform {
   /**
    * @param {*} vars
-   * @param {string} binaryPath 
-   * @param {string} resourceDirname
-   * @param {string} terraformDirname
+   * @param {string} binary
+   * @param {string} resourcePath
+   * @param {string} terraformPath
    */
   constructor(
     vars = {}, 
-    binaryPath = Terraform.DEFAULT_BINARY_PATH, 
-    resourceDirname = Terraform.RESOURCE_DIRNAME,
-    terraformDirname = Terraform.TERRAFORM_DIRNAME
+    binary = Terraform.TERRAFORM_EXEC,
+    resourcePath = Terraform.RESOURCE_PATH,
+    terraformPath = Terraform.TERRAFORM_PATH
   ) {
-    this._binaryPath = binaryPath;
-    this._resourceDirname = resourceDirname;
-    this._terraformDirname = terraformDirname;
+    this._binary = binary;
+    this._resourcePath = resourcePath;
+    this._terraformPath = terraformPath;
     this._vars = vars;
     this._logger = false;
   }
@@ -89,22 +89,22 @@ class Terraform {
   /**
    * @returns {string}
    */
-  get binaryPath() {
-    return this._binaryPath;
+  get binary() {
+    return this._binary;
   }
 
   /**
    * @returns {string}
    */
-  get resourceDirname() {
-    return this._resourceDirname;
+  get resourcePath() {
+    return this._resourcePath;
   }
 
   /**
    * @returns {string}
    */
-  get terraformDirname() {
-    return this._terraformDirname;
+  get terraformPath() {
+    return this._terraformPath;
   }
 
   /**
@@ -142,8 +142,8 @@ class Terraform {
   plan(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const planPath = path.join(dir, this.resourceDirname, Terraform.PLAN);
+        const statePath = path.join(dir, this.resourcePath, Terraform.STATE);
+        const planPath = path.join(dir, this.resourcePath, Terraform.PLAN);
         let options = [
           '-no-color',
           `-out=${ planPath }`
@@ -167,9 +167,9 @@ class Terraform {
   apply(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
+        const statePath = path.join(dir, this.resourcePath, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resourcePath, Terraform.BACKUP_STATE);
+        const remoteStatePath = path.join(dir, this.terraformPath, Terraform.STATE);
 
         let options = [
           '-auto-approve=true',
@@ -196,9 +196,9 @@ class Terraform {
   destroy(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
+        const statePath = path.join(dir, this.resourcePath, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resourcePath, Terraform.BACKUP_STATE);
+        const remoteStatePath = path.join(dir, this.terraformPath, Terraform.STATE);
         let options = ['-no-color', '-force'];
 
         if (fse.existsSync(statePath)) {
@@ -241,7 +241,7 @@ class Terraform {
    * @private
    */
   _ensureResourceDir(dir) {
-    return fse.ensureDir(path.join(dir, this.resourceDirname));
+    return fse.ensureDir(path.join(dir, this.resourcePath));
   }
 
   /**
@@ -259,7 +259,7 @@ class Terraform {
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
 
       this.logger.debug({
-        binary: this.binaryPath,
+        binary: this.binary,
         command: command,
         args: args,
         cwd: cwd,
@@ -268,7 +268,7 @@ class Terraform {
     }
 
     return execa(
-      path.resolve(this.binaryPath), 
+      path.resolve(this.binary),
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
@@ -284,14 +284,14 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    return fse.pathExists(this.binaryPath)
+    return fse.pathExists(this.binary)
       .then(exists => {
         if (exists) {
           return Promise.resolve();
         }
 
         const downloader = new Downloader();
-        const dir = path.dirname(this.binaryPath);
+        const dir = path.dirname(this.binary);
 
         // todo: validate version to follow format X.Y.Z
 
@@ -299,11 +299,11 @@ class Terraform {
           .then(() => {
             const realPath = path.join(dir, Terraform.BINARY);
 
-            if (realPath === this.binaryPath) {
+            if (realPath === this.binary) {
               return Promise.resolve();
             }
 
-            return fse.move(realPath, this.binaryPath);
+            return fse.move(realPath, this.binary);
           });
       });
   }
@@ -328,15 +328,9 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BACKUP_STATE() {
-    return `terraform.tfstate.${ new Date().getTime() }.backup`;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get STATE() {
-    return 'terraform.tfstate';
+  static get VERSION() {
+    const { version } = pjson.terraform;
+    return version;
   }
 
   /**
@@ -349,29 +343,28 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BINARY() {
-    return 'terraform';
+  static get STATE() {
+    return 'terraform.tfstate';
   }
 
   /**
    * @returns {string}
    */
-  static get VERSION() {
-    const { version } = pjson.terraform;
-    return version;
+  static get BACKUP_STATE() {
+    return `terraform.tfstate.${ new Date().getTime() }.backup`;
   }
 
   /**
    * @returns {string}
    */
-  static get RESOURCE_DIRNAME() {
+  static get RESOURCE_PATH() {
     return '.resource';
   }
 
   /**
    * @returns {string}
    */
-  static get TERRAFORM_DIRNAME() {
+  static get TERRAFORM_PATH() {
     return '.terraform';
   }
 
@@ -385,7 +378,14 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get DEFAULT_BINARY_PATH() {
+  static get BINARY() {
+    return 'terraform';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get TERRAFORM_EXEC() {
     return path.join(Terraform.BIN_PATH, Terraform.BINARY);
   }
 }
