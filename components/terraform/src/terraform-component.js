@@ -115,8 +115,10 @@ class TerraformComponent extends DependantConfigBasedComponent {
           .then(() => {
             return Promise.all(
               terraformModules.map(emitModule => {
-                return this._loadCache(emitModule)
-                  .then(() => this._terraformate(emitModule))
+                return this._loadCache(emitModule).then(() => {
+                  this.logger.debug(`Cache for module "${ emitModule.name }" downloaded.`);
+                  return this._terraformate(emitModule);
+                });
               })
             );
           })
@@ -127,10 +129,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     
                 return () => {
                   if (changed) {
-                    this.logger.info(
-                      this.logger.emoji.check,
-                      `Starting Terraform in module "${ emitModule.name }".`
-                    );
+                    this.logger.info(this.logger.emoji.check, `Starting Terraform in module "${ emitModule.name }".`);
     
                     return this._dispatchModule(emitModule)
                       .then(() => {
@@ -213,7 +212,10 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Downloading caches for Terraform module "${ emitModule.name }".`
     );
 
-    return this._caches[emitModule.name].download();
+    return this._caches[emitModule.name].download().then(debug => {
+      this.logger.debug(JSON.stringify(debug));
+      return Promise.resolve();
+    });
   }
 
   /**
@@ -406,7 +408,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
       || this.container.get('binary', Terraform.DEFAULT_BINARY_PATH);
     const resourceDirname = emitModule.container.get('terraform.resource-dirname', Terraform.RESOURCE_DIRNAME)
       || this.container.get('resource-dirname', Terraform.RESOURCE_DIRNAME);
-    const terraform = new Terraform(vars, binary, resourceDirname);
+    const terraformDirname = emitModule.container.get('terraform.terraform-dirname', Terraform.TERRAFORM_DIRNAME)
+      || this.container.get('terraform-dirname', Terraform.TERRAFORM_DIRNAME);
+    const terraform = new Terraform(vars, binary, resourceDirname, terraformDirname);
   
     return terraform.ensure()
       .then(() => this._init(terraform, emitModule))
@@ -441,6 +445,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
+    terraform.setLogger(this.logger);
+
     this.logger.info(
       this.logger.emoji.magic,
       `Running "terraform init" in "${ emitModule.name }".`
