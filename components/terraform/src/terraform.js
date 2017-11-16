@@ -177,7 +177,7 @@ class Terraform {
         ];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
+          options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
         } else if (fse.existsSync(remoteStatePath)) {
           options.push(`-state=${ remoteStatePath }`);
         }
@@ -202,7 +202,7 @@ class Terraform {
         let options = ['-no-color', '-force'];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
+          options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
         } else if (fse.existsSync(remoteStatePath)) {
           options.push(`-state=${remoteStatePath}`)
         }
@@ -292,6 +292,8 @@ class Terraform {
 
         const downloader = new Downloader();
         const dir = path.dirname(this.binaryPath);
+
+        // todo: validate version to follow format X.Y.Z
 
         return downloader.download(dir, version)
           .then(() => {
