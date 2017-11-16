@@ -25,6 +25,7 @@ class Terraform {
     this._binaryPath = binaryPath;
     this._resourceDirname = resourceDirname;
     this._vars = vars;
+    this._logger = false;
   }
 
   /**
@@ -230,6 +231,15 @@ class Terraform {
   run(command, args = [], cwd = process.cwd()) {
     const { env } = this;
 
+    if (this.logger) {
+      this.logger.debug({
+        binary: this.binaryPath,
+        command: command,
+        args: args,
+        cwd: cwd
+      })
+    }
+
     return execa(
       path.resolve(this.binaryPath), 
       [ command ].concat(args),
@@ -265,6 +275,23 @@ class Terraform {
             return fse.move(realPath, this.binaryPath);
           });
       });
+  }
+
+  /**
+   * @return {boolean|*}
+   */
+  get logger() {
+    return this._logger;
+  }
+
+  /**
+   * @param {*} logger
+   * @return {Terraform}
+   */
+  setLogger(logger) {
+    this._logger = logger;
+
+    return this;
   }
 
   /**
