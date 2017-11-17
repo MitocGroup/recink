@@ -16,7 +16,6 @@ class Downloader {
    * @returns {Promise} 
    */
   download(binPath, version, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
-    console.log(`Download terraform version ${ version}`);
     const url = Downloader.urlTemplate(version, platform, arch);
 
     return download(url, binPath, { extract: true });
@@ -54,7 +53,6 @@ class Downloader {
         platformVar = platform;
     }
 
-    console.log(`Terraform: https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${platformVar}_${archVar}.zip`);
     return `https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${platformVar}_${archVar}.zip`;
   }
 

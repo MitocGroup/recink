@@ -271,11 +271,16 @@ class Terraform {
         const dir = path.dirname(this.binary);
 
         // todo: validate version to follow format X.Y.Z
-        console.log(`Validate version ${ version } is missing`);
+        console.log(`TODO: Validate version ${ version } for binary ${ this.binary }`);
 
         return downloader.download(dir, version)
           .then(() => {
             const realPath = path.join(dir, Terraform.BINARY);
+
+            console.log(`realPath: ${ realPath } | binary: ${ this.binary } `);
+            let fileNames = [];
+            walkDir(dir, /.*/, (fileName) => fileNames.push(fileName));
+            console.log(fileNames);
 
             if (realPath === this.binary) {
               return Promise.resolve();
