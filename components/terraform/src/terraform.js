@@ -141,8 +141,8 @@ class Terraform {
    */
   plan(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.resource, Terraform.STATE);
-      const planPath = path.join(dir, this.resource, Terraform.PLAN);
+      const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       let options = ['-no-color', `-out=${planPath}`];
 
       if (fse.existsSync(statePath)) {
@@ -162,9 +162,10 @@ class Terraform {
    */
   apply(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.resource, Terraform.STATE);
-      const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
-      let options = ['-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
+      const planPath = path.join(dir, this.getResource, Terraform.PLAN);
+      const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
+      let options = [planPath, '-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
 
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
@@ -187,8 +188,8 @@ class Terraform {
    */
   destroy(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.resource, Terraform.STATE);
-      const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
+      const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
       let options = ['-no-color', '-force'];
 
       if (fse.existsSync(statePath)) {
