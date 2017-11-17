@@ -271,29 +271,28 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    return fse.pathExists(this.getBinary)
-      .then(exists => {
-        if (exists) {
+    return fse.pathExists(this.getBinary).then(exists => {
+      if (exists) {
+        return Promise.resolve();
+      }
+
+      // todo: rethink this logic
+      const downloader = new Downloader();
+      const dir = path.dirname(this.getBinary);
+
+      // todo: validate version to follow format X.Y.Z
+      console.log(`TODO: Validate version ${ version } for binary ${ this.getBinary }`);
+
+      return downloader.download(dir, version).then(() => {
+        const realPath = path.join(dir, Terraform.BIN_FILE);
+
+        if (realPath === this.getBinary) {
           return Promise.resolve();
         }
 
-        // todo: rethink this logic
-        const downloader = new Downloader();
-        const dir = path.dirname(this.getBinary);
-
-        // todo: validate version to follow format X.Y.Z
-        console.log(`TODO: Validate version ${ version } for binary ${ this.getBinary }`);
-
-        return downloader.download(dir, version).then(() => {
-          const realPath = path.join(dir, Terraform.BIN_FILE);
-
-          if (realPath === this.getBinary) {
-            return Promise.resolve();
-          }
-
-          return fse.move(realPath, this.getBinary);
-        });
+        return fse.move(realPath, this.getBinary);
       });
+    });
   }
 
   /**

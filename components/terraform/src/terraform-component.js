@@ -184,7 +184,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _initCaches(emitter, terraformModules) {
-    if (!this._cacheEnabled) {
+    if (!this._cacheEnabled(emitter)) {
       return Promise.resolve();
     }
 
@@ -272,19 +272,15 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {Emitter} emitter
-   *
-   * @returns {boolean}
-   *
+   * @returns {Boolean}
    * @private
    */
   _cacheEnabled(emitter) {
-    return this.container.get('use-cache', true)
-      && !!emitter.component('cache');
+    return this.container.get('use-cache', true) && !!emitter.component('cache');
   }
 
   /**
   * @param {Emitter} emitter
-  *
   * @returns {Promise}
   */
   teardown(emitter) {
@@ -433,6 +429,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
+    terraform.setLogger(this.logger);
+
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
@@ -466,8 +464,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    terraform.setLogger(this.logger);
-
     this.logger.info(
       this.logger.emoji.magic,
       `Running "terraform init" in "${ emitModule.name }".`
