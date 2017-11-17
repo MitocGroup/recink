@@ -30,14 +30,16 @@ manage different versions of Node.js; Ideally, use v8+ for faster performance
 $:
   preprocess:
     '$.terraform.vars.sample': 'eval'
+    '$.comment.providers.github.0.token': 'eval'
   terraform:
-    use-cache: true                                                         # Enable state/plans/backups caching if cache component enabled
-    resource-dirname: '.resource'                                           # Resource dirname relative to the module root directory (default ".resource")
+    version: '0.10.3'                                                       # Terraform version that will be downloaded and installed locally (default "0.10.3")
+    use-cache: true                                                         # Enable state/plans/backups caching if cache component enabled (default "true")
+    resource: '.resource'                                                   # Resource relative path to the module root directory (default ".resource")
     binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
     init: true                                                              # Initialize Terraform setup (default "true")
     plan: true                                                              # Terraform validate .tf and make a provision plan (default "true")
     apply: false                                                            # Terraform provision infrastructure (default "false")
-    destroy: false                                                          # Terraform destroy provisioned infrastructure in previous step (default "false")
+    destroy: false                                                          # Terraform destroy infrastructure provisioned in previous step (default "false")
     vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
       sample: 'process.env.SAMPLE_VAR'
   comment:

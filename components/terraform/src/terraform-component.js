@@ -45,9 +45,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {string}
-   * 
+   *
    * @private
    */
   _moduleRoot(emitModule) {
@@ -56,9 +56,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _isTerraformModule(emitModule) {
@@ -72,7 +72,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
   * @param {Emitter} emitter
-  * 
+  *
   * @returns {Promise}
   */
   init(emitter) {
@@ -83,7 +83,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
+   *
    * @returns {Promise}
    */
   run(emitter) {
@@ -178,9 +178,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * @param {EmitModule[]} terraformModules
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _initCaches(emitter, terraformModules) {
@@ -197,9 +197,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _loadCache(emitModule) {
@@ -220,9 +220,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _uploadCache(emitModule) {
@@ -241,9 +241,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {AbstractDriver|S3Driver}
-   * 
+   *
    * @private
    */
   _cache(emitter, emitModule) {
@@ -251,9 +251,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
     const cacheComponent = emitter.component('cache');
     const options = [].concat(cacheComponent.container.get('options', []));
     const driverName = cacheComponent.container.get('driver');
-    const resourcePath = emitModule.container.get('terraform.resource-path', Terraform.RESOURCE_PATH)
-      || this.container.get('resource-path', Terraform.RESOURCE_PATH);
-    const resourcesPath = path.join(rootPath, resourcePath);
+    const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
+      || this.container.get('resource', Terraform.RESOURCE);
+    const resourcesPath = path.join(rootPath, resource);
 
     // @todo abstract the way cache behavior hooked
     if (driverName === 's3' && options.length >= 1) {
@@ -272,9 +272,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {Emitter} emitter
-   * 
+   *
    * @returns {boolean}
-   * 
+   *
    * @private
    */
   _cacheEnabled(emitter) {
@@ -284,7 +284,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
   * @param {Emitter} emitter
-  * 
+  *
   * @returns {Promise}
   */
   teardown(emitter) {
@@ -297,7 +297,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @returns {Function[]}
-   * 
+   *
    * @private
    */
   get _normalizedRunStack() {
@@ -345,7 +345,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @throws {Error}
-   * 
+   *
    * @private
    */
   _validateRunStack() {
@@ -376,9 +376,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _terraformate(emitModule) {
@@ -394,9 +394,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /** 
    * @param {EmitModule} emitModule 
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _dispatchModule(emitModule) {
@@ -408,11 +408,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
       || this.container.get('binary', Terraform.BINARY);
     const version = emitModule.container.get('terraform.version', Terraform.VERSION)
       || this.container.get('version', Terraform.VERSION);
-    const resourcePath = emitModule.container.get('terraform.resource-path', Terraform.RESOURCE_PATH)
-      || this.container.get('resource-path', Terraform.RESOURCE_PATH);
-    const terraformPath = emitModule.container.get('terraform.terraform-path', Terraform.TERRAFORM_PATH)
-      || this.container.get('terraform-path', Terraform.TERRAFORM_PATH);
-    const terraform = new Terraform(vars, binary, resourcePath, terraformPath);
+    const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
+      || this.container.get('resource', Terraform.RESOURCE);
+    const terraform = new Terraform(vars, binary, resource);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
@@ -423,9 +421,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private 
    */
   _hasChanges(emitModule) {
@@ -441,9 +439,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _init(terraform, emitModule) {
@@ -470,9 +468,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _plan(terraform, emitModule) {
@@ -498,9 +496,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private
    */
   _apply(terraform, emitModule) {
@@ -517,7 +515,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     if (!enabled) {
       return this._handleSkip(emitModule, 'apply');
     } else if (this._noChanges) {
-      return this._handleSkip(emitModule, 'apply', 'No Changes Detected');
+      return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
     return terraform.apply(dir)
@@ -557,14 +555,14 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @param {EmitModule} emitModule
    * @param {string} command
    * @param {Error} error
-   * 
+   *
    * @returns {Promise}
-   * 
-   * @private 
+   *
+   * @private
    */
   _handleError(emitModule, command, error) {
     return this._reporter.report(`
-### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\` *-> ERROR*
+### \`${ emitModule.name }\` returned an error executing \`terraform ${ command }\`
 
 \`\`\`
 ${ error.toString().trim() }
@@ -576,18 +574,18 @@ ${ error.toString().trim() }
    * @param {EmitModule} emitModule
    * @param {string} command
    * @param {string} reason
-   * 
+   *
    * @returns {Promise}
-   * 
-   * @private 
+   *
+   * @private
    */
   _handleSkip(emitModule, command, reason = null) {
-    const reasonMsg = reason ? `. Reason - "${ reason }"` : '';
+    const reasonMsg = reason ? `Reason - "${ reason }" ...` : '';
 
     return this._reporter.report(`
-### Terraform ${ command.toUpperCase() } \`${ emitModule.name }\` *-> SKIP*
+### \`${ emitModule.name }\` skipped executing \`terraform ${ command }\`
 
-Skip \`terraform ${ command }\`${ reasonMsg }...
+${ reasonMsg }
     `);
   }
 
@@ -595,9 +593,9 @@ Skip \`terraform ${ command }\`${ reasonMsg }...
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {Plan} plan
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private 
    */
   _handlePlan(terraform, emitModule, plan) {
@@ -607,7 +605,9 @@ Skip \`terraform ${ command }\`${ reasonMsg }...
     return terraform.show(plan)
       .then(output => {
         return this._reporter.report(`
-### Terraform PLAN \`${ emitModule.name }\` *-> ${ plan.changed ? '' : 'UN' }CHANGED*
+### \`${ emitModule.name }\` returned below output while executing \`terraform plan\`
+
+${ plan.changed ? '' : 'No Plan Changes Detected' }
 
 \`\`\`
 ${ output }
@@ -620,16 +620,16 @@ ${ output }
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {State} state
-   * 
+   *
    * @returns {Promise}
-   * 
+   *
    * @private 
    */
   _handleApply(terraform, emitModule, state) {
     return terraform.show(state)
       .then(output => {
         return this._reporter.report(`
-### Terraform APPLY \`${ emitModule.name }\` *-> SUCCEEDED*
+### \`${ emitModule.name }\` returned below output while executing \`terraform apply\`
 
 \`\`\`
 ${ output }
@@ -651,7 +651,7 @@ ${ output }
     return terraform.show(state)
       .then(output => {
         return this._reporter.report(`
-### Terraform DESTROY \`${ emitModule.name }\` *-> SUCCEEDED*
+### \`${ emitModule.name }\` returned below output while executing \`terraform destroy\`
 
 \`\`\`
 ${ output }
