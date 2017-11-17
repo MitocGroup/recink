@@ -21,7 +21,7 @@ class Terraform {
    * @param {Array} varFiles
    */
   constructor(
-    vars = {}, 
+    vars = {},
     binary = Terraform.BINARY,
     resource = Terraform.RESOURCE,
     varFiles = []
@@ -89,14 +89,14 @@ class Terraform {
   /**
    * @returns {string}
    */
-  get binary() {
+  get getBinary() {
     return this._binary;
   }
 
   /**
    * @returns {string}
    */
-  get resource() {
+  get getResource() {
     return this._resource;
   }
 
@@ -228,7 +228,7 @@ class Terraform {
    * @private
    */
   _ensureResourceDir(dir) {
-    return fse.ensureDir(path.join(dir, this.resource));
+    return fse.ensureDir(path.join(dir, this.getResource));
   }
 
   /**
@@ -246,13 +246,13 @@ class Terraform {
 
       this.logger.debug({
         fileNames: fileNames,
-        command: `${this.binary} ${command}`,
+        command: `${this.getBinary} ${command}`,
         args: args
       });
     }
 
     return execa(
-      path.resolve(this.binary),
+      path.resolve(this.getBinary),
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
@@ -268,25 +268,27 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    return fse.pathExists(this.binary)
+    return fse.pathExists(this.getBinary)
       .then(exists => {
         if (exists) {
           return Promise.resolve();
         }
 
+        // todo: rethink this logic
         const downloader = new Downloader();
-        const dir = path.dirname(this.binary);
+        const dir = path.dirname(this.getBinary);
 
         // todo: validate version to follow format X.Y.Z
+        console.log(`TODO: Validate version ${ version } for binary ${ this.getBinary }`);
 
         return downloader.download(dir, version).then(() => {
-          const realPath = path.join(dir, Terraform.BINARY);
+          const realPath = path.join(dir, Terraform.BIN_FILE);
 
-          if (realPath === this.binary) {
+          if (realPath === this.getBinary) {
             return Promise.resolve();
           }
 
-          return fse.move(realPath, this.binary);
+          return fse.move(realPath, this.getBinary);
         });
       });
   }
@@ -312,7 +314,7 @@ class Terraform {
    * @returns {string}
    */
   static get VERSION() {
-    const { version } = pjson.terraform;
+    const { version } = pjson.terraform || '0.10.3';
     return version;
   }
 
