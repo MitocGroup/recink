@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const PlanParser = require('tf-parse').Plan;
 
 /**
@@ -21,6 +22,13 @@ class Plan {
    */
   get path() {
     return this._path;
+  }
+
+  /**
+   * @returns {string}
+   */
+  get dir() {
+    return path.dirname(this._path);
   }
 
   /**

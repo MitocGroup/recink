@@ -1,6 +1,7 @@
 'use strict';
 
 const fse = require('fs-extra');
+const path = require('path');
 
 /**
  * Terraform state
@@ -20,6 +21,13 @@ class State {
    */
   get path() {
     return this._path;
+  }
+
+  /**
+   * @returns {string}
+   */
+  get dir() {
+    return path.dirname(this._path);
   }
 
   /**

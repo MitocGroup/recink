@@ -382,35 +382,56 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _terraformate(emitModule) {
-    return this._hasChanges(emitModule)
-      .then(changed => {
-        const after = emitModule.container.get('terraform.run-after', []);
+    return this._hasChanges(emitModule).then(changed => {
+      const after = emitModule.container.get('terraform.run-after', []);
 
-        this._runStack[emitModule.name] = { emitModule, after, changed };
+      this._runStack[emitModule.name] = { emitModule, after, changed };
 
-        return Promise.resolve();
-      });
+      return Promise.resolve();
+    });
+  }
+
+  /**
+   * Get main or extended by module parameter
+   * @param {EmitModule} module
+   * @param {String} parameter
+   * @param {String|Object|Array} defValue
+   * @return {*}
+   * @private
+   */
+  _parameterFromConfig(module, parameter, defValue) {
+    let result = defValue;
+    let mainCfg = this.container.get(parameter, defValue);
+    let moduleCfg = module.container.get(`terraform.${parameter}`, defValue);
+
+    switch ((defValue).constructor) {
+      case String:
+        result = (moduleCfg === defValue) ? mainCfg : moduleCfg;
+        break;
+      case Object:
+        result = Object.assign({}, mainCfg, moduleCfg);
+        break;
+      case Array:
+        result = moduleCfg.length ? moduleCfg : mainCfg;
+        break;
+    }
+
+    return result;
   }
 
   /** 
    * @param {EmitModule} emitModule 
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _dispatchModule(emitModule) {
-    const vars = Object.assign(
-      this.container.get('vars', {}), 
-      emitModule.container.get('terraform.vars', {})
+    const version = this._parameterFromConfig(emitModule, 'version', Terraform.VERSION);
+    const terraform = new Terraform(
+      this._parameterFromConfig(emitModule, 'vars', {}),
+      this._parameterFromConfig(emitModule, 'binary', Terraform.BINARY),
+      this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE),
+      this._parameterFromConfig(emitModule, 'var-files', [])
     );
-    const binary = emitModule.container.get('terraform.binary', Terraform.BINARY)
-      || this.container.get('binary', Terraform.BINARY);
-    const version = emitModule.container.get('terraform.version', Terraform.VERSION)
-      || this.container.get('version', Terraform.VERSION);
-    const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
-      || this.container.get('resource', Terraform.RESOURCE);
-    const terraform = new Terraform(vars, binary, resource);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
