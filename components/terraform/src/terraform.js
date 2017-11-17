@@ -24,7 +24,6 @@ class Terraform {
     binary = Terraform.BINARY,
     resource = Terraform.RESOURCE
   ) {
-    console.log(`constructor : ${ binary }`);
     this._binary = binary;
     this._resource = resource;
     this._vars = vars;
@@ -87,15 +86,14 @@ class Terraform {
   /**
    * @returns {string}
    */
-  get binary() {
-    console.log(`binary() : ${ this._binary }`);
+  get getBinary() {
     return this._binary;
   }
 
   /**
    * @returns {string}
    */
-  get resource() {
+  get getResource() {
     return this._resource;
   }
 
@@ -134,8 +132,8 @@ class Terraform {
   plan(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resource, Terraform.STATE);
-        const planPath = path.join(dir, this.resource, Terraform.PLAN);
+        const statePath = path.join(dir, this.getResource, Terraform.STATE);
+        const planPath = path.join(dir, this.getResource, Terraform.PLAN);
         let options = ['-no-color', `-out=${ planPath }`];
 
         if (fse.existsSync(statePath)) {
@@ -156,8 +154,8 @@ class Terraform {
   apply(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resource, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
+        const statePath = path.join(dir, this.getResource, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
         let options = ['-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
 
         if (fse.existsSync(statePath)) {
@@ -178,8 +176,8 @@ class Terraform {
   destroy(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resource, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
+        const statePath = path.join(dir, this.getResource, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
         let options = ['-no-color', '-force'];
 
         if (fse.existsSync(statePath)) {
@@ -220,7 +218,7 @@ class Terraform {
    * @private
    */
   _ensureResourceDir(dir) {
-    return fse.ensureDir(path.join(dir, this.resource));
+    return fse.ensureDir(path.join(dir, this.getResource));
   }
 
   /**
@@ -237,9 +235,8 @@ class Terraform {
       let fileNames = [];
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
 
-      console.log(`run() 1: ${ binary }`);
       this.logger.debug({
-        binary: this.binary,
+        binary: this.getBinary,
         command: command,
         args: args,
         cwd: cwd,
@@ -247,14 +244,12 @@ class Terraform {
       });
     }
 
-    console.log(`run() 2: ${ binary }`);
     return execa(
-      path.resolve(this.binary),
+      path.resolve(this.getBinary),
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
       const { stdout, code } = result;
-      console.log(`run() 3: ${ binary }`);
 
       return Promise.resolve({ code, output: stdout });
     });
@@ -266,30 +261,29 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    return fse.pathExists(this.binary)
+    return fse.pathExists(this.getBinary)
       .then(exists => {
-        console.log(`ensure() 1: ${ this.binary }`);
         if (exists) {
           return Promise.resolve();
         }
 
         const downloader = new Downloader();
-        const dir = path.dirname(this.binary);
+        const dir = path.dirname(this.getBinary);
 
         // todo: validate version to follow format X.Y.Z
-        console.log(`TODO: Validate version ${ version } for binary ${ this.binary }`);
+        console.log(`TODO: Validate version ${ version } for binary ${ this.getBinary }`);
 
         return downloader.download(dir, version)
           .then(() => {
+            console.log(`dir: ${ dir} | binary: ${ Terraform.BINARY }`);
             const realPath = path.join(dir, Terraform.BINARY);
+            console.log(`realPath: ${ realPath } | dir: ${ dir} | binary: ${ Terraform.BINARY }`);
 
-            if (realPath === this.binary) {
-              console.log(`ensure() 2: ${ this.binary }`);
+            if (realPath === this.getBinary) {
               return Promise.resolve();
             }
 
-            console.log(`ensure() 3: ${ this.binary }`);
-            return fse.move(realPath, this.binary);
+            return fse.move(realPath, this.getBinary);
           });
       });
   }

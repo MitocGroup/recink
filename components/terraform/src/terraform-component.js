@@ -410,9 +410,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       || this.container.get('version', Terraform.VERSION);
     const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
       || this.container.get('resource', Terraform.RESOURCE);
-    console.log(`_dispatchModule() 1: ${ binary }`);
     const terraform = new Terraform(vars, binary, resource);
-    console.log(`_dispatchModule() 2: ${ binary }`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
