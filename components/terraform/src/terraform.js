@@ -267,6 +267,7 @@ class Terraform {
           return Promise.resolve();
         }
 
+        // todo: rethink this logic
         const downloader = new Downloader();
         const dir = path.dirname(this.getBinary);
 
@@ -275,9 +276,7 @@ class Terraform {
 
         return downloader.download(dir, version)
           .then(() => {
-            console.log(`dir: ${ dir} | binary: ${ Terraform.BINARY }`);
-            const realPath = path.join(dir, Terraform.BINARY);
-            console.log(`realPath: ${ realPath } | dir: ${ dir} | binary: ${ Terraform.BINARY }`);
+            const realPath = path.join(dir, Terraform.BIN_FILE);
 
             if (realPath === this.getBinary) {
               return Promise.resolve();
