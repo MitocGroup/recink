@@ -317,7 +317,7 @@ class Terraform {
    * @returns {string}
    */
   static get VERSION() {
-    const { version } = pjson.terraform || '0.10.3';
+    const { version } = pjson.terraform || '0.10.4';
     return version;
   }
 
