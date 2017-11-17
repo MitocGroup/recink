@@ -169,9 +169,9 @@ class Terraform {
 
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+      } else {
+        options.push(planPath);
       }
-
-      options.push(planPath);
 
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
