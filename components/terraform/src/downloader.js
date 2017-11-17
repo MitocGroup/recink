@@ -1,7 +1,6 @@
 'use strict';
 
 const os = require('os');
-const pjson = require('../package');
 const download = require('download');
 
 /**
@@ -9,27 +8,28 @@ const download = require('download');
  */
 class Downloader {
   /**
-   * @param {string} binPath 
-   * @param {string} platform 
+   * @param {string} binPath
+   * @param {string} version
+   * @param {string} platform
    * @param {string} arch
    * 
    * @returns {Promise} 
    */
-  download(binPath, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
-    const url = Downloader.urlTemplate(platform, arch);
+  download(binPath, version, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
+    const url = Downloader.urlTemplate(version, platform, arch);
 
     return download(url, binPath, { extract: true });
   }
 
   /**
-   * @param {string} platform 
+   * @param {string} version
+   * @param {string} platform
    * @param {string} arch
-   * 
-   * @returns {string} 
+   *
+   * @returns {string}
    */
-  static urlTemplate(platform, arch) {
+  static urlTemplate(version, platform, arch) {
     let archVar, platformVar;
-    const { version } = pjson.terraform;
 
     switch (arch) {
       case 'x32':

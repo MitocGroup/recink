@@ -3,6 +3,7 @@
 const path = require('path');
 const fse = require('fs-extra');
 const execa = require('execa');
+const pjson = require('../package');
 const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
@@ -15,19 +16,16 @@ const { walkDir } = require('./helper/util');
 class Terraform {
   /**
    * @param {*} vars
-   * @param {string} binaryPath 
-   * @param {string} resourceDirname
-   * @param {string} terraformDirname
+   * @param {string} binary
+   * @param {string} resource
    */
   constructor(
     vars = {}, 
-    binaryPath = Terraform.DEFAULT_BINARY_PATH, 
-    resourceDirname = Terraform.RESOURCE_DIRNAME,
-    terraformDirname = Terraform.TERRAFORM_DIRNAME
+    binary = Terraform.BINARY,
+    resource = Terraform.RESOURCE
   ) {
-    this._binaryPath = binaryPath;
-    this._resourceDirname = resourceDirname;
-    this._terraformDirname = terraformDirname;
+    this._binary = binary;
+    this._resource = resource;
     this._vars = vars;
     this._logger = false;
   }
@@ -88,22 +86,15 @@ class Terraform {
   /**
    * @returns {string}
    */
-  get binaryPath() {
-    return this._binaryPath;
+  get binary() {
+    return this._binary;
   }
 
   /**
    * @returns {string}
    */
-  get resourceDirname() {
-    return this._resourceDirname;
-  }
-
-  /**
-   * @returns {string}
-   */
-  get terraformDirname() {
-    return this._terraformDirname;
+  get resource() {
+    return this._resource;
   }
 
   /**
@@ -141,12 +132,9 @@ class Terraform {
   plan(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const planPath = path.join(dir, this.resourceDirname, Terraform.PLAN);
-        let options = [
-          '-no-color',
-          `-out=${ planPath }`
-        ];
+        const statePath = path.join(dir, this.resource, Terraform.STATE);
+        const planPath = path.join(dir, this.resource, Terraform.PLAN);
+        let options = ['-no-color', `-out=${ planPath }`];
 
         if (fse.existsSync(statePath)) {
           options.push(`-state=${ statePath }`);
@@ -166,19 +154,12 @@ class Terraform {
   apply(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
-
-        let options = [
-          '-auto-approve=true',
-          '-no-color'
-        ];
+        const statePath = path.join(dir, this.resource, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
+        let options = ['-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
-        } else if (fse.existsSync(remoteStatePath)) {
-          options.push(`-state=${ remoteStatePath }`);
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
         }
     
         return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
@@ -195,15 +176,12 @@ class Terraform {
   destroy(dir) {
     return this._ensureResourceDir(dir)
       .then(() => {
-        const statePath = path.join(dir, this.resourceDirname, Terraform.STATE);
-        const backupStatePath = path.join(dir, this.resourceDirname, Terraform.BACKUP_STATE);
-        const remoteStatePath = path.join(dir, this.terraformDirname, Terraform.STATE);
+        const statePath = path.join(dir, this.resource, Terraform.STATE);
+        const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
         let options = ['-no-color', '-force'];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`, `-state-out=${ statePath }`);
-        } else if (fse.existsSync(remoteStatePath)) {
-          options.push(`-state=${remoteStatePath}`)
+          options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
         }
 
         return this.run('destroy', options, dir).then(result => new State(statePath, backupStatePath));
@@ -240,7 +218,7 @@ class Terraform {
    * @private
    */
   _ensureResourceDir(dir) {
-    return fse.ensureDir(path.join(dir, this.resourceDirname));
+    return fse.ensureDir(path.join(dir, this.resource));
   }
 
   /**
@@ -258,7 +236,7 @@ class Terraform {
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
 
       this.logger.debug({
-        binary: this.binaryPath,
+        binary: this.binary,
         command: command,
         args: args,
         cwd: cwd,
@@ -267,7 +245,7 @@ class Terraform {
     }
 
     return execa(
-      path.resolve(this.binaryPath), 
+      path.resolve(this.binary),
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
@@ -278,27 +256,31 @@ class Terraform {
   }
 
   /**
+   * @param {string} version
+   *
    * @returns {Promise}
    */
-  ensure() {
-    return fse.pathExists(this.binaryPath)
+  ensure(version = Terraform.VERSION) {
+    return fse.pathExists(this.binary)
       .then(exists => {
         if (exists) {
           return Promise.resolve();
         }
 
         const downloader = new Downloader();
-        const dir = path.dirname(this.binaryPath);
+        const dir = path.dirname(this.binary);
 
-        return downloader.download(dir)
+        // todo: validate version to follow format X.Y.Z
+
+        return downloader.download(dir, version)
           .then(() => {
             const realPath = path.join(dir, Terraform.BINARY);
 
-            if (realPath === this.binaryPath) {
+            if (realPath === this.binary) {
               return Promise.resolve();
             }
 
-            return fse.move(realPath, this.binaryPath);
+            return fse.move(realPath, this.binary);
           });
       });
   }
@@ -323,15 +305,9 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BACKUP_STATE() {
-    return `terraform.tfstate.${ new Date().getTime() }.backup`;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get STATE() {
-    return 'terraform.tfstate';
+  static get VERSION() {
+    const { version } = pjson.terraform;
+    return version;
   }
 
   /**
@@ -344,22 +320,22 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BINARY() {
-    return 'terraform';
+  static get STATE() {
+    return 'terraform.tfstate';
   }
 
   /**
    * @returns {string}
    */
-  static get RESOURCE_DIRNAME() {
+  static get BACKUP_STATE() {
+    return `terraform.tfstate.${ new Date().getTime() }.backup`;
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get RESOURCE() {
     return '.resource';
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get TERRAFORM_DIRNAME() {
-    return '.terraform';
   }
 
   /**
@@ -372,8 +348,15 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get DEFAULT_BINARY_PATH() {
-    return path.join(Terraform.BIN_PATH, Terraform.BINARY);
+  static get BIN_FILE() {
+    return 'terraform';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get BINARY() {
+    return path.join(Terraform.BIN_PATH, Terraform.BIN_FILE);
   }
 }
 
