@@ -253,14 +253,14 @@ class TerraformComponent extends DependantConfigBasedComponent {
     const driverName = cacheComponent.container.get('driver');
     const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
       || this.container.get('resource', Terraform.RESOURCE);
-    const resourcesPath = path.join(rootPath, resource);
+    const resourcePath = path.join(rootPath, resource);
 
     // @todo abstract the way cache behavior hooked
     if (driverName === 's3' && options.length >= 1) {
       options[0] = `${ options[0] }/${ emitModule.name }`;
     }
 
-    const driver = CacheFactory.create(driverName, resourcesPath, ...options);
+    const driver = CacheFactory.create(driverName, resourcePath, ...options);
 
     // @todo abstract the way cache behavior hooked
     if (driverName === 's3') {
