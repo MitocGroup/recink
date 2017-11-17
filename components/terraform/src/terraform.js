@@ -154,11 +154,27 @@ class Terraform {
   }
 
   /**
-   * https://www.terraform.io/docs/commands/apply.html
+   * https://www.terraform.io/docs/commands/state/
    * 
    * @param {string} dir
    * 
    * @returns {Promise} 
+   */
+  state(dir) {
+    return this._ensureResourceDir(dir).then(() => {
+      //const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      let options = ['pull'];
+
+      return this.run('state', options, dir)/*.then(result => new State(statePath))*/;
+    });
+  }
+
+  /**
+   * https://www.terraform.io/docs/commands/apply.html
+   *
+   * @param {string} dir
+   *
+   * @returns {Promise}
    */
   apply(dir) {
     return this._ensureResourceDir(dir).then(() => {
@@ -176,6 +192,8 @@ class Terraform {
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
+
+      console.log(this.state(dir));
 
       return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
     });
