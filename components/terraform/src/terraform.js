@@ -169,7 +169,7 @@ class Terraform {
 
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
-      } else {
+      } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
 
