@@ -20,10 +20,11 @@ class Terraform {
    * @param {string} resource
    */
   constructor(
-    vars = {}, 
+    vars = {},
     binary = Terraform.BINARY,
     resource = Terraform.RESOURCE
   ) {
+    console.log(`constructor : ${ binary }`);
     this._binary = binary;
     this._resource = resource;
     this._vars = vars;
@@ -87,6 +88,7 @@ class Terraform {
    * @returns {string}
    */
   get binary() {
+    console.log(`binary() : ${ this._binary }`);
     return this._binary;
   }
 
@@ -235,6 +237,7 @@ class Terraform {
       let fileNames = [];
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
 
+      console.log(`run() 1: ${ binary }`);
       this.logger.debug({
         binary: this.binary,
         command: command,
@@ -244,12 +247,14 @@ class Terraform {
       });
     }
 
+    console.log(`run() 2: ${ binary }`);
     return execa(
       path.resolve(this.binary),
       [ command ].concat(args),
       { env, cwd }
     ).then(result => {
       const { stdout, code } = result;
+      console.log(`run() 3: ${ binary }`);
 
       return Promise.resolve({ code, output: stdout });
     });
@@ -263,6 +268,7 @@ class Terraform {
   ensure(version = Terraform.VERSION) {
     return fse.pathExists(this.binary)
       .then(exists => {
+        console.log(`ensure() 1: ${ this.binary }`);
         if (exists) {
           return Promise.resolve();
         }
@@ -277,15 +283,12 @@ class Terraform {
           .then(() => {
             const realPath = path.join(dir, Terraform.BINARY);
 
-            console.log(`realPath: ${ realPath } | binary: ${ this.binary } `);
-            let fileNames = [];
-            walkDir(dir, /.*/, (fileName) => fileNames.push(fileName));
-            console.log(fileNames);
-
             if (realPath === this.binary) {
+              console.log(`ensure() 2: ${ this.binary }`);
               return Promise.resolve();
             }
 
+            console.log(`ensure() 3: ${ this.binary }`);
             return fse.move(realPath, this.binary);
           });
       });
