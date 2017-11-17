@@ -264,6 +264,7 @@ class Terraform {
     return fse.pathExists(this.binary)
       .then(exists => {
         if (exists) {
+          this.logger.debug(`Terraform version ${ version } exists`);
           return Promise.resolve();
         }
 
@@ -271,9 +272,11 @@ class Terraform {
         const dir = path.dirname(this.binary);
 
         // todo: validate version to follow format X.Y.Z
+        this.logger.debug(`Validate version ${ version } is missing`);
 
         return downloader.download(dir, version)
           .then(() => {
+            this.logger.debug(`Trigger downloader for version ${ version} in ${ dir }`);
             const realPath = path.join(dir, Terraform.BINARY);
 
             if (realPath === this.binary) {
@@ -306,7 +309,7 @@ class Terraform {
    * @returns {string}
    */
   static get VERSION() {
-    const { version } = pjson.terraform;
+    const { version } = pjson.terraform || '0.10.3';
     return version;
   }
 
