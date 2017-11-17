@@ -156,10 +156,10 @@ class Terraform {
       .then(() => {
         const statePath = path.join(dir, this.resource, Terraform.STATE);
         const backupStatePath = path.join(dir, this.resource, Terraform.BACKUP_STATE);
-        let options = ['-auto-approve=true', '-no-color'];
+        let options = ['-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
 
         if (fse.existsSync(statePath)) {
-          options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
+          options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
         }
     
         return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
