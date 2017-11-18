@@ -149,6 +149,10 @@ class Terraform {
         options.push(`-state=${statePath}`);
       }
 
+      this.varFiles.forEach(fileName => {
+        options.push(`-var-file=${path.join(dir, fileName)}`);
+      });
+
       return this.run('plan', options, dir).then(result =>  new Plan(planPath, result.output));
     });
   }
@@ -244,6 +248,9 @@ class Terraform {
     const { env } = this;
 
     if (this.logger) {
+      this.run('version',[], dir)
+        .then(result => Promise.resolve());
+
       let fileNames = [];
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
 
