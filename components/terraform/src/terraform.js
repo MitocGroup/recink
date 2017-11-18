@@ -169,17 +169,17 @@ class Terraform {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       const statePath = path.join(dir, this.getResource, Terraform.STATE);
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
-      let options = ['-auto-approve=true', '-no-color', `-state-out=${ statePath }`];
+      let options = ['-no-color', '-auto-approve=true', `-state-out=${ statePath }`];
+
+      this.varFiles.forEach(fileName => {
+        options.push(`-var-file=${path.join(dir, fileName)}`);
+      });
 
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
       } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
-
-      this.varFiles.forEach(fileName => {
-        options.push(`-var-file=${path.join(dir, fileName)}`);
-      });
 
       return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
     });
