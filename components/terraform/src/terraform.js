@@ -165,6 +165,7 @@ class Terraform {
    * @returns {Promise} 
    */
   state(dir) {
+    // todo: pull remote state and store it as .resource/terraform.tfstate.remote
     return this._ensureResourceDir(dir).then(() => {
       const statePath = path.join(dir, this.getResource, Terraform.STATE);
       let options = ['pull'];
@@ -185,19 +186,18 @@ class Terraform {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       const statePath = path.join(dir, this.getResource, Terraform.STATE);
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
-      //let options = ['-no-color', '-auto-approve=true', `-state-out=${ statePath }`];
       let options = ['-no-color', '-auto-approve=true'];
 
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
+      // todo: check if NOT remote state
       if (fse.existsSync(statePath)) {
-        //options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
-      } /*else if (fse.existsSync(planPath)) {
+      } else if (fse.existsSync(planPath)) {
         options.push(planPath);
-      }*/
+      }
 
       return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
     });
@@ -216,6 +216,7 @@ class Terraform {
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
       let options = ['-no-color', '-force'];
 
+      // todo: check if NOT remote state
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       }
