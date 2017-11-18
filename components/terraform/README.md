@@ -42,6 +42,9 @@ $:
     destroy: false                                                          # Terraform destroy infrastructure provisioned in previous step (default "false")
     vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
       sample: 'process.env.SAMPLE_VAR'
+    var-file:                                                               # Terraform variables files (@see https://www.terraform.io/docs/configuration/variables.html#variable-files)
+      - foo.tfvars
+      - bar.tfvars
   comment:
     providers:                                                              # Supported providers: github
       github:
@@ -85,6 +88,9 @@ example_module:
     vars:                                   # Local module variables and global overwrites
       sample: 'overwrite default value!'
       new_one: 'define a new variable here.'
+    var-file:                               # Terraform variables files (pay attention to the order)
+      - foo.tfvars
+      - bar.tfvars
 ```
 
 > `terraform.dependencies` key is available as local module configuration option only and matches the changed files affecting the module that allows Terraform commands to be launched on global modules changes.
