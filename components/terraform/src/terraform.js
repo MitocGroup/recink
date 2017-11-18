@@ -193,7 +193,8 @@ class Terraform {
       });
 
       if (fse.existsSync(statePath)) {
-        options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+        //options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+        options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       } /*else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }*/
