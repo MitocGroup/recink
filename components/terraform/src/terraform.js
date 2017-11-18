@@ -145,13 +145,13 @@ class Terraform {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       let options = ['-no-color', `-out=${planPath}`];
 
-      if (fse.existsSync(statePath)) {
-        options.push(`-state=${statePath}`);
-      }
-
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
+
+      if (fse.existsSync(statePath)) {
+        options.push(`-state=${statePath}`);
+      }
 
       return this.run('plan', options, dir).then(result =>  new Plan(planPath, result.output));
     });
