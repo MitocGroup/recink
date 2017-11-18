@@ -248,8 +248,7 @@ class Terraform {
     const { env } = this;
 
     if (this.logger) {
-      this.run('version',[], dir)
-        .then(result => Promise.resolve());
+      this.run('version').then(result => Promise.resolve());
 
       let fileNames = [];
       walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
