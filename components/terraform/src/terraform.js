@@ -133,6 +133,25 @@ class Terraform {
   }
 
   /**
+   * https://www.terraform.io/docs/commands/state/index.html
+   *
+   * @param {string} dir
+   *
+   * @returns {Promise}
+   */
+  state(dir) {
+    // todo: pull remote state
+    // if not empty, store it as .resource/terraform.tfstate.remote
+    // implement backup mechanism, to store older remote states
+    return this._ensureResourceDir(dir).then(() => {
+      const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      let options = ['pull'];
+
+      return this.run('state', options, dir).then(result => new State(statePath, statePath));
+    });
+  }
+
+  /**
    * https://www.terraform.io/docs/commands/plan.html
    * 
    * @param {string} dir
@@ -159,23 +178,6 @@ class Terraform {
   }
 
   /**
-   * https://www.terraform.io/docs/commands/state/
-   * 
-   * @param {string} dir
-   * 
-   * @returns {Promise} 
-   */
-  state(dir) {
-    // todo: pull remote state and store it as .resource/terraform.tfstate.remote
-    return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.getResource, Terraform.STATE);
-      let options = ['pull'];
-
-      return this.run('state', options, dir).then(result => new State(statePath, statePath));
-    });
-  }
-
-  /**
    * https://www.terraform.io/docs/commands/apply.html
    *
    * @param {string} dir
@@ -194,6 +196,7 @@ class Terraform {
       });
 
       // todo: check if NOT remote state
+      // local state and plan shouldn't go together
       if (fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       } else if (fse.existsSync(planPath)) {
@@ -216,6 +219,10 @@ class Terraform {
       const statePath = path.join(dir, this.getResource, Terraform.STATE);
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
       let options = ['-no-color', '-force'];
+
+      this.varFiles.forEach(fileName => {
+        options.push(`-var-file=${path.join(dir, fileName)}`);
+      });
 
       // todo: check if NOT remote state
       if (fse.existsSync(statePath)) {
