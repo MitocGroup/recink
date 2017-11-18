@@ -62,6 +62,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _isTerraformModule(emitModule) {
+    // todo: rethink this logic
+    // not all terraform modules are main.tf
     const terraformEntryPoint = path.join(
       this._moduleRoot(emitModule), 
       TerraformComponent.TERRAFORM_MAIN
