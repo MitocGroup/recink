@@ -149,6 +149,7 @@ class Terraform {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
+      // todo: check if NOT remote state
       if (fse.existsSync(statePath)) {
         options.push(`-state=${statePath}`);
       }
