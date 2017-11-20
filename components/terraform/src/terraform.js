@@ -8,7 +8,7 @@ const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
 const SecureOutput = require('./secure-output');
-const { walkDir } = require('./helper/util');
+const { getFilesByPattern } = require('./helper/util');
 
 /**
  * Terraform wrapper
@@ -31,6 +31,7 @@ class Terraform {
     this._resource = resource;
     this._varFiles = varFiles;
     this._logger = false;
+    this._hasRemoteState = false;
   }
 
   /**
@@ -133,11 +134,27 @@ class Terraform {
   }
 
   /**
-   * https://www.terraform.io/docs/commands/plan.html
-   * 
+   * https://www.terraform.io/docs/commands/state/index.html
    * @param {string} dir
-   * 
-   * @returns {Promise} 
+   * @returns {Promise}
+   */
+  pullState(dir) {
+    return this._ensureResourceDir(dir).then(() => {
+      return this.run('state', ['pull'], dir).then(result => {
+        if (result.output) {
+          this._hasRemoteState = true;
+          fse.writeFileSync(path.join(dir, this.getResource, Terraform.REMOTE_BACKUP_STATE), result.output, 'utf8');
+        }
+
+        return Promise.resolve();
+      });
+    });
+  }
+
+  /**
+   * https://www.terraform.io/docs/commands/plan.html
+   * @param {string} dir
+   * @returns {Promise}
    */
   plan(dir) {
     return this._ensureResourceDir(dir).then(() => {
@@ -145,51 +162,57 @@ class Terraform {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       let options = ['-no-color', `-out=${planPath}`];
 
-      if (fse.existsSync(statePath)) {
-        options.push(`-state=${statePath}`);
-      }
-
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      return this.run('plan', options, dir).then(result =>  new Plan(planPath, result.output));
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
+        options.push(`-state=${statePath}`);
+      }
+
+      return this.run('plan', options, dir).then(result => new Plan(planPath, result.output));
     });
   }
 
   /**
    * https://www.terraform.io/docs/commands/apply.html
-   * 
+   *
    * @param {string} dir
-   * 
-   * @returns {Promise} 
+   *
+   * @returns {Promise}
    */
   apply(dir) {
     return this._ensureResourceDir(dir).then(() => {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       const statePath = path.join(dir, this.getResource, Terraform.STATE);
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
-      let options = ['-no-color', '-auto-approve=true', `-state-out=${ statePath }`];
+      let options = ['-no-color', '-auto-approve=true'];
 
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      if (fse.existsSync(statePath)) {
-        options.push(`-state=${ statePath }`, `-backup=${ backupStatePath }`);
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
+        options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
 
-      return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
+      return this.run('apply', options, dir).then(() => {
+        let state = new State(statePath, backupStatePath);
+
+        if (!this._hasRemoteState) {
+          return Promise.resolve(state);
+        }
+
+        return this.pullState(dir).then(() => Promise.resolve(state));
+      });
     });
   }
 
   /**
    * https://www.terraform.io/docs/commands/destroy.html
-   *
    * @param {string} dir
-   *
    * @returns {Promise}
    */
   destroy(dir) {
@@ -198,11 +221,23 @@ class Terraform {
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
       let options = ['-no-color', '-force'];
 
-      if (fse.existsSync(statePath)) {
+      this.varFiles.forEach(fileName => {
+        options.push(`-var-file=${path.join(dir, fileName)}`);
+      });
+
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       }
 
-      return this.run('destroy', options, dir).then(result => new State(statePath, backupStatePath));
+      return this.run('destroy', options, dir).then(() => {
+        let state = new State(statePath, backupStatePath);
+
+        if (!this._hasRemoteState) {
+          return Promise.resolve(state);
+        }
+
+        return this.pullState(dir).then(() => Promise.resolve(state));
+      });
     });
   }
 
@@ -248,13 +283,13 @@ class Terraform {
     const { env } = this;
 
     if (this.logger) {
-      //this.run('version').then(result => Promise.resolve());
-
-      let fileNames = [];
-      walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
+      // todo: display terrafom version
+      //if (command != 'version') {
+      //  this.run('version').then(result => Promise.resolve());
+      //}
 
       this.logger.debug({
-        fileNames: fileNames,
+        fileNames: getFilesByPattern(cwd, /.*/),
         command: `${this.getBinary} ${command}`,
         args: args
       });
@@ -345,6 +380,13 @@ class Terraform {
    */
   static get BACKUP_STATE() {
     return `terraform.tfstate.${ new Date().getTime() }.backup`;
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get REMOTE_BACKUP_STATE() {
+    return `terraform.tfstate.remote.${ new Date().getTime() }.backup`;
   }
 
   /**

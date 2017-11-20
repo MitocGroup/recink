@@ -6,9 +6,9 @@ const SequentialPromise = require('recink/src/component/helper/sequential-promis
 const CacheFactory = require('recink/src/component/cache/factory');
 const Terraform = require('./terraform');
 const Reporter = require('./reporter');
-const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
+const { getFilesByPattern } = require('./helper/util');
 
 /**
  * Terraform component
@@ -56,18 +56,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _isTerraformModule(emitModule) {
-    const terraformEntryPoint = path.join(
-      this._moduleRoot(emitModule), 
-      TerraformComponent.TERRAFORM_MAIN
-    );
+    let terraformFiles = getFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
 
-    return fse.pathExists(terraformEntryPoint);
+    return Promise.resolve(terraformFiles.length > 0);
   }
 
   /**
@@ -433,6 +428,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
+      .then(() => this._pullState(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._apply(terraform, emitModule))
       .then(() => this._destroy(terraform, emitModule));
@@ -458,28 +454,32 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _init(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform init" in "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.magic, `Running "terraform init" in "${ emitModule.name }".`);
 
-    const dir = this._moduleRoot(emitModule);
-    const enabled = emitModule.container.has('terraform.init') 
-      ? emitModule.container.get('terraform.init')
-      : this.container.get('init', true);
-
-    if (!enabled) {
+    if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
     }
 
-    return terraform.init(dir)
+    return terraform
+      .init(this._moduleRoot(emitModule))
       .catch(error => this._handleError(emitModule, 'init', error));
+  }
+
+  /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   * @return {Promise}
+   * @private
+   */
+  _pullState(terraform, emitModule) {
+    const dir = this._moduleRoot(emitModule);
+    this.logger.info(this.logger.emoji.magic, `Running "terraform state pull" in "${ emitModule.name }".`);
+
+    return terraform.pullState(dir).catch(error => this._handleError(emitModule, 'init', error));
   }
 
   /**
@@ -677,12 +677,6 @@ ${ output }
       });
   }
 
-  /**
-   * @returns {string}
-   */
-  static get TERRAFORM_MAIN() {
-    return 'main.tf';
-  }
 }
 
 module.exports = TerraformComponent;
