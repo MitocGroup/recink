@@ -31,6 +31,7 @@ class Terraform {
     this._resource = resource;
     this._varFiles = varFiles;
     this._logger = false;
+    this._hasRemoteState = false;
   }
 
   /**
@@ -134,29 +135,26 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/state/index.html
-   *
    * @param {string} dir
-   *
    * @returns {Promise}
    */
-  state(dir) {
-    // todo: pull remote state
-    // if not empty, store it as .resource/terraform.tfstate.remote
-    // implement backup mechanism, to store older remote states
+  pullState(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.getResource, Terraform.STATE);
-      let options = ['pull'];
+      return this.run('state', ['pull'], dir).then(result => {
+        if (result.output) {
+          this._hasRemoteState = true;
+          fse.writeFileSync(path.join(dir, this.getResource, Terraform.REMOTE_BACKUP_STATE), result.output, 'utf8');
+        }
 
-      return this.run('state', options, dir).then(result => new State(statePath, statePath));
+        return Promise.resolve();
+      });
     });
   }
 
   /**
    * https://www.terraform.io/docs/commands/plan.html
-   * 
    * @param {string} dir
-   * 
-   * @returns {Promise} 
+   * @returns {Promise}
    */
   plan(dir) {
     return this._ensureResourceDir(dir).then(() => {
@@ -168,12 +166,11 @@ class Terraform {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      // todo: check if NOT remote state
-      if (fse.existsSync(statePath)) {
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
         options.push(`-state=${statePath}`);
       }
 
-      return this.run('plan', options, dir).then(result =>  new Plan(planPath, result.output));
+      return this.run('plan', options, dir).then(result => new Plan(planPath, result.output));
     });
   }
 
@@ -195,23 +192,27 @@ class Terraform {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      // todo: check if NOT remote state
-      // local state and plan shouldn't go together
-      if (fse.existsSync(statePath)) {
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
 
-      return this.run('apply', options, dir).then(result => new State(statePath, backupStatePath));
+      return this.run('apply', options, dir).then(() => {
+        let state = new State(statePath, backupStatePath);
+
+        if (!this._hasRemoteState) {
+          return Promise.resolve(state);
+        }
+
+        return this.pullState(dir).then(() => Promise.resolve(state));
+      });
     });
   }
 
   /**
    * https://www.terraform.io/docs/commands/destroy.html
-   *
    * @param {string} dir
-   *
    * @returns {Promise}
    */
   destroy(dir) {
@@ -224,12 +225,19 @@ class Terraform {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      // todo: check if NOT remote state
-      if (fse.existsSync(statePath)) {
+      if (!this._hasRemoteState && fse.existsSync(statePath)) {
         options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
       }
 
-      return this.run('destroy', options, dir).then(result => new State(statePath, backupStatePath));
+      return this.run('destroy', options, dir).then(() => {
+        let state = new State(statePath, backupStatePath);
+
+        if (!this._hasRemoteState) {
+          return Promise.resolve(state);
+        }
+
+        return this.pullState(dir).then(() => Promise.resolve(state));
+      });
     });
   }
 
@@ -375,6 +383,13 @@ class Terraform {
    */
   static get BACKUP_STATE() {
     return `terraform.tfstate.${ new Date().getTime() }.backup`;
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get REMOTE_BACKUP_STATE() {
+    return `terraform.tfstate.remote.${ new Date().getTime() }.backup`;
   }
 
   /**
