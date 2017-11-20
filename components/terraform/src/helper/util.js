@@ -29,3 +29,18 @@ function walkDir(dir, filter, callback) {
 }
 
 exports.walkDir = walkDir;
+
+/**
+ * Get filenames from dir by RegExp pattern
+ * @param {String} dir
+ * @param {RegExp} regExp
+ * @return {Array}
+ */
+function getFilesByPattern(dir, regExp) {
+  let fileNames = [];
+  walkDir(dir, regExp, (fileName) => fileNames.push(fileName));
+
+  return fileNames;
+}
+
+exports.getFilesByPattern = getFilesByPattern;

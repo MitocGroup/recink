@@ -6,9 +6,9 @@ const SequentialPromise = require('recink/src/component/helper/sequential-promis
 const CacheFactory = require('recink/src/component/cache/factory');
 const Terraform = require('./terraform');
 const Reporter = require('./reporter');
-const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
+const { getFilesByPattern } = require('./helper/util');
 
 /**
  * Terraform component
@@ -56,16 +56,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _isTerraformModule(emitModule) {
-    // todo: find any .tf file and return true if successful
-    let mainTf = this._parameterFromConfig(emitModule, 'main', TerraformComponent.TERRAFORM_MAIN);
+    let terraformFiles = getFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
 
-    return fse.pathExists(path.join(this._moduleRoot(emitModule), mainTf));
+    return Promise.resolve(terraformFiles.length > 0);
   }
 
   /**
@@ -680,13 +677,6 @@ ${ output }
       });
   }
 
-  /**
-   * @returns {string}
-   */
-  static get TERRAFORM_MAIN() {
-    // todo: remove after _isTerraformModule is refactored
-    return 'main.tf';
-  }
 }
 
 module.exports = TerraformComponent;

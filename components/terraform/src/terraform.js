@@ -8,7 +8,7 @@ const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
 const State = require('./terraform/state');
 const SecureOutput = require('./secure-output');
-const { walkDir } = require('./helper/util');
+const { getFilesByPattern } = require('./helper/util');
 
 /**
  * Terraform wrapper
@@ -288,11 +288,8 @@ class Terraform {
       //  this.run('version').then(result => Promise.resolve());
       //}
 
-      let fileNames = [];
-      walkDir(cwd, /.*/, (fileName) => fileNames.push(fileName));
-
       this.logger.debug({
-        fileNames: fileNames,
+        fileNames: getFilesByPattern(cwd, /.*/),
         command: `${this.getBinary} ${command}`,
         args: args
       });
