@@ -62,6 +62,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _isTerraformModule(emitModule) {
+    // todo: find any .tf file and return true if successful
     let mainTf = this._parameterFromConfig(emitModule, 'main', TerraformComponent.TERRAFORM_MAIN);
 
     return fse.pathExists(path.join(this._moduleRoot(emitModule), mainTf));
@@ -678,6 +679,7 @@ ${ output }
    * @returns {string}
    */
   static get TERRAFORM_MAIN() {
+    // todo: remove after _isTerraformModule is refactored
     return 'main.tf';
   }
 }
