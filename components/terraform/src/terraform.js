@@ -307,9 +307,9 @@ class Terraform {
 
     if (this.logger) {
       this.logger.debug({
-        fileNames: getFilesByPattern(cwd, /.*/),
         command: `${this.getBinary} ${command}`,
-        args: args
+        args: args,
+        fileNames: getFilesByPattern(cwd, /.*/)
       });
     }
 

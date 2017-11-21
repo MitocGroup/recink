@@ -1,20 +1,33 @@
 --- 
 $:
   preprocess:
-    '$.terraform.vars.sample': 'eval'
+#   '$.terraform.vars.sample': 'eval'
 #   '$.comment.providers.github.0.token': 'eval'
   terraform:
-    version: '0.10.3'                                                       # Terraform version that will be downloaded and installed locally (default "0.10.3")
-    use-cache: true                                                         # Enable state/plans/backups caching if cache component enabled (default "true")
-    resource: '.resource'                                                   # Resource relative path to the module root directory (default ".resource")
-    binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
-    init: true                                                              # Initialize Terraform setup (default "true")
-    plan: true                                                              # Terraform validate .tf and make a provision plan (default "true")
-    apply: false                                                            # Terraform provision infrastructure (default "false")
-    destroy: false                                                          # Terraform destroy infrastructure provisioned in previous step (default "false")
-    vars:                                                                   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
-      sample: 'process.env.SAMPLE_VAR'
+    # Enable state/plans/backups caching if cache component enabled (default "true")
+    use-cache: true
+    # Resource relative path to the module root directory (default ".resource")
+    resource: '.resource'
+    # Path to Terraform binary (default "./bin/terraform")
+#   binary: './bin/terraform'
+#   # Terraform version that will be downloaded and installed locally (default "0.10.4")
+#   version: '0.10.4'
+#   # Initialize Terraform setup (default "true")
+#   init: true
+#   # Terraform validate .tf and make a provision plan (default "true")
+#   plan: true
+#   # Terraform provision infrastructure (default "false")
+#   apply: false
+#   # Terraform destroy infrastructure provisioned in previous step (default "false")
+#   destroy: false
+#   # Terraform variables (@see https://www.terraform.io/docs/configuration/variables.html)
+#   vars:
+#     sample: 'process.env.SAMPLE_VAR'
+#   # Terraform variable files (@see https://www.terraform.io/docs/configuration/variables.html#variable-files)
+#   var-files:
+#     - 'stable.tfvars'
 # comment:
-#   providers:                                                              # Supported providers: github
+#   # Supported providers: github
+#   providers:
 #     github:
 #       - token: 'process.env.GITHUB_ACCESS_TOKEN'
