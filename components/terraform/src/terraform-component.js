@@ -386,18 +386,18 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * Get main or extended by module parameter
    * @param {EmitModule} module
    * @param {String} parameter
-   * @param {String|Object|Array} defValue
+   * @param {String|Object|Array} defaultValue
    * @return {*}
    * @private
    */
-  _parameterFromConfig(module, parameter, defValue) {
-    let result = defValue;
-    let mainCfg = this.container.get(parameter, defValue);
-    let moduleCfg = module.container.get(`terraform.${parameter}`, defValue);
+  _parameterFromConfig(module, parameter, defaultValue) {
+    let result = defaultValue;
+    let mainCfg = this.container.get(parameter, defaultValue);
+    let moduleCfg = module.container.get(`terraform.${parameter}`, defaultValue);
 
-    switch ((defValue).constructor) {
+    switch ((defaultValue).constructor) {
       case String:
-        result = (moduleCfg === defValue) ? mainCfg : moduleCfg;
+        result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
         break;
       case Object:
         result = Object.assign({}, mainCfg, moduleCfg);
@@ -418,13 +418,14 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _dispatchModule(emitModule) {
     const version = this._parameterFromConfig(emitModule, 'version', Terraform.VERSION);
     const terraform = new Terraform(
-      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'binary', Terraform.BINARY),
       this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE),
+      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
     terraform.setLogger(this.logger);
+    this.logger.debug(`Terraform version - "${ version }".`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
@@ -458,7 +459,10 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    this.logger.info(this.logger.emoji.magic, `Running "terraform init" in "${ emitModule.name }".`);
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform init" in "${ emitModule.name }".`
+    );
 
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
@@ -477,9 +481,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
    */
   _pullState(terraform, emitModule) {
     const dir = this._moduleRoot(emitModule);
-    this.logger.info(this.logger.emoji.magic, `Running "terraform state pull" in "${ emitModule.name }".`);
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform state pull" in "${ emitModule.name }".`
+    );
 
-    return terraform.pullState(dir).catch(error => this._handleError(emitModule, 'init', error));
+    return terraform.pullState(dir)
+      .catch(error => this._handleError(emitModule, 'init', error));
   }
 
   /**

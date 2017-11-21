@@ -31,7 +31,7 @@ class Terraform {
     this._resource = resource;
     this._varFiles = varFiles;
     this._logger = false;
-    this._hasRemoteState = false;
+    this._isRemoteState = false;
   }
 
   /**
@@ -142,8 +142,8 @@ class Terraform {
     return this._ensureResourceDir(dir).then(() => {
       return this.run('state', ['pull'], dir).then(result => {
         if (result.output) {
-          this._hasRemoteState = true;
-          fse.writeFileSync(path.join(dir, this.getResource, Terraform.REMOTE_BACKUP_STATE), result.output, 'utf8');
+          this._isRemoteState = true;
+          fse.writeFileSync(path.join(dir, this.getResource, Terraform.BACKUP), result.output, 'utf8');
         }
 
         return Promise.resolve();
@@ -158,7 +158,7 @@ class Terraform {
    */
   plan(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.getResource, Terraform.STATE);
+      const localStatePath = path.join(dir, this.getResource, Terraform.STATE);
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       let options = ['-no-color', `-out=${planPath}`];
 
@@ -166,8 +166,8 @@ class Terraform {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      if (!this._hasRemoteState && fse.existsSync(statePath)) {
-        options.push(`-state=${statePath}`);
+      if (!this._isRemoteState && fse.existsSync(localStatePath)) {
+        options.push(`-state=${localStatePath}`);
       }
 
       return this.run('plan', options, dir).then(result => new Plan(planPath, result.output));
@@ -184,24 +184,24 @@ class Terraform {
   apply(dir) {
     return this._ensureResourceDir(dir).then(() => {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
-      const statePath = path.join(dir, this.getResource, Terraform.STATE);
-      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
-      let options = ['-no-color', '-auto-approve=true'];
+      const localStatePath = path.join(dir, this.getResource, Terraform.STATE);
+      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
+      let options = ['-no-color', '-auto-approve'];
 
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      if (!this._hasRemoteState && fse.existsSync(statePath)) {
-        options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
+      if (!this._isRemoteState && fse.existsSync(localStatePath)) {
+        options.push(`-state=${ localStatePath }`, `-state-out=${ localStatePath }`, `-backup=${ backupStatePath }`);
       } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
 
       return this.run('apply', options, dir).then(() => {
-        let state = new State(statePath, backupStatePath);
+        let state = new State(localStatePath, backupStatePath);
 
-        if (!this._hasRemoteState) {
+        if (!this._isRemoteState) {
           return Promise.resolve(state);
         }
 
@@ -217,22 +217,22 @@ class Terraform {
    */
   destroy(dir) {
     return this._ensureResourceDir(dir).then(() => {
-      const statePath = path.join(dir, this.getResource, Terraform.STATE);
-      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP_STATE);
+      const localStatePath = path.join(dir, this.getResource, Terraform.STATE);
+      const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
       let options = ['-no-color', '-force'];
 
       this.varFiles.forEach(fileName => {
         options.push(`-var-file=${path.join(dir, fileName)}`);
       });
 
-      if (!this._hasRemoteState && fse.existsSync(statePath)) {
-        options.push(`-state=${ statePath }`, `-state-out=${ statePath }`, `-backup=${ backupStatePath }`);
+      if (!this._isRemoteState && fse.existsSync(localStatePath)) {
+        options.push(`-state=${ localStatePath }`, `-state-out=${ localStatePath }`, `-backup=${ backupStatePath }`);
       }
 
       return this.run('destroy', options, dir).then(() => {
-        let state = new State(statePath, backupStatePath);
+        let state = new State(localStatePath, backupStatePath);
 
-        if (!this._hasRemoteState) {
+        if (!this._isRemoteState) {
           return Promise.resolve(state);
         }
 
@@ -283,11 +283,6 @@ class Terraform {
     const { env } = this;
 
     if (this.logger) {
-      // todo: display terrafom version
-      //if (command != 'version') {
-      //  this.run('version').then(result => Promise.resolve());
-      //}
-
       this.logger.debug({
         fileNames: getFilesByPattern(cwd, /.*/),
         command: `${this.getBinary} ${command}`,
@@ -317,12 +312,11 @@ class Terraform {
         return Promise.resolve();
       }
 
-      // todo: rethink this logic
+      // @todo rethink this logic
       const downloader = new Downloader();
       const dir = path.dirname(this.getBinary);
 
-      // todo: validate version to follow format X.Y.Z
-      console.log(`TODO: Validate version ${ version } for binary ${ this.getBinary }`);
+      // @todo validate version to follow format X.Y.Z
 
       return downloader.download(dir, version).then(() => {
         const realPath = path.join(dir, Terraform.BIN_FILE);
@@ -378,15 +372,8 @@ class Terraform {
   /**
    * @returns {string}
    */
-  static get BACKUP_STATE() {
+  static get BACKUP() {
     return `terraform.tfstate.${ new Date().getTime() }.backup`;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get REMOTE_BACKUP_STATE() {
-    return `terraform.tfstate.remote.${ new Date().getTime() }.backup`;
   }
 
   /**
