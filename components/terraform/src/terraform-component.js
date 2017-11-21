@@ -480,13 +480,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _pullState(terraform, emitModule) {
-    const dir = this._moduleRoot(emitModule);
     this.logger.info(
       this.logger.emoji.magic,
       `Running "terraform state pull" in "${ emitModule.name }".`
     );
 
-    return terraform.pullState(dir)
+    return terraform
+      .pullState(this._moduleRoot(emitModule))
       .catch(error => this._handleError(emitModule, 'init', error));
   }
 
@@ -504,7 +504,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform plan" in "${ emitModule.name }".`
     );
 
-    const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('terraform.plan') 
       ? emitModule.container.get('terraform.plan')
       : this.container.get('plan', true);
@@ -513,7 +512,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return this._handleSkip(emitModule, 'plan');
     }
 
-    return terraform.plan(dir)
+    return terraform
+      .plan(this._moduleRoot(emitModule))
       .then(plan => this._handlePlan(terraform, emitModule, plan))
       .catch(error => this._handleError(emitModule, 'plan', error));
   }
@@ -532,7 +532,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform apply" in "${ emitModule.name }".`
     );
 
-    const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('terraform.apply') 
       ? emitModule.container.get('terraform.apply')
       : this.container.get('apply', false);
@@ -543,7 +542,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
-    return terraform.apply(dir)
+    return terraform
+      .apply(this._moduleRoot(emitModule))
       .then(state => this._handleApply(terraform, emitModule, state))
       .catch(error => this._handleError(emitModule, 'apply', error));
   }
@@ -562,7 +562,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform destroy" in "${ emitModule.name }".`
     );
 
-    const dir = this._moduleRoot(emitModule);
     const enabled = emitModule.container.has('terraform.destroy')
       ? emitModule.container.get('terraform.destroy')
       : this.container.get('destroy', false);
@@ -571,7 +570,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return this._handleSkip(emitModule, 'destroy');
     }
 
-    return terraform.destroy(dir)
+    return terraform
+      .destroy(this._moduleRoot(emitModule))
       .then(state => this._handleDestroy(terraform, emitModule, state))
       .catch(error => this._handleError(emitModule, 'destroy', error));
   }
