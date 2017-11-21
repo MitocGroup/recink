@@ -141,9 +141,20 @@ class Terraform {
   pullState(dir) {
     return this._ensureResourceDir(dir).then(() => {
       return this.run('state', ['pull'], dir).then(result => {
+        // @todo check again this logic
+        // remote state returns valid json
+        // local state returns message: Empty state (no state)
         if (result.output) {
+          const remoteStatePath = path.join(dir, this.getResource, Terraform.REMOTE);
+          const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
+
+          if (fse.existsSync(remoteStatePath)) {
+            fse.move(remoteStatePath, backupStatePath);
+          }
+
+          fse.writeFileSync(remoteStatePath, result.output, 'utf8');
+
           this._isRemoteState = true;
-          fse.writeFileSync(path.join(dir, this.getResource, Terraform.BACKUP), result.output, 'utf8');
         }
 
         return Promise.resolve();
@@ -193,7 +204,11 @@ class Terraform {
       });
 
       if (!this._isRemoteState && fse.existsSync(localStatePath)) {
-        options.push(`-state=${ localStatePath }`, `-state-out=${ localStatePath }`, `-backup=${ backupStatePath }`);
+        options.push(
+          `-state=${ localStatePath }`,
+          `-state-out=${ localStatePath }`,
+          `-backup=${ backupStatePath }`
+        );
       } else if (fse.existsSync(planPath)) {
         options.push(planPath);
       }
@@ -226,7 +241,11 @@ class Terraform {
       });
 
       if (!this._isRemoteState && fse.existsSync(localStatePath)) {
-        options.push(`-state=${ localStatePath }`, `-state-out=${ localStatePath }`, `-backup=${ backupStatePath }`);
+        options.push(
+          `-state=${ localStatePath }`,
+          `-state-out=${ localStatePath }`,
+          `-backup=${ backupStatePath }`
+        );
       }
 
       return this.run('destroy', options, dir).then(() => {
@@ -317,7 +336,6 @@ class Terraform {
       const dir = path.dirname(this.getBinary);
 
       // @todo validate version to follow format X.Y.Z
-
       return downloader.download(dir, version).then(() => {
         const realPath = path.join(dir, Terraform.BIN_FILE);
 
@@ -367,6 +385,13 @@ class Terraform {
    */
   static get STATE() {
     return 'terraform.tfstate';
+  }
+
+  /**
+   * @returns {string}
+   */
+  static get REMOTE() {
+    return 'terraform.tfstate.remote';
   }
 
   /**
