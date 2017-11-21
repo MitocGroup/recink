@@ -274,8 +274,8 @@ class Terraform {
   show(planOrState, secureOutput = true) {
     let options = ['-no-color'];
 
-    if (planOrState instanceof Plan) {
-      options.push(planOrState.path)
+    if (planOrState.path) {
+      options.push(planOrState.path);
     }
 
     return this.run('show', options, planOrState.dir).then(result => {
