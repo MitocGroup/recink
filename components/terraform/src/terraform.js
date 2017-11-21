@@ -200,11 +200,11 @@ class Terraform {
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
       let options = ['-no-color', '-auto-approve'];
 
-      this.varFiles.forEach(fileName => {
-        options.push(`-var-file=${path.join(dir, fileName)}`);
-      });
-
       if (!this._isRemoteState && fse.existsSync(localStatePath)) {
+        this.varFiles.forEach(fileName => {
+          options.push(`-var-file=${path.join(dir, fileName)}`);
+        });
+
         options.push(
           `-state=${ localStatePath }`,
           `-state-out=${ localStatePath }`,
