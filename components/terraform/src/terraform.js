@@ -211,6 +211,9 @@ class Terraform {
           `-backup=${ backupStatePath }`
         );
       } else if (fse.existsSync(planPath)) {
+        if (!this._isRemoteState) {
+          options.push(`-state-out=${ localStatePath }`);
+        }
         options.push(planPath);
       }
 
