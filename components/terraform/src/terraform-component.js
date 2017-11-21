@@ -418,9 +418,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _dispatchModule(emitModule) {
     const version = this._parameterFromConfig(emitModule, 'version', Terraform.VERSION);
     const terraform = new Terraform(
+      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'binary', Terraform.BINARY),
       this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE),
-      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 

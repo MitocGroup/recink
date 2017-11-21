@@ -81,7 +81,6 @@ example_prepare:
 example_module:
   root: './example'                         # Module root folder containing "main.tf" file inside
   terraform:
-    main: 'main.tf'                         # Module entry file name (default "main.tf")
     run-after:                              # Other Terraform modules to run before dispatching "example_module"
       - example_prepare
     dependencies:                           # Global dependencies that should be considered when mathing changeset
@@ -121,4 +120,3 @@ The following example will create 2 AWS VPCs with a peering connection between t
 # Gotchas
 
  - If `recink-comment` is neither installed or configured the reporter will fall back to `logger.info()` and output the message in console
- 
