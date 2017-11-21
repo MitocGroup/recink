@@ -196,6 +196,7 @@ class Terraform {
     return this._ensureResourceDir(dir).then(() => {
       const planPath = path.join(dir, this.getResource, Terraform.PLAN);
       const localStatePath = path.join(dir, this.getResource, Terraform.STATE);
+      const remoteStatePath = path.join(dir, this.getResource, Terraform.REMOTE);
       const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
       let options = ['-no-color', '-auto-approve'];
 
@@ -214,13 +215,13 @@ class Terraform {
       }
 
       return this.run('apply', options, dir).then(() => {
-        let state = new State(localStatePath, backupStatePath);
-
-        if (!this._isRemoteState) {
-          return Promise.resolve(state);
+        if (this._isRemoteState) {
+          return this.pullState(dir)
+            .then(() => Promise.resolve(new State(remoteStatePath, backupStatePath))
+          );
         }
 
-        return this.pullState(dir).then(() => Promise.resolve(state));
+        return Promise.resolve(new State(localStatePath, backupStatePath));
       });
     });
   }
