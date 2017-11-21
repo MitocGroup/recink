@@ -8,29 +8,35 @@ cache:
     - node_modules
     - "$(npm root -g)"
     - "$(npm config get prefix)/bin"
-branches:
-  only:
-    - master
-    - dev
-    - stage
-    - test
+stage: "Continuous Integration :clipboard:"
+node_js:
+  # AWS Lambda
+  - 6
+  # LTS
+  - 8
 before_install:
-  - "npm install -g recink --production"
-script: $SCRIPT
-matrix:
-  include:
-    - node_js: 6  # Current LTS
-      env: SCRIPT="recink run unit"
-    - node_js: 8 # Next LTS (@see https://nodejs.org/en/blog/release/v8.0.0/#long-term-support)
-      env: SCRIPT="recink run unit"
-    - node_js: 8
-      env: SCRIPT="recink run e2e"
-# Uncomment this to virtualize the X instance for non headless browsers
-# E.g. Electron based (Nightmare etc.)
-#     addons:
-#       apt:
-#         packages:
-#           - xvfb
-#     install:
-#       - "export DISPLAY=':99.0'"
-#       - "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
+  - npm install -g recink --production
+script: recink run unit
+#jobs:
+#  include:
+#    - stage: "Continuous Deployment :cloud:"
+#      node_js: 6
+#      before_install:
+#        - npm install -g deepify
+#      script:
+#        - if [ ${DEEPIFY_DEPLOY} == 1 ]; then deepify deploy src --loglevel=debug; else echo "Skipping deploy"; fi
+#      after_failure:
+#        - deepify undeploy src --loglevel=debug
+#    - stage: "E2E Testing :clipboard:"
+#      node_js: 8
+#      script:
+#        - if [ ${DEEPIFY_DEPLOY} == 1 ]; then recink run e2e; else echo "Skipping e2e testing"; fi
+#      # addons:
+#      #   firefox: 'latest'
+#      #   chrome: 'beta'
+#      #   apt:
+#      #     packages:
+#      #       - xvfb
+#      # install:
+#      #   - 'export DISPLAY='':99.0'''
+#      #   - 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'

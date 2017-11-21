@@ -1,82 +1,120 @@
 --- 
 $:
+  npm:
+#   # Scripts to run after installing dependencies
+#   scripts:
+#     - 'compile-travis'
+#   # Dependencies to add/overwrite
+    dependencies:
+      chai: 'latest'
+
+  emit:
+    # Files to include
+    pattern:
+      - /.+\.js$/i
+    # Files to exclude
+    ignore:
+      - /^(.*\/)?node_modules(\/?$)?/i
+
+  test:
+    # JS test framework
+    mocha:
+      options:
+        ui: 'bdd'
+        reporter: 'spec'
+    # Files to include
+    pattern:
+      - /.+\.spec\.js$/i
+    # Files to exclude
+    ignore: ~
+
 # preprocess:
-#  '$.coverage.compare.storage.options.1.region': 'eval'
-#  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
-#  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
+#  # preprocessing of cache variables
 #  '$.cache.options.1.region': 'eval'
 #  '$.cache.options.1.accessKeyId': 'eval'
 #  '$.cache.options.1.secretAccessKey': 'eval'
+#  # preprocessing of coverage variables
+#  '$.coverage.compare.storage.options.1.region': 'eval'
+#  '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
+#  '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
+
 # cache:
-#   paths: []                                                               # Additional paths to be cached
-#   npm: true                                                               # Cache NPM dependencies
-#   driver: 's3'                                                            # Available drivers: void, s3
+#   # Additional paths to be cached
+#   paths: []
+#   # Cache NPM dependencies
+#   npm: true
+#   # Available drivers: void, s3
+#   driver: 's3'
 #   options:
-#     - 's3://travis-metadata/cache/sample-repo'                            # S3 cache directory
-#     -                                                                     # S3 client options
+#     # S3 cache directory
+#     - 's3://travis-metadata/cache/sample-repo'
+#     # S3 client options
+#     -
 #       region: 'process.env.AWS_DEFAULT_REGION'
 #       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
 #       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
-  npm:
-#   scripts:                                                                # Scripts to run after installing dependencies
-#     - 'compile-travis'
-    dependencies:                                                           # Dependencies to add/overwrite
-      chai: 'latest'
-  emit:
-    pattern:                                                                # Files to include
-      - /.+\.js$/i
-    ignore:                                                                 # Files to exclude
-      - /^(.*\/)?node_modules(\/?$)?/i
-  test:
-    mocha:
-      options:                                                              # Mocha options
-        ui: 'bdd'
-        reporter: 'spec'
-    pattern:                                                                # Files to include
-      - /.+\.spec\.js$/i
-    ignore: ~                                                               # Files to exclude
-  e2e:
-    pattern:                                                                # Files to include
-      - /.+\.e2e\.js$/i
-    ignore: ~                                                               # Files to exclude
-    reporter: ~                                                             # TestCafe framework reporter
-#   screenshot:                                                             # TestCafe allow taking screenshots
+
+# coverage:
+#   # Istanbul reporters
+#   reporters:
+#     text-summary: ~
+#   # Files to include
+#   pattern:
+#     - /.+\.js$/i
+#   # Files to exclude
+#   ignore:
+#     - /.+\.spec\.js$/i
+#     - /.+\.e2e\.js$/i
+#     - /^(.*\/)?node_modules(\/?$)?/i
+#   # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
+#   compare:
+#     negative-delta: 3
+#     storage:
+#       # Available drivers: s3, volative
+#       driver: 's3'
+#       options:
+#         # S3 storage directory
+#         - 's3://travis-metadata/coverage/sample-repo'
+#         # S3 storage options
+#         -
+#           region: 'process.env.AWS_DEFAULT_REGION'
+#           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+
+# e2e:
+#   # TestCafe framework reporter
+#   reporter: ~
+#   # Files to include
+#   pattern:
+#     - /.+\.e2e\.js$/i
+#   # Files to exclude
+#   ignore: ~
+#   # TestCafe allows taking screenshots
+#   screenshot:
 #     enabled: false                  
 #     path: 'path/to/screenshots'
 #     take-on-fail: false
-#   browsers:                                                               # Browsers to run the tests against
-#     - puppeteer                                                           # The default one...
+#   # Browsers to run the tests against
+#   browsers:
+#     - puppeteer
 #     - nightmare
 #     - safari
 #     - chrome
 #     - firefox
+#   # Wait options for running uri checks
 #   wait:
-#     interval: 200                                                         # Interval of running uri checks
-#     timeout: 15000                                                        # Timeout to wait for uri's available
-#     uri:                                                                  # uri's to wait before start running test cases
+#     interval: 200
+#     timeout: 15000
+#     uri:
 #        - https://www.example.com
-  coverage:
-    pattern:                                                                # Files to include
-      - /.+\.js$/i
-    ignore:                                                                 # Files to exclude
-      - /.+\.spec\.js$/i
-      - /.+\.e2e\.js$/i
-      - /^(.*\/)?node_modules(\/?$)?/i
-    reporters:                                                              # Istanbul reporters
-      text-summary: ~
-#   compare:
-#     negative-delta: 3                                                     # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
-#     storage:                                              
-#       driver: 's3'                                                        # Available drivers: s3, volative
-#       options:
-#         - 's3://travis-metadata/coverage/sample-repo'                     # S3 storage directory
-#         -                                                                 # S3 storage options
-#           region: 'process.env.AWS_DEFAULT_REGION'
-#           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-#           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
-main:                                                                       # Main module definition
-  root: '.'                                                                 # Root package directory (containing package.json and tests)
-#  scripts: []                                                              # Scripts to run after installing dependencies (over $.npm.scripts config)
-#  dependencies: []                                                         # Dependencies to add/overwrite (over $.npm.dependencies config)
+
+# Main module definition
+#main:
+# # Root package directory (containing package.json and tests)
+# root: '.'
+#  # Scripts to run after installing dependencies (over $.npm.scripts config)
+#  scripts: []
+#  # Dependencies to add/overwrite (over $.npm.dependencies config)
+#  dependencies: []
 
 ### Add other modules here...
