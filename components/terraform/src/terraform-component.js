@@ -21,7 +21,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
     super(...args);
 
     this._reporter = null;
-    this._noChanges = true;
+    this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
@@ -279,7 +279,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    this._noChanges = true;
+    this._planChanged = false;
     this._runStack = {};
     this._caches = {};
 
@@ -504,11 +504,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform plan" in "${ emitModule.name }".`
     );
 
-    const enabled = emitModule.container.has('terraform.plan') 
-      ? emitModule.container.get('terraform.plan')
-      : this.container.get('plan', true);
-
-    if (!enabled) {
+    if (!this._parameterFromConfig(emitModule, 'plan', true)) {
       return this._handleSkip(emitModule, 'plan');
     }
 
@@ -532,13 +528,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform apply" in "${ emitModule.name }".`
     );
 
-    const enabled = emitModule.container.has('terraform.apply') 
-      ? emitModule.container.get('terraform.apply')
-      : this.container.get('apply', false);
-
-    if (!enabled) {
+    if (!this._parameterFromConfig(emitModule, 'apply', false)) {
       return this._handleSkip(emitModule, 'apply');
-    } else if (this._noChanges) {
+    } else if (!this._planChanged) {
       return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
@@ -562,11 +554,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       `Running "terraform destroy" in "${ emitModule.name }".`
     );
 
-    const enabled = emitModule.container.has('terraform.destroy')
-      ? emitModule.container.get('terraform.destroy')
-      : this.container.get('destroy', false);
-
-    if (!enabled) {
+    if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
 
@@ -625,7 +613,7 @@ ${ reasonMsg }
    */
   _handlePlan(terraform, emitModule, plan) {
     // @todo move this...
-    this._noChanges = !plan.changed;
+    this._planChanged = plan.changed;
 
     return terraform.show(plan)
       .then(output => {
