@@ -1,12 +1,13 @@
 'use strict';
 
-const path = require('path');
 const fse = require('fs-extra');
+const dot = require('dot-object');
+const path = require('path');
 const execa = require('execa');
-const pjson = require('../package');
-const Downloader = require('./downloader');
 const Plan = require('./terraform/plan');
+const pjson = require('../package');
 const State = require('./terraform/state');
+const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
 const { getFilesByPattern } = require('./helper/util');
 
@@ -123,14 +124,36 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/init.html
-   * 
    * @param {string} dir
    * @returns {Promise}
    */
   init(dir) {
     return this
       .run('init', ['-no-color', '.'], dir)
-      .then(result => Promise.resolve());
+      .then(() => this.checkRemoteState(dir))
+      .then(() => Promise.resolve());
+  }
+
+  /**
+   * Check if remote state configured
+   * @param {String} dir
+   * @return {Promise}
+   */
+  checkRemoteState(dir) {
+    // Is it always here - .terraform/terraform.tfstate ?
+    // const state = path.join(dir, '.terraform/terraform.tfstate');
+    const statePath = path.join(dir, this.getResource, Terraform.STATE);
+
+    if (!fse.existsSync(statePath)) {
+      return Promise.resolve();
+    }
+
+    return fse.readJson(statePath).then(stateObj => {
+      this._isRemoteState = !!dot.pick('backend.type', stateObj);
+      // do we need to check if it't S3?
+      // this._isRemoteState = dot.pick('backend.type', stateObj) === 's3';
+      return Promise.resolve();
+    });
   }
 
   /**
@@ -141,17 +164,12 @@ class Terraform {
   pullState(dir) {
     return this._ensureResourceDir(dir).then(() => {
       return this.run('state', ['pull'], dir).then(result => {
-        // @todo in order to _isRemoteState = true
-        // read .terraform/terraform.tfstate file
-        // check if backend.type is not empty
         if (result.output) {
-          this._isRemoteState = true;
-
           const remoteStatePath = path.join(dir, this.getResource, Terraform.REMOTE);
           const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
 
           if (fse.existsSync(remoteStatePath)) {
-            fse.move(remoteStatePath, backupStatePath);
+            fse.moveSync(remoteStatePath, backupStatePath);
           }
 
           fse.writeFileSync(remoteStatePath, result.output, 'utf8');
@@ -219,9 +237,7 @@ class Terraform {
 
       return this.run('apply', options, dir).then(() => {
         if (this._isRemoteState) {
-          return this.pullState(dir)
-            .then(() => Promise.resolve(new State(remoteStatePath, backupStatePath))
-          );
+          return this.pullState(dir).then(() => Promise.resolve(new State(remoteStatePath, backupStatePath)));
         }
 
         return Promise.resolve(new State(localStatePath, backupStatePath));
