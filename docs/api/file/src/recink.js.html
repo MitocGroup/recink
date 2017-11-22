@@ -64,7 +64,8 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/module-compile.js~ModuleCompile.html">ModuleCompile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
@@ -182,9 +183,7 @@ class Recink extends Emitter {
   
   /**
    * @param {Function} targetClass
-   *
-   * @returns {string}
-   *
+   * @returns {string|null}
    * @private
    */
   _getBaseClass(targetClass) {
@@ -240,7 +239,7 @@ class Recink extends Emitter {
         .then(() =&gt; component.ready())
         .then(() =&gt; {
           this.emit(events.component.ready, component);
-          
+
           return Promise.resolve(component);
         });
     }));
@@ -289,20 +288,17 @@ class Recink extends Emitter {
   /**
    * @param {*} config
    * @param {string} configFile
-   *
    * @returns {Promise}
-   * 
    * @private
    */
   _configLoad(config, configFile) {
-    return this.emitBlocking(events.config.preprocess, config)
-      .then(() =&gt; {
-        this._config = config;
-        this._container.reload(this._config);
-        this.emit(events.config.load, this.container, configFile);
-        
-        return Promise.resolve(this._config);
-      });
+    return this.emitBlocking(events.config.preprocess, config).then(() =&gt; {
+      this._config = config;
+      this._container.reload(this._config);
+      this.emit(events.config.load, this.container, configFile);
+
+      return Promise.resolve(this._config);
+    });
   }
 
   /**
@@ -320,28 +316,28 @@ class Recink extends Emitter {
   listComponents() {
     return this._components;
   }
-  
+
   /**
    * @returns {Container}
    */
   get container() {
     return this._container;
   }
-  
+
   /**
    * @returns {AbstractConfig}
    */
   get config() {
     return this._config;
   }
-  
+
   /**
    * @returns {string}
    */
   static get CONFIG_FILE() {
     return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);
   }
-  
+
   /**
    * @returns {string}
    */

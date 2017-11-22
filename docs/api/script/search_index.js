@@ -30,6 +30,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "recink/src/component/helper/aws-credentials.js~awscredentials",
+    "class/src/component/helper/aws-credentials.js~AwsCredentials.html",
+    "<span>AwsCredentials</span> <span class=\"search-result-import-path\">recink/src/component/helper/aws-credentials.js</span>",
+    "class"
+  ],
+  [
     "recink/src/component/npm/cache.js~cache",
     "class/src/component/npm/cache.js~Cache.html",
     "<span>Cache</span> <span class=\"search-result-import-path\">recink/src/component/npm/cache.js</span>",
@@ -1395,6 +1401,24 @@ window.esdocSearchIndex = [
     "src/component/factory.js~factory.test",
     "class/src/component/factory.js~Factory.html#static-method-test",
     "src/component/factory.js~Factory.test",
+    "method"
+  ],
+  [
+    "src/component/helper/aws-credentials.js",
+    "file/src/component/helper/aws-credentials.js.html",
+    "src/component/helper/aws-credentials.js",
+    "file"
+  ],
+  [
+    "src/component/helper/aws-credentials.js~awscredentials#constructor",
+    "class/src/component/helper/aws-credentials.js~AwsCredentials.html#instance-constructor-constructor",
+    "src/component/helper/aws-credentials.js~AwsCredentials#constructor",
+    "method"
+  ],
+  [
+    "src/component/helper/aws-credentials.js~awscredentials#getaws",
+    "class/src/component/helper/aws-credentials.js~AwsCredentials.html#instance-method-getAws",
+    "src/component/helper/aws-credentials.js~AwsCredentials#getAws",
     "method"
   ],
   [

@@ -64,7 +64,8 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/module-compile.js~ModuleCompile.html">ModuleCompile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
@@ -88,13 +89,13 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/component/cache/s3-driver.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const AbstractDriver = require(&apos;./abstract-driver&apos;);
-const S3 = require(&apos;aws-sdk/clients/s3&apos;);
-const path = require(&apos;path&apos;);
 const fs = require(&apos;fs&apos;);
-const progress = require(&apos;progress-stream&apos;);
-const md5File = require(&apos;md5-file&apos;);
+const path = require(&apos;path&apos;);
 const pify = require(&apos;pify&apos;);
+const md5File = require(&apos;md5-file&apos;);
+const progress = require(&apos;progress-stream&apos;);
+const AbstractDriver = require(&apos;./abstract-driver&apos;);
+const AwsCredentials = require(&apos;../helper/aws-credentials&apos;);
 
 /**
  * AWS S3 cache driver
@@ -112,7 +113,8 @@ class S3Driver extends AbstractDriver {
     this._path = path;
     this._options = options;
     this._includeNodeVersion = includeNodeVersion;
-    this._client = new S3(this.options);
+    this._awsCredentials = new AwsCredentials(this.options);
+    this._client = false;
   }
 
   /**
@@ -135,12 +137,17 @@ class S3Driver extends AbstractDriver {
   get path() {
     return this._path;
   }
-  
+
   /**
-   * @returns {S3}
+   * Get AWS.S3 client promise
+   * @return {Promise}
    */
-  get client() {    
-    return this._client;
+  get client() {
+    if (this._client) {
+      return Promise.resolve(this._client);
+    }
+
+    return this._awsCredentials.getAws().then(AWS =&gt; Promise.resolve(new AWS.S3()));
   }
   
   /**
@@ -152,66 +159,59 @@ class S3Driver extends AbstractDriver {
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _upload() {
-    return this._packageSize
-      .then(ContentLength =&gt; {
-        if (ContentLength &lt;= 0) {
-          return Promise.resolve();
-        }
-        
-        return this._hasChanged
-          .then(hasChanged =&gt; {
-            return new Promise((resolve, reject) =&gt; {
-              if (!hasChanged) {
-                return resolve();
-              }
-              
-              const { Bucket, Key } = this._s3Location(this.path);
-              const packageStream = fs.createReadStream(this._packagePath);
-              
-              packageStream.on(&apos;error&apos;, error =&gt; reject(error));
-              
-              const Body = this._track(packageStream, ContentLength);
+    return this._packageSize.then(ContentLength =&gt; {
+      if (ContentLength &lt;= 0) {
+        return Promise.resolve();
+      }
 
-              this.client
-                .upload({ Bucket, Key, Body, })
-                .promise()
-                .then(() =&gt; resolve())
-                .catch(error =&gt; reject(error));
-            });
-          });
+      return this._hasChanged.then(hasChanged =&gt; {
+        return new Promise((resolve, reject) =&gt; {
+          if (!hasChanged) {
+            return resolve();
+          }
+
+          const { Bucket, Key } = this._s3Location(this.path);
+          const packageStream = fs.createReadStream(this._packagePath);
+
+          packageStream.on(&apos;error&apos;, error =&gt; reject(error));
+
+          const Body = this._track(packageStream, ContentLength);
+
+          this.client
+            .then(S3 =&gt; S3.upload({ Bucket, Key, Body }).promise())
+            .then(() =&gt; resolve())
+            .catch(error =&gt; reject(error));
+        });
       });
+    });
   }
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   get _hasChanged() {
-    return pify(md5File)(this._packagePath)
-      .then(packageHash =&gt; {
-        const { Bucket, Key } = this._s3Location(this.path);
-        
-        return this.client
-          .headObject({ Bucket, Key, })
-          .promise()
-          .then(data =&gt; {
-            const remoteHash = data.ETag.replace(/&quot;/g, &apos;&apos;);
-            
-            return Promise.resolve(packageHash !== remoteHash);
-          })
-          .catch(error =&gt; {
-            if (this._isMissingObject(error)) {
-              return Promise.resolve(true);
-            }
-            
-            return Promise.reject(error);
-          });
-      });
+    return pify(md5File)(this._packagePath).then(packageHash =&gt; {
+      const { Bucket, Key } = this._s3Location(this.path);
+
+      return this.client
+        .then(S3 =&gt; S3.headObject({ Bucket, Key }).promise())
+        .then(data =&gt; {
+          const remoteHash = data.ETag.replace(/&quot;/g, &apos;&apos;);
+
+          return Promise.resolve(packageHash !== remoteHash);
+        })
+        .catch(error =&gt; {
+          if (this._isMissingObject(error)) {
+            return Promise.resolve(true);
+          }
+
+          return Promise.reject(error);
+        });
+    });
   }
   
   /**
@@ -221,22 +221,23 @@ class S3Driver extends AbstractDriver {
    */
   _download() {
     return new Promise((resolve, reject) =&gt; {
-      const { Bucket, Key } = this._s3Location(this.path);
-      const packageStream = fs.createWriteStream(this._packagePath);
-      const remoteStream = this.client
-        .getObject({ Bucket, Key, }).createReadStream();
-      
-      remoteStream.on(&apos;end&apos;, () =&gt; resolve());
-      remoteStream.on(&apos;error&apos;, error =&gt; {
-        if (this._isMissingObject(error)) {
-          return resolve();
-        }
-        
-        reject(error);
+      this.client.then(S3 =&gt; {
+        const { Bucket, Key } = this._s3Location(this.path);
+        const packageStream = fs.createWriteStream(this._packagePath);
+        const remoteStream = S3.getObject({ Bucket, Key }).createReadStream();
+
+        remoteStream.on(&apos;end&apos;, () =&gt; resolve());
+        remoteStream.on(&apos;error&apos;, error =&gt; {
+          if (this._isMissingObject(error)) {
+            return resolve();
+          }
+
+          reject(error);
+        });
+        packageStream.on(&apos;error&apos;, error =&gt; reject(error));
+
+        this._track(remoteStream).pipe(packageStream);
       });
-      packageStream.on(&apos;error&apos;, error =&gt; reject(error));
-      
-      this._track(remoteStream).pipe(packageStream);
     });
   }
   
