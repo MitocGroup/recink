@@ -94,9 +94,7 @@ class Recink extends Emitter {
   
   /**
    * @param {Function} targetClass
-   *
-   * @returns {string}
-   *
+   * @returns {string|null}
    * @private
    */
   _getBaseClass(targetClass) {
@@ -152,7 +150,7 @@ class Recink extends Emitter {
         .then(() => component.ready())
         .then(() => {
           this.emit(events.component.ready, component);
-          
+
           return Promise.resolve(component);
         });
     }));
@@ -201,20 +199,17 @@ class Recink extends Emitter {
   /**
    * @param {*} config
    * @param {string} configFile
-   *
    * @returns {Promise}
-   * 
    * @private
    */
   _configLoad(config, configFile) {
-    return this.emitBlocking(events.config.preprocess, config)
-      .then(() => {
-        this._config = config;
-        this._container.reload(this._config);
-        this.emit(events.config.load, this.container, configFile);
-        
-        return Promise.resolve(this._config);
-      });
+    return this.emitBlocking(events.config.preprocess, config).then(() => {
+      this._config = config;
+      this._container.reload(this._config);
+      this.emit(events.config.load, this.container, configFile);
+
+      return Promise.resolve(this._config);
+    });
   }
 
   /**
@@ -232,28 +227,28 @@ class Recink extends Emitter {
   listComponents() {
     return this._components;
   }
-  
+
   /**
    * @returns {Container}
    */
   get container() {
     return this._container;
   }
-  
+
   /**
    * @returns {AbstractConfig}
    */
   get config() {
     return this._config;
   }
-  
+
   /**
    * @returns {string}
    */
   static get CONFIG_FILE() {
     return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);
   }
-  
+
   /**
    * @returns {string}
    */
