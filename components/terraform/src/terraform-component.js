@@ -386,7 +386,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * Get main or extended by module parameter
    * @param {EmitModule} module
    * @param {String} parameter
-   * @param {String|Object|Array} defaultValue
+   * @param {String|Object|Array|Boolean} defaultValue
    * @return {*}
    * @private
    */
@@ -397,6 +397,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     switch ((defaultValue).constructor) {
       case String:
+      case Boolean:
         result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
         break;
       case Object:
