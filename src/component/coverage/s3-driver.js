@@ -1,8 +1,8 @@
 'use strict';
 
-const AbstractDriver = require('./abstract-driver');
-const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
+const AbstractDriver = require('./abstract-driver');
+const AwsCredentials = require('../helper/aws-credentials');
 
 /**
  * AWS S3 coverage storage driver
@@ -18,67 +18,68 @@ class S3Driver extends AbstractDriver {
     
     this._path = path;
     this._options = options;
-    this._client = new S3(this.options);
     this._includeNodeVersion = includeNodeVersion;
+    this._awsCredentials = new AwsCredentials(this.options);
+    this._client = false;
   }
-  
+
   /**
    * @returns {boolean}
    */
   get includeNodeVersion() {
     return this._includeNodeVersion;
   }
-  
+
   /**
    * @returns {string}
    */
   get path() {
     return this._path;
   }
-  
+
   /**
-   * @returns {S3}
+   * Get AWS.S3 client promise
+   * @return {Promise}
    */
-  get client() {    
-    return this._client;
+  get client() {
+    if (this._client) {
+      return Promise.resolve(this._client);
+    }
+
+    return this._awsCredentials.getAws().then(AWS => Promise.resolve(new AWS.S3()));
   }
-  
+
   /**
    * @returns {*}
    */
   get options() {
     return this._options;
   }
-  
+
   /**
    * @param {string} name
-   * 
    * @returns {Promise}
-   *
    * @private
    */
   _read(name) {
     const { Bucket, Key } = this._s3Payload(name);
-    
+
     return this.client
-      .getObject({ Bucket, Key, })
-      .promise()
+      .then(S3 => S3.getObject({ Bucket, Key }).promise())
       .then(data => Promise.resolve(data.Body.toString()))
       .catch(error => {
         if (this._isMissingObject(error)) {
           return Promise.resolve(null);
         }
-        
-        Promise.reject(error);
+
+        return Promise.reject(error);
       });
   }
-  
+
   /**
    * @param {string} name
    * @param {string} content
-   * 
    * @returns {Promise}
-   *
    * @private
    */
   _write(name, content) {
@@ -86,11 +87,10 @@ class S3Driver extends AbstractDriver {
     const { Bucket, Key } = this._s3Payload(name);
     
     return this.client
-      .upload({ Bucket, Key, Body, })
-      .promise()
+      .then(S3 => S3.upload({ Bucket, Key, Body }).promise())
       .then(data => Promise.resolve());
   }
-  
+
   /**
    * @param {*} error
    *

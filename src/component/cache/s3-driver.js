@@ -1,12 +1,12 @@
 'use strict';
 
-const AbstractDriver = require('./abstract-driver');
-const S3 = require('aws-sdk/clients/s3');
-const path = require('path');
 const fs = require('fs');
-const progress = require('progress-stream');
-const md5File = require('md5-file');
+const path = require('path');
 const pify = require('pify');
+const md5File = require('md5-file');
+const progress = require('progress-stream');
+const AbstractDriver = require('./abstract-driver');
+const AwsCredentials = require('../helper/aws-credentials');
 
 /**
  * AWS S3 cache driver
@@ -24,7 +24,8 @@ class S3Driver extends AbstractDriver {
     this._path = path;
     this._options = options;
     this._includeNodeVersion = includeNodeVersion;
-    this._client = new S3(this.options);
+    this._awsCredentials = new AwsCredentials(this.options);
+    this._client = false;
   }
 
   /**
@@ -47,12 +48,17 @@ class S3Driver extends AbstractDriver {
   get path() {
     return this._path;
   }
-  
+
   /**
-   * @returns {S3}
+   * Get AWS.S3 client promise
+   * @return {Promise}
    */
-  get client() {    
-    return this._client;
+  get client() {
+    if (this._client) {
+      return Promise.resolve(this._client);
+    }
+
+    return this._awsCredentials.getAws().then(AWS => Promise.resolve(new AWS.S3()));
   }
   
   /**
@@ -64,66 +70,59 @@ class S3Driver extends AbstractDriver {
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _upload() {
-    return this._packageSize
-      .then(ContentLength => {
-        if (ContentLength <= 0) {
-          return Promise.resolve();
-        }
-        
-        return this._hasChanged
-          .then(hasChanged => {
-            return new Promise((resolve, reject) => {
-              if (!hasChanged) {
-                return resolve();
-              }
-              
-              const { Bucket, Key } = this._s3Location(this.path);
-              const packageStream = fs.createReadStream(this._packagePath);
-              
-              packageStream.on('error', error => reject(error));
-              
-              const Body = this._track(packageStream, ContentLength);
+    return this._packageSize.then(ContentLength => {
+      if (ContentLength <= 0) {
+        return Promise.resolve();
+      }
 
-              this.client
-                .upload({ Bucket, Key, Body, })
-                .promise()
-                .then(() => resolve())
-                .catch(error => reject(error));
-            });
-          });
+      return this._hasChanged.then(hasChanged => {
+        return new Promise((resolve, reject) => {
+          if (!hasChanged) {
+            return resolve();
+          }
+
+          const { Bucket, Key } = this._s3Location(this.path);
+          const packageStream = fs.createReadStream(this._packagePath);
+
+          packageStream.on('error', error => reject(error));
+
+          const Body = this._track(packageStream, ContentLength);
+
+          this.client
+            .then(S3 => S3.upload({ Bucket, Key, Body }).promise())
+            .then(() => resolve())
+            .catch(error => reject(error));
+        });
       });
+    });
   }
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   get _hasChanged() {
-    return pify(md5File)(this._packagePath)
-      .then(packageHash => {
-        const { Bucket, Key } = this._s3Location(this.path);
-        
-        return this.client
-          .headObject({ Bucket, Key, })
-          .promise()
-          .then(data => {
-            const remoteHash = data.ETag.replace(/"/g, '');
-            
-            return Promise.resolve(packageHash !== remoteHash);
-          })
-          .catch(error => {
-            if (this._isMissingObject(error)) {
-              return Promise.resolve(true);
-            }
-            
-            return Promise.reject(error);
-          });
-      });
+    return pify(md5File)(this._packagePath).then(packageHash => {
+      const { Bucket, Key } = this._s3Location(this.path);
+
+      return this.client
+        .then(S3 => S3.headObject({ Bucket, Key }).promise())
+        .then(data => {
+          const remoteHash = data.ETag.replace(/"/g, '');
+
+          return Promise.resolve(packageHash !== remoteHash);
+        })
+        .catch(error => {
+          if (this._isMissingObject(error)) {
+            return Promise.resolve(true);
+          }
+
+          return Promise.reject(error);
+        });
+    });
   }
   
   /**
@@ -133,22 +132,23 @@ class S3Driver extends AbstractDriver {
    */
   _download() {
     return new Promise((resolve, reject) => {
-      const { Bucket, Key } = this._s3Location(this.path);
-      const packageStream = fs.createWriteStream(this._packagePath);
-      const remoteStream = this.client
-        .getObject({ Bucket, Key, }).createReadStream();
-      
-      remoteStream.on('end', () => resolve());
-      remoteStream.on('error', error => {
-        if (this._isMissingObject(error)) {
-          return resolve();
-        }
-        
-        reject(error);
+      this.client.then(S3 => {
+        const { Bucket, Key } = this._s3Location(this.path);
+        const packageStream = fs.createWriteStream(this._packagePath);
+        const remoteStream = S3.getObject({ Bucket, Key }).createReadStream();
+
+        remoteStream.on('end', () => resolve());
+        remoteStream.on('error', error => {
+          if (this._isMissingObject(error)) {
+            return resolve();
+          }
+
+          reject(error);
+        });
+        packageStream.on('error', error => reject(error));
+
+        this._track(remoteStream).pipe(packageStream);
       });
-      packageStream.on('error', error => reject(error));
-      
-      this._track(remoteStream).pipe(packageStream);
     });
   }
   
