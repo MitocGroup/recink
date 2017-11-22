@@ -613,7 +613,6 @@ ${ reasonMsg }
    * @private 
    */
   _handlePlan(terraform, emitModule, plan) {
-    // @todo move this...
     this._planChanged = plan.changed;
 
     return terraform.show(plan)

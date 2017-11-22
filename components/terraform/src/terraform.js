@@ -140,9 +140,7 @@ class Terraform {
    * @return {Promise}
    */
   checkRemoteState(dir) {
-    // Is it always here - .terraform/terraform.tfstate ?
-    // const state = path.join(dir, '.terraform/terraform.tfstate');
-    const statePath = path.join(dir, this.getResource, Terraform.STATE);
+    const statePath = path.join(dir, '.terraform', Terraform.STATE);
 
     if (!fse.existsSync(statePath)) {
       return Promise.resolve();
@@ -150,8 +148,6 @@ class Terraform {
 
     return fse.readJson(statePath).then(stateObj => {
       this._isRemoteState = !!dot.pick('backend.type', stateObj);
-      // do we need to check if it't S3?
-      // this._isRemoteState = dot.pick('backend.type', stateObj) === 's3';
       return Promise.resolve();
     });
   }
@@ -164,7 +160,7 @@ class Terraform {
   pullState(dir) {
     return this._ensureResourceDir(dir).then(() => {
       return this.run('state', ['pull'], dir).then(result => {
-        if (result.output) {
+        if (this._isRemoteState && result.output) {
           const remoteStatePath = path.join(dir, this.getResource, Terraform.REMOTE);
           const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
 
