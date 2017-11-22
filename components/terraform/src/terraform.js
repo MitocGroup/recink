@@ -141,10 +141,12 @@ class Terraform {
   pullState(dir) {
     return this._ensureResourceDir(dir).then(() => {
       return this.run('state', ['pull'], dir).then(result => {
-        // @todo check again this logic
-        // remote state returns valid json
-        // local state returns message: Empty state (no state)
+        // @todo in order to _isRemoteState = true
+        // read .terraform/terraform.tfstate file
+        // check if backend.type is not empty
         if (result.output) {
+          this._isRemoteState = true;
+
           const remoteStatePath = path.join(dir, this.getResource, Terraform.REMOTE);
           const backupStatePath = path.join(dir, this.getResource, Terraform.BACKUP);
 
@@ -153,8 +155,6 @@ class Terraform {
           }
 
           fse.writeFileSync(remoteStatePath, result.output, 'utf8');
-
-          this._isRemoteState = true;
         }
 
         return Promise.resolve();
