@@ -116,3 +116,25 @@ We can overwrite it like this:
 ```bash
 recink run unit --custom-config='{"$.pagespeed.uri":"www-test.example.com"}'
 ```
+
+___
+
+Q: _How can I pass list of parameters?_
+
+A: You can pass it like this:
+
+```bash
+recink run terraform --tf-vars="list.0:item_1, list.1:item_2, list.2:item_3"
+```
+
+And you will receive:
+
+```javascript
+{
+  list: [
+    'item_1',
+    'item_2',
+    'item_3' 
+  ]
+}
+```
