@@ -430,7 +430,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
-      .then(() => this._pullState(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._apply(terraform, emitModule))
       .then(() => this._destroy(terraform, emitModule));
@@ -475,28 +474,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
-   * @param {Terraform} terraform
-   * @param {EmitModule} emitModule
-   * @return {Promise}
-   * @private
-   */
-  _pullState(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform state pull" in "${ emitModule.name }".`
-    );
-
-    return terraform
-      .pullState(this._moduleRoot(emitModule))
-      .catch(error => this._handleError(emitModule, 'init', error));
-  }
-
-  /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _plan(terraform, emitModule) {
