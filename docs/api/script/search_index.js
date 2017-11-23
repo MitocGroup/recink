@@ -2286,6 +2286,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/recink.js~recink#configload",
+    "class/src/recink.js~Recink.html#instance-method-configLoad",
+    "src/recink.js~Recink#configLoad",
+    "method"
+  ],
+  [
     "src/recink.js~recink#configure",
     "class/src/recink.js~Recink.html#instance-method-configure",
     "src/recink.js~Recink#configure",
@@ -2319,12 +2325,6 @@ window.esdocSearchIndex = [
     "src/recink.js~recink#run",
     "class/src/recink.js~Recink.html#instance-method-run",
     "src/recink.js~Recink#run",
-    "method"
-  ],
-  [
-    "src/recink.js~recink#skipmodules",
-    "class/src/recink.js~Recink.html#instance-method-skipModules",
-    "src/recink.js~Recink#skipModules",
     "method"
   ],
   [

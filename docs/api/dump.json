@@ -17225,7 +17225,7 @@
     "__docId__": 589,
     "kind": "file",
     "name": "src/recink.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst merge = require('merge');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst logger = require('./logger');\nconst Container = require('./container');\nconst configFactory = require('./config/factory');\nconst AbstractComponent = require('./component/abstract-component');\n\n/**\n * Recink entry point\n */\nclass Recink extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -', components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components.filter(component => component.isActive);\n\n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.init, component);\n      \n      return component.init(this);\n    }))\n      .then(() => {\n        return Promise.all(activeComponents.map(component => {\n          this.emit(events.component.run, component);\n        \n          return component.run(this);\n        }));\n      })\n      .then(() => {\n        return Promise.all(this._components.map(component => {\n          this.emit(events.component.teardown, component);\n        \n          return component.teardown(this);\n        }));\n      });\n  }\n  \n  /**\n   * @param {Function} targetClass\n   * @returns {string|null}\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent} components\n   *\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n    \n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n    \n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent) \n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n      \n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n      \n      return component.subscribe(this)\n        .then(() => {\n          this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n\n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   * @param {*} extendConfigs\n   *\n   * @returns {Promise}\n   */\n  configureExtend(configFile, ...extendConfigs) {\n    if (extendConfigs.length <= 0) {\n      return this.configure(configFile);\n    }\n    \n    const promises = extendConfigs\n      .concat([ configFile ])\n      .map(cfgFile => configFactory.guess(cfgFile).load());\n\n    return Promise.all(promises).then(configVector => {\n      const consolidatedConfig = merge.recursive(true, ...configVector);\n      \n      return this._configLoad(consolidatedConfig, configFile);\n    });\n  }\n\n  /**\n   * @param {Array} modules\n   */\n  skipModules(modules) {\n    this._skipModules = modules;\n  }\n\n  /**\n   * @param {string} configFile\n   *\n   * @returns {Promise}\n   */\n  configure(configFile = Recink.CONFIG_FILE) {\n    return configFactory.guess(configFile)\n      .load()\n      .then(config => this._configLoad(config, configFile));\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   * @returns {Promise}\n   * @private\n   */\n  _configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config).then(() => {\n      this._config = config;\n      this._container.reload(this._config);\n      this.emit(events.config.load, this.container, configFile);\n\n      return Promise.resolve(this._config);\n    });\n  }\n\n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0] || null;\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n\n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n\n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = Recink;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst merge = require('merge');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst logger = require('./logger');\nconst Container = require('./container');\nconst configFactory = require('./config/factory');\nconst AbstractComponent = require('./component/abstract-component');\n\n/**\n * Recink entry point\n */\nclass Recink extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -', components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components.filter(component => component.isActive);\n\n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.init, component);\n      \n      return component.init(this);\n    }))\n      .then(() => {\n        return Promise.all(activeComponents.map(component => {\n          this.emit(events.component.run, component);\n        \n          return component.run(this);\n        }));\n      })\n      .then(() => {\n        return Promise.all(this._components.map(component => {\n          this.emit(events.component.teardown, component);\n        \n          return component.teardown(this);\n        }));\n      });\n  }\n  \n  /**\n   * @param {Function} targetClass\n   * @returns {string|null}\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent} components\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n\n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent)\n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n\n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n\n      return component.subscribe(this)\n        .then(() => {\n          return this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   * @param {*} extendConfigs\n   * @returns {Promise}\n   */\n  configureExtend(configFile, ...extendConfigs) {\n    if (extendConfigs.length <= 0) {\n      return this.configure(configFile);\n    }\n    \n    const promises = extendConfigs\n      .concat([ configFile ])\n      .map(cfgFile => configFactory.guess(cfgFile).load());\n\n    return Promise.all(promises).then(configVectors => {\n      return Promise.resolve(merge.recursive(true, ...configVectors));\n    });\n  }\n\n  /**\n   * @param {string} configFile\n   * @returns {Promise}\n   */\n  configure(configFile = Recink.CONFIG_FILE) {\n    return configFactory.guess(configFile).load().then(config => Promise.resolve(config));\n  }\n\n  /**\n   * @param {Object} config\n   * @param {String} configFile\n   * @returns {Promise}\n   */\n  configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config).then(() => {\n      this._config = config;\n      this._container.reload(this._config);\n      this.emit(events.config.load, this.container, configFile);\n\n      return Promise.resolve(this._config);\n    });\n  }\n\n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0] || null;\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n\n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n\n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = Recink;\n",
     "static": true,
     "longname": "src/recink.js",
     "access": null,
@@ -17641,7 +17641,7 @@
     "longname": "src/recink.js~Recink#components",
     "access": null,
     "description": "",
-    "lineNumber": 125,
+    "lineNumber": 124,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17680,7 +17680,7 @@
     "longname": "src/recink.js~Recink#configureExtend",
     "access": null,
     "description": "",
-    "lineNumber": 165,
+    "lineNumber": 162,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17721,54 +17721,6 @@
   {
     "__docId__": 608,
     "kind": "method",
-    "name": "skipModules",
-    "memberof": "src/recink.js~Recink",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/recink.js~Recink#skipModules",
-    "access": null,
-    "description": "",
-    "lineNumber": 184,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "Array"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "modules",
-        "description": ""
-      }
-    ]
-  },
-  {
-    "__docId__": 609,
-    "kind": "member",
-    "name": "_skipModules",
-    "memberof": "src/recink.js~Recink",
-    "static": false,
-    "longname": "src/recink.js~Recink#_skipModules",
-    "access": null,
-    "description": null,
-    "lineNumber": 185,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 610,
-    "kind": "method",
     "name": "configure",
     "memberof": "src/recink.js~Recink",
     "generator": false,
@@ -17777,7 +17729,7 @@
     "longname": "src/recink.js~Recink#configure",
     "access": null,
     "description": "",
-    "lineNumber": 193,
+    "lineNumber": 180,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17806,17 +17758,17 @@
     }
   },
   {
-    "__docId__": 611,
+    "__docId__": 609,
     "kind": "method",
-    "name": "_configLoad",
+    "name": "configLoad",
     "memberof": "src/recink.js~Recink",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/recink.js~Recink#_configLoad",
-    "access": "private",
+    "longname": "src/recink.js~Recink#configLoad",
+    "access": null,
     "description": "",
-    "lineNumber": 205,
+    "lineNumber": 189,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17827,7 +17779,7 @@
       {
         "nullable": null,
         "types": [
-          "*"
+          "Object"
         ],
         "spread": false,
         "optional": false,
@@ -17837,7 +17789,7 @@
       {
         "nullable": null,
         "types": [
-          "string"
+          "String"
         ],
         "spread": false,
         "optional": false,
@@ -17855,7 +17807,7 @@
     }
   },
   {
-    "__docId__": 612,
+    "__docId__": 610,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~Recink",
@@ -17863,7 +17815,7 @@
     "longname": "src/recink.js~Recink#_config",
     "access": null,
     "description": null,
-    "lineNumber": 207,
+    "lineNumber": 191,
     "undocument": true,
     "unknown": [
       {
@@ -17878,7 +17830,7 @@
     }
   },
   {
-    "__docId__": 613,
+    "__docId__": 611,
     "kind": "method",
     "name": "component",
     "memberof": "src/recink.js~Recink",
@@ -17888,7 +17840,7 @@
     "longname": "src/recink.js~Recink#component",
     "access": null,
     "description": "",
-    "lineNumber": 220,
+    "lineNumber": 204,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17917,7 +17869,7 @@
     }
   },
   {
-    "__docId__": 614,
+    "__docId__": 612,
     "kind": "method",
     "name": "listComponents",
     "memberof": "src/recink.js~Recink",
@@ -17927,7 +17879,7 @@
     "longname": "src/recink.js~Recink#listComponents",
     "access": null,
     "description": "",
-    "lineNumber": 227,
+    "lineNumber": 211,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17945,7 +17897,7 @@
     }
   },
   {
-    "__docId__": 615,
+    "__docId__": 613,
     "kind": "get",
     "name": "container",
     "memberof": "src/recink.js~Recink",
@@ -17955,7 +17907,7 @@
     "longname": "src/recink.js~Recink#container",
     "access": null,
     "description": "",
-    "lineNumber": 234,
+    "lineNumber": 218,
     "unknown": [
       {
         "tagName": "@returns",
@@ -17977,7 +17929,7 @@
     }
   },
   {
-    "__docId__": 616,
+    "__docId__": 614,
     "kind": "get",
     "name": "config",
     "memberof": "src/recink.js~Recink",
@@ -17987,7 +17939,7 @@
     "longname": "src/recink.js~Recink#config",
     "access": null,
     "description": "",
-    "lineNumber": 241,
+    "lineNumber": 225,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18009,7 +17961,7 @@
     }
   },
   {
-    "__docId__": 617,
+    "__docId__": 615,
     "kind": "get",
     "name": "CONFIG_FILE",
     "memberof": "src/recink.js~Recink",
@@ -18019,7 +17971,7 @@
     "longname": "src/recink.js~Recink.CONFIG_FILE",
     "access": null,
     "description": "",
-    "lineNumber": 248,
+    "lineNumber": 232,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18041,7 +17993,7 @@
     }
   },
   {
-    "__docId__": 618,
+    "__docId__": 616,
     "kind": "get",
     "name": "CONFIG_FILE_NAME",
     "memberof": "src/recink.js~Recink",
@@ -18051,7 +18003,7 @@
     "longname": "src/recink.js~Recink.CONFIG_FILE_NAME",
     "access": null,
     "description": "",
-    "lineNumber": 255,
+    "lineNumber": 239,
     "unknown": [
       {
         "tagName": "@returns",
@@ -18073,7 +18025,7 @@
     }
   },
   {
-    "__docId__": 620,
+    "__docId__": 618,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -18085,7 +18037,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 621,
+    "__docId__": 619,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -18097,7 +18049,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 622,
+    "__docId__": 620,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -18109,7 +18061,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 623,
+    "__docId__": 621,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -18121,7 +18073,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 624,
+    "__docId__": 622,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -18133,7 +18085,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 625,
+    "__docId__": 623,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -18145,7 +18097,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 626,
+    "__docId__": 624,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -18157,7 +18109,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 627,
+    "__docId__": 625,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -18169,7 +18121,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 628,
+    "__docId__": 626,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -18181,7 +18133,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 629,
+    "__docId__": 627,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -18193,7 +18145,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 630,
+    "__docId__": 628,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -18205,7 +18157,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 631,
+    "__docId__": 629,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -18217,7 +18169,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 632,
+    "__docId__": 630,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -18229,7 +18181,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 633,
+    "__docId__": 631,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -18241,7 +18193,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 634,
+    "__docId__": 632,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -18253,7 +18205,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 635,
+    "__docId__": 633,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -18265,7 +18217,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 636,
+    "__docId__": 634,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -18277,7 +18229,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 637,
+    "__docId__": 635,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -18289,7 +18241,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 638,
+    "__docId__": 636,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -18301,7 +18253,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 639,
+    "__docId__": 637,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -18313,7 +18265,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 640,
+    "__docId__": 638,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -18325,7 +18277,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 641,
+    "__docId__": 639,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -18337,7 +18289,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 642,
+    "__docId__": 640,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -18349,7 +18301,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 643,
+    "__docId__": 641,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -18361,7 +18313,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 644,
+    "__docId__": 642,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -18373,7 +18325,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 645,
+    "__docId__": 643,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -18385,7 +18337,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 646,
+    "__docId__": 644,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -18397,7 +18349,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 647,
+    "__docId__": 645,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -18409,7 +18361,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 648,
+    "__docId__": 646,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -18421,7 +18373,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 649,
+    "__docId__": 647,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -18433,7 +18385,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 650,
+    "__docId__": 648,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -18445,7 +18397,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 651,
+    "__docId__": 649,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -18457,7 +18409,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 652,
+    "__docId__": 650,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -18469,7 +18421,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 653,
+    "__docId__": 651,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -18481,7 +18433,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 654,
+    "__docId__": 652,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -18493,7 +18445,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 655,
+    "__docId__": 653,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -18505,7 +18457,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 656,
+    "__docId__": 654,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -18517,7 +18469,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 657,
+    "__docId__": 655,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -18529,7 +18481,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 658,
+    "__docId__": 656,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -18541,7 +18493,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 659,
+    "__docId__": 657,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -18553,7 +18505,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 660,
+    "__docId__": 658,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -18565,7 +18517,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 661,
+    "__docId__": 659,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -18577,7 +18529,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 662,
+    "__docId__": 660,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -18589,7 +18541,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 663,
+    "__docId__": 661,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -18601,7 +18553,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 664,
+    "__docId__": 662,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -18613,7 +18565,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 665,
+    "__docId__": 663,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -18625,7 +18577,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 666,
+    "__docId__": 664,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -18638,7 +18590,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 668,
+    "__docId__": 666,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -18650,7 +18602,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 669,
+    "__docId__": 667,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -18662,7 +18614,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 670,
+    "__docId__": 668,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -18674,7 +18626,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 671,
+    "__docId__": 669,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -18686,7 +18638,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 672,
+    "__docId__": 670,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -18698,7 +18650,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 673,
+    "__docId__": 671,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -18710,7 +18662,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 674,
+    "__docId__": 672,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -18722,7 +18674,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 675,
+    "__docId__": 673,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
