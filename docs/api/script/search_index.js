@@ -1416,9 +1416,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/component/helper/aws-credentials.js~awscredentials#getaws",
-    "class/src/component/helper/aws-credentials.js~AwsCredentials.html#instance-method-getAws",
-    "src/component/helper/aws-credentials.js~AwsCredentials#getAws",
+    "src/component/helper/aws-credentials.js~awscredentials#getconfig",
+    "class/src/component/helper/aws-credentials.js~AwsCredentials.html#instance-method-getConfig",
+    "src/component/helper/aws-credentials.js~AwsCredentials#getConfig",
     "method"
   ],
   [
