@@ -30,13 +30,22 @@ class AwsCredentials {
   }
 
   /**
-   * Get initialized AWS
+   * Get AWS Configuration
    * @return {Promise}
    */
-  getAws() {
+  getConfig() {
     return new AWS.CredentialProviderChain(this._providers).resolvePromise().then(credentials => {
-      AWS.config.credentials = this._options.hasOwnProperty('roleArn')
-        ? new AWS.TemporaryCredentials({ RoleArn: this._options.roleArn }, credentials)
+      let RoleArn = "";
+
+      // @todo: validate roleArn, roleName and accountId
+      if (this._options.hasOwnProperty('roleArn')) {
+        RoleArn = this._options.roleArn;
+      } else if (this._options.hasOwnProperty('accountId') && this._options.hasOwnProperty('roleName')) {
+        RoleArn = RoleArn.concat("arn:aws:iam::", this._options.accountId, ":role/", this._options.roleName);
+      }
+
+      AWS.config.credentials = RoleArn
+        ? new AWS.TemporaryCredentials({ RoleArn: RoleArn }, credentials)
         : credentials;
 
       if (this._options.hasOwnProperty('region')) {

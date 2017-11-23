@@ -58,7 +58,7 @@ class S3Driver extends AbstractDriver {
       return Promise.resolve(this._client);
     }
 
-    return this._awsCredentials.getAws().then(AWS => Promise.resolve(new AWS.S3()));
+    return this._awsCredentials.getConfig().then(AWS => Promise.resolve(new AWS.S3()));
   }
   
   /**
