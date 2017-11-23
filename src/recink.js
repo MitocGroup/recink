@@ -119,18 +119,17 @@ class Recink extends Emitter {
   
   /**
    * @param {AbstractComponent} components
-   *
    * @returns {Promise}
    */
   components(...components) {
     this.emit(events.components.load, ...components);
-    
+
     if (components.length <= 0) {
       return Promise.resolve();
     }
-    
+
     return Promise.all(components.map(component => {
-      if (!(component instanceof AbstractComponent) 
+      if (!(component instanceof AbstractComponent)
         && [ 'ConfigBasedComponent', 'AbstractComponent' ]
           .indexOf(this._getBaseClass(component.constructor)) === -1) {
         
@@ -138,19 +137,18 @@ class Recink extends Emitter {
           `Component ${ component.constructor.name } should be an instance of AbstractComponent`
         ));
       }
-      
+
       component.setLogger(logger);
       this._components.push(component);
       this.emit(events.component.load, component);
-      
+
       return component.subscribe(this)
         .then(() => {
-          this.emit(events.component.subscribe, component, this);
+          return this.emit(events.component.subscribe, component, this);
         })
         .then(() => component.ready())
         .then(() => {
           this.emit(events.component.ready, component);
-
           return Promise.resolve(component);
         });
     }));
@@ -159,7 +157,6 @@ class Recink extends Emitter {
   /**
    * @param {string} configFile
    * @param {*} extendConfigs
-   *
    * @returns {Promise}
    */
   configureExtend(configFile, ...extendConfigs) {
@@ -171,38 +168,25 @@ class Recink extends Emitter {
       .concat([ configFile ])
       .map(cfgFile => configFactory.guess(cfgFile).load());
 
-    return Promise.all(promises).then(configVector => {
-      const consolidatedConfig = merge.recursive(true, ...configVector);
-      
-      return this._configLoad(consolidatedConfig, configFile);
+    return Promise.all(promises).then(configVectors => {
+      return Promise.resolve(merge.recursive(true, ...configVectors));
     });
   }
 
   /**
-   * @param {Array} modules
-   */
-  skipModules(modules) {
-    this._skipModules = modules;
-  }
-
-  /**
    * @param {string} configFile
-   *
    * @returns {Promise}
    */
   configure(configFile = Recink.CONFIG_FILE) {
-    return configFactory.guess(configFile)
-      .load()
-      .then(config => this._configLoad(config, configFile));
+    return configFactory.guess(configFile).load().then(config => Promise.resolve(config));
   }
-  
+
   /**
-   * @param {*} config
-   * @param {string} configFile
+   * @param {Object} config
+   * @param {String} configFile
    * @returns {Promise}
-   * @private
    */
-  _configLoad(config, configFile) {
+  configLoad(config, configFile) {
     return this.emitBlocking(events.config.preprocess, config).then(() => {
       this._config = config;
       this._container.reload(this._config);

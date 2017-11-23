@@ -131,6 +131,7 @@ class Terraform {
     return this
       .run('init', ['-no-color', '.'], dir)
       .then(() => this.checkRemoteState(dir))
+      .then(() => this.pullState(dir))
       .then(() => Promise.resolve());
   }
 
