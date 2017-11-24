@@ -10,7 +10,7 @@ class AwsCredentials {
    * @param {Object} options
    */
   constructor(options) {
-    this._options = options;
+    this._options = options || {};
     this._providers = [
       new AWS.EnvironmentCredentials(
         options.hasOwnProperty('envPrefix') ? options.envPrefix : 'AWS'
@@ -35,17 +35,10 @@ class AwsCredentials {
    */
   getConfig() {
     return new AWS.CredentialProviderChain(this._providers).resolvePromise().then(credentials => {
-      let RoleArn = "";
+      let roleArn = this._getRoleArn();
 
-      // @todo: validate roleArn, roleName and accountId
-      if (this._options.hasOwnProperty('roleArn')) {
-        RoleArn = this._options.roleArn;
-      } else if (this._options.hasOwnProperty('accountId') && this._options.hasOwnProperty('roleName')) {
-        RoleArn = RoleArn.concat("arn:aws:iam::", this._options.accountId, ":role/", this._options.roleName);
-      }
-
-      AWS.config.credentials = RoleArn
-        ? new AWS.TemporaryCredentials({ RoleArn: RoleArn }, credentials)
+      AWS.config.credentials = roleArn
+        ? new AWS.TemporaryCredentials({ RoleArn: roleArn }, credentials)
         : credentials;
 
       if (this._options.hasOwnProperty('region')) {
@@ -54,6 +47,21 @@ class AwsCredentials {
 
       return Promise.resolve(AWS);
     });
+  }
+
+  /**
+   * Compose and validate Role ARN
+   * @return {boolean}
+   * @private
+   */
+  _getRoleArn() {
+    let roleArn = this._options.roleArn;
+
+    if (this._options.hasOwnProperty('accountId') && this._options.hasOwnProperty('roleName')) {
+      roleArn = `arn:aws:iam::${this._options.accountId}:role/${this._options.roleName}`
+    }
+
+    return /^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@\-_]*$/.test(roleArn) ? roleArn : false;
   }
 }
 

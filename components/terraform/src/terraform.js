@@ -294,7 +294,7 @@ class Terraform {
     return this.run('show', options, planOrState.dir).then(result => {
       return Promise.resolve(
         secureOutput 
-          ? SecureOutput.secure(result.output) 
+          ? SecureOutput.secure(result.output)
           : result.output
       );
     });
@@ -317,29 +317,27 @@ class Terraform {
    */
   run(command, args = [], cwd = process.cwd()) {
     const { env } = this;
+    const bin = path.resolve(this.getBinary);
 
-    if (this.logger) {
-      this.logger.debug({
-        command: `${this.getBinary} ${command}`,
-        args: args,
-        fileNames: getFilesByPattern(cwd, /.*/)
-      });
-    }
-
-    return execa(
-      path.resolve(this.getBinary),
-      [ command ].concat(args),
-      { env, cwd }
-    ).then(result => {
+    return execa(bin, [ command ].concat(args), { env, cwd }).then(result => {
       const { stdout, code } = result;
+
+      if (this.logger) {
+        this.logger.debug({
+          command: `${this.getBinary} ${command}`,
+          args: args,
+          fileNames: getFilesByPattern(cwd, /.*/),
+          terraformOutput: stdout ? SecureOutput.secure(stdout) : '(No output)'
+        });
+      }
 
       return Promise.resolve({ code, output: stdout });
     });
   }
 
   /**
-   * @param {string} version
-   *
+   * Ensure binary exists (download otherwise)
+   * @param {String} version
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
@@ -348,19 +346,15 @@ class Terraform {
         return Promise.resolve();
       }
 
-      // @todo rethink this logic
-      const downloader = new Downloader();
-      const dir = path.dirname(this.getBinary);
+      const downloader = new Downloader(version);
+      const saveToDir = path.dirname(this.getBinary);
 
-      // @todo validate version to follow format X.Y.Z
-      return downloader.download(dir, version).then(() => {
-        const realPath = path.join(dir, Terraform.BIN_FILE);
-
-        if (realPath === this.getBinary) {
-          return Promise.resolve();
+      return downloader.isVersionAvailable().then(isAvailable => {
+        if (!isAvailable) {
+          throw new Error(`Terraform version ${version} is not available`);
         }
 
-        return fse.move(realPath, this.getBinary);
+        return downloader.download(saveToDir);
       });
     });
   }

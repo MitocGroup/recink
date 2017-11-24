@@ -1,6 +1,8 @@
 'use strict';
 
 const os = require('os');
+const url = require('url');
+const https = require('https');
 const download = require('download');
 
 /**
@@ -8,27 +10,40 @@ const download = require('download');
  */
 class Downloader {
   /**
-   * @param {string} binPath
-   * @param {string} version
-   * @param {string} platform
-   * @param {string} arch
-   * 
-   * @returns {Promise} 
+   * @param {String} version
    */
-  download(binPath, version, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
-    const url = Downloader.urlTemplate(version, platform, arch);
-
-    return download(url, binPath, { extract: true });
+  constructor(version) {
+    this._version = version;
   }
 
   /**
-   * @param {string} version
+   * Check if specified version is available
+   * @return {Promise}
+   */
+  isVersionAvailable() {
+    return new Promise((resolve, reject) => {
+      https.get(this._getBaseUrl(), res => {
+        return resolve(res.statusCode === 200);
+      }).on('error', err => reject(err));
+    });
+  }
+
+  /**
+   * @param {String} saveToPath
+   * @param {String} platform
+   * @param {String} arch
+   * @returns {Promise}
+   */
+  download(saveToPath, platform = Downloader.PLATFORM, arch = Downloader.ARCH) {
+    return download(this._urlTemplate(platform, arch), saveToPath, { extract: true });
+  }
+
+  /**
    * @param {string} platform
    * @param {string} arch
-   *
-   * @returns {string}
+   * @returns {String}
    */
-  static urlTemplate(version, platform, arch) {
+  _urlTemplate(platform, arch) {
     let archVar, platformVar;
 
     switch (arch) {
@@ -53,18 +68,22 @@ class Downloader {
         platformVar = platform;
     }
 
-    return `https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${platformVar}_${archVar}.zip`;
+    return url.resolve(this._getBaseUrl(), `terraform_${this._version}_${platformVar}_${archVar}.zip`);
+  }
+
+  _getBaseUrl() {
+    return `https://releases.hashicorp.com/terraform/${this._version}/`;
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get ARCH() {
     return os.arch();
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get PLATFORM() {
     return os.platform();
