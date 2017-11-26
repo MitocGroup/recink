@@ -55,6 +55,32 @@ $:
 #           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
 #           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 
+# preprocess:
+#   # preprocessing of cache variables
+#   '$.cache.options.1.region': 'eval'
+#   '$.cache.options.1.accessKeyId': 'eval'
+#   '$.cache.options.1.secretAccessKey': 'eval'
+#   # preprocessing of coverage variables
+#   '$.coverage.compare.storage.options.1.region': 'eval'
+#   '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
+#   '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
+
+# cache:
+#   # Additional paths to be cached
+#   paths: []
+#   # Cache NPM dependencies
+#   npm: true
+#   # Available drivers: void, s3
+#   driver: 's3'
+#   options:
+#     # S3 cache directory
+#     - 's3://travis-metadata/cache/sample-repo'
+#     # S3 client options
+#     -
+#       region: 'process.env.AWS_DEFAULT_REGION'
+#       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+
 # e2e:
 #   # TestCafe framework reporter
 #   reporter: ~
@@ -81,32 +107,6 @@ $:
 #     timeout: 15000
 #     uri:
 #        - https://www.example.com
-
-# preprocess:
-#   # preprocessing of cache variables
-#   '$.cache.options.1.region': 'eval'
-#   '$.cache.options.1.accessKeyId': 'eval'
-#   '$.cache.options.1.secretAccessKey': 'eval'
-#   # preprocessing of coverage variables
-#   '$.coverage.compare.storage.options.1.region': 'eval'
-#   '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
-#   '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
-
-# cache:
-#   # Additional paths to be cached
-#   paths: []
-#   # Cache NPM dependencies
-#   npm: true
-#   # Available drivers: void, s3
-#   driver: 's3'
-#   options:
-#     # S3 cache directory
-#     - 's3://travis-metadata/cache/sample-repo'
-#     # S3 client options
-#     -
-#       region: 'process.env.AWS_DEFAULT_REGION'
-#       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-#       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 
 # Main module definition
 #main:
