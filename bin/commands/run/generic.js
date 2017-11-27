@@ -66,7 +66,7 @@ module.exports = (args, options, logger) => {
       result[res[0].trim()] = res[1].trim();
     });
 
-    return dot.object(result);
+    return result;
   }
 
   /**
@@ -81,7 +81,7 @@ module.exports = (args, options, logger) => {
 
     for (let property in customConfig) {
       if (customConfig.hasOwnProperty(property)) {
-        dot.str(property, config);
+        dot.str(property, customConfig[property], config);
       }
     }
 

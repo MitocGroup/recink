@@ -319,20 +319,24 @@ class Terraform {
     const { env } = this;
     const bin = path.resolve(this.getBinary);
 
-    return execa(bin, [ command ].concat(args), { env, cwd }).then(result => {
-      const { stdout, code } = result;
+    const childProcess = execa(bin, [command].concat(args), { env, cwd });
 
-      if (this.logger) {
-        this.logger.debug({
-          command: `${this.getBinary} ${command}`,
-          args: args,
-          fileNames: getFilesByPattern(cwd, /.*/),
-          terraformOutput: stdout ? SecureOutput.secure(stdout) : '(No output)'
-        });
-      }
+    if (this.logger) {
+      this.logger.debug({
+        command: `${this.getBinary} ${command}`,
+        args: args,
+        fileNames: getFilesByPattern(cwd, /.*/)
+      });
 
-      return Promise.resolve({ code, output: stdout });
-    });
+      childProcess.stdout.on('data', data => {
+        let chunk = data.toString().replace(/\s*$/g, '');
+        if (chunk) {
+          this.logger.debug(SecureOutput.secure(chunk));
+        }
+      });
+    }
+
+    return childProcess.then(({ stdout, code }) => Promise.resolve({ code, output: stdout }));
   }
 
   /**
