@@ -5,6 +5,7 @@ const resolvePackage = require('resolve-package');
 const Recink = require('../../../src/recink');
 const ComponentRegistry = require('../component/registry/registry');
 const componentsFactory = require('../../../src/component/factory');
+const { trimBoth } = require('../../../src/component/helper/utils');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const ConfigBasedComponent = require('../../../src/component/config-based-component');
 const dot = require('dot-object');
@@ -87,7 +88,7 @@ module.exports = (args, options, logger) => {
 
     for (let property in tfVars) {
       if (tfVars.hasOwnProperty(property)) {
-        dot.str(`$.terraform.vars.${property}`, tfVars[property], config);
+        dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
       }
     }
 
