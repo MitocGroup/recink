@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/component/npm-component.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/helper/utils.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -87,133 +87,23 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/component/npm-component.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/helper/utils.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const DependantConfigBasedComponent = require(&apos;./dependant-config-based-component&apos;);
-const emitEvents = require(&apos;./emit/events&apos;);
-const events = require(&apos;./npm/events&apos;);
-const os = require(&apos;os&apos;);
-const fse = require(&apos;fs-extra&apos;);
-const NpmModule = require(&apos;./npm/npm-module&apos;);
-const Cache = require(&apos;./npm/cache&apos;);
-const path = require(&apos;path&apos;);
-
 /**
- * NPM component
+ * Remove all prefixes or suffixes from the given string
+ * @param {String} string
+ * @param {String} symbol
+ * @returns {String}
  */
-class NpmComponent extends DependantConfigBasedComponent {
-  /**
-   * @param {*} args
-   */
-  constructor(...args) {
-    super(...args);
-    
-    this._cacheDir = null;
-    this._cache = {};
-  }
-  
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return &apos;npm&apos;;
-  }
-  
-  /**
-   * @returns {string[]}
-   */
-  get dependencies() {
-    return [ &apos;emit&apos; ];
-  }
-  
-  /**
-   * @param {Emitter} emitter
-   * 
-   * @returns {Promise}
-   */
-  cacheDir(emitter) {
-    if (this._cacheDir) {
-      return Promise.resolve(this._cacheDir);
-    }
-    
-    this._cacheDir = path.join(os.tmpdir(), &apos;_recink_npm_cache_&apos;);
-    
-    return fse.ensureDir(this._cacheDir)
-      .then(() =&gt; {
-        this.logger.debug(&apos;Npm cache&apos;, this._cacheDir);
-        
-        return emitter.emitBlocking(events.npm.cache.init, this._cacheDir)
-          .then(() =&gt; Promise.resolve(this._cacheDir));
-      });
-  }
-  
-  /**
-   * @param {Emitter} emitter
-   * @param {string} name
-   * 
-   * @returns {Promise}
-   */
-  cache(emitter, name) {
-    if (this._cache.hasOwnProperty(name)) {
-      return Promise.resolve(this._cache[name]);
-    }
-    
-    return this.cacheDir(emitter)
-      .then(cacheDir =&gt; {
-        this._cache[name] = new Cache(cacheDir, name);
-        
-        return Promise.resolve(this._cache[name]);
-      });
-  }
-  
-  /**
-   * @param {Emitter} emitter
-   * 
-   * @returns {Promise}
-   */
-  run(emitter) {
-    return new Promise(resolve =&gt; {
-      emitter.onBlocking(emitEvents.module.process.start, emitModule =&gt; {
-        return this.cache(emitter, emitModule.name)
-          .then(cache =&gt; {
-            const npmModule = new NpmModule(
-              emitModule.container.get(&apos;root&apos;),
-              cache,
-              this.logger
-            );
-            
-            this.logger.info(
-              this.logger.emoji.hat, 
-              `Ensure dependencies in place for ${ emitModule.name }`
-            );
-            
-            emitter.emit(events.npm.dependencies.install, npmModule, emitModule);
-            
-            return npmModule.install(
-              Object.assign(
-                {}, 
-                this.container.get(&apos;dependencies&apos;, {}), 
-                emitModule.container.get(&apos;dependencies&apos;, {})
-              ),
-              [].concat(
-                this.container.get(&apos;scripts&apos;, []),
-                emitModule.container.get(&apos;scripts&apos;, [])
-              )
-            ).then(() =&gt; {              
-              emitter.emit(events.npm.dependencies.postinstall, npmModule, emitModule);
-            });
-          });
-      });
-      
-      emitter.on(emitEvents.modules.process.end, () =&gt; {
-        process.nextTick(() =&gt; resolve());
-      });
-    });
-  }
+function trimBoth(string, symbol = &apos;\s&apos;) {
+  const leading = new RegExp(`^${symbol}`);
+  const trailing = new RegExp(`${symbol}$`);
+
+  return string.replace(leading, &apos;&apos;).replace(trailing, &apos;&apos;);
 }
 
-module.exports = NpmComponent;
+exports.trimBoth = trimBoth;
 </code></pre>
 
 </div>

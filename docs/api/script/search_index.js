@@ -300,6 +300,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "recink/src/component/helper/utils.js~trimboth",
+    "function/index.html#static-function-trimBoth",
+    "<span>trimBoth</span> <span class=\"search-result-import-path\">recink/src/component/helper/utils.js</span>",
+    "function"
+  ],
+  [
     "builtinexternal/ecmascriptexternal.js~array",
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     "BuiltinExternal/ECMAScriptExternal.js~Array",
@@ -1594,6 +1600,12 @@ window.esdocSearchIndex = [
     "class/src/component/helper/transformer.js~Transformer.html#instance-get-transformer",
     "src/component/helper/transformer.js~Transformer#transformer",
     "member"
+  ],
+  [
+    "src/component/helper/utils.js",
+    "file/src/component/helper/utils.js.html",
+    "src/component/helper/utils.js",
+    "file"
   ],
   [
     "src/component/npm-component.js",
