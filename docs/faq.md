@@ -138,3 +138,13 @@ And you will receive:
   ]
 }
 ```
+
+___
+
+Q: _How can I parse terraform show output?_
+
+A: You can save terraform show output into a file just passing `save-show-output` parameter and parse it later:
+
+```bash
+recink run terraform --custom-config="<module-name>.terraform.save-show-output":"./show-output.txt"
+```
