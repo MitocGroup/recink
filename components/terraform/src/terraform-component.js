@@ -6,6 +6,7 @@ const SequentialPromise = require('recink/src/component/helper/sequential-promis
 const CacheFactory = require('recink/src/component/cache/factory');
 const Terraform = require('./terraform');
 const Reporter = require('./reporter');
+const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
 const { getFilesByPattern } = require('./helper/util');
@@ -549,9 +550,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @param {EmitModule} emitModule
    * @param {string} command
    * @param {Error} error
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _handleError(emitModule, command, error) {
@@ -568,9 +567,7 @@ ${ error.toString().trim() }
    * @param {EmitModule} emitModule
    * @param {string} command
    * @param {string} reason
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _handleSkip(emitModule, command, reason = null) {
@@ -587,17 +584,19 @@ ${ reasonMsg }
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {Plan} plan
-   *
    * @returns {Promise}
-   *
-   * @private 
+   * @private
    */
   _handlePlan(terraform, emitModule, plan) {
     this._planChanged = plan.changed;
+    const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
-    return terraform.show(plan)
-      .then(output => {
-        return this._reporter.report(`
+    return terraform.show(plan).then(output => {
+      if (saveShowOutput) {
+        fse.outputFileSync(path.resolve(this._moduleRoot(emitModule), saveShowOutput), output);
+      }
+
+      return this._reporter.report(`
 ### \`${ emitModule.name }\` returned below output while executing \`terraform plan\`
 
 ${ plan.changed ? '' : 'No Plan Changes Detected' }
@@ -605,54 +604,47 @@ ${ plan.changed ? '' : 'No Plan Changes Detected' }
 \`\`\`
 ${ output }
 \`\`\`
-        `);
-      });
+      `);
+    });
   }
 
   /**
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {State} state
-   *
    * @returns {Promise}
-   *
-   * @private 
+   * @private
    */
   _handleApply(terraform, emitModule, state) {
-    return terraform.show(state)
-      .then(output => {
-        return this._reporter.report(`
+    return terraform.show(state).then(output => {
+      return this._reporter.report(`
 ### \`${ emitModule.name }\` returned below output while executing \`terraform apply\`
 
 \`\`\`
 ${ output }
 \`\`\`
-        `);
-      });
+      `);
+    });
   }
 
   /**
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
    * @param {State} state
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _handleDestroy(terraform, emitModule, state) {
-    return terraform.show(state)
-      .then(output => {
-        return this._reporter.report(`
+    return terraform.show(state).then(output => {
+      return this._reporter.report(`
 ### \`${ emitModule.name }\` returned below output while executing \`terraform destroy\`
 
 \`\`\`
 ${ output }
 \`\`\`
-        `);
-      });
+      `);
+    });
   }
-
 }
 
 module.exports = TerraformComponent;
