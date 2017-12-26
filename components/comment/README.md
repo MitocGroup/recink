@@ -34,7 +34,7 @@ $:
     # listen: '`${ process.cwd() }/recink.comment`'     # Listen for file input (including initial content; think "tail -f")
     providers:                                          # Supported providers: github
       github:
-        - token: 'process.env.GITHUB_ACCESS_TOKEN'
+        - token: 'process.env.GITHUB_TOKEN'
 ```
 
 `.travis.yml` configuration:
@@ -54,10 +54,10 @@ before_install:
   - 'recink component add comment'
 ```
 
-Add the `GITHUB_ACCESS_TOKEN` to `.travis.yml`:
+Add the `GITHUB_TOKEN` to `.travis.yml`:
 
 ```
-recink travis encrypt -x 'GITHUB_ACCESS_TOKEN=1234'
+recink travis encrypt -x 'GITHUB_TOKEN=1234'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
@@ -66,7 +66,7 @@ recink travis encrypt -x 'GITHUB_ACCESS_TOKEN=1234'
 # Usage
 
 ```
-GITHUB_ACCESS_TOKEN=1234 recink run unit -c recink-comment
+GITHUB_TOKEN=1234 recink run unit -c recink-comment
 ```
 
 # Pushing Messages Using Programatic API

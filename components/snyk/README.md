@@ -39,7 +39,7 @@ $:
     # reporters:                                      # Customize Reporters (available: text, github)
     #   text: ~
     #   github:
-    #     - token: 'process.env.GITHUB_ACCESS_TOKEN'
+    #     - token: 'process.env.GITHUB_TOKEN'
     # fail:                                     
     #   enabled: false                                # Fail on issues found
     #   severity: 'medium'                            # Minimal severity to handle (available: low, medium, high)
@@ -65,7 +65,7 @@ before_install:
 Add the [Snyk.io API Token](https://snyk.io/docs/quick-start/#authentication) to `.travis.yml`:
 
 ```
-recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
+recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_TOKEN=1234'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
@@ -74,7 +74,7 @@ recink travis encrypt -x 'SNYK_API_TOKEN=1234' -x 'GITHUB_ACCESS_TOKEN=1234'
 # Usage
 
 ```
-GITHUB_ACCESS_TOKEN=1234 SNYK_API_TOKEN=1234 recink run snyk
+GITHUB_TOKEN=1234 SNYK_API_TOKEN=1234 recink run snyk
 ```
 
 

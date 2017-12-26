@@ -48,7 +48,7 @@ $:
   comment:
     providers:                                                              # Supported providers: github
       github:
-        - token: 'process.env.GITHUB_ACCESS_TOKEN'
+        - token: 'process.env.GITHUB_TOKEN'
 ```
 
 `.travis.yml` configuration:
@@ -61,10 +61,10 @@ before_install:
   - 'npm install -g recink-comment'
 ```
 
-Add the `SAMPLE_VAR` and `GITHUB_ACCESS_TOKEN` to `.travis.yml`:
+Add the `SAMPLE_VAR` and `GITHUB_TOKEN` to `.travis.yml`:
 
 ```
-recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_ACCESS_TOKEN=xxxxxxx'
+recink travis encrypt -x 'SAMPLE_VAR="sample value"' -x 'GITHUB_TOKEN=xxxxxxx'
 ```
 
 > If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
@@ -100,7 +100,7 @@ example_module:
 # Usage
 
 ```
-SAMPLE_VAR="sample value" GITHUB_ACCESS_TOKEN=xxxxxxx recink run terraform -c comment
+SAMPLE_VAR="sample value" GITHUB_TOKEN=xxxxxxx recink run terraform -c comment
 ```
 
 # Running example project
