@@ -589,11 +589,12 @@ ${ reasonMsg }
    */
   _handlePlan(terraform, emitModule, plan) {
     this._planChanged = plan.changed;
+    const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
     return terraform.show(plan).then(output => {
       if (saveShowOutput) {
-        fse.outputFileSync(path.resolve(this._moduleRoot(emitModule), saveShowOutput), output);
+        fse.outputFileSync(path.resolve(this._moduleRoot(emitModule), resourceFolder, saveShowOutput), output);
       }
 
       return this._reporter.report(`
