@@ -63,8 +63,10 @@ module.exports = (args, options, logger) => {
     let result = {};
 
     opts.map(key => key.trim()).forEach(item => {
-      let res = item.split(':');
-      result[res[0].trim()] = res[1].trim();
+      let [ property, value ] = item.split(':');
+
+      value = value.trim();
+      result[property.trim()] = ['true', 'false'].includes(value) ? Boolean(value) : value ;
     });
 
     return result;
