@@ -64,9 +64,9 @@ module.exports = (args, options, logger) => {
 
     opts.map(key => key.trim()).forEach(item => {
       let [ property, value ] = item.split(':');
+      let lowerCaseValue = value.trim().toLowerCase();
 
-      value = value.trim();
-      result[property.trim()] = ['true', 'false'].includes(value) ? Boolean(value) : value ;
+      result[property.trim()] = ['true', 'false'].includes(lowerCaseValue) ? (lowerCaseValue === 'true') : value.trim();
     });
 
     return result;
