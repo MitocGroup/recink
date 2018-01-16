@@ -1,0 +1,47 @@
+{
+  "name": "recink-e2e",
+  "version": "0.0.1",
+  "description": "REciNK Component for End to End Testing",
+  "keywords": [
+    "REciNK",
+    "Testing",
+    "Unit",
+    "Development",
+    "Tools",
+    "CodeClimate",
+    "lcov",
+    "Coverage",
+    "Travis"
+  ],
+  "homepage": "https://github.com/MitocGroup/recink",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/recink/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "https://www.mitocgroup.com"
+  },
+  "contributors": [
+    {
+      "name": "AlexanderC",
+      "email": "alexanderc@mitocgroup.com"
+    }
+  ],
+  "main": "src/e2e-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/recink.git"
+  },
+  "dependencies": {
+    "pify": "^3.0.0",
+    "request": "^2.81.0",
+    "recink": "^1.x.x"
+  },
+  "engines": {
+    "node": ">=6.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}
