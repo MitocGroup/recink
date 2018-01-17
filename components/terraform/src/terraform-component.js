@@ -431,6 +431,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
+      .then(() => this._workspace(terraform,emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._apply(terraform, emitModule))
       .then(() => this._destroy(terraform, emitModule));
@@ -472,6 +473,23 @@ class TerraformComponent extends DependantConfigBasedComponent {
     return terraform
       .init(this._moduleRoot(emitModule))
       .catch(error => this._handleError(emitModule, 'init', error));
+  }
+
+  /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _workspace(terraform, emitModule){
+    let workspace = this._parameterFromConfig(emitModule, 'current_workspace', 'default')
+    this.logger.info(
+      this.logger.emoji.magic,
+      `Running "terraform workspace" in "${ emitModule.name }".`
+    );
+    return terraform
+      .workspace(this._moduleRoot(emitModule), workspace)
+      .catch(error => this._handleError(emitModule, 'workspace', error));
   }
 
   /**

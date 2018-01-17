@@ -136,6 +136,32 @@ class Terraform {
   }
 
   /**
+   * https://www.terraform.io/docs/state/workspaces.html
+   * @param {string} dir
+   * @param {string} workspace
+   * @returns {Promise}
+   */
+  workspace(dir, workspace) {
+    return this._ensureResourceDir(dir).then(() => {
+      const regex = RegExp('(\\*\\s|\\s.)' + workspace + '$','m');
+      let options;
+      this.run('workspace', ['list'], dir).then(result => {
+        if (regex.exec(result.output) != null){
+          options = ['select', workspace,'-no-color']
+        } else {
+          options = ['new', workspace,'-no-color']
+        }
+        if (fse.existsSync(`${dir}/terraform.tfstate.d`)) {
+          this._resource = 'terraform.tfstate.d/' + workspace;
+        }
+        return this.run('workspace', options, dir)
+          .then(() => Promise.resolve());
+      });
+    });
+  }
+
+
+  /**
    * Check if remote state configured
    * @param {String} dir
    * @return {Promise}
