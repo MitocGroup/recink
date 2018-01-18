@@ -48,7 +48,8 @@ const commands = prog
   .option('--exclude-modules [modules]', 'List of modules to exclude', prog.LIST, [])
   .option('--include-modules [modules]', 'List of modules to run', prog.LIST, [])
   .option('--custom-config', 'Custom configuration', prog.LIST, [])
-  // @todo: check first if recink-terraform module is enabled
+  // @todo: refactor this code
+  // move this code into recink-terraform component
   .option('--tf-version', 'Terraform version',  /.*/, [])
   .option('--tf-workspace', 'Terraform workspace', /.*/, [])
   .option('--tf-vars', 'Terraform variables as environmental variables', prog.LIST, [])

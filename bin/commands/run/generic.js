@@ -99,6 +99,8 @@ module.exports = (args, options, logger) => {
       }
     }
 
+    // @todo: refactor this code
+    // move this code into recink-terraform component
     if (options.tfVersion || options.tfWorkspace || options.tfVarfiles) {
       for (let module in modules) {
         if (options.tfVersion) {
@@ -129,6 +131,8 @@ module.exports = (args, options, logger) => {
       }
     }
 
+    // @todo: refactor this code
+    // move this code into recink-terraform component
     if (options.tfVars) {
       let tfVars = optionsToObject(options.tfVars);
       for (let property in tfVars) {
