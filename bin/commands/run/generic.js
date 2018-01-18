@@ -94,6 +94,46 @@ module.exports = (args, options, logger) => {
       }
     }
 
+    if (options.tfWorkspace) {
+      for (let module in modules) {
+
+        dot.str(`${modules[module]}.terraform.current_workspace`, trimBoth(options.tfWorkspace, '"'), config);
+
+        if (config[modules[module]]['terraform']['available_workspaces']) {
+          let availableWorkspaces = config[modules[module]]['terraform']['available_workspaces'];
+
+          for (let property in availableWorkspaces[options.tfWorkspace]) {
+
+            if (availableWorkspaces[options.tfWorkspace].hasOwnProperty(property)) {
+              dot.str(`${modules[module]}.terraform.${property}`, availableWorkspaces[options.tfWorkspace][property], config);
+            }
+
+          }
+
+        }
+
+      }
+    }
+
+    if (options.tfVarfiles.length > 0) {
+      for (let module in modules) {
+        dot.str(`${modules[module]}.terraform.var-files`, [], config);
+        for (let property in options.tfVarfiles) {
+
+          if (options.tfVarfiles.hasOwnProperty(property)) {
+            dot.str(`${modules[module]}.terraform.var-files.${property}`, trimBoth(options.tfVarfiles[property], '"'), config);
+          }
+
+        }
+      }
+    }
+
+    if (options.tfVersion) {
+      for (let module in modules) {
+        dot.str(`${modules[module]}.terraform.version`, options.tfVersion, config);
+      }
+    }
+
     let excludeModules = cleanList(options.excludeModules, modules);
     let includeModules = cleanList(options.includeModules, modules);
 
