@@ -50,8 +50,8 @@ const commands = prog
   .option('--custom-config', 'Custom configuration', prog.LIST, [])
   // @todo: refactor this code
   // move this code into recink-terraform component
-  .option('--tf-version', 'Terraform version',  /.*/, [])
-  .option('--tf-workspace', 'Terraform workspace', /.*/, [])
+  .option('--tf-version', 'Terraform version',  /.*/, '0.11.0')
+  .option('--tf-workspace', 'Terraform workspace', /.*/, 'default')
   .option('--tf-vars', 'Terraform variables as environmental variables', prog.LIST, [])
   .option('--tf-varfiles', 'Terraform variables as tfvars files', prog.LIST, [])
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
