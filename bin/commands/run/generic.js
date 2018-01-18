@@ -98,7 +98,6 @@ module.exports = (args, options, logger) => {
       for (let module in modules) {
 
         dot.str(`${modules[module]}.terraform.current_workspace`, trimBoth(options.tfWorkspace, '"'), config);
-        console.log(config[modules[module]]['terraform']['available_workspaces']);
 
         if (config[modules[module]]['terraform']['available_workspaces']) {
           let availableWorkspaces = config[modules[module]]['terraform']['available_workspaces'];

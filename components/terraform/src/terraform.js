@@ -147,15 +147,14 @@ class Terraform {
       let options;
       this.run('workspace', ['list'], dir).then(result => {
         if (regex.exec(result.output) != null){
-          options = ['select', workspace,'-no-color']
+          options = ['select', workspace,'-no-color'];
         } else {
-          options = ['new', workspace,'-no-color']
+          options = ['new', workspace,'-no-color'];
         }
         if (fse.existsSync(`${dir}/terraform.tfstate.d`)) {
           this._resource = 'terraform.tfstate.d/' + workspace;
         }
         return this.run('workspace', options, dir)
-          .then(() => Promise.resolve());
       });
     });
   }
