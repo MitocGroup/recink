@@ -79,21 +79,6 @@ module.exports = (args, options, logger) => {
    */
   function transformConfig(config) {
     let modules = Object.keys(config);
-    let tfVars = optionsToObject(options.tfVars);
-    let customConfig = optionsToObject(options.customConfig);
-
-    for (let property in customConfig) {
-      if (customConfig.hasOwnProperty(property)) {
-        dot.str(property, customConfig[property], config);
-      }
-    }
-
-    for (let property in tfVars) {
-      if (tfVars.hasOwnProperty(property)) {
-        dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
-      }
-    }
-
     let excludeModules = cleanList(options.excludeModules, modules);
     let includeModules = cleanList(options.includeModules, modules);
 
@@ -106,6 +91,50 @@ module.exports = (args, options, logger) => {
     excludeModules.forEach(module => {
       dot.del(module, config);
     });
+
+    let customConfig = optionsToObject(options.customConfig);
+    for (let property in customConfig) {
+      if (customConfig.hasOwnProperty(property)) {
+        dot.str(property, customConfig[property], config);
+      }
+    }
+
+    if (options.tfVersion || options.tfWorkspace || options.tfVarfiles) {
+      for (let module in modules) {
+        if (options.tfVersion) {
+          dot.str(`${modules[module]}.terraform.version`, options.tfVersion, config);
+        }
+
+        if (options.tfWorkspace) {
+          dot.str(`${modules[module]}.terraform.current_workspace`, trimBoth(options.tfWorkspace, '"'), config);
+          if (config[modules[module]]['terraform']['available_workspaces']) {
+            let availableWorkspaces = config[modules[module]]['terraform']['available_workspaces'];
+
+            for (let property in availableWorkspaces[options.tfWorkspace]) {
+              if (availableWorkspaces[options.tfWorkspace].hasOwnProperty(property)) {
+                dot.str(`${modules[module]}.terraform.${property}`, availableWorkspaces[options.tfWorkspace][property], config);
+              }
+            }
+          }
+        }
+
+        if (options.tfVarfiles && options.tfVarfiles.length > 0) {
+          dot.str(`${modules[module]}.terraform.var-files`, [], config);
+          for (let property in options.tfVarfiles) {
+            if (options.tfVarfiles.hasOwnProperty(property)) {
+              dot.str(`${modules[module]}.terraform.var-files.${property}`, trimBoth(options.tfVarfiles[property], '"'), config);
+            }
+          }
+        }
+      }
+    }
+
+    let tfVars = optionsToObject(options.tfVars);
+    for (let property in tfVars) {
+      if (tfVars.hasOwnProperty(property)) {
+        dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
+      }
+    }
 
     return Promise.resolve(config);
   }
