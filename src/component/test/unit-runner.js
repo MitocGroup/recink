@@ -55,7 +55,13 @@ class UnitRunner {
    */
   cleanup() {
     this._tmps.forEach(tmpTest => {
-      fs.unlinkSync(tmpTest);
+      try {
+        fs.unlinkSync(tmpTest);
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          console.log(err.code);
+        }
+      }
     });
 
     return Promise.resolve();
