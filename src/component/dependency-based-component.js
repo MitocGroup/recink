@@ -68,4 +68,4 @@ class DependencyBasedComponent extends ConfigBasedComponent {
   }
 }
 
-module.exports = DependentConfigBasedComponent;
+module.exports = DependencyBasedComponent;
