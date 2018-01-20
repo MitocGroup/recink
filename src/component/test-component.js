@@ -1,4 +1,4 @@
-  'use strict';
+'use strict';
 
 const print = require('print');
 const unitEvents = require('./test/events');
