@@ -24,7 +24,7 @@ class TerraformComponent extends DependencyBasedComponent {
     super(...args);
 
     /**
-     * _units & _e2e formats
+     * _unit & _e2e formats
      * @type {{
      *  moduleName: {
      *    assets: [],
@@ -34,7 +34,7 @@ class TerraformComponent extends DependencyBasedComponent {
      * }}
      */
     this._e2e = {};
-    this._units = {};
+    this._unit = {};
     this._reporter = null;
     this._planChanged = false;
     this._runStack = {};
@@ -225,15 +225,15 @@ class TerraformComponent extends DependencyBasedComponent {
     const { mapping, plan, apply } = emitModule.container.get('terraform.test', {});
 
     if (plan) {
-      if (!this._units.hasOwnProperty(moduleName)) {
-        this._units[moduleName] = {
+      if (!this._unit.hasOwnProperty(moduleName)) {
+        this._unit[moduleName] = {
           assets: [],
           runner: new UnitRunner()
         };
       }
 
       walkDir(plan, /.*\.spec.\js/, testFile => {
-        this._units[moduleName].assets.push(testFile);
+        this._unit[moduleName].assets.push(testFile);
       })
     }
 
@@ -315,7 +315,7 @@ class TerraformComponent extends DependencyBasedComponent {
     this._planChanged = false;
     this._runStack = {};
     this._caches = {};
-    this._units = {};
+    this._unit = {};
     this._e2e = {};
 
     return Promise.resolve();
@@ -466,8 +466,8 @@ class TerraformComponent extends DependencyBasedComponent {
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
-      .then(() => this._units[emitModule.name].runner.run(this._units[emitModule.name].assets))
-      .then(() => this._units[emitModule.name].runner.cleanup())
+      .then(() => this._unit[emitModule.name].runner.run(this._unit[emitModule.name].assets))
+      .then(() => this._unit[emitModule.name].runner.cleanup())
       .then(() => this._apply(terraform, emitModule))
       .then(() => this._e2e[emitModule.name].runner.run(this._e2e[emitModule.name].assets))
       .then(() => this._e2e[emitModule.name].runner.close())
