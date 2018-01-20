@@ -465,7 +465,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
-      .then(() => this._workspace(terraform,emitModule))
+      .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._unit[emitModule.name].runner.run(this._unit[emitModule.name].assets))
       .then(() => this._unit[emitModule.name].runner.cleanup())
@@ -516,13 +516,12 @@ class TerraformComponent extends DependencyBasedComponent {
    * @returns {Promise}
    * @private
    */
-  _workspace(terraform, emitModule){
-    // @todo: refactor this code
-    // workspace is supported only in version 0.11+
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform workspace" in "${ emitModule.name }".`
-    );
+  _workspace(terraform, emitModule) {
+    this.logger.info(this.logger.emoji.magic, `Running "terraform workspace" in "${ emitModule.name }".`);
+
+    if (terraform.isWorkspaceSupported()) {
+      return this._handleSkip(emitModule, 'workspace', `Please use version 0.11.0 (or higher) to use "terraform workspace".`);
+    }
 
     if (!this._parameterFromConfig(emitModule, 'workspace', true)) {
       return this._handleSkip(emitModule, 'workspace');

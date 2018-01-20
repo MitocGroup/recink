@@ -9,7 +9,7 @@ const pjson = require('../package');
 const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
-const { getFilesByPattern } = require('./helper/util');
+const { getFilesByPattern, versionCompare } = require('./helper/util');
 
 /**
  * Terraform wrapper
@@ -27,12 +27,13 @@ class Terraform {
     resource = Terraform.RESOURCE,
     varFiles = []
   ) {
-    this._vars = vars;
     this._binary = binary;
     this._resource = resource;
+    this._vars = vars;
     this._varFiles = varFiles;
     this._logger = false;
     this._isRemoteState = false;
+    this._isWorkspaceSupported = NaN;
   }
 
   /**
@@ -82,13 +83,6 @@ class Terraform {
   }
 
   /**
-   * @returns {*}
-   */
-  get vars() {
-    return this._vars;
-  }
-
-  /**
    * @returns {string}
    */
   get getBinary() {
@@ -103,10 +97,25 @@ class Terraform {
   }
 
   /**
+   * @returns {*}
+   */
+  get vars() {
+    return this._vars;
+  }
+
+  /**
    * @returns {Array}
    */
   get varFiles() {
     return this._varFiles;
+  }
+
+  /**
+   * @returns {Number|NaN}
+   */
+  get isWorkspaceSupported() {
+    return this._isWorkspaceSupported !== NaN
+      && this._isWorkspaceSupported >= 0;
   }
 
   /**
@@ -370,6 +379,12 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
+    this._isWorkspaceSupported = versionCompare(version, '0.11.0');
+
+    if (this._isWorkspaceSupported === NaN) {
+      throw new Error(`Terraform version ${version} is invalid`);
+    }
+
     return fse.pathExists(this.getBinary).then(exists => {
       if (exists) {
         return Promise.resolve();
