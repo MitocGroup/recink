@@ -9,12 +9,12 @@ const urlExists = require('url-exists');
 const e2eEvents = require('./e2e/events');
 const emitEvents = require('./emit/events');
 const ContainerTransformer = require('./helper/container-transformer');
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
+const DependencyBasedComponent = require('./dependency-based-component');
 
 /**
  * End2End component
  */
-class E2EComponent extends DependantConfigBasedComponent {
+class E2EComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

@@ -1,6 +1,6 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const npmEvents = require('recink/src/component/npm/events');
 const snykUserConfig = require('snyk/lib/user-config');
 const snykTest = require('snyk/cli/commands/test');
@@ -9,7 +9,7 @@ const ReporterFactory = require('./reporter/factory');
 /**
  * Snyk.io component
  */
-class SnykComponent extends DependantConfigBasedComponent {
+class SnykComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

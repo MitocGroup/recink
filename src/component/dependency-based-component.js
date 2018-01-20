@@ -4,9 +4,9 @@ const chalk = require('chalk');
 const ConfigBasedComponent = require('./config-based-component');
 
 /**
- * Abstract configuration aware dependant component
+ * Abstract dependency aware component
  */
-class DependantConfigBasedComponent extends ConfigBasedComponent {
+class DependencyBasedComponent extends ConfigBasedComponent {
   /**
    * @param {*} args
    */
@@ -68,4 +68,4 @@ class DependantConfigBasedComponent extends ConfigBasedComponent {
   }
 }
 
-module.exports = DependantConfigBasedComponent;
+module.exports = DependentConfigBasedComponent;

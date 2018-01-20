@@ -1,6 +1,6 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const ProviderFactory = require('./provider/factory');
 const Tail = require('nodejs-tail');
 const pify = require('pify');
@@ -9,7 +9,7 @@ const fs = require('fs');
 /**
  * Comment component
  */
-class CommentComponent extends DependantConfigBasedComponent {
+class CommentComponent extends DependencyBasedComponent {
   /**
    * @param {*} args 
    */

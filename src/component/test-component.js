@@ -1,16 +1,16 @@
-'use strict';
+  'use strict';
 
 const print = require('print');
 const unitEvents = require('./test/events');
 const emitEvents = require('./emit/events');
 const UnitRunner = require('./test/unit-runner');
 const ContainerTransformer = require('./helper/container-transformer');
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
+const DependencyBasedComponent = require('./dependency-based-component');
 
 /**
  * Test component
  */
-class TestComponent extends DependantConfigBasedComponent {
+class TestComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

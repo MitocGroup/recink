@@ -1,6 +1,6 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
+const DependencyBasedComponent = require('./dependency-based-component');
 const emitEvents = require('./emit/events');
 const events = require('./npm/events');
 const os = require('os');
@@ -12,7 +12,7 @@ const path = require('path');
 /**
  * NPM component
  */
-class NpmComponent extends DependantConfigBasedComponent {
+class NpmComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

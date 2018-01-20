@@ -46,7 +46,7 @@ Examples:
 - `recink run unit -s npm` Run unit tests with disabled `npm` component
 - `recink run unit -s emit -c pagespeed` Run unit tests with disabled `emit` component and additional `pagespeed` component enabled
 
-> Note that any components dependant on the disabled one will be implicit disabled by `REciNK`.
+> Note that any components dependent on the disabled one will be implicit disabled by `REciNK`.
 > For example by disabling `npm` component you'll have the `cache` component disabled,
 > by disabling `emit`- `test`, `coverage`, `npm` etc. will be implicit disabled!
 

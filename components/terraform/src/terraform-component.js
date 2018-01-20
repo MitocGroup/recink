@@ -10,13 +10,13 @@ const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const { getFilesByPattern, walkDir } = require('./helper/util');
 
 /**
  * Terraform component
  */
-class TerraformComponent extends DependantConfigBasedComponent {
+class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {*} args 
    */
