@@ -1,26 +1,40 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
-const emitEvents = require('recink/src/component/emit/events');
-const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const CacheFactory = require('recink/src/component/cache/factory');
-const Terraform = require('./terraform');
-const Reporter = require('./reporter');
 const fse = require('fs-extra');
-const path = require('path');
 const Diff = require('./diff');
-const { getFilesByPattern } = require('./helper/util');
+const path = require('path');
+const Reporter = require('./reporter');
+const Terraform = require('./terraform');
+const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const emitEvents = require('recink/src/component/emit/events');
+const UnitRunner = require('recink/src/component/test/unit-runner');
+const CacheFactory = require('recink/src/component/cache/factory');
+const SequentialPromise = require('recink/src/component/helper/sequential-promise');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
+const { getFilesByPattern, walkDir } = require('./helper/util');
 
 /**
  * Terraform component
  */
-class TerraformComponent extends DependantConfigBasedComponent {
+class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {*} args 
    */
   constructor(...args) {
     super(...args);
 
+    /**
+     * _unit & _e2e formats
+     * @type {{
+     *  moduleName: {
+     *    assets: [],
+     *    runner: Runner
+     *  },
+     *  {...}
+     * }}
+     */
+    this._e2e = {};
+    this._unit = {};
     this._reporter = null;
     this._planChanged = false;
     this._runStack = {};
@@ -36,9 +50,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
   
   /**
-   * Add the components Terraform depends on
-   *
-   * @returns {string[]}
+   * Terraform component dependencies
+   * @returns {String[]}
    */
   get dependencies() {
     return [ 'emit' ];
@@ -68,7 +81,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
   * @param {Emitter} emitter
-  *
   * @returns {Promise}
   */
   init(emitter) {
@@ -79,7 +91,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   *
    * @returns {Promise}
    */
   run(emitter) {
@@ -87,26 +98,20 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return new Promise((resolve, reject) => {
       emitter.onBlocking(emitEvents.module.process.start, emitModule => {
-        return this._isTerraformModule(emitModule)
-          .then(isTerraform => {
-            if (!isTerraform) {
-              return Promise.resolve();
-            }
-
-            terraformModules.push(emitModule);
-  
+        return this._isTerraformModule(emitModule).then(isTerraform => {
+          if (!isTerraform) {
             return Promise.resolve();
-          });
+          }
+
+          terraformModules.push(emitModule);
+          this._updateTestsList(emitModule);
+
+          return Promise.resolve();
+        });
       });
 
       emitter.on(emitEvents.modules.process.end, () => {
         this._diff.load()
-          .catch(error => {
-            this.logger.warn(
-              this.logger.emoji.cross,
-              `Failed to calculate git diff: ${ error }.`
-            );
-          })
           .then(() => this._initCaches(emitter, terraformModules))
           .then(() => {
             return Promise.all(
@@ -119,54 +124,53 @@ class TerraformComponent extends DependantConfigBasedComponent {
             );
           })
           .then(() => {
-            return SequentialPromise.all(
-              this._normalizedRunStack.map(item => {
-                const { emitModule, changed } = item;
-    
-                return () => {
-                  if (changed) {
-                    this.logger.info(this.logger.emoji.check, `Starting Terraform in module "${ emitModule.name }".`);
-    
-                    return this._dispatchModule(emitModule)
-                      .then(() => {
-                        return this._uploadCache(emitModule)
-                          .catch(error => {
-                            this.logger.warn(
-                              this.logger.emoji.cross,
-                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ error }.`
-                            );
+            return SequentialPromise.all(this._normalizedRunStack.map(item => {
+              const { emitModule, changed } = item;
 
-                            return Promise.resolve();
-                          });
-                      })
-                      .catch(error => {
+              return () => {
+                if (changed) {
+                  this.logger.info(this.logger.emoji.check, `Starting Terraform in module "${ emitModule.name }"`);
 
-                        // Upload caches even if apply failed
-                        return this._uploadCache(emitModule)
-                          .catch(cacheError => {
-                            this.logger.warn(
-                              this.logger.emoji.cross,
-                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ cacheError }.`
-                            );
+                  return this._dispatchModule(emitModule)
+                    .then(() => {
+                      return this._uploadCache(emitModule).catch(error => {
+                        this.logger.warn(
+                          this.logger.emoji.cross,
+                          `Failed to upload caches for Terraform module "${ emitModule.name }": ${ error }`
+                        );
 
-                            return Promise.reject(error);
-                          })
-                          .then(() => Promise.reject(error));
+                        return Promise.resolve();
                       });
-                  } else {
-                    this.logger.info(
-                      this.logger.emoji.cross,
-                      `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
-                    );
-    
-                    return Promise.resolve();
-                  }
-                };
-              })
-            );
+                    })
+                    .catch(error => {
+                      // Upload caches even if apply failed
+                      return this._uploadCache(emitModule)
+                        .catch(cacheError => {
+                          this.logger.warn(
+                            this.logger.emoji.cross,
+                            `Failed to upload caches for Terraform module "${ emitModule.name }": ${ cacheError }`
+                          );
+
+                          return Promise.reject(error);
+                        })
+                        .then(() => Promise.reject(error));
+                    });
+                } else {
+                  this.logger.info(
+                    this.logger.emoji.cross,
+                    `Skip running Terraform in module "${ emitModule.name }". No changes Detected`
+                  );
+
+                  return Promise.resolve();
+                }
+              };
+            }));
           })
           .then(() => resolve())
-          .catch(error => reject(error));
+          .catch(error => {
+            this.logger.warn(this.logger.emoji.cross, `Failed to calculate git diff: ${ error }`);
+            return reject(error)
+          });
       });
     });
   }
@@ -203,10 +207,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return Promise.resolve();
     }
 
-    this.logger.info(
-      this.logger.emoji.check,
-      `Downloading caches for Terraform module "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.check, `Downloading caches for Terraform module "${ emitModule.name }"`);
 
     return this._caches[emitModule.name].download().then(debug => {
       this.logger.debug(JSON.stringify(debug));
@@ -215,10 +216,44 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
+   * Handle unit/e2e tests
+   * @param {EmitModule} emitModule
+   * @private
+   */
+  _updateTestsList(emitModule) {
+    const moduleName = emitModule.name;
+    const { mapping, plan, apply } = emitModule.container.get('terraform.test', {});
+
+    if (plan) {
+      if (!this._unit.hasOwnProperty(moduleName)) {
+        this._unit[moduleName] = {
+          assets: [],
+          runner: new UnitRunner()
+        };
+      }
+
+      walkDir(plan, /.*\.spec.\js/, testFile => {
+        this._unit[moduleName].assets.push(testFile);
+      })
+    }
+
+    if (apply) {
+      if (!this._e2e.hasOwnProperty(moduleName)) {
+        this._e2e[moduleName] = {
+          assets: [],
+          runner: new E2ERunner()
+        };
+      }
+
+      walkDir(apply, /.*\.e2e.\js/, testFile => {
+        this._e2e[moduleName].assets.push(testFile);
+      })
+    }
+  }
+
+  /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _uploadCache(emitModule) {
@@ -226,10 +261,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return Promise.resolve();
     }
 
-    this.logger.info(
-      this.logger.emoji.check,
-      `Uploading caches for Terraform module "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.check, `Uploading caches for Terraform module "${ emitModule.name }"`);
 
     return this._caches[emitModule.name].upload();
   }
@@ -283,6 +315,8 @@ class TerraformComponent extends DependantConfigBasedComponent {
     this._planChanged = false;
     this._runStack = {};
     this._caches = {};
+    this._unit = {};
+    this._e2e = {};
 
     return Promise.resolve();
   }
@@ -427,12 +461,16 @@ class TerraformComponent extends DependantConfigBasedComponent {
     );
 
     terraform.setLogger(this.logger);
-    this.logger.debug(`Terraform version - "${ version }".`);
+    this.logger.debug(`Terraform version - "${ version }"`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
+      .then(() => this._unit[emitModule.name].runner.run(this._unit[emitModule.name].assets))
+      .then(() => this._unit[emitModule.name].runner.cleanup())
       .then(() => this._apply(terraform, emitModule))
+      .then(() => this._e2e[emitModule.name].runner.run(this._e2e[emitModule.name].assets))
+      .then(() => this._e2e[emitModule.name].runner.close())
       .then(() => this._destroy(terraform, emitModule));
   }
 
@@ -460,10 +498,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform init" in "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.magic, `Running "terraform init" in "${ emitModule.name }"`);
 
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
@@ -481,10 +516,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _plan(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform plan" in "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.magic, `Running "terraform plan" in "${ emitModule.name }"`);
 
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
       return this._handleSkip(emitModule, 'plan');
@@ -499,9 +531,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _apply(terraform, emitModule) {
@@ -525,9 +555,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _destroy(terraform, emitModule) {
@@ -548,7 +576,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @param {EmitModule} emitModule
-   * @param {string} command
+   * @param {String} command
    * @param {Error} error
    * @returns {Promise}
    * @private

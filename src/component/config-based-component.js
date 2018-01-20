@@ -9,17 +9,16 @@ const AbstractComponent = require('./abstract-component');
  */
 class ConfigBasedComponent extends AbstractComponent {
   /**
-   * @param {string} configPath
+   * @param {String} configPath
    */
   constructor(configPath = null) {
     super();
     
     this._container = null;
     this._readyPromise = Promise.resolve();
-    this._configPath = configPath 
-      || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;
+    this._configPath = configPath || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;
   }
-  
+
   /**
    * @returns {*}
    */
