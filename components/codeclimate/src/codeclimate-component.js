@@ -2,7 +2,7 @@
 
 const Spinner = require('recink/src/component/helper/spinner');
 const coverageEvents = require('recink/src/component/coverage/events');
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const Formatter = require('codeclimate-test-reporter/formatter');
 const pify = require('pify');
 const CodeclimateClient = require('./codeclimate-client');
@@ -10,7 +10,7 @@ const CodeclimateClient = require('./codeclimate-client');
 /**
  * CodeClimate component
  */
-class CodeclimateComponent extends DependantConfigBasedComponent {
+class CodeclimateComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

@@ -72,21 +72,27 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "recink/src/component/cache-component.js~dependantconfigbasedcomponent",
-    "variable/index.html#static-variable-DependantConfigBasedComponent",
-    "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/cache-component.js</span>",
+    "recink/src/component/cache-component.js~dependencybasedcomponent",
+    "variable/index.html#static-variable-DependencyBasedComponent",
+    "<span>DependencyBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/cache-component.js</span>",
     "variable"
   ],
   [
-    "recink/src/component/dependant-config-based-component.js~dependantconfigbasedcomponent",
-    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html",
-    "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/dependant-config-based-component.js</span>",
+    "recink/src/component/dependency-based-component.js~dependencybasedcomponent",
+    "class/src/component/dependency-based-component.js~DependencyBasedComponent.html",
+    "<span>DependencyBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/dependency-based-component.js</span>",
     "class"
   ],
   [
     "recink/src/component/e2e-component.js~e2ecomponent",
     "class/src/component/e2e-component.js~E2EComponent.html",
     "<span>E2EComponent</span> <span class=\"search-result-import-path\">recink/src/component/e2e-component.js</span>",
+    "class"
+  ],
+  [
+    "recink/src/component/e2e/e2e-runner.js~e2erunner",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html",
+    "<span>E2ERunner</span> <span class=\"search-result-import-path\">recink/src/component/e2e/e2e-runner.js</span>",
     "class"
   ],
   [
@@ -225,6 +231,12 @@ window.esdocSearchIndex = [
     "recink/src/component/helper/transformer.js~transformer",
     "class/src/component/helper/transformer.js~Transformer.html",
     "<span>Transformer</span> <span class=\"search-result-import-path\">recink/src/component/helper/transformer.js</span>",
+    "class"
+  ],
+  [
+    "recink/src/component/test/unit-runner.js~unitrunner",
+    "class/src/component/test/unit-runner.js~UnitRunner.html",
+    "<span>UnitRunner</span> <span class=\"search-result-import-path\">recink/src/component/test/unit-runner.js</span>",
     "class"
   ],
   [
@@ -1110,27 +1122,27 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/component/dependant-config-based-component.js",
-    "file/src/component/dependant-config-based-component.js.html",
-    "src/component/dependant-config-based-component.js",
+    "src/component/dependency-based-component.js",
+    "file/src/component/dependency-based-component.js.html",
+    "src/component/dependency-based-component.js",
     "file"
   ],
   [
-    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#constructor",
-    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-constructor-constructor",
-    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#constructor",
+    "src/component/dependency-based-component.js~dependencybasedcomponent#constructor",
+    "class/src/component/dependency-based-component.js~DependencyBasedComponent.html#instance-constructor-constructor",
+    "src/component/dependency-based-component.js~DependencyBasedComponent#constructor",
     "method"
   ],
   [
-    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#dependencies",
-    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-get-dependencies",
-    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#dependencies",
+    "src/component/dependency-based-component.js~dependencybasedcomponent#dependencies",
+    "class/src/component/dependency-based-component.js~DependencyBasedComponent.html#instance-get-dependencies",
+    "src/component/dependency-based-component.js~DependencyBasedComponent#dependencies",
     "member"
   ],
   [
-    "src/component/dependant-config-based-component.js~dependantconfigbasedcomponent#waitconfig",
-    "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html#instance-method-waitConfig",
-    "src/component/dependant-config-based-component.js~DependantConfigBasedComponent#waitConfig",
+    "src/component/dependency-based-component.js~dependencybasedcomponent#waitconfig",
+    "class/src/component/dependency-based-component.js~DependencyBasedComponent.html#instance-method-waitConfig",
+    "src/component/dependency-based-component.js~DependencyBasedComponent#waitConfig",
     "method"
   ],
   [
@@ -1182,33 +1194,9 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/component/e2e-component.js~e2ecomponent.default_browsers",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_BROWSERS",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_BROWSERS",
-    "member"
-  ],
-  [
     "src/component/e2e-component.js~e2ecomponent.default_priority",
     "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_PRIORITY",
     "src/component/e2e-component.js~E2EComponent.DEFAULT_PRIORITY",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_reporter",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_REPORTER",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_REPORTER",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_server_hostname",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_SERVER_HOSTNAME",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_HOSTNAME",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_server_ports",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_SERVER_PORTS",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_SERVER_PORTS",
     "member"
   ],
   [
@@ -1224,9 +1212,57 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/component/e2e-component.js~e2ecomponent.run_options",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-RUN_OPTIONS",
-    "src/component/e2e-component.js~E2EComponent.RUN_OPTIONS",
+    "src/component/e2e/e2e-runner.js",
+    "file/src/component/e2e/e2e-runner.js.html",
+    "src/component/e2e/e2e-runner.js",
+    "file"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner#close",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-close",
+    "src/component/e2e/e2e-runner.js~E2ERunner#close",
+    "method"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner#constructor",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-constructor-constructor",
+    "src/component/e2e/e2e-runner.js~E2ERunner#constructor",
+    "method"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner#run",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-run",
+    "src/component/e2e/e2e-runner.js~E2ERunner#run",
+    "method"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner.default_browsers",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_BROWSERS",
+    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_BROWSERS",
+    "member"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner.default_reporter",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_REPORTER",
+    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_REPORTER",
+    "member"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner.default_server_hostname",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_SERVER_HOSTNAME",
+    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_HOSTNAME",
+    "member"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner.default_server_ports",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_SERVER_PORTS",
+    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_PORTS",
+    "member"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner.run_options",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-RUN_OPTIONS",
+    "src/component/e2e/e2e-runner.js~E2ERunner.RUN_OPTIONS",
     "member"
   ],
   [
@@ -1930,6 +1966,36 @@ window.esdocSearchIndex = [
     "file/src/component/test/events.js.html",
     "src/component/test/events.js",
     "file"
+  ],
+  [
+    "src/component/test/unit-runner.js",
+    "file/src/component/test/unit-runner.js.html",
+    "src/component/test/unit-runner.js",
+    "file"
+  ],
+  [
+    "src/component/test/unit-runner.js~unitrunner#cleanup",
+    "class/src/component/test/unit-runner.js~UnitRunner.html#instance-method-cleanup",
+    "src/component/test/unit-runner.js~UnitRunner#cleanup",
+    "method"
+  ],
+  [
+    "src/component/test/unit-runner.js~unitrunner#constructor",
+    "class/src/component/test/unit-runner.js~UnitRunner.html#instance-constructor-constructor",
+    "src/component/test/unit-runner.js~UnitRunner#constructor",
+    "method"
+  ],
+  [
+    "src/component/test/unit-runner.js~unitrunner#getmocha",
+    "class/src/component/test/unit-runner.js~UnitRunner.html#instance-method-getMocha",
+    "src/component/test/unit-runner.js~UnitRunner#getMocha",
+    "method"
+  ],
+  [
+    "src/component/test/unit-runner.js~unitrunner#run",
+    "class/src/component/test/unit-runner.js~UnitRunner.html#instance-method-run",
+    "src/component/test/unit-runner.js~UnitRunner#run",
+    "method"
   ],
   [
     "src/config/abstract-config.js",

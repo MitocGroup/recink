@@ -2,7 +2,7 @@
 
 /* eslint no-useless-call: 0 */
 
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
+const DependencyBasedComponent = require('./dependency-based-component');
 const istanbul = require('istanbul');
 const testEvents = require('./test/events');
 const events = require('./coverage/events');
@@ -16,7 +16,7 @@ const ModuleCompile = require('./helper/module-compile');
 /**
  * Coverage component
  */
-class CoverageComponent extends DependantConfigBasedComponent {
+class CoverageComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

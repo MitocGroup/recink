@@ -65,12 +65,12 @@ He're the generated boilerplate component code `src/hello-component.js`:
 ```javascript
 'use strict';
 
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 
 /**
  * Hello component
  */
-class HelloComponent extends DependantConfigBasedComponent {
+class HelloComponent extends DependencyBasedComponent {
   /**
    * @returns {string}
    */
