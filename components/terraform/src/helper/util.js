@@ -61,7 +61,7 @@ exports.getFilesByPattern = getFilesByPattern;
  *
  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format
  */
-function versionCompare(v1, v2, options) {
+function versionCompare(v1, v2, options = {}) {
   let lexicographical = options && options.lexicographical,
     zeroExtend = options && options.zeroExtend,
     v1parts = v1.split('.'),
