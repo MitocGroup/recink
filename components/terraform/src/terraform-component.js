@@ -11,7 +11,7 @@ const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
 const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
-const { getFilesByPattern, walkDir } = require('./helper/util');
+const { getFilesByPattern, walkDir } = require('../../../src/helper/util');
 
 /**
  * Terraform component

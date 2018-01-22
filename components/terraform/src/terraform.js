@@ -9,7 +9,7 @@ const pjson = require('../package');
 const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
-const { getFilesByPattern, versionCompare } = require('./helper/util');
+const { getFilesByPattern, versionCompare } = require('../../../src/helper/util');
 
 /**
  * Terraform wrapper
