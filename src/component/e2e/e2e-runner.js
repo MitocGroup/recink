@@ -75,7 +75,7 @@ class E2ERunner {
    * Terminate
    * @returns {Promise}
    */
-  close() {
+  cleanup() {
     return this._testcafe.close();
   }
 

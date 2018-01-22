@@ -65,7 +65,7 @@ class E2EComponent extends DependencyBasedComponent {
         // @todo find a smarter way to indent the output (buffer it?)
         process.stdout.write('\n\n');
 
-        return e2eRunner.close()
+        return e2eRunner.cleanup()
           .then(() => emitter.emitBlocking(e2eEvents.assets.e2e.end))
           .then(() => Promise.resolve(failedCount));
       });

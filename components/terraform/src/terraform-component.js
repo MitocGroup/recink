@@ -224,30 +224,30 @@ class TerraformComponent extends DependencyBasedComponent {
     const moduleName = emitModule.name;
     const { mapping, plan, apply } = emitModule.container.get('terraform.test', {});
 
-    if (plan) {
-      if (!this._unit.hasOwnProperty(moduleName)) {
-        this._unit[moduleName] = {
-          assets: [],
-          runner: new UnitRunner()
-        };
-      }
+    if (!this._unit.hasOwnProperty(moduleName)) {
+      this._unit[moduleName] = {
+        assets: [],
+        runner: new UnitRunner()
+      };
+    }
 
+    if (!this._e2e.hasOwnProperty(moduleName)) {
+      this._e2e[moduleName] = {
+        assets: [],
+        runner: new E2ERunner()
+      };
+    }
+
+    if (plan) {
       walkDir(plan, /.*\.spec.\js/, testFile => {
         this._unit[moduleName].assets.push(testFile);
-      })
+      });
     }
 
     if (apply) {
-      if (!this._e2e.hasOwnProperty(moduleName)) {
-        this._e2e[moduleName] = {
-          assets: [],
-          runner: new E2ERunner()
-        };
-      }
-
       walkDir(apply, /.*\.e2e.\js/, testFile => {
         this._e2e[moduleName].assets.push(testFile);
-      })
+      });
     }
   }
 
@@ -467,11 +467,9 @@ class TerraformComponent extends DependencyBasedComponent {
       .then(() => this._init(terraform, emitModule))
       .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
-      .then(() => this._unit[emitModule.name].runner.run(this._unit[emitModule.name].assets))
-      .then(() => this._unit[emitModule.name].runner.cleanup())
+      .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
-      .then(() => this._e2e[emitModule.name].runner.run(this._e2e[emitModule.name].assets))
-      .then(() => this._e2e[emitModule.name].runner.close())
+      .then(() => this._runTests(TerraformComponent.E2E, emitModule))
       .then(() => this._destroy(terraform, emitModule));
   }
 
@@ -551,6 +549,29 @@ class TerraformComponent extends DependencyBasedComponent {
       .plan(this._moduleRoot(emitModule))
       .then(plan => this._handlePlan(terraform, emitModule, plan))
       .catch(error => this._handleError(emitModule, 'plan', error));
+  }
+
+  /**
+   * Run test if configured
+   * @param {String} type
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _runTests(type, emitModule) {
+    return new Promise((resolve, reject) => {
+      const tests = type === TerraformComponent.UNIT ? this._unit : this._e2e;
+      const module = tests[emitModule.name];
+
+      if (!module || module.length <= 0) {
+        return resolve();
+      }
+
+      module.runner.run(module.assets)
+        .then(() => module.runner.cleanup())
+        .then(() => resolve())
+        .catch(err => reject(err));
+    });
   }
 
   /**
@@ -692,6 +713,22 @@ ${ output }
 \`\`\`
       `);
     });
+  }
+
+  /**
+   * @returns {string}
+   * @constructor
+   */
+  static get UNIT() {
+    return 'unit'
+  }
+
+  /**
+   * @returns {string}
+   * @constructor
+   */
+  static get E2E() {
+    return 'e2e'
   }
 }
 
