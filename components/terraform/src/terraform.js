@@ -37,7 +37,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} name
+   * @param {String} name
    * 
    * @returns {boolean} 
    */
@@ -46,7 +46,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} name 
+   * @param {String} name
    * @param {*} defaultValue 
    * 
    * @returns {*}
@@ -60,7 +60,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} name 
+   * @param {String} name
    * @param {*} value 
    * 
    * @returns {Terraform}
@@ -83,14 +83,14 @@ class Terraform {
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get getBinary() {
     return this._binary;
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get getResource() {
     return this._resource;
@@ -133,7 +133,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/init.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   init(dir) {
@@ -146,8 +146,8 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/state/workspaces.html
-   * @param {string} dir
-   * @param {string} workspace
+   * @param {String} dir
+   * @param {String} workspace
    * @returns {Promise}
    */
   workspace(dir, workspace) {
@@ -189,7 +189,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/state/index.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   pullState(dir) {
@@ -213,7 +213,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/plan.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   plan(dir) {
@@ -237,7 +237,7 @@ class Terraform {
   /**
    * https://www.terraform.io/docs/commands/apply.html
    *
-   * @param {string} dir
+   * @param {String} dir
    *
    * @returns {Promise}
    */
@@ -278,7 +278,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/destroy.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   destroy(dir) {
@@ -335,7 +335,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    * @private
    */
@@ -421,63 +421,63 @@ class Terraform {
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get VERSION() {
     return '0.11.0';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get PLAN() {
     return 'terraform.tfplan';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get STATE() {
     return 'terraform.tfstate';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get REMOTE() {
     return 'terraform.tfstate.remote';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BACKUP() {
     return `terraform.tfstate.${ new Date().getTime() }.backup`;
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get RESOURCE() {
     return '.resource';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BIN_PATH() {
     return path.resolve(process.cwd(), 'bin');
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BIN_FILE() {
     return 'terraform';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BINARY() {
     return path.join(Terraform.BIN_PATH, Terraform.BIN_FILE);

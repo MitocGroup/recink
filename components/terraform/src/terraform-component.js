@@ -43,7 +43,7 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return 'terraform';
@@ -60,7 +60,7 @@ class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {EmitModule} emitModule 
    *
-   * @returns {string}
+   * @returns {String}
    *
    * @private
    */
@@ -560,10 +560,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _apply(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform apply" in "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.magic, `Running "terraform apply" in "${ emitModule.name }".`);
 
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
       return this._handleSkip(emitModule, 'apply');
@@ -584,10 +581,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _destroy(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform destroy" in "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.magic, `Running "terraform destroy" in "${ emitModule.name }".`);
 
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
@@ -618,8 +612,8 @@ ${ error.toString().trim() }
 
   /**
    * @param {EmitModule} emitModule
-   * @param {string} command
-   * @param {string} reason
+   * @param {String} command
+   * @param {String} reason
    * @returns {Promise}
    * @private
    */
