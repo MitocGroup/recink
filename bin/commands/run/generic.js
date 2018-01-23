@@ -143,14 +143,14 @@ module.exports = (args, options, logger) => {
 
     // @todo: refactor this code
     // move this code into recink-terraform component
-    // if (options.tfVars) {
-    //   let tfVars = optionsToObject(options.tfVars);
-    //   for (let property in tfVars) {
-    //     if (tfVars.hasOwnProperty(property)) {
-    //       dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
-    //     }
-    //   }
-    // }
+    if (options.tfVars) {
+      let tfVars = optionsToObject(options.tfVars);
+      for (let property in tfVars) {
+        if (tfVars.hasOwnProperty(property)) {
+          dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
+        }
+      }
+    }
 
     return Promise.resolve(config);
   }
