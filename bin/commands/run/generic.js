@@ -101,7 +101,7 @@ module.exports = (args, options, logger) => {
 
     // @todo: refactor this code
     // move this code into recink-terraform component
-    if (options.tfVersion || options.tfWorkspace || options.tfVarfiles) {
+    if (options.tfVersion || options.tfWorkspace || options.tfVarfiles || options.tfVars) {
       for (let module in modules) {
         if (modules[module].terraform && options.tfVersion) {
           dot.str(`${modules[module]}.terraform.version`, options.tfVersion, config);
@@ -129,6 +129,8 @@ module.exports = (args, options, logger) => {
           }
         }
 
+        // @todo: for now, this doesn't work properly
+        // this code will need fixing and refactoring
         if (modules[module].terraform && options.tfVars && options.tfVars.length > 0) {
           for (let property in options.tfVars) {
             if (options.tfVars.hasOwnProperty(property)) {
@@ -141,14 +143,14 @@ module.exports = (args, options, logger) => {
 
     // @todo: refactor this code
     // move this code into recink-terraform component
-    /*if (options.tfVars) {
-      let tfVars = optionsToObject(options.tfVars);
-      for (let property in tfVars) {
-        if (tfVars.hasOwnProperty(property)) {
-          dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
-        }
-      }
-    }*/
+    // if (options.tfVars) {
+    //   let tfVars = optionsToObject(options.tfVars);
+    //   for (let property in tfVars) {
+    //     if (tfVars.hasOwnProperty(property)) {
+    //       dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
+    //     }
+    //   }
+    // }
 
     return Promise.resolve(config);
   }
