@@ -355,16 +355,13 @@ class Terraform {
     const childProcess = execa(bin, [command].concat(args), { env, cwd });
 
     if (this.logger) {
-      this.logger.debug({
-        command: `${this.getBinary} ${command}`,
-        args: args,
-        fileNames: getFilesByPattern(cwd, /.*/)
-      });
+      this.logger.info(this.logger.emoji.magic, `Running ${this.getBinary} ${command} ${args.join(' ')} command`);
+      this.logger.debug(this.logger.emoji.fire, getFilesByPattern(cwd, /^((?!(node_modules)).)*$/));
 
       childProcess.stdout.on('data', data => {
         let chunk = data.toString().replace(/\s*$/g, '');
         if (chunk) {
-          this.logger.debug(SecureOutput.secure(chunk));
+          this.logger.info(this.logger.emoji.magic, SecureOutput.secure(chunk));
         }
       });
     }

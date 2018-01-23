@@ -197,9 +197,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _loadCache(emitModule) {
@@ -497,8 +495,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    this.logger.info(this.logger.emoji.magic, `Running "terraform init" in "${ emitModule.name }"`);
-
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
     }
@@ -539,8 +535,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _plan(terraform, emitModule) {
-    this.logger.info(this.logger.emoji.magic, `Running "terraform plan" in "${ emitModule.name }"`);
-
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
       return this._handleSkip(emitModule, 'plan');
     }
@@ -563,7 +557,7 @@ class TerraformComponent extends DependencyBasedComponent {
       const tests = type === TerraformComponent.UNIT ? this._unit : this._e2e;
       const module = tests[emitModule.name];
 
-      if (!module || module.length <= 0) {
+      if (!module || module.assets.length <= 0) {
         return resolve();
       }
 
@@ -581,8 +575,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _apply(terraform, emitModule) {
-    this.logger.info(this.logger.emoji.magic, `Running "terraform apply" in "${ emitModule.name }".`);
-
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
       return this._handleSkip(emitModule, 'apply');
     } else if (!this._planChanged) {
@@ -602,8 +594,8 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _destroy(terraform, emitModule) {
-    this.logger.info(this.logger.emoji.magic, `Running "terraform destroy" in "${ emitModule.name }".`);
 
+    
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
@@ -623,7 +615,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _handleError(emitModule, command, error) {
     return this._reporter.report(`
-### \`${ emitModule.name }\` returned an error executing \`terraform ${ command }\`
+### '${ emitModule.name }' returned an error executing 'terraform ${ command }'
 
 \`\`\`
 ${ error.toString().trim() }
@@ -642,7 +634,7 @@ ${ error.toString().trim() }
     const reasonMsg = reason ? `Reason - "${ reason }" ...` : '';
 
     return this._reporter.report(`
-### \`${ emitModule.name }\` skipped executing \`terraform ${ command }\`
+### '${ emitModule.name }' skipped executing 'terraform ${ command }'
 
 ${ reasonMsg }
     `);
@@ -666,7 +658,7 @@ ${ reasonMsg }
       }
 
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform plan\`
+### '${ emitModule.name }' returned below output while executing 'terraform plan'
 
 ${ plan.changed ? '' : 'No Plan Changes Detected' }
 
@@ -687,7 +679,7 @@ ${ output }
   _handleApply(terraform, emitModule, state) {
     return terraform.show(state).then(output => {
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform apply\`
+### '${ emitModule.name }' returned below output while executing 'terraform apply'
 
 \`\`\`
 ${ output }
@@ -706,7 +698,7 @@ ${ output }
   _handleDestroy(terraform, emitModule, state) {
     return terraform.show(state).then(output => {
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform destroy\`
+### '${ emitModule.name }' returned below output while executing 'terraform destroy'
 
 \`\`\`
 ${ output }
@@ -716,7 +708,7 @@ ${ output }
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    * @constructor
    */
   static get UNIT() {
@@ -724,7 +716,7 @@ ${ output }
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    * @constructor
    */
   static get E2E() {
