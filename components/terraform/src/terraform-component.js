@@ -518,7 +518,7 @@ class TerraformComponent extends DependencyBasedComponent {
     this.logger.info(this.logger.emoji.magic, `Running "terraform workspace" in "${ emitModule.name }".`);
 
     if (terraform.isWorkspaceSupported) {
-      return this._handleSkip(emitModule, 'workspace', `Please use version 0.11.0 (or higher) to leverage "terraform workspace".`);
+      return this._handleSkip(emitModule, 'workspace', `'terraform workspace' requires version 0.11.0 (or higher)`);
     }
 
     if (!this._parameterFromConfig(emitModule, 'workspace', true)) {
