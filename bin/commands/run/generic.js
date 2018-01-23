@@ -103,11 +103,11 @@ module.exports = (args, options, logger) => {
     // move this code into recink-terraform component
     if (options.tfVersion || options.tfWorkspace || options.tfVarfiles) {
       for (let module in modules) {
-        if (options.tfVersion) {
+        if (modules[module].terraform && options.tfVersion) {
           dot.str(`${modules[module]}.terraform.version`, options.tfVersion, config);
         }
 
-        if (options.tfWorkspace) {
+        if (modules[module].terraform && options.tfWorkspace) {
           dot.str(`${modules[module]}.terraform.current_workspace`, trimBoth(options.tfWorkspace, '"'), config);
           if (config[modules[module]]['terraform']['available_workspaces']) {
             let availableWorkspaces = config[modules[module]]['terraform']['available_workspaces'];
@@ -120,11 +120,19 @@ module.exports = (args, options, logger) => {
           }
         }
 
-        if (options.tfVarfiles && options.tfVarfiles.length > 0) {
+        if (modules[module].terraform && options.tfVarfiles && options.tfVarfiles.length > 0) {
           dot.str(`${modules[module]}.terraform.var-files`, [], config);
           for (let property in options.tfVarfiles) {
             if (options.tfVarfiles.hasOwnProperty(property)) {
               dot.str(`${modules[module]}.terraform.var-files.${property}`, trimBoth(options.tfVarfiles[property], '"'), config);
+            }
+          }
+        }
+
+        if (modules[module].terraform && options.tfVars && options.tfVars.length > 0) {
+          for (let property in options.tfVars) {
+            if (options.tfVars.hasOwnProperty(property)) {
+              dot.str(`${modules[module]}.terraform.vars.${property}`, trimBoth(options.tfVars[property], '"'), config);
             }
           }
         }
@@ -133,14 +141,14 @@ module.exports = (args, options, logger) => {
 
     // @todo: refactor this code
     // move this code into recink-terraform component
-    if (options.tfVars) {
+    /*if (options.tfVars) {
       let tfVars = optionsToObject(options.tfVars);
       for (let property in tfVars) {
         if (tfVars.hasOwnProperty(property)) {
           dot.str(`$.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
         }
       }
-    }
+    }*/
 
     return Promise.resolve(config);
   }

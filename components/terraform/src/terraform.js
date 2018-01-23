@@ -9,7 +9,7 @@ const pjson = require('../package');
 const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
-const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
+const { getFilesByPattern, versionCompare } = require('../node_modules/recink/src/helper/util');
 
 /**
  * Terraform wrapper
@@ -33,7 +33,7 @@ class Terraform {
     this._varFiles = varFiles;
     this._logger = false;
     this._isRemoteState = false;
-    this._isWorkspaceSupported = NaN;
+    this._isWorkspaceSupported = false;
   }
 
   /**
@@ -114,8 +114,7 @@ class Terraform {
    * @returns {Number|NaN}
    */
   get isWorkspaceSupported() {
-    return this._isWorkspaceSupported !== NaN
-      && this._isWorkspaceSupported >= 0;
+    return this._isWorkspaceSupported;
   }
 
   /**
@@ -379,11 +378,12 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    this._isWorkspaceSupported = versionCompare(version, '0.11.0');
-
-    if (this._isWorkspaceSupported === NaN) {
+    let compared = versionCompare(version, '0.11.0');
+    if (compared === NaN) {
       throw new Error(`Terraform version ${version} is invalid`);
     }
+
+    this._isWorkspaceSupported = (compared !== NaN && compared >= 0);
 
     return fse.pathExists(this.getBinary).then(exists => {
       if (exists) {
