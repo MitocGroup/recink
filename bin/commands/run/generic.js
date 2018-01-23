@@ -121,6 +121,8 @@ module.exports = (args, options, logger) => {
           }
         }
 
+        // @todo: refactor this code
+        // if tfWorkspace is enabled, overwrite tfVarfiles of tfWorkspace
         if (options.tfVarfiles) {
           dot.str(`${tfModules[m]}.terraform.var-files`, [], config);
           for (let property in options.tfVarfiles) {
@@ -130,6 +132,8 @@ module.exports = (args, options, logger) => {
           }
         }
 
+        // @todo: refactor this code
+        // if tfWorkspace is enabled, overwrite tfVars of tfWorkspace
         if (options.tfVars) {
           let tfVars = optionsToObject(options.tfVars);
           for (let property in tfVars) {
