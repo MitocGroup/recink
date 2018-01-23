@@ -171,6 +171,7 @@ class Logger {
    */
   static get emoji() {
     return {
+      empty: '',
       rocket: '🚀 ',
       cross: '❌ ',
       check: '✅ ',

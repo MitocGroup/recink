@@ -361,7 +361,7 @@ class Terraform {
       childProcess.stdout.on('data', data => {
         let chunk = data.toString().replace(/\s*$/g, '');
         if (chunk) {
-          this.logger.info(this.logger.emoji.magic, SecureOutput.secure(chunk));
+          this.logger.info(this.logger.emoji.empty, SecureOutput.secure(chunk));
         }
       });
     }
