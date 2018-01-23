@@ -101,6 +101,7 @@ module.exports = (args, options, logger) => {
 
     // @todo: refactor this code
     // move this code into recink-terraform component
+    // validate that tfModules contains `terraform` key
     let tfModules = modules.filter(key => !excludeModules.includes(key));
     if (options.tfVersion || options.tfWorkspace || options.tfVarfiles || options.tfVars) {
       for (let m in tfModules) {
