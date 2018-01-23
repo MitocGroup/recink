@@ -111,7 +111,7 @@ class Terraform {
   }
 
   /**
-   * @returns {Number|NaN}
+   * @returns {Boolean}
    */
   get isWorkspaceSupported() {
     return this._isWorkspaceSupported;
