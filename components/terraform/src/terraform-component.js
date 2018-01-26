@@ -85,8 +85,21 @@ class TerraformComponent extends DependencyBasedComponent {
   */
   init(emitter) {
     this._reporter = new Reporter(emitter, this.logger);
+    this._setDeafaults();
 
     return Promise.resolve();
+  }
+
+  /**
+   * Configure default values for terraform
+   * @private
+   */
+  _setDeafaults() {
+    Object.keys(TerraformComponent.GLOBAL_DEFAULTS).forEach(key => {
+      if (!this.container.has(key)) {
+        this.container.set(key, TerraformComponent.GLOBAL_DEFAULTS[key]);
+      }
+    })
   }
   
   /**
@@ -168,8 +181,8 @@ class TerraformComponent extends DependencyBasedComponent {
           })
           .then(() => resolve())
           .catch(error => {
-            this.logger.warn(this.logger.emoji.cross, `Failed to calculate git diff: ${ error }`);
-            return reject(error)
+            this.logger.warn(this.logger.emoji.cross, `Failed with error: ${ error }`);
+            return reject(error);
           });
       });
     });
@@ -196,7 +209,7 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @param {EmitModule} emitModule 
+   * @param {EmitModule} emitModule
    * @returns {Promise}
    * @private
    */
@@ -392,9 +405,7 @@ class TerraformComponent extends DependencyBasedComponent {
       });
       const extraneousInfo = extraneousVector.join('\n\t');
 
-      throw new Error(
-        `Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`
-      );
+      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
     }
   }
 
@@ -515,11 +526,11 @@ class TerraformComponent extends DependencyBasedComponent {
       return this._handleSkip(emitModule, 'workspace', `'terraform workspace' requires version 0.11.0 (or higher)`);
     }
 
-    if (!this._parameterFromConfig(emitModule, 'workspace', true)) {
+    const workspace = this._parameterFromConfig(emitModule, 'current-workspace', 'default');
+
+    if (workspace === 'default') {
       return this._handleSkip(emitModule, 'workspace');
     }
-
-    let workspace = this._parameterFromConfig(emitModule, 'current_workspace', 'default');
 
     return terraform
       .workspace(this._moduleRoot(emitModule), workspace)
@@ -719,6 +730,17 @@ ${ output }
    */
   static get E2E() {
     return 'e2e'
+  }
+
+  /**
+   * @returns {Object}
+   * @constructor
+   */
+  static get GLOBAL_DEFAULTS() {
+    return {
+      'version': Terraform.VERSION,
+      'current-workspace': 'default'
+    }
   }
 }
 

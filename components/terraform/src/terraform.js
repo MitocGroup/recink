@@ -151,10 +151,10 @@ class Terraform {
    */
   workspace(dir, workspace) {
     return this._ensureResourceDir(dir).then(() => {
-      const regex = RegExp(`(\\*\\s|\\s.)${workspace}$`,'m');
+      let regex = RegExp(`(\\*\\s|\\s.)${workspace}$`, 'm');
       let options = ['new', workspace, '-no-color'];
 
-      this.run('workspace', ['list'], dir).then(result => {
+      return this.run('workspace', ['list'], dir).then(result => {
         if (regex.exec(result.output) != null) {
           options[0] = 'select';
         }

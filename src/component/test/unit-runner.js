@@ -34,10 +34,13 @@ class UnitRunner {
       });
 
       this._mocha.run(err => {
-        return err ? reject(err) : resolve();
+        if (err) {
+          this._removeTmpFiles();
+          return reject(err);
+        }
+
+        return resolve();
       });
-    }).catch(() => {
-      return this.cleanup();
     });
   }
 
@@ -50,10 +53,20 @@ class UnitRunner {
   }
 
   /**
-   * Remove tmp test files
+   * Cleanup action
    * @returns {Promise}
    */
   cleanup() {
+    this._removeTmpFiles();
+
+    return Promise.resolve();
+  }
+
+  /**
+   * Remove tmp test files
+   * @private
+   */
+  _removeTmpFiles() {
     this._tmps.forEach(tmpTest => {
       try {
         fs.unlinkSync(tmpTest);
@@ -63,8 +76,6 @@ class UnitRunner {
         }
       }
     });
-
-    return Promise.resolve();
   }
 }
 

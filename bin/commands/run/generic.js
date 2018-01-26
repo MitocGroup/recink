@@ -14,6 +14,7 @@ dot.overwrite = true;
 module.exports = (args, options, logger) => {
   const recink = new Recink();
 
+  let cfg = {};
   let namespace = args.name;
   let disabledComponents = options.s;
   let additionalComponents = options.c;
@@ -73,12 +74,22 @@ module.exports = (args, options, logger) => {
   }
 
   /**
+   * @param {String} parameter
+   * @param {*} value
+   * @param {String} root
+   */
+  function setTfParameter(parameter, value, root = '$') {
+    dot.str(`${root}.terraform.${parameter}`, value.constructor === String ? trimBoth(value, '"'): value, cfg);
+  }
+
+  /**
    * Transform configuration
    * @param {Object} config
    * @return {Object}
    */
   function transformConfig(config) {
-    let modules = Object.keys(config);
+    cfg = config;
+    let modules = Object.keys(cfg).filter(module => module !== ConfigBasedComponent.MAIN_CONFIG_KEY);
     let excludeModules = cleanList(options.excludeModules, modules);
     let includeModules = cleanList(options.includeModules, modules);
 
@@ -87,66 +98,55 @@ module.exports = (args, options, logger) => {
     }
 
     excludeModules.forEach(module => {
-      if (module !== ConfigBasedComponent.MAIN_CONFIG_KEY) {
-        dot.del(module, config);
+      dot.del(module, cfg);
+      modules.splice(modules.indexOf(module), 1);
+    });
+
+    /**
+     * Returns true if --include-modules or --exclude-modules applied
+     * @type {Boolean}
+     */
+    let filtered = !!excludeModules.length;
+    let workspaceEnabled = false;
+    let tfModules = modules.filter(module => typeof dot.pick(`${module}.terraform`, cfg) !== 'undefined');
+
+    tfModules.forEach(module => {
+      let tfVars = optionsToObject(options.tfVars);
+      let tfVarfiles = options.tfVarfiles;
+      let tfWorkspace = options.tfWorkspace;
+      let cfgKey = filtered ? module : ConfigBasedComponent.MAIN_CONFIG_KEY;
+
+      if (options.tfVersion) {
+        setTfParameter('version', options.tfVersion, cfgKey);
+      }
+
+      if (tfWorkspace) {
+        setTfParameter('current-workspace', tfWorkspace, cfgKey);
+
+        if (tfWorkspace !== 'default') {
+          workspaceEnabled = true;
+        }
+      }
+
+      if (options.tfVarfiles.length > 0) {
+        let key = workspaceEnabled ? `available-workspaces.${tfWorkspace}.var-files` : 'var-files';
+        setTfParameter(key, options.tfVarfiles, cfgKey);
+      }
+
+      for (let property in tfVars) {
+        let key = workspaceEnabled ? `available-workspaces.${tfWorkspace}.vars` : 'vars';
+        setTfParameter(key, tfVars[property], cfgKey);
       }
     });
 
     let customConfig = optionsToObject(options.customConfig);
     for (let property in customConfig) {
       if (customConfig.hasOwnProperty(property)) {
-        dot.str(property, customConfig[property], config);
+        dot.str(property, customConfig[property], cfg);
       }
     }
 
-    // @todo: refactor this code
-    // move this code into recink-terraform component
-    // validate that tfModules contains `terraform` key
-    let tfModules = modules.filter(key => !excludeModules.includes(key));
-    if (options.tfVersion || options.tfWorkspace || options.tfVarfiles || options.tfVars) {
-      for (let m in tfModules) {
-        if (options.tfVersion) {
-          dot.str(`${tfModules[m]}.terraform.version`, options.tfVersion, config);
-        }
-
-        if (options.tfWorkspace) {
-          dot.str(`${tfModules[m]}.terraform.current-workspace`, trimBoth(options.tfWorkspace, '"'), config);
-          if (config[tfModules[m]]['terraform']['available-workspaces']) {
-            let availableWorkspaces = config[tfModules[m]]['terraform']['available-workspaces'];
-
-            for (let property in availableWorkspaces[options.tfWorkspace]) {
-              if (availableWorkspaces[options.tfWorkspace].hasOwnProperty(property)) {
-                dot.str(`${tfModules[m]}.terraform.${property}`, availableWorkspaces[options.tfWorkspace][property], config);
-              }
-            }
-          }
-        }
-
-        // @todo: refactor this code
-        // if tfWorkspace is enabled, overwrite tfVarfiles of tfWorkspace
-        if (options.tfVarfiles) {
-          dot.str(`${tfModules[m]}.terraform.var-files`, [], config);
-          for (let property in options.tfVarfiles) {
-            if (options.tfVarfiles.hasOwnProperty(property)) {
-              dot.str(`${tfModules[m]}.terraform.var-files.${property}`, trimBoth(options.tfVarfiles[property], '"'), config);
-            }
-          }
-        }
-
-        // @todo: refactor this code
-        // if tfWorkspace is enabled, overwrite tfVars of tfWorkspace
-        if (options.tfVars) {
-          let tfVars = optionsToObject(options.tfVars);
-          for (let property in tfVars) {
-            if (tfVars.hasOwnProperty(property)) {
-              dot.str(`${tfModules[m]}.terraform.vars.${property}`, trimBoth(tfVars[property], '"'), config);
-            }
-          }
-        }
-      }
-    }
-
-    return Promise.resolve(config);
+    return Promise.resolve(cfg);
   }
 
   return componentRegistry.load()
@@ -217,10 +217,10 @@ module.exports = (args, options, logger) => {
 
       return recink.configureExtend(configFilePath, ...componentConfig)
         .then(config => transformConfig(config))
-        .then(config => {
+        .then(() => {
           return Promise.all([
             recink.components(...components),
-            recink.configLoad(config, configFilePath)
+            recink.configLoad(cfg, configFilePath)
           ]);
         })
         .then(() => recink.run());

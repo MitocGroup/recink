@@ -48,10 +48,8 @@ const commands = prog
   .option('--exclude-modules [modules]', 'List of modules to exclude', prog.LIST, [])
   .option('--include-modules [modules]', 'List of modules to run', prog.LIST, [])
   .option('--custom-config', 'Custom configuration', prog.LIST, [])
-  // @todo: refactor this code
-  // move this code into recink-terraform component
-  .option('--tf-version', 'Terraform version',  /.*/, '0.11.0')
-  .option('--tf-workspace', 'Terraform workspace', /.*/, 'default')
+  .option('--tf-version', 'Terraform version',  /.*/, false)
+  .option('--tf-workspace', 'Terraform workspace', /.*/, false)
   .option('--tf-vars', 'Terraform variables as environmental variables', prog.LIST, [])
   .option('--tf-varfiles', 'Terraform variables as tfvars files', prog.LIST, [])
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
