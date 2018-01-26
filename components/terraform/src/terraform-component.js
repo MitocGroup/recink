@@ -5,13 +5,13 @@ const Diff = require('./diff');
 const path = require('path');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
-const E2ERunner = require('../node_modules/recink/src/component/e2e/e2e-runner');
-const emitEvents = require('../node_modules/recink/src/component/emit/events');
-const UnitRunner = require('../node_modules/recink/src/component/test/unit-runner');
-const CacheFactory = require('../node_modules/recink/src/component/cache/factory');
-const SequentialPromise = require('../node_modules/recink/src/component/helper/sequential-promise');
-const DependencyBasedComponent = require('../node_modules/recink/src/component/dependency-based-component');
-const { getFilesByPattern, walkDir } = require('../node_modules/recink/src/helper/util');
+const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const emitEvents = require('recink/src/component/emit/events');
+const UnitRunner = require('recink/src/component/test/unit-runner');
+const CacheFactory = require('recink/src/component/cache/factory');
+const SequentialPromise = require('recink/src/component/helper/sequential-promise');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
+const { getFilesByPattern, walkDir } = require('recink/src/helper/util');
 
 /**
  * Terraform component
