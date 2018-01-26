@@ -17,7 +17,7 @@ branches:
     - dev
 matrix:
   include:
-    - script: './bin/cli.js run unit -c ./components/codeclimate'
+    - script: './bin/cli.js run unit -c codeclimate'
       before_install:
         - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
