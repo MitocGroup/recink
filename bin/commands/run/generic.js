@@ -217,10 +217,10 @@ module.exports = (args, options, logger) => {
 
       return recink.configureExtend(configFilePath, ...componentConfig)
         .then(config => transformConfig(config))
-        .then(() => {
+        .then(config => {
           return Promise.all([
             recink.components(...components),
-            recink.configLoad(cfg, configFilePath)
+            recink.configLoad(config, configFilePath)
           ]);
         })
         .then(() => recink.run());
