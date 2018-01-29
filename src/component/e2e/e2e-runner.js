@@ -67,7 +67,14 @@ class E2ERunner {
         .src(tests)
         .browsers(options.browsers || E2ERunner.DEFAULT_BROWSERS)
         .reporter(options.reporter || E2ERunner.DEFAULT_REPORTER)
-        .run(E2ERunner.RUN_OPTIONS);
+        .run(E2ERunner.RUN_OPTIONS)
+        .then(failed => {
+          if (failed > 0) {
+            return Promise.reject(failed);
+          }
+
+          return Promise.resolve();
+        });
     });
   }
 
