@@ -552,8 +552,8 @@ class TerraformComponent extends DependencyBasedComponent {
   _apply(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
       return this._handleSkip(emitModule, 'apply');
-    } else if (!this._planChanged) {
-      return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
+    // } else if (!this._planChanged) {
+    //   return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
     return terraform
