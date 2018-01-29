@@ -1,10 +1,10 @@
 'use strict';
 
+const path = require('path');
 console.log(path.resolve(__dirname, '../../../../../src/component/helper/sequential-promise'))
 
 const SequentialPromise = require('../../../../../src/component/helper/sequential-promise');
 const chai = require('chai');
-const path = require('path');
 
 describe('Test SequentialPromise', () => {  
   it('Test all()', done => {
