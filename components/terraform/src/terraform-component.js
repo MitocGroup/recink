@@ -11,7 +11,7 @@ const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
 const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
-const { getFilesByPattern, walkDir } = require('./helper/util');
+const { getFilesByPattern, walkDir } = require('recink/src/helper/util');
 
 /**
  * Terraform component
@@ -43,7 +43,7 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return 'terraform';
@@ -60,7 +60,7 @@ class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {EmitModule} emitModule 
    *
-   * @returns {string}
+   * @returns {String}
    *
    * @private
    */
@@ -85,8 +85,21 @@ class TerraformComponent extends DependencyBasedComponent {
   */
   init(emitter) {
     this._reporter = new Reporter(emitter, this.logger);
+    this._setDeafaults();
 
     return Promise.resolve();
+  }
+
+  /**
+   * Configure default values for terraform
+   * @private
+   */
+  _setDeafaults() {
+    Object.keys(TerraformComponent.GLOBAL_DEFAULTS).forEach(key => {
+      if (!this.container.has(key)) {
+        this.container.set(key, TerraformComponent.GLOBAL_DEFAULTS[key]);
+      }
+    })
   }
   
   /**
@@ -168,8 +181,8 @@ class TerraformComponent extends DependencyBasedComponent {
           })
           .then(() => resolve())
           .catch(error => {
-            this.logger.warn(this.logger.emoji.cross, `Failed to calculate git diff: ${ error }`);
-            return reject(error)
+            this.logger.warn(this.logger.emoji.cross, `Failed with error: ${ error }`);
+            return reject(error);
           });
       });
     });
@@ -196,7 +209,7 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @param {EmitModule} emitModule 
+   * @param {EmitModule} emitModule
    * @returns {Promise}
    * @private
    */
@@ -392,9 +405,7 @@ class TerraformComponent extends DependencyBasedComponent {
       });
       const extraneousInfo = extraneousVector.join('\n\t');
 
-      throw new Error(
-        `Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`
-      );
+      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
     }
   }
 
@@ -463,6 +474,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
+      .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
       .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
@@ -502,6 +514,28 @@ class TerraformComponent extends DependencyBasedComponent {
       .init(this._moduleRoot(emitModule))
       .catch(error => this._handleError(emitModule, 'init', error));
   }
+
+  /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _workspace(terraform, emitModule) {
+    if (!terraform.isWorkspaceSupported) {
+      return this._handleSkip(emitModule, 'workspace', `'terraform workspace' requires version 0.11.0 (or higher)`);
+    }
+
+    const workspace = this._parameterFromConfig(emitModule, 'current-workspace', 'default');
+
+    if (workspace === 'default') {
+      return this._handleSkip(emitModule, 'workspace');
+    }
+
+    return terraform
+      .workspace(this._moduleRoot(emitModule), workspace)
+      .catch(error => this._handleError(emitModule, 'workspace', error));
+   }
 
   /**
    * @param {Terraform} terraform 
@@ -552,8 +586,8 @@ class TerraformComponent extends DependencyBasedComponent {
   _apply(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
       return this._handleSkip(emitModule, 'apply');
-    } else if (!this._planChanged) {
-      return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
+    // } else if (!this._planChanged) {
+    //   return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
     return terraform
@@ -569,6 +603,8 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _destroy(terraform, emitModule) {
+
+    
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
@@ -598,8 +634,8 @@ ${ error.toString().trim() }
 
   /**
    * @param {EmitModule} emitModule
-   * @param {string} command
-   * @param {string} reason
+   * @param {String} command
+   * @param {String} reason
    * @returns {Promise}
    * @private
    */
@@ -694,6 +730,17 @@ ${ output }
    */
   static get E2E() {
     return 'e2e'
+  }
+
+  /**
+   * @returns {Object}
+   * @constructor
+   */
+  static get GLOBAL_DEFAULTS() {
+    return {
+      'version': Terraform.VERSION,
+      'current-workspace': 'default'
+    }
   }
 }
 

@@ -48,7 +48,6 @@ class Logger {
   
   /**
    * @param {*} args
-   * 
    * @returns {Logger}
    */
   static debug(...args) {
@@ -57,7 +56,6 @@ class Logger {
   
   /**
    * @param {*} args
-   * 
    * @returns {Logger}
    */
   static log(...args) {
@@ -66,7 +64,6 @@ class Logger {
   
   /**
    * @param {*} args
-   * 
    * @returns {Logger}
    */
   static info(...args) {
@@ -171,6 +168,7 @@ class Logger {
    */
   static get emoji() {
     return {
+      empty: '',
       rocket: '🚀 ',
       cross: '❌ ',
       check: '✅ ',
