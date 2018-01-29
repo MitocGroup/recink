@@ -17,9 +17,11 @@ branches:
     - dev
 matrix:
   include:
-    - script: './bin/cli.js run unit -c codeclimate'
+    - script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
-        - 'npm install -g recink-codeclimate'
+        # - 'cd ./components/codeclimate && npm install && cd "$TRAVIS_BUILD_DIR"'
+        # https://github.com/npm/npm/issues/19393
+        - 'cd ./components/codeclimate && rm -rf node_modules && npm install --no-optional && npm dedupe && npm up && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
       before_install:
         - 'cd `npm root`/.. && npm i --save testcafe@^0.16.0 && cd "$TRAVIS_BUILD_DIR"'
