@@ -1,7 +1,8 @@
 'use strict';
 
 const path = require('path');
-console.log(path.resolve(__dirname, '../../../../../src/component/helper/sequential-promise'))
+process.exit(1);
+console.log(path.resolve(__dirname, '../../../../../src/component/helper/sequential-promise'));
 
 const SequentialPromise = require('../../../../../src/component/helper/sequential-promise');
 const chai = require('chai');
