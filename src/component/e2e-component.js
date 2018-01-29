@@ -49,18 +49,18 @@ class E2EComponent extends DependencyBasedComponent {
    * @private
    */
   _run(emitter) {
-    const e2eRunner = new E2ERunner();
     const config = {
       reporter: this.container.get('reporter', E2ERunner.DEFAULT_REPORTER),
       browsers: this.container.get('browsers', E2ERunner.DEFAULT_BROWSERS),
       screenshotsPath: path.resolve(this.container.get('screenshot.path', process.cwd())),
       takeOnFail: this.container.get('screenshot.take-on-fail', false)
     };
+    const e2eRunner = new E2ERunner(config);
 
     return this._waitUris()
       .then(() => emitter.emitBlocking(e2eEvents.assets.e2e.start))
       .then(() => {
-        return e2eRunner.run(this._testAssets, config)
+        return e2eRunner.run(this._testAssets)
           .then(() => Promise.resolve(0))
           .catch(failed => Promise.resolve(failed));
       })
