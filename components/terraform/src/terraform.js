@@ -305,9 +305,7 @@ class Terraform {
           return Promise.resolve(state);
         }
 
-        return Promise.resolve(state);
-        // @todo do we need pullState here?
-        // return this.pullState(dir).then(() => Promise.resolve(state));
+        return this.pullState(dir).then(() => Promise.resolve(state));
       });
     });
   }

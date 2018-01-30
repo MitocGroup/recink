@@ -27,6 +27,7 @@ class TerraformComponent extends DependencyBasedComponent {
      * _unit & _e2e formats
      * @type {{
      *  moduleName: {
+     *    enabled: true
      *    assets: [],
      *    runner: Runner
      *  },
@@ -234,31 +235,48 @@ class TerraformComponent extends DependencyBasedComponent {
   _updateTestsList(emitModule) {
     const moduleName = emitModule.name;
     const { mapping, plan, apply } = emitModule.container.get('terraform.test', {});
+    const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
+    const testcafePath = 'terraform.test.e2e.testcafe';
+    const testcafeOptions = {
+      browsers: emitModule.container.get(`${testcafePath}.browsers`, E2ERunner.DEFAULT_BROWSERS),
+      screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
+      takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
+    };
 
     if (!this._unit.hasOwnProperty(moduleName)) {
       this._unit[moduleName] = {
         assets: [],
-        runner: new UnitRunner()
+        enabled: true,
+        runner: new UnitRunner(mochaOptions)
       };
     }
 
     if (!this._e2e.hasOwnProperty(moduleName)) {
       this._e2e[moduleName] = {
         assets: [],
-        runner: new E2ERunner()
+        enabled: true,
+        runner: new E2ERunner(testcafeOptions)
       };
     }
 
     if (plan) {
-      walkDir(plan, /.*\.spec.\js/, testFile => {
-        this._unit[moduleName].assets.push(testFile);
-      });
+      if (fse.lstatSync(plan).isFile()) {
+        this._unit[moduleName].assets.push(plan);
+      } else {
+        walkDir(plan, /.*\.spec.\js/, testFile => {
+          this._unit[moduleName].assets.push(testFile);
+        });
+      }
     }
 
     if (apply) {
-      walkDir(apply, /.*\.e2e.\js/, testFile => {
-        this._e2e[moduleName].assets.push(testFile);
-      });
+      if (fse.lstatSync(apply).isFile()) {
+        this._e2e[moduleName].assets.push(apply);
+      } else {
+        walkDir(apply, /.*\.e2e.\js/, testFile => {
+          this._e2e[moduleName].assets.push(testFile);
+        });
+      }
     }
   }
 
@@ -411,9 +429,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _terraformate(emitModule) {
@@ -545,6 +561,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _plan(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
+      this._unit[emitModule.name].enabled = false;
       return this._handleSkip(emitModule, 'plan');
     }
 
@@ -566,7 +583,12 @@ class TerraformComponent extends DependencyBasedComponent {
       const tests = type === TerraformComponent.UNIT ? this._unit : this._e2e;
       const module = tests[emitModule.name];
 
-      if (!module || module.assets.length <= 0) {
+      if (!module || !module.enabled) {
+        return resolve();
+      }
+
+      if (module.assets.length <= 0) {
+        this.logger.info(this.logger.emoji.check, `No ${type}-test found for ${ emitModule.name } module`)
         return resolve();
       }
 
@@ -585,9 +607,8 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _apply(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
+      this._e2e[emitModule.name].enabled = false;
       return this._handleSkip(emitModule, 'apply');
-    // } else if (!this._planChanged) {
-    //   return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
     return terraform
@@ -611,7 +632,10 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform
       .destroy(this._moduleRoot(emitModule))
-      .then(state => this._handleDestroy(terraform, emitModule, state))
+      .then(state => {
+        return Promise.resolve();
+        // return this._handleDestroy(terraform, emitModule, state)
+      })
       .catch(error => this._handleError(emitModule, 'destroy', error));
   }
 
