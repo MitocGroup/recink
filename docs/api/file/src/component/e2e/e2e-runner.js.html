@@ -48,12 +48,10 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DependencyBasedComponent">DependencyBasedComponent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-EventEmitter">EventEmitter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
@@ -85,6 +83,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -105,45 +106,35 @@ class E2ERunner {
    * @param {String} hostName
    * @param {Array} hostPorts
    */
-  constructor(
-    hostName = E2ERunner.DEFAULT_SERVER_HOSTNAME,
-    hostPorts = E2ERunner.DEFAULT_SERVER_PORTS
-  ) {
-    this._testcafe = false;
-    this._hostName = hostName;
-    this._hostPorts = hostPorts;
+  constructor(options = {}) {
+    const defaults = {
+      hostPorts: E2ERunner.DEFAULT_SERVER_PORTS,
+      hostName: E2ERunner.DEFAULT_SERVER_HOSTNAME,
+      reporter: E2ERunner.DEFAULT_REPORTER,
+      browsers: E2ERunner.DEFAULT_BROWSERS,
+      screenshotsPath: process.cwd(),
+      takeOnFail: false,
+    };
+
+    this._config = Object.assign({}, defaults, options);
+
+    console.log(&apos;this._config&apos;, JSON.stringify(this._config, null, 2));
   }
 
   /**
-   * Init runner
+   * Init testcafe runner
    * @returns {Promise}
-   * @private
    */
-  _init() {
+  getTestCafe() {
     if (this._testcafe) {
       return Promise.resolve();
     }
 
-    return createTestCafe(this._hostName, ...this._hostPorts).then(testcafe =&gt; {
+    return createTestCafe(this._config.hostName, ...this._config.hostPorts).then(testcafe =&gt; {
       registerBrowsers();
       this._testcafe = testcafe;
 
       return Promise.resolve();
-    });
-  }
-
-  /**
-   * Get runner
-   * @param {String} screenshotsPath
-   * @param {Boolean} takeOnFail
-   * @returns {Promise}
-   * @private
-   */
-  _getRunner(screenshotsPath = process.cwd(), takeOnFail = false) {
-    return this._init().then(() =&gt; {
-      const runner = this._testcafe.createRunner().screenshots(screenshotsPath, takeOnFail);
-
-      return Promise.resolve(runner);
     });
   }
 
@@ -153,13 +144,22 @@ class E2ERunner {
    * @param {Object} options
    * @returns {Promise}
    */
-  run(tests, options = {}) {
-    return this._getRunner(options.screenshotsPath, options.takeOnFail).then(runner =&gt; {
+  run(tests) {
+    return this.getTestCafe().then(() =&gt; {
+      const runner = this._testcafe.createRunner().screenshots(this._config.screenshotsPath, this._config.takeOnFail);
+
       return runner
         .src(tests)
-        .browsers(options.browsers || E2ERunner.DEFAULT_BROWSERS)
-        .reporter(options.reporter || E2ERunner.DEFAULT_REPORTER)
-        .run(E2ERunner.RUN_OPTIONS);
+        .browsers(this._config.browsers)
+        .reporter(this._config.reporter)
+        .run(E2ERunner.RUN_OPTIONS)
+        .then(failed =&gt; {
+          if (failed &gt; 0) {
+            return Promise.reject(failed);
+          }
+
+          return Promise.resolve();
+        });
     });
   }
 
@@ -167,7 +167,7 @@ class E2ERunner {
    * Terminate
    * @returns {Promise}
    */
-  close() {
+  cleanup() {
     return this._testcafe.close();
   }
 

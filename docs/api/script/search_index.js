@@ -72,12 +72,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "recink/src/component/cache-component.js~dependencybasedcomponent",
-    "variable/index.html#static-variable-DependencyBasedComponent",
-    "<span>DependencyBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/cache-component.js</span>",
-    "variable"
-  ],
-  [
     "recink/src/component/dependency-based-component.js~dependencybasedcomponent",
     "class/src/component/dependency-based-component.js~DependencyBasedComponent.html",
     "<span>DependencyBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/dependency-based-component.js</span>",
@@ -124,12 +118,6 @@ window.esdocSearchIndex = [
     "class/src/component/preprocess/eval-transformer.js~EvalTransformer.html",
     "<span>EvalTransformer</span> <span class=\"search-result-import-path\">recink/src/component/preprocess/eval-transformer.js</span>",
     "class"
-  ],
-  [
-    "recink/src/component/cache/abstract-driver.js~eventemitter",
-    "variable/index.html#static-variable-EventEmitter",
-    "<span>EventEmitter</span> <span class=\"search-result-import-path\">recink/src/component/cache/abstract-driver.js</span>",
-    "variable"
   ],
   [
     "recink/src/component/cache/factory.js~factory",
@@ -300,6 +288,12 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
+    "recink/src/helper/util.js~getfilesbypattern",
+    "function/index.html#static-function-getFilesByPattern",
+    "<span>getFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
+    "function"
+  ],
+  [
     "recink/src/component/helper/pattern-transformer.js~patterntransformer",
     "function/index.html#static-function-patterntransformer",
     "<span>patterntransformer</span> <span class=\"search-result-import-path\">recink/src/component/helper/pattern-transformer.js</span>",
@@ -315,6 +309,18 @@ window.esdocSearchIndex = [
     "recink/src/component/helper/utils.js~trimboth",
     "function/index.html#static-function-trimBoth",
     "<span>trimBoth</span> <span class=\"search-result-import-path\">recink/src/component/helper/utils.js</span>",
+    "function"
+  ],
+  [
+    "recink/src/helper/util.js~versioncompare",
+    "function/index.html#static-function-versionCompare",
+    "<span>versionCompare</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
+    "function"
+  ],
+  [
+    "recink/src/helper/util.js~walkdir",
+    "function/index.html#static-function-walkDir",
+    "<span>walkDir</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [
@@ -1218,15 +1224,21 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/component/e2e/e2e-runner.js~e2erunner#close",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-close",
-    "src/component/e2e/e2e-runner.js~E2ERunner#close",
+    "src/component/e2e/e2e-runner.js~e2erunner#cleanup",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-cleanup",
+    "src/component/e2e/e2e-runner.js~E2ERunner#cleanup",
     "method"
   ],
   [
     "src/component/e2e/e2e-runner.js~e2erunner#constructor",
     "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-constructor-constructor",
     "src/component/e2e/e2e-runner.js~E2ERunner#constructor",
+    "method"
+  ],
+  [
+    "src/component/e2e/e2e-runner.js~e2erunner#gettestcafe",
+    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-getTestCafe",
+    "src/component/e2e/e2e-runner.js~E2ERunner#getTestCafe",
     "method"
   ],
   [
@@ -2236,6 +2248,12 @@ window.esdocSearchIndex = [
     "class/src/helper/env.js~Env.html#static-method-read",
     "src/helper/env.js~Env.read",
     "method"
+  ],
+  [
+    "src/helper/util.js",
+    "file/src/helper/util.js.html",
+    "src/helper/util.js",
+    "file"
   ],
   [
     "src/logger.js",
