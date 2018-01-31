@@ -72,12 +72,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "recink/src/component/cache-component.js~dependantconfigbasedcomponent",
-    "variable/index.html#static-variable-DependantConfigBasedComponent",
-    "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/cache-component.js</span>",
-    "variable"
-  ],
-  [
     "recink/src/component/dependant-config-based-component.js~dependantconfigbasedcomponent",
     "class/src/component/dependant-config-based-component.js~DependantConfigBasedComponent.html",
     "<span>DependantConfigBasedComponent</span> <span class=\"search-result-import-path\">recink/src/component/dependant-config-based-component.js</span>",
@@ -118,12 +112,6 @@ window.esdocSearchIndex = [
     "class/src/component/preprocess/eval-transformer.js~EvalTransformer.html",
     "<span>EvalTransformer</span> <span class=\"search-result-import-path\">recink/src/component/preprocess/eval-transformer.js</span>",
     "class"
-  ],
-  [
-    "recink/src/component/cache/abstract-driver.js~eventemitter",
-    "variable/index.html#static-variable-EventEmitter",
-    "<span>EventEmitter</span> <span class=\"search-result-import-path\">recink/src/component/cache/abstract-driver.js</span>",
-    "variable"
   ],
   [
     "recink/src/component/cache/factory.js~factory",
