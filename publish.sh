@@ -50,7 +50,7 @@ npm install --no-shrinkwrap --no-peer                                           
 npm run docs                                                                                                    || fail "Generate recink API documentation"
 (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Generate API docs"))
 npm version "$1"                                                                                                || fail "Updating $1 version of recink package"
-npm publish                                                                                                     || fail "Publishing recink package on npmjs.com"
+npm publish --tag beta                                                                                          || fail "Publishing recink package on npmjs.com"
 (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish recink package on npmjs.com"))
 git push && git push --tags
 
