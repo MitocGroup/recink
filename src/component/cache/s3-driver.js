@@ -13,10 +13,10 @@ const AwsCredentials = require('../helper/aws-credentials');
  */
 class S3Driver extends AbstractDriver {
   /**
-   * @param {string} cacheDir
-   * @param {string} path
+   * @param {String} cacheDir
+   * @param {String} path
    * @param {*} options
-   * @param {boolean} includeNodeVersion
+   * @param {Boolean} includeNodeVersion
    */
   constructor(cacheDir, path, options, includeNodeVersion = true) {
     super(cacheDir);
@@ -73,8 +73,8 @@ class S3Driver extends AbstractDriver {
    * @private
    */
   _upload() {
-    return this._packageSize.then(ContentLength => {
-      if (ContentLength <= 0) {
+    return this._packageSize.then(contentLength => {
+      if (contentLength <= 0) {
         return Promise.resolve();
       }
 
@@ -89,7 +89,7 @@ class S3Driver extends AbstractDriver {
 
           packageStream.on('error', error => reject(error));
 
-          const Body = this._track(packageStream, ContentLength);
+          const Body = this._track(packageStream, contentLength);
 
           this.client
             .then(S3 => S3.upload({ Bucket, Key, Body }).promise())
@@ -183,10 +183,8 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @param {string} s3Path
-   *
+   * @param {String} s3Path
    * @returns {*}
-   *
    * @private
    */
   _s3Location(s3Path) {

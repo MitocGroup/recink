@@ -235,9 +235,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/apply.html
-   *
    * @param {String} dir
-   *
    * @returns {Promise}
    */
   apply(dir) {

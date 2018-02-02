@@ -24,8 +24,6 @@ class E2ERunner {
     };
 
     this._config = Object.assign({}, defaults, options);
-
-    console.log('this._config', JSON.stringify(this._config, null, 2));
   }
 
   /**

@@ -192,18 +192,29 @@ class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {Emitter} emitter
    * @param {EmitModule[]} terraformModules
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _initCaches(emitter, terraformModules) {
-    if (!this._cacheEnabled(emitter)) {
-      return Promise.resolve();
-    }
-
     terraformModules.forEach(emitModule => {
-      this._caches[emitModule.name] = this._cache(emitter, emitModule);
+      const isCacheEnabled = this._parameterFromConfig(emitModule, 'cache', true);
+
+      if (isCacheEnabled) {
+        const options = this._parameterFromConfig(emitModule, 'cache.options', []);
+        const modulePath = this._moduleRoot(emitModule);
+        const resource = this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE);
+
+        if (options.length >= 1) {
+          options[0] = `${ options[0] }/${ emitModule.name }`;
+        }
+
+        this._caches[emitModule.name] = CacheFactory.create(
+          's3-unpacked',
+          path.join(modulePath, resource),
+          path.dirname(this.configFileRealPath),
+          ...options
+        );
+      }
     });
 
     return Promise.resolve();
@@ -260,7 +271,7 @@ class TerraformComponent extends DependencyBasedComponent {
     }
 
     if (plan) {
-      if (fse.lstatSync(plan).isFile()) {
+      if (fse.existsSync(plan) && fse.lstatSync(plan).isFile()) {
         this._unit[moduleName].assets.push(plan);
       } else {
         walkDir(plan, /.*\.spec.\js/, testFile => {
@@ -270,7 +281,7 @@ class TerraformComponent extends DependencyBasedComponent {
     }
 
     if (apply) {
-      if (fse.lstatSync(apply).isFile()) {
+      if (fse.existsSync(apply) && fse.lstatSync(apply).isFile()) {
         this._e2e[moduleName].assets.push(apply);
       } else {
         walkDir(apply, /.*\.e2e.\js/, testFile => {
@@ -281,8 +292,8 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @param {EmitModule} emitModule 
-   * @returns {Promise}
+   * @param {EmitModule} emitModule
+   * @returns {*}
    * @private
    */
   _uploadCache(emitModule) {
@@ -293,47 +304,6 @@ class TerraformComponent extends DependencyBasedComponent {
     this.logger.info(this.logger.emoji.check, `Uploading caches for Terraform module "${ emitModule.name }"`);
 
     return this._caches[emitModule.name].upload();
-  }
-
-  /**
-   * @param {Emitter} emitter
-   * @param {EmitModule} emitModule 
-   *
-   * @returns {AbstractDriver|S3Driver}
-   *
-   * @private
-   */
-  _cache(emitter, emitModule) {
-    const rootPath = this._moduleRoot(emitModule);
-    const cacheComponent = emitter.component('cache');
-    const options = [].concat(cacheComponent.container.get('options', []));
-    const driverName = cacheComponent.container.get('driver');
-    const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
-      || this.container.get('resource', Terraform.RESOURCE);
-    const resourcePath = path.join(rootPath, resource);
-
-    // @todo abstract the way cache behavior hooked
-    if (driverName === 's3' && options.length >= 1) {
-      options[0] = `${ options[0] }/${ emitModule.name }`;
-    }
-
-    const driver = CacheFactory.create(driverName, resourcePath, ...options);
-
-    // @todo abstract the way cache behavior hooked
-    if (driverName === 's3') {
-      driver._includeNodeVersion = false;
-    }
-
-    return driver;
-  }
-
-  /**
-   * @param {Emitter} emitter
-   * @returns {Boolean}
-   * @private
-   */
-  _cacheEnabled(emitter) {
-    return this.container.get('use-cache', true) && !!emitter.component('cache');
   }
 
   /**
