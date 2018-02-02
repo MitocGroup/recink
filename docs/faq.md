@@ -148,3 +148,32 @@ A: You can save terraform show output into a file just passing `save-show-output
 ```bash
 recink run terraform --custom-config="<module-name>.terraform.save-show-output":"./show-output.txt"
 ```
+
+___
+Q: _How can I configure terraform to cache .ftplan & .tfstate?_
+
+A: You can do it the same way as cache component:
+
+```yaml
+$:
+  terraform:
+    resource: '.resource'
+    binary: './bin/terraform'
+    cache:
+      options:
+        - 's3://bucket/name/space'
+        -
+          region: '<region>'
+          accessKeyId: '<key>'
+          secretAccessKey: '<secret>'
+          
+iam:
+  root: './iam'
+  terraform:
+    cache: true
+    plan: true
+    apply: false
+    destroy: false
+    test:
+      apply: './iam/index.e2e.js'
+```
