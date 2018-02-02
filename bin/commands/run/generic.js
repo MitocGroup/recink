@@ -1,14 +1,15 @@
 'use strict';
 
+const dot = require('dot-object');
 const path = require('path');
-const resolvePackage = require('resolve-package');
 const Recink = require('../../../src/recink');
+const { trimBoth } = require('../../../src/helper/util');
+const resolvePackage = require('resolve-package');
 const ComponentRegistry = require('../component/registry/registry');
 const componentsFactory = require('../../../src/component/factory');
-const { trimBoth } = require('../../../src/component/helper/utils');
 const SequentialPromise = require('../../../src/component/helper/sequential-promise');
 const ConfigBasedComponent = require('../../../src/component/config-based-component');
-const dot = require('dot-object');
+
 dot.overwrite = true;
 
 module.exports = (args, options, logger) => {
@@ -46,14 +47,21 @@ module.exports = (args, options, logger) => {
   logger.debug(`Initialize components registry in ${componentRegistry.storage.registryFile}`);
 
   /**
+   * @param {Array} array
+   * @returns {Array}
+   * @private
+   */
+  function _arr(array) {
+    return array.map(key => key.trim());
+  }
+
+  /**
    * @param {Array} modules
    * @param {Array} availableModules
    * @return {Array}
    */
   function cleanList(modules, availableModules) {
-    return modules
-      .map(key => key.trim())
-      .filter(key => availableModules.includes(key.trim()));
+    return _arr(modules).filter(key => availableModules.includes(key.trim()));
   }
 
   /**
@@ -79,7 +87,7 @@ module.exports = (args, options, logger) => {
    * @param {String} root
    */
   function setTfParameter(parameter, value, root = '$') {
-    dot.str(`${root}.terraform.${parameter}`, value.constructor === String ? trimBoth(value, '"'): value, cfg);
+    dot.str(`${root}.terraform.${parameter}`, value.constructor === String ? trimBoth(value, '"') : value, cfg);
   }
 
   /**
@@ -106,13 +114,13 @@ module.exports = (args, options, logger) => {
      * Returns true if --include-modules or --exclude-modules applied
      * @type {Boolean}
      */
-    let filtered = !!excludeModules.length;
+    let filtered = !!excludeModules.length || !!includeModules.length;
     let workspaceEnabled = false;
     let tfModules = modules.filter(module => typeof dot.pick(`${module}.terraform`, cfg) !== 'undefined');
 
     tfModules.forEach(module => {
       let tfVars = optionsToObject(options.tfVars);
-      let tfVarfiles = options.tfVarfiles;
+      let tfVarfiles = _arr(options.tfVarfiles);
       let tfWorkspace = options.tfWorkspace;
       let cfgKey = filtered ? module : ConfigBasedComponent.MAIN_CONFIG_KEY;
 
@@ -128,14 +136,14 @@ module.exports = (args, options, logger) => {
         }
       }
 
-      if (options.tfVarfiles.length > 0) {
+      if (tfVarfiles.length > 0) {
         let key = workspaceEnabled ? `available-workspaces.${tfWorkspace}.var-files` : 'var-files';
-        setTfParameter(key, options.tfVarfiles, cfgKey);
+        setTfParameter(key, tfVarfiles, cfgKey);
       }
 
       for (let property in tfVars) {
         let key = workspaceEnabled ? `available-workspaces.${tfWorkspace}.vars` : 'vars';
-        setTfParameter(key, tfVars[property], cfgKey);
+        setTfParameter(`${key}.${property}`, tfVars[property], cfgKey);
       }
     });
 
@@ -180,7 +188,7 @@ module.exports = (args, options, logger) => {
           return componentPromise.then(componentPath => {
 
             if (!componentPath) {
-              logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+              logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
               logger.error(new Error(`Unable to resolve path to ${ component } component`));
 
               return Promise.resolve();
@@ -191,7 +199,7 @@ module.exports = (args, options, logger) => {
               
               additionalComponentsInstances.push(new ComponentConstructor());
             } catch (error) {
-              logger.warn(`${ logger.emoji.cross } Error initializing component ${ component }`);
+              logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
               logger.error(error);
             }
               

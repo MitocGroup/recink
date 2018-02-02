@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Mocha = require('mocha');
 const uuidv1 = require('uuid/v1');
+const Logger = require('../../../src/logger');
 
 /**
  * Unit test runner
@@ -72,7 +73,7 @@ class UnitRunner {
         fs.unlinkSync(tmpTest);
       } catch (err) {
         if (err.code !== 'ENOENT') {
-          console.log(err.code);
+          Logger.warn(Logger.emoji.bulb, err.message);
         }
       }
     });

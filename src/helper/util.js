@@ -46,6 +46,21 @@ function getFilesByPattern(dir, regExp) {
 exports.getFilesByPattern = getFilesByPattern;
 
 /**
+ * Remove all prefixes or suffixes from the given string
+ * @param {String} string
+ * @param {String} symbol
+ * @returns {String}
+ */
+function trimBoth(string, symbol = '\s') {
+  const leading = new RegExp(`^${symbol}`);
+  const trailing = new RegExp(`${symbol}$`);
+
+  return string.replace(leading, '').replace(trailing, '');
+}
+
+exports.trimBoth = trimBoth;
+
+/**
  * Compares two software version numbers (e.g. "1.7.1" or "1.2b").
  *
  * @param {String} v1 The first version to be compared.
