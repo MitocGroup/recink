@@ -455,7 +455,6 @@ class TerraformComponent extends DependencyBasedComponent {
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
-    terraform.setLogger(this.logger);
     this.logger.debug(`Terraform version - "${ version }"`);
 
     return terraform.ensure(version)

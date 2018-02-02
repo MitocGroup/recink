@@ -7,6 +7,7 @@ const execa = require('execa');
 const Plan = require('./terraform/plan');
 const pjson = require('../package');
 const State = require('./terraform/state');
+const Logger = require('recink/src/logger');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
 const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
@@ -27,6 +28,7 @@ class Terraform {
     resource = Terraform.RESOURCE,
     varFiles = []
   ) {
+    this.logger = Logger;
     this._binary = binary;
     this._resource = resource;
     this._vars = vars;
@@ -359,7 +361,7 @@ class Terraform {
       childProcess.stdout.on('data', data => {
         let chunk = data.toString().replace(/\s*$/g, '');
         if (chunk) {
-          this.logger.info(this.logger.emoji.empty, SecureOutput.secure(chunk));
+          this.logger.info(SecureOutput.secure(chunk));
         }
       });
     }
@@ -396,23 +398,6 @@ class Terraform {
         return downloader.download(saveToDir);
       });
     });
-  }
-
-  /**
-   * @return {boolean|*}
-   */
-  get logger() {
-    return this._logger;
-  }
-
-  /**
-   * @param {*} logger
-   * @return {Terraform}
-   */
-  setLogger(logger) {
-    this._logger = logger;
-
-    return this;
   }
 
   /**
