@@ -9,7 +9,7 @@ const pjson = require('../package');
 const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
-const { getFilesByPattern, versionCompare } = require('../node_modules/recink/src/helper/util');
+const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
 
 /**
  * Terraform wrapper

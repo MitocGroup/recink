@@ -48,12 +48,10 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DependencyBasedComponent">DependencyBasedComponent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-EventEmitter">EventEmitter</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
@@ -85,6 +83,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -141,23 +142,27 @@ class E2EComponent extends DependencyBasedComponent {
    * @private
    */
   _run(emitter) {
-    const e2eRunner = new E2ERunner();
     const config = {
       reporter: this.container.get(&apos;reporter&apos;, E2ERunner.DEFAULT_REPORTER),
       browsers: this.container.get(&apos;browsers&apos;, E2ERunner.DEFAULT_BROWSERS),
       screenshotsPath: path.resolve(this.container.get(&apos;screenshot.path&apos;, process.cwd())),
       takeOnFail: this.container.get(&apos;screenshot.take-on-fail&apos;, false)
     };
+    const e2eRunner = new E2ERunner(config);
 
     return this._waitUris()
       .then(() =&gt; emitter.emitBlocking(e2eEvents.assets.e2e.start))
-      .then(() =&gt; e2eRunner.run(this._testAssets, config))
+      .then(() =&gt; {
+        return e2eRunner.run(this._testAssets)
+          .then(() =&gt; Promise.resolve(0))
+          .catch(failed =&gt; Promise.resolve(failed));
+      })
       .then(failedCount =&gt; {
 
         // @todo find a smarter way to indent the output (buffer it?)
         process.stdout.write(&apos;\n\n&apos;);
 
-        return e2eRunner.close()
+        return e2eRunner.cleanup()
           .then(() =&gt; emitter.emitBlocking(e2eEvents.assets.e2e.end))
           .then(() =&gt; Promise.resolve(failedCount));
       });
@@ -252,9 +257,7 @@ class E2EComponent extends DependencyBasedComponent {
           
           this._run(emitter).then(failedCount =&gt; {
             if (failedCount &gt; 0) {
-              return Promise.reject(new Error(
-                `There is/are ${ failedCount } end-to-end test case/s failed!`
-              ));
+              return Promise.reject(new Error(`There is/are ${ failedCount } end-to-end test case/s failed!`));
             }
 
             this.logger.info(this.logger.emoji.beer, `Finished processing ${ this.stats.processed } e2e test assets`);

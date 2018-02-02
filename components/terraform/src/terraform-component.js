@@ -86,7 +86,7 @@ class TerraformComponent extends DependencyBasedComponent {
   */
   init(emitter) {
     this._reporter = new Reporter(emitter, this.logger);
-    this._setDeafaults();
+    this._setDefaults();
 
     return Promise.resolve();
   }
@@ -95,7 +95,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * Configure default values for terraform
    * @private
    */
-  _setDeafaults() {
+  _setDefaults() {
     Object.keys(TerraformComponent.GLOBAL_DEFAULTS).forEach(key => {
       if (!this.container.has(key)) {
         this.container.set(key, TerraformComponent.GLOBAL_DEFAULTS[key]);
