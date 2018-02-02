@@ -199,7 +199,7 @@ module.exports = (args, options, logger) => {
               
               additionalComponentsInstances.push(new ComponentConstructor());
             } catch (error) {
-              logger.warn(logger.emoji.cross `Error initializing component ${ component }`);
+              logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
               logger.error(error);
             }
               
