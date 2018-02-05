@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/component/helper/utils.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
+  <title data-ice="title">src/component/cache/s3-unpacked-driver.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -51,6 +51,7 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html">S3UnpackedDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
@@ -70,7 +71,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/npm</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/cache.js~Cache.html">Cache</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/npm-module.js~NpmModule.html">NpmModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
@@ -84,29 +84,136 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/component/helper/utils.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/cache/s3-unpacked-driver.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-/**
- * Remove all prefixes or suffixes from the given string
- * @param {String} string
- * @param {String} symbol
- * @returns {String}
- */
-function trimBoth(string, symbol = &apos;\s&apos;) {
-  const leading = new RegExp(`^${symbol}`);
-  const trailing = new RegExp(`${symbol}$`);
+const fs = require(&apos;fs-extra&apos;);
+const path = require(&apos;path&apos;);
+const S3Driver = require(&apos;./s3-driver&apos;);
+const { walkDir } = require(&apos;../../helper/util&apos;);
 
-  return string.replace(leading, &apos;&apos;).replace(trailing, &apos;&apos;);
+/**
+ * AWS S3 (unpacked) cache driver
+ */
+class S3UnpackedDriver extends S3Driver {
+  /**
+   * @param {String} cacheDir
+   * @param {String} baseDir
+   * @param {String} s3path
+   * @param {Object} s3options
+   */
+  constructor(cacheDir, baseDir, s3path, s3options) {
+    super(cacheDir, s3path, s3options, false);
+
+    this._baseDir = baseDir;
+  }
+
+  /**
+   * @returns {String}
+   */
+  get name() {
+    return &apos;s3-unpacked&apos;;
+  }
+
+  /**
+   * @returns {String}
+   * @private
+   */
+  get _packagePath() {
+    return this.cacheDir;
+  }
+
+  /**
+   * @returns {Promise}
+   * @private
+   */
+  _download() {
+    const { Bucket, Key } = this._s3Location(this.path);
+
+    return this.client.then(S3 =&gt; {
+      return S3.listObjectsV2({ Bucket: Bucket, Prefix: Key }).promise();
+    }).then(listRes =&gt; {
+      let keys = listRes.Contents.filter(item =&gt; item.Size).map(item =&gt; item.Key);
+
+      return Promise.all(keys.map(key =&gt; {
+        return this._getAndSaveS3Object(key, key.replace(Key, this.cacheDir));
+      }));
+    });
+  }
+
+  /**
+   * @returns {Promise}
+   * @private
+   */
+  _unpack() {
+    return Promise.resolve();
+  }
+
+  /**
+   * @returns {Promise}
+   * @private
+   */
+  _pack() {
+    return Promise.resolve();
+  }
+
+  /**
+   * @returns {Promise}
+   * @private
+   */
+  _removePackageFile() {
+    return Promise.resolve();
+  }
+
+  /**
+   * @returns {Promise}
+   * @private
+   */
+  _upload() {
+    let { Bucket, Key } = this._s3Location(this.path);
+    let list = [];
+
+    walkDir(this.cacheDir, /.*/, item =&gt; list.push(item));
+
+    return Promise.all(
+      list.map(filePath =&gt; {
+        const stream = fs.createReadStream(filePath);
+        const tfResource = Key.split(&apos;/&apos;).pop();
+        const additionalKey = filePath.substring(filePath.lastIndexOf(tfResource) + tfResource.length);
+        const fullS3Key = path.normalize(`${Key}/${additionalKey}`);
+
+        return this.client.then(S3 =&gt; {
+          return S3.upload({ Bucket: Bucket, Key: fullS3Key, Body: stream }).promise();
+        });
+      })
+    );
+  }
+
+  /**
+   * Get S3 object and save it to local path
+   * @param {String} objectKey
+   * @param {String} pathToSave
+   * @returns {Promise}
+   */
+  _getAndSaveS3Object(objectKey, pathToSave) {
+    return this.client.then(S3 =&gt; {
+      const { Bucket } = this._s3Location(this.path);
+
+      return S3.getObject({ Bucket: Bucket, Key: objectKey }).promise().then(content =&gt; {
+        return fs.outputFile(pathToSave, content.Body);
+      });
+    });
+  }
 }
 
-exports.trimBoth = trimBoth;
+module.exports = S3UnpackedDriver;
 </code></pre>
 
 </div>

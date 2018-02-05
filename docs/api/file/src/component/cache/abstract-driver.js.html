@@ -51,6 +51,7 @@
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html">S3UnpackedDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
@@ -70,7 +71,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/npm</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/cache.js~Cache.html">Cache</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/npm-module.js~NpmModule.html">NpmModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
@@ -84,6 +84,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
@@ -93,20 +94,20 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/component/cache/abstract-driver.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const jag = require(&apos;jag&apos;);
-const path = require(&apos;path&apos;);
-const fse = require(&apos;fs-extra&apos;);
-const pify = require(&apos;pify&apos;);
-const EventEmitter = require(&apos;events&apos;);
-const events = require(&apos;./events&apos;);
 const fs = require(&apos;fs&apos;);
+const jag = require(&apos;jag&apos;);
+const fse = require(&apos;fs-extra&apos;);
+const path = require(&apos;path&apos;);
+const pify = require(&apos;pify&apos;);
+const events = require(&apos;./events&apos;);
+const EventEmitter = require(&apos;events&apos;);
 
 /**
  * Abstract cache driver
  */
 class AbstractDriver extends EventEmitter {
   /**
-   * @param {string} cacheDir
+   * @param {String} cacheDir
    */
   constructor(cacheDir) {
     super();
@@ -210,63 +211,47 @@ class AbstractDriver extends EventEmitter {
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _pack() {
-    const packagePath = this._packagePath;
-    
-    return fse.pathExists(this.cacheDir)
-      .then(result =&gt; {
-        if (!result) {
-          return Promise.resolve();
-        }
-        
-        return pify(jag.pack)(this.cacheDir, packagePath)
-          .then(() =&gt; {
-            
-            // @todo remove when fixed
-            // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53
-            const tmpPackagePath = path.join(
-              path.dirname(packagePath),
-              path.basename(packagePath, &apos;.tar.gz&apos;)
-            ) + &apos;.tar.tar.gz&apos;;
-            
-            return fse.move(
-              tmpPackagePath, 
-              packagePath, 
-              { overwrite: true }
-            );
-          });
+    return fse.pathExists(this.cacheDir).then(result =&gt; {
+      if (!result) {
+        return Promise.resolve();
+      }
+
+      return pify(jag.pack)(this.cacheDir, this._packagePath).then(() =&gt; {
+        // @todo remove when fixed
+        // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53
+        const tmpPackagePath = path.join(
+          path.dirname(this._packagePath),
+          path.basename(this._packagePath, &apos;.tar.gz&apos;)
+        ) + &apos;.tar.tar.gz&apos;;
+
+        return fse.move(tmpPackagePath, this._packagePath, { overwrite: true });
       });
+    });
   }
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _unpack() {
-    return fse.pathExists(this._packagePath)
-      .then(result =&gt; {
-        if (!result) {
+    return fse.pathExists(this._packagePath).then(result =&gt; {
+      if (!result) {
+        return Promise.resolve();
+      }
+
+      return this._packageSize.then(packageSize =&gt; {
+        if (packageSize &lt;= 0) {
           return Promise.resolve();
         }
 
-        return this._packageSize
-          .then(packageSize =&gt; {            
-            if (packageSize &lt;= 0) {
-              return Promise.resolve();
-            }
-            
-            return fse.ensureDir(this.cacheDir)
-              .then(() =&gt; {
-                return pify(jag.unpack)(this._packagePath, this.cacheDir);
-              });
-          });
+        return fse.ensureDir(this.cacheDir).then(() =&gt; pify(jag.unpack)(this._packagePath, this.cacheDir));
       });
+    });
   }
-  
+
   /**
    * @returns {Promise}
    *

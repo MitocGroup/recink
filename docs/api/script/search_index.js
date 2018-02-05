@@ -198,6 +198,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "recink/src/component/cache/s3-unpacked-driver.js~s3unpackeddriver",
+    "class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html",
+    "<span>S3UnpackedDriver</span> <span class=\"search-result-import-path\">recink/src/component/cache/s3-unpacked-driver.js</span>",
+    "class"
+  ],
+  [
     "recink/src/component/helper/sequential-promise.js~sequentialpromise",
     "class/src/component/helper/sequential-promise.js~SequentialPromise.html",
     "<span>SequentialPromise</span> <span class=\"search-result-import-path\">recink/src/component/helper/sequential-promise.js</span>",
@@ -306,9 +312,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "recink/src/component/helper/utils.js~trimboth",
+    "recink/src/helper/util.js~trimboth",
     "function/index.html#static-function-trimBoth",
-    "<span>trimBoth</span> <span class=\"search-result-import-path\">recink/src/component/helper/utils.js</span>",
+    "<span>trimBoth</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [
@@ -918,6 +924,24 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/component/cache/s3-unpacked-driver.js",
+    "file/src/component/cache/s3-unpacked-driver.js.html",
+    "src/component/cache/s3-unpacked-driver.js",
+    "file"
+  ],
+  [
+    "src/component/cache/s3-unpacked-driver.js~s3unpackeddriver#constructor",
+    "class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html#instance-constructor-constructor",
+    "src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver#constructor",
+    "method"
+  ],
+  [
+    "src/component/cache/s3-unpacked-driver.js~s3unpackeddriver#name",
+    "class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html#instance-get-name",
+    "src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver#name",
+    "member"
+  ],
+  [
     "src/component/cache/void-driver.js",
     "file/src/component/cache/void-driver.js.html",
     "src/component/cache/void-driver.js",
@@ -934,6 +958,12 @@ window.esdocSearchIndex = [
     "file/src/component/config-based-component.js.html",
     "src/component/config-based-component.js",
     "file"
+  ],
+  [
+    "src/component/config-based-component.js~configbasedcomponent#configfilerealpath",
+    "class/src/component/config-based-component.js~ConfigBasedComponent.html#instance-get-configFileRealPath",
+    "src/component/config-based-component.js~ConfigBasedComponent#configFileRealPath",
+    "member"
   ],
   [
     "src/component/config-based-component.js~configbasedcomponent#configpath",
@@ -1648,12 +1678,6 @@ window.esdocSearchIndex = [
     "class/src/component/helper/transformer.js~Transformer.html#instance-get-transformer",
     "src/component/helper/transformer.js~Transformer#transformer",
     "member"
-  ],
-  [
-    "src/component/helper/utils.js",
-    "file/src/component/helper/utils.js.html",
-    "src/component/helper/utils.js",
-    "file"
   ],
   [
     "src/component/npm-component.js",
