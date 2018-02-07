@@ -5,11 +5,10 @@ const dot = require('dot-object');
 const path = require('path');
 const execa = require('execa');
 const Plan = require('./terraform/plan');
-const pjson = require('../package');
 const State = require('./terraform/state');
-const Logger = require('recink/src/logger');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
+const Logger = require('recink/src/logger');
 const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
 
 /**
@@ -17,17 +16,17 @@ const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
  */
 class Terraform {
   /**
-   * @param {*} vars
    * @param {String} binary
    * @param {String} resource
+   * @param {*} vars
    * @param {Array} varFiles
    */
   constructor(
-    vars = {},
     binary = Terraform.BINARY,
     resource = Terraform.RESOURCE,
-    varFiles = []
-  ) {
+    vars = {},
+    varFiles = [])
+  {
     this.logger = Logger;
     this._binary = binary;
     this._resource = resource;
