@@ -370,7 +370,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @throws {Error}
-   *
    * @private
    */
   _validateRunStack() {
@@ -513,14 +512,10 @@ class TerraformComponent extends DependencyBasedComponent {
 
     const workspace = this._parameterFromConfig(emitModule, 'current-workspace', 'default');
 
-    if (workspace === 'default') {
-      return this._handleSkip(emitModule, 'workspace');
-    }
-
     return terraform
       .workspace(this._moduleRoot(emitModule), workspace)
       .catch(error => this._handleError(emitModule, 'workspace', error));
-   }
+  }
 
   /**
    * @param {Terraform} terraform 
@@ -593,8 +588,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _destroy(terraform, emitModule) {
-
-    
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
@@ -714,7 +707,7 @@ ${ output }
    * @constructor
    */
   static get UNIT() {
-    return 'unit'
+    return 'unit';
   }
 
   /**
@@ -722,7 +715,7 @@ ${ output }
    * @constructor
    */
   static get E2E() {
-    return 'e2e'
+    return 'e2e';
   }
 
   /**
@@ -733,7 +726,7 @@ ${ output }
     return {
       'version': Terraform.VERSION,
       'current-workspace': 'default'
-    }
+    };
   }
 }
 
