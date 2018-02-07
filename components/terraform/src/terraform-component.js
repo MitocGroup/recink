@@ -37,7 +37,7 @@ class TerraformComponent extends DependencyBasedComponent {
     this._e2e = {};
     this._unit = {};
     this._reporter = null;
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
@@ -311,7 +311,7 @@ class TerraformComponent extends DependencyBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
     this._unit = {};
@@ -643,7 +643,7 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    this._planChanged = plan.changed;
+    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
@@ -654,8 +654,6 @@ ${ reasonMsg }
 
       return this._reporter.report(`
 ### '${ emitModule.name }' returned below output while executing 'terraform plan'
-
-${ plan.changed ? '' : 'No Plan Changes Detected' }
 
 \`\`\`
 ${ output }
