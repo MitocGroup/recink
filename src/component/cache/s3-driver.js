@@ -58,7 +58,10 @@ class S3Driver extends AbstractDriver {
       return Promise.resolve(this._client);
     }
 
-    return this._awsCredentials.getConfig().then(AWS => Promise.resolve(new AWS.S3()));
+    return this._awsCredentials.getConfig().then(AWS => {
+      this._client = new AWS.S3();
+      return Promise.resolve(this._client);
+    });
   }
   
   /**
@@ -99,7 +102,7 @@ class S3Driver extends AbstractDriver {
       });
     });
   }
-  
+
   /**
    * @returns {Promise}
    * @private
@@ -124,10 +127,9 @@ class S3Driver extends AbstractDriver {
         });
     });
   }
-  
+
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _download() {
@@ -188,6 +190,10 @@ class S3Driver extends AbstractDriver {
    * @private
    */
   _s3Location(s3Path) {
+    if (!s3Path) {
+      throw new Error('S3 path is required!');
+    }
+
     const matches = s3Path.match(
       /^(?:s3:\/\/|\/)?([^\/]+)(?:\/(.*))?$/i
     );
