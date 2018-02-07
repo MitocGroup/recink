@@ -47,12 +47,15 @@ module.exports = (args, options, logger) => {
   logger.debug(`Initialize components registry in ${componentRegistry.storage.registryFile}`);
 
   /**
+   * Clean array and trim string elements
    * @param {Array} array
    * @returns {Array}
    * @private
    */
   function _arr(array) {
-    return array.map(key => key.trim());
+    return array
+      .map(key => key.constructor === String ? key.trim() : key)
+      .filter(key => key !== '' ? true : false);
   }
 
   /**

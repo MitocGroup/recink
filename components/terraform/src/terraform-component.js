@@ -37,7 +37,7 @@ class TerraformComponent extends DependencyBasedComponent {
     this._e2e = {};
     this._unit = {};
     this._reporter = null;
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
@@ -311,7 +311,7 @@ class TerraformComponent extends DependencyBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
     this._unit = {};
@@ -370,7 +370,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @throws {Error}
-   *
    * @private
    */
   _validateRunStack() {
@@ -513,14 +512,10 @@ class TerraformComponent extends DependencyBasedComponent {
 
     const workspace = this._parameterFromConfig(emitModule, 'current-workspace', 'default');
 
-    if (workspace === 'default') {
-      return this._handleSkip(emitModule, 'workspace');
-    }
-
     return terraform
       .workspace(this._moduleRoot(emitModule), workspace)
       .catch(error => this._handleError(emitModule, 'workspace', error));
-   }
+  }
 
   /**
    * @param {Terraform} terraform 
@@ -593,8 +588,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _destroy(terraform, emitModule) {
-
-    
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
@@ -650,7 +643,7 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    this._planChanged = plan.changed;
+    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
@@ -661,8 +654,6 @@ ${ reasonMsg }
 
       return this._reporter.report(`
 ### '${ emitModule.name }' returned below output while executing 'terraform plan'
-
-${ plan.changed ? '' : 'No Plan Changes Detected' }
 
 \`\`\`
 ${ output }
@@ -714,7 +705,7 @@ ${ output }
    * @constructor
    */
   static get UNIT() {
-    return 'unit'
+    return 'unit';
   }
 
   /**
@@ -722,7 +713,7 @@ ${ output }
    * @constructor
    */
   static get E2E() {
-    return 'e2e'
+    return 'e2e';
   }
 
   /**
@@ -733,7 +724,7 @@ ${ output }
     return {
       'version': Terraform.VERSION,
       'current-workspace': 'default'
-    }
+    };
   }
 }
 

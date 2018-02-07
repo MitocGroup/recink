@@ -13,18 +13,21 @@ class AwsCredentials {
     this._options = options || {};
     this._providers = [
       new AWS.EnvironmentCredentials(
-        options.hasOwnProperty('envPrefix') ? options.envPrefix : 'AWS'
+        this._options.hasOwnProperty('envPrefix') ? this._options.envPrefix : 'AWS'
       ),
       new AWS.SharedIniFileCredentials({
-        profile: options.hasOwnProperty('profile') ? options.profile : 'default'
+        profile: this._options.hasOwnProperty('profile') ? this._options.profile : 'default'
       }),
       AWS.ECSCredentials.prototype.isConfiguredForEcsCredentials()
         ? new AWS.ECSCredentials() : new AWS.EC2MetadataCredentials()
     ];
 
-    if (options.hasOwnProperty('accessKeyId') && options.hasOwnProperty('secretAccessKey')) {
+    if (this._options.hasOwnProperty('accessKeyId') && this._options.hasOwnProperty('secretAccessKey')) {
       this._providers.push(
-        new AWS.Credentials({ accessKeyId: options.accessKeyId, secretAccessKey: options.secretAccessKey})
+        new AWS.Credentials({
+          accessKeyId: this._options.accessKeyId,
+          secretAccessKey: this._options.secretAccessKey
+        })
       );
     }
   }
