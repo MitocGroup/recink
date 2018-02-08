@@ -13,45 +13,33 @@ class E2ERunner {
    * @param {String} hostName
    * @param {Array} hostPorts
    */
-  constructor(
-    hostName = E2ERunner.DEFAULT_SERVER_HOSTNAME,
-    hostPorts = E2ERunner.DEFAULT_SERVER_PORTS
-  ) {
-    this._testcafe = false;
-    this._hostName = hostName;
-    this._hostPorts = hostPorts;
+  constructor(options = {}) {
+    const defaults = {
+      hostPorts: E2ERunner.DEFAULT_SERVER_PORTS,
+      hostName: E2ERunner.DEFAULT_SERVER_HOSTNAME,
+      reporter: E2ERunner.DEFAULT_REPORTER,
+      browsers: E2ERunner.DEFAULT_BROWSERS,
+      screenshotsPath: process.cwd(),
+      takeOnFail: false,
+    };
+
+    this._config = Object.assign({}, defaults, options);
   }
 
   /**
-   * Init runner
+   * Init testcafe runner
    * @returns {Promise}
-   * @private
    */
-  _init() {
+  getTestCafe() {
     if (this._testcafe) {
       return Promise.resolve();
     }
 
-    return createTestCafe(this._hostName, ...this._hostPorts).then(testcafe => {
+    return createTestCafe(this._config.hostName, ...this._config.hostPorts).then(testcafe => {
       registerBrowsers();
       this._testcafe = testcafe;
 
       return Promise.resolve();
-    });
-  }
-
-  /**
-   * Get runner
-   * @param {String} screenshotsPath
-   * @param {Boolean} takeOnFail
-   * @returns {Promise}
-   * @private
-   */
-  _getRunner(screenshotsPath = process.cwd(), takeOnFail = false) {
-    return this._init().then(() => {
-      const runner = this._testcafe.createRunner().screenshots(screenshotsPath, takeOnFail);
-
-      return Promise.resolve(runner);
     });
   }
 
@@ -61,13 +49,22 @@ class E2ERunner {
    * @param {Object} options
    * @returns {Promise}
    */
-  run(tests, options = {}) {
-    return this._getRunner(options.screenshotsPath, options.takeOnFail).then(runner => {
+  run(tests) {
+    return this.getTestCafe().then(() => {
+      const runner = this._testcafe.createRunner().screenshots(this._config.screenshotsPath, this._config.takeOnFail);
+
       return runner
         .src(tests)
-        .browsers(options.browsers || E2ERunner.DEFAULT_BROWSERS)
-        .reporter(options.reporter || E2ERunner.DEFAULT_REPORTER)
-        .run(E2ERunner.RUN_OPTIONS);
+        .browsers(this._config.browsers)
+        .reporter(this._config.reporter)
+        .run(E2ERunner.RUN_OPTIONS)
+        .then(failed => {
+          if (failed > 0) {
+            return Promise.reject(failed);
+          }
+
+          return Promise.resolve();
+        });
     });
   }
 

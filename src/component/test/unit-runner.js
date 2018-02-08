@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Mocha = require('mocha');
 const uuidv1 = require('uuid/v1');
+const Logger = require('../../../src/logger');
 
 /**
  * Unit test runner
@@ -34,10 +35,13 @@ class UnitRunner {
       });
 
       this._mocha.run(err => {
-        return err ? reject(err) : resolve();
+        if (err) {
+          this._removeTmpFiles();
+          return reject(err);
+        }
+
+        return resolve();
       });
-    }).catch(() => {
-      return this.cleanup();
     });
   }
 
@@ -50,21 +54,29 @@ class UnitRunner {
   }
 
   /**
-   * Remove tmp test files
+   * Cleanup action
    * @returns {Promise}
    */
   cleanup() {
+    this._removeTmpFiles();
+
+    return Promise.resolve();
+  }
+
+  /**
+   * Remove tmp test files
+   * @private
+   */
+  _removeTmpFiles() {
     this._tmps.forEach(tmpTest => {
       try {
         fs.unlinkSync(tmpTest);
       } catch (err) {
         if (err.code !== 'ENOENT') {
-          console.log(err.code);
+          Logger.warn(Logger.emoji.bulb, err.message);
         }
       }
     });
-
-    return Promise.resolve();
   }
 }
 

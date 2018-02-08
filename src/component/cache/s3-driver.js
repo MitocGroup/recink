@@ -13,10 +13,10 @@ const AwsCredentials = require('../helper/aws-credentials');
  */
 class S3Driver extends AbstractDriver {
   /**
-   * @param {string} cacheDir
-   * @param {string} path
+   * @param {String} cacheDir
+   * @param {String} path
    * @param {*} options
-   * @param {boolean} includeNodeVersion
+   * @param {Boolean} includeNodeVersion
    */
   constructor(cacheDir, path, options, includeNodeVersion = true) {
     super(cacheDir);
@@ -58,7 +58,10 @@ class S3Driver extends AbstractDriver {
       return Promise.resolve(this._client);
     }
 
-    return this._awsCredentials.getConfig().then(AWS => Promise.resolve(new AWS.S3()));
+    return this._awsCredentials.getConfig().then(AWS => {
+      this._client = new AWS.S3();
+      return Promise.resolve(this._client);
+    });
   }
   
   /**
@@ -73,8 +76,8 @@ class S3Driver extends AbstractDriver {
    * @private
    */
   _upload() {
-    return this._packageSize.then(ContentLength => {
-      if (ContentLength <= 0) {
+    return this._packageSize.then(contentLength => {
+      if (contentLength <= 0) {
         return Promise.resolve();
       }
 
@@ -89,7 +92,7 @@ class S3Driver extends AbstractDriver {
 
           packageStream.on('error', error => reject(error));
 
-          const Body = this._track(packageStream, ContentLength);
+          const Body = this._track(packageStream, contentLength);
 
           this.client
             .then(S3 => S3.upload({ Bucket, Key, Body }).promise())
@@ -99,7 +102,7 @@ class S3Driver extends AbstractDriver {
       });
     });
   }
-  
+
   /**
    * @returns {Promise}
    * @private
@@ -124,10 +127,9 @@ class S3Driver extends AbstractDriver {
         });
     });
   }
-  
+
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _download() {
@@ -183,13 +185,15 @@ class S3Driver extends AbstractDriver {
   }
   
   /**
-   * @param {string} s3Path
-   *
+   * @param {String} s3Path
    * @returns {*}
-   *
    * @private
    */
   _s3Location(s3Path) {
+    if (!s3Path) {
+      throw new Error('S3 path is required!');
+    }
+
     const matches = s3Path.match(
       /^(?:s3:\/\/|\/)?([^\/]+)(?:\/(.*))?$/i
     );

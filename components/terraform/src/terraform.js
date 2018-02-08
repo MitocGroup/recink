@@ -5,38 +5,40 @@ const dot = require('dot-object');
 const path = require('path');
 const execa = require('execa');
 const Plan = require('./terraform/plan');
-const pjson = require('../package');
 const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
-const { getFilesByPattern } = require('./helper/util');
+const Logger = require('recink/src/logger');
+const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
 
 /**
  * Terraform wrapper
  */
 class Terraform {
   /**
-   * @param {*} vars
    * @param {String} binary
    * @param {String} resource
+   * @param {*} vars
    * @param {Array} varFiles
    */
   constructor(
-    vars = {},
     binary = Terraform.BINARY,
     resource = Terraform.RESOURCE,
-    varFiles = []
-  ) {
-    this._vars = vars;
+    vars = {},
+    varFiles = [])
+  {
+    this.logger = Logger;
     this._binary = binary;
     this._resource = resource;
+    this._vars = vars;
     this._varFiles = varFiles;
     this._logger = false;
     this._isRemoteState = false;
+    this._isWorkspaceSupported = false;
   }
 
   /**
-   * @param {string} name
+   * @param {String} name
    * 
    * @returns {boolean} 
    */
@@ -45,7 +47,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} name 
+   * @param {String} name
    * @param {*} defaultValue 
    * 
    * @returns {*}
@@ -59,7 +61,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} name 
+   * @param {String} name
    * @param {*} value 
    * 
    * @returns {Terraform}
@@ -82,6 +84,20 @@ class Terraform {
   }
 
   /**
+   * @returns {String}
+   */
+  get getBinary() {
+    return this._binary;
+  }
+
+  /**
+   * @returns {String}
+   */
+  get getResource() {
+    return this._resource;
+  }
+
+  /**
    * @returns {*}
    */
   get vars() {
@@ -89,24 +105,17 @@ class Terraform {
   }
 
   /**
-   * @returns {string}
-   */
-  get getBinary() {
-    return this._binary;
-  }
-
-  /**
-   * @returns {string}
-   */
-  get getResource() {
-    return this._resource;
-  }
-
-  /**
    * @returns {Array}
    */
   get varFiles() {
     return this._varFiles;
+  }
+
+  /**
+   * @returns {Boolean}
+   */
+  get isWorkspaceSupported() {
+    return this._isWorkspaceSupported;
   }
 
   /**
@@ -124,7 +133,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/init.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   init(dir) {
@@ -133,6 +142,31 @@ class Terraform {
       .then(() => this.checkRemoteState(dir))
       .then(() => this.pullState(dir))
       .then(() => Promise.resolve());
+  }
+
+  /**
+   * https://www.terraform.io/docs/state/workspaces.html
+   * @param {String} dir
+   * @param {String} workspace
+   * @returns {Promise}
+   */
+  workspace(dir, workspace) {
+    return this._ensureResourceDir(dir).then(() => {
+      let regex = RegExp(`(\\*\\s|\\s.)${workspace}$`, 'm');
+      let options = ['new', workspace, '-no-color'];
+
+      return this.run('workspace', ['list'], dir).then(result => {
+        if (regex.exec(result.output) != null) {
+          options[0] = 'select';
+        }
+
+        if (fse.existsSync(`${dir}/terraform.tfstate.d`)) {
+          this._resource = `terraform.tfstate.d/${workspace}`;
+        }
+
+        return this.run('workspace', options, dir);
+      });
+    });
   }
 
   /**
@@ -154,7 +188,7 @@ class Terraform {
   }
 
   /**
-   * https://www.terraform.io/docs/commands/state/index.html
+   * https://www.terraform.io/docs/commands/state/pull.html
    * @param {String} dir
    * @returns {Promise}
    */
@@ -202,9 +236,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/apply.html
-   *
-   * @param {string} dir
-   *
+   * @param {String} dir
    * @returns {Promise}
    */
   apply(dir) {
@@ -244,7 +276,7 @@ class Terraform {
 
   /**
    * https://www.terraform.io/docs/commands/destroy.html
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    */
   destroy(dir) {
@@ -301,7 +333,7 @@ class Terraform {
   }
 
   /**
-   * @param {string} dir
+   * @param {String} dir
    * @returns {Promise}
    * @private
    */
@@ -328,7 +360,7 @@ class Terraform {
       childProcess.stdout.on('data', data => {
         let chunk = data.toString().replace(/\s*$/g, '');
         if (chunk) {
-          this.logger.info(this.logger.emoji.magic, SecureOutput.secure(chunk));
+          this.logger.info(SecureOutput.secure(chunk));
         }
       });
     }
@@ -342,6 +374,13 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
+    let compared = versionCompare(version, '0.11.0');
+    if (compared === NaN) {
+      throw new Error(`Terraform version ${version} is invalid`);
+    }
+
+    this._isWorkspaceSupported = (compared !== NaN && compared >= 0);
+
     return fse.pathExists(this.getBinary).then(exists => {
       if (exists) {
         return Promise.resolve();
@@ -361,81 +400,63 @@ class Terraform {
   }
 
   /**
-   * @return {boolean|*}
-   */
-  get logger() {
-    return this._logger;
-  }
-
-  /**
-   * @param {*} logger
-   * @return {Terraform}
-   */
-  setLogger(logger) {
-    this._logger = logger;
-
-    return this;
-  }
-
-  /**
-   * @returns {string}
+   * @returns {String}
    */
   static get VERSION() {
-    const { version } = pjson.terraform || '0.10.4';
-    return version;
+    return '0.11.0';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get PLAN() {
     return 'terraform.tfplan';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get STATE() {
     return 'terraform.tfstate';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get REMOTE() {
     return 'terraform.tfstate.remote';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BACKUP() {
     return `terraform.tfstate.${ new Date().getTime() }.backup`;
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get RESOURCE() {
     return '.resource';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BIN_PATH() {
     return path.resolve(process.cwd(), 'bin');
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BIN_FILE() {
     return 'terraform';
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   static get BINARY() {
     return path.join(Terraform.BIN_PATH, Terraform.BIN_FILE);

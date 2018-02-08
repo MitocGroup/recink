@@ -17,6 +17,7 @@ class ConfigBasedComponent extends AbstractComponent {
     this._container = null;
     this._readyPromise = Promise.resolve();
     this._configPath = configPath || `${ ConfigBasedComponent.MAIN_CONFIG_KEY }.${ this.name }`;
+    this._configFileRealPath = null;
   }
 
   /**
@@ -27,12 +28,19 @@ class ConfigBasedComponent extends AbstractComponent {
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get configPath() {
     return this._configPath;
   }
-  
+
+  /**
+   * @returns {String}
+   */
+  get configFileRealPath() {
+    return this._configFileRealPath;
+  }
+
   /**
    * @param {Emitter} emitter
    *
@@ -80,24 +88,22 @@ class ConfigBasedComponent extends AbstractComponent {
   
   /**
    * @param {*} config
-   * @param {string} configFile
-   *
+   * @param {String} configFile
    * @returns {Container}
    */
   prepareConfig(config, configFile) {
-    const configFileRealPath = path.resolve(configFile);
+    this._configFileRealPath = path.resolve(configFile);
     
     return Promise.resolve(this.createContainer(
       Object.assign({
-        __file: configFileRealPath,
-        __dir: path.dirname(configFileRealPath),
+        __file: this._configFileRealPath,
+        __dir: path.dirname(this._configFileRealPath),
       }, config)
     ));
   }
   
   /**
    * @param {*} config
-   *
    * @returns {Container}
    */
   createContainer(config) {

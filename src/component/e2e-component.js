@@ -49,17 +49,21 @@ class E2EComponent extends DependencyBasedComponent {
    * @private
    */
   _run(emitter) {
-    const e2eRunner = new E2ERunner();
     const config = {
       reporter: this.container.get('reporter', E2ERunner.DEFAULT_REPORTER),
       browsers: this.container.get('browsers', E2ERunner.DEFAULT_BROWSERS),
       screenshotsPath: path.resolve(this.container.get('screenshot.path', process.cwd())),
       takeOnFail: this.container.get('screenshot.take-on-fail', false)
     };
+    const e2eRunner = new E2ERunner(config);
 
     return this._waitUris()
       .then(() => emitter.emitBlocking(e2eEvents.assets.e2e.start))
-      .then(() => e2eRunner.run(this._testAssets, config))
+      .then(() => {
+        return e2eRunner.run(this._testAssets)
+          .then(() => Promise.resolve(0))
+          .catch(failed => Promise.resolve(failed));
+      })
       .then(failedCount => {
 
         // @todo find a smarter way to indent the output (buffer it?)
@@ -160,9 +164,7 @@ class E2EComponent extends DependencyBasedComponent {
           
           this._run(emitter).then(failedCount => {
             if (failedCount > 0) {
-              return Promise.reject(new Error(
-                `There is/are ${ failedCount } end-to-end test case/s failed!`
-              ));
+              return Promise.reject(new Error(`There is/are ${ failedCount } end-to-end test case/s failed!`));
             }
 
             this.logger.info(this.logger.emoji.beer, `Finished processing ${ this.stats.processed } e2e test assets`);
