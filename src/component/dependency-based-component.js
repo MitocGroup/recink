@@ -23,7 +23,6 @@ class DependencyBasedComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   *
    * @returns {Promise}
    */
   waitConfig(emitter) {
