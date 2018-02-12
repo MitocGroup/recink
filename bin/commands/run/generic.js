@@ -146,7 +146,10 @@ module.exports = (args, options, logger) => {
 
       for (let property in tfVars) {
         let key = workspaceEnabled ? `available-workspaces.${tfWorkspace}.vars` : 'vars';
-        setTfParameter(`${key}.${property}`, tfVars[property], cfgKey);
+
+        if (tfVars.hasOwnProperty(property)) {
+          setTfParameter(`${key}.${property}`, tfVars[property], cfgKey);
+        }
       }
     });
 

@@ -10,8 +10,7 @@ const registerBrowsers = require('./testcafe/browsers-registrar');
  */
 class E2ERunner {
   /**
-   * @param {String} hostName
-   * @param {Array} hostPorts
+   * @param {Object} options
    */
   constructor(options = {}) {
     const defaults = {

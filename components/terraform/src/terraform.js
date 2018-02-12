@@ -18,7 +18,7 @@ class Terraform {
   /**
    * @param {String} binary
    * @param {String} resource
-   * @param {*} vars
+   * @param {Object} vars
    * @param {Array} varFiles
    */
   constructor(
@@ -49,7 +49,6 @@ class Terraform {
   /**
    * @param {String} name
    * @param {*} defaultValue 
-   * 
    * @returns {*}
    */
   getVar(name, defaultValue = null) {
@@ -375,11 +374,11 @@ class Terraform {
    */
   ensure(version = Terraform.VERSION) {
     let compared = versionCompare(version, '0.11.0');
-    if (compared === NaN) {
+    if (Number.isNaN(compared)) {
       throw new Error(`Terraform version ${version} is invalid`);
     }
 
-    this._isWorkspaceSupported = (compared !== NaN && compared >= 0);
+    this._isWorkspaceSupported = (!Number.isNaN(compared) && compared >= 0);
 
     return fse.pathExists(this.getBinary).then(exists => {
       if (exists) {
