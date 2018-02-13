@@ -155,7 +155,7 @@ class Terraform {
       let options = ['new', workspace, '-no-color'];
 
       return this.run('workspace', ['list'], dir).then(result => {
-        if (regex.exec(result.output) != null) {
+        if (regex.exec(result.output) !== null) {
           options[0] = 'select';
         }
 

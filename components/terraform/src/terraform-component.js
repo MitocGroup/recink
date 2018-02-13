@@ -245,7 +245,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _updateTestsList(emitModule) {
     const moduleName = emitModule.name;
-    const { mapping, plan, apply } = emitModule.container.get('terraform.test', {});
+    const { plan, apply } = emitModule.container.get('terraform.test', {});
     const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
     const testcafePath = 'terraform.test.e2e.testcafe';
     const testcafeOptions = {
