@@ -373,12 +373,8 @@ class Terraform {
    * @returns {Promise}
    */
   ensure(version = Terraform.VERSION) {
-    let compared = versionCompare(version, '0.11.0');
-    if (Number.isNaN(compared)) {
-      throw new Error(`Terraform version ${version} is invalid`);
-    }
-
-    this._isWorkspaceSupported = (!Number.isNaN(compared) && compared >= 0);
+    const compared = versionCompare(version, '0.11.0');
+    this._isWorkspaceSupported = (compared >= 0);
 
     return fse.pathExists(this.getBinary).then(exists => {
       if (exists) {

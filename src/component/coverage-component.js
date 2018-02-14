@@ -208,9 +208,7 @@ class CoverageComponent extends DependencyBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
-   * '
    * @todo split into several abstractions
    */
   run(emitter) {
@@ -223,12 +221,7 @@ class CoverageComponent extends DependencyBasedComponent {
       const dispatchedAssets = {};
       
       Object.keys(reporters).map(reporterName => {
-        const report = istanbul.Report.create(
-          reporterName, 
-          reporters[reporterName] || {}
-        );
-        
-        reporter.reports[reporterName] = report;
+        reporter.reports[reporterName] = istanbul.Report.create(reporterName, reporters[reporterName] || {});
       });
       
       emitter.onBlocking(testEvents.asset.test.skip, payload => {
@@ -245,11 +238,7 @@ class CoverageComponent extends DependencyBasedComponent {
       });
       
       emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {
-        return this._persistModuleBlankCoverage(
-          assetsToInstrument,
-          dispatchedAssets,
-          module
-        ).then(() => {
+        return this._persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module).then(() => {
           delete assetsToInstrument[module.name];
           delete dispatchedAssets[module.name];
           
@@ -293,12 +282,7 @@ class CoverageComponent extends DependencyBasedComponent {
                 file = path.resolve(file);
                 
                 mocha.suite.emit('pre-require', global, file, mocha);
-                mocha.suite.emit(
-                  'require',
-                  ModuleCompile.require(file, {}, preprocessor),
-                  file,
-                  mocha
-                );
+                mocha.suite.emit('require', ModuleCompile.require(file, {}, preprocessor), file, mocha);
                 mocha.suite.emit('post-require', global, file, mocha);
               });
               
@@ -315,21 +299,9 @@ class CoverageComponent extends DependencyBasedComponent {
           collector.add(global[coverageVariable] || {});
         });
         
-        return emitter.emitBlocking(
-          events.coverage.report.create, 
-          istanbul, 
-          reporter, 
-          collector
-        )
+        return emitter.emitBlocking(events.coverage.report.create, istanbul, reporter, collector)
           .then(() => this._dumpCoverageStats(collector, reporter))
-          .then(() => {
-            return emitter.emitBlocking(
-              events.coverage.report.compare, 
-              istanbul, 
-              reporter, 
-              collector
-            );
-          })
+          .then(() => emitter.emitBlocking(events.coverage.report.compare, istanbul, reporter, collector))
           .then(() => this._doCompare(collector));
       });
       
