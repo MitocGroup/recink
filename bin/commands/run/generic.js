@@ -95,11 +95,11 @@ module.exports = (args, options, logger) => {
 
   /**
    * Parse available modules
-   * @param cfg
-   * @returns {{
-   *  modules: string[],  // list of modules (without global config)
-   *  filtered: boolean   // true if --include-modules or --exclude-modules applied
-   * }}
+   * 'modules' => list of modules (without global config)
+   * 'filtered' => true if --include-modules or --exclude-modules applied
+   *
+   * @param {Object} cfg
+   * @returns {{modules: String[], filtered: Boolean}}
    */
   function parseModules(cfg) {
     let modules = Object.keys(cfg).filter(module => module !== ConfigBasedComponent.MAIN_CONFIG_KEY);
