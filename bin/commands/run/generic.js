@@ -94,12 +94,14 @@ module.exports = (args, options, logger) => {
   }
 
   /**
-   * Transform configuration
-   * @param {Object} config
-   * @return {Object}
+   * Parse available modules
+   * @param cfg
+   * @returns {{
+   *  modules: string[],  // list of modules (without global config)
+   *  filtered: boolean   // true if --include-modules or --exclude-modules applied
+   * }}
    */
-  function transformConfig(config) {
-    cfg = config;
+  function parseModules(cfg) {
     let modules = Object.keys(cfg).filter(module => module !== ConfigBasedComponent.MAIN_CONFIG_KEY);
     let excludeModules = cleanList(options.excludeModules, modules);
     let includeModules = cleanList(options.includeModules, modules);
@@ -113,11 +115,21 @@ module.exports = (args, options, logger) => {
       modules.splice(modules.indexOf(module), 1);
     });
 
-    /**
-     * Returns true if --include-modules or --exclude-modules applied
-     * @type {Boolean}
-     */
-    let filtered = !!excludeModules.length || !!includeModules.length;
+    return {
+      modules: modules,
+      filtered: !!excludeModules.length || !!includeModules.length
+    }
+  }
+
+  /**
+   * Transform configuration
+   * @param {Object} config
+   * @return {Object}
+   */
+  function transformConfig(config) {
+    cfg = config;
+
+    let { modules, filtered } = parseModules(cfg);
     let workspaceEnabled = false;
     let tfModules = modules.filter(module => typeof dot.pick(`${module}.terraform`, cfg) !== 'undefined');
 
@@ -162,80 +174,71 @@ module.exports = (args, options, logger) => {
     return Promise.resolve(cfg);
   }
 
-  return componentRegistry.load()
-    .then(() => {
-      const additionalComponentsInstances = [];
+  return componentRegistry.load().then(() => {
+    const additionalComponentsInstances = [];
 
-      componentRegistry.listKeys()
-        .map(component => {
-          additionalComponents.push(component);
-        });
-      
-      return SequentialPromise.all(additionalComponents.map(component => {
-        return () => {
-          let componentPromise;
+    componentRegistry.listKeys().map(component => {
+      additionalComponents.push(component);
+    });
 
-          if (/^[a-z0-9]/i.test(component)) {
-            let componentName = component;
+    return SequentialPromise.all(additionalComponents.map(component => {
+      return () => {
+        let componentPromise;
 
-            if (component.indexOf('recink') !== 0) {
-              componentName = `recink-${ component }`;
-            }
+        if (/^[a-z0-9]/i.test(component)) {
+          let componentName = (component.indexOf('recink') !== 0) ? `recink-${ component }` : component;
 
-            componentPromise = resolvePackage(componentName);
-          } else {
-            componentPromise = Promise.resolve(path.resolve(
-              process.cwd(),
-              component
-            ));
+          componentPromise = resolvePackage(componentName);
+        } else {
+          componentPromise = Promise.resolve(
+            path.resolve(process.cwd(), component)
+          );
+        }
+
+        return componentPromise.then(componentPath => {
+          if (!componentPath) {
+            logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
+            logger.error(new Error(`Unable to resolve path to ${ component } component`));
+
+            return Promise.resolve();
           }
 
-          return componentPromise.then(componentPath => {
+          try {
+            const ComponentConstructor = require(componentPath);
 
-            if (!componentPath) {
-              logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
-              logger.error(new Error(`Unable to resolve path to ${ component } component`));
+            additionalComponentsInstances.push(new ComponentConstructor());
+          } catch (error) {
+            logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
+            logger.error(error);
+          }
 
-              return Promise.resolve();
-            }
+          return Promise.resolve();
+        });
+      };
+    })).then(() => {
+      const components = availableComponents
+        .filter(c => disabledComponents.indexOf(c) === -1)
+        .map(c => componentsFactory[c]())
+        .concat(additionalComponentsInstances);
 
-            try {
-              const ComponentConstructor = require(componentPath);
-              
-              additionalComponentsInstances.push(new ComponentConstructor());
-            } catch (error) {
-              logger.warn(logger.emoji.cross, `Error initializing component ${ component }`);
-              logger.error(error);
-            }
-              
-            return Promise.resolve();
-          });
-        };
-      })).then(() => {
-        const components = availableComponents
-          .filter(c => disabledComponents.indexOf(c) === -1)
-          .map(c => componentsFactory[c]())
-          .concat(additionalComponentsInstances);
-          
-        return Promise.resolve(components);
-      });
-    })
-    .then(components => {
-      const componentConfig = componentRegistry.configs;
-      const configFilePath = path.join(args.path, Recink.CONFIG_FILE_NAME);
-
-      if (componentConfig.length > 0) {
-        logger.debug(`Loading component configurations - ${componentConfig.join(', ')}`);
-      }
-
-      return recink.configureExtend(configFilePath, ...componentConfig)
-        .then(config => transformConfig(config))
-        .then(() => {
-          return Promise.all([
-            recink.components(...components),
-            recink.configLoad(cfg, configFilePath)
-          ]);
-        })
-        .then(() => recink.run());
+      return Promise.resolve(components);
     });
+  }).then(components => {
+    const componentConfig = componentRegistry.configs;
+    const configFilePath = path.join(args.path, Recink.CONFIG_FILE_NAME);
+
+    if (componentConfig.length > 0) {
+      logger.debug(`Loading component configurations - ${componentConfig.join(', ')}`);
+    }
+
+    return recink.configureExtend(configFilePath, ...componentConfig)
+      .then(config => transformConfig(config))
+      .then(() => {
+        return Promise.all([
+          recink.components(...components),
+          recink.configLoad(cfg, configFilePath)
+        ]);
+      })
+      .then(() => recink.run());
+  });
 };

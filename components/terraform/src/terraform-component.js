@@ -255,40 +255,30 @@ class TerraformComponent extends DependencyBasedComponent {
     };
 
     if (!this._unit.hasOwnProperty(moduleName)) {
-      this._unit[moduleName] = {
-        assets: [],
-        enabled: true,
-        runner: new UnitRunner(mochaOptions)
-      };
+      this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
     }
 
     if (!this._e2e.hasOwnProperty(moduleName)) {
-      this._e2e[moduleName] = {
-        assets: [],
-        enabled: true,
-        runner: new E2ERunner(testcafeOptions)
-      };
+      this._e2e[moduleName] = { assets: [], enabled: true, runner: new E2ERunner(testcafeOptions)};
     }
 
+    let e2es = [];
+    let units = [];
+
     if (plan) {
-      if (fse.existsSync(plan) && fse.lstatSync(plan).isFile()) {
-        this._unit[moduleName].assets.push(plan);
-      } else {
-        walkDir(plan, /.*\.spec.\js/, testFile => {
-          this._unit[moduleName].assets.push(testFile);
-        });
-      }
+      units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
+        ? [plan]
+        : getFilesByPattern(plan, /.*\.spec.\js/);
     }
 
     if (apply) {
-      if (fse.existsSync(apply) && fse.lstatSync(apply).isFile()) {
-        this._e2e[moduleName].assets.push(apply);
-      } else {
-        walkDir(apply, /.*\.e2e.\js/, testFile => {
-          this._e2e[moduleName].assets.push(testFile);
-        });
-      }
+      e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
+        ? [apply]
+        : getFilesByPattern(apply, /.*\.e2e.\js/);
     }
+
+    this._unit[moduleName].assets.push(...units);
+    this._e2e[moduleName].assets.push(...e2es);
   }
 
   /**
