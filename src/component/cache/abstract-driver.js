@@ -1,19 +1,19 @@
 'use strict';
 
-const jag = require('jag');
-const path = require('path');
-const fse = require('fs-extra');
-const pify = require('pify');
-const EventEmitter = require('events');
-const events = require('./events');
 const fs = require('fs');
+const jag = require('jag');
+const fse = require('fs-extra');
+const path = require('path');
+const pify = require('pify');
+const events = require('./events');
+const EventEmitter = require('events');
 
 /**
  * Abstract cache driver
  */
 class AbstractDriver extends EventEmitter {
   /**
-   * @param {string} cacheDir
+   * @param {String} cacheDir
    */
   constructor(cacheDir) {
     super();
@@ -117,63 +117,47 @@ class AbstractDriver extends EventEmitter {
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _pack() {
-    const packagePath = this._packagePath;
-    
-    return fse.pathExists(this.cacheDir)
-      .then(result => {
-        if (!result) {
-          return Promise.resolve();
-        }
-        
-        return pify(jag.pack)(this.cacheDir, packagePath)
-          .then(() => {
-            
-            // @todo remove when fixed
-            // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53
-            const tmpPackagePath = path.join(
-              path.dirname(packagePath),
-              path.basename(packagePath, '.tar.gz')
-            ) + '.tar.tar.gz';
-            
-            return fse.move(
-              tmpPackagePath, 
-              packagePath, 
-              { overwrite: true }
-            );
-          });
+    return fse.pathExists(this.cacheDir).then(result => {
+      if (!result) {
+        return Promise.resolve();
+      }
+
+      return pify(jag.pack)(this.cacheDir, this._packagePath).then(() => {
+        // @todo remove when fixed
+        // @see https://github.com/coderaiser/node-jag/blob/master/lib/jag.js#L53
+        const tmpPackagePath = path.join(
+          path.dirname(this._packagePath),
+          path.basename(this._packagePath, '.tar.gz')
+        ) + '.tar.tar.gz';
+
+        return fse.move(tmpPackagePath, this._packagePath, { overwrite: true });
       });
+    });
   }
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _unpack() {
-    return fse.pathExists(this._packagePath)
-      .then(result => {
-        if (!result) {
+    return fse.pathExists(this._packagePath).then(result => {
+      if (!result) {
+        return Promise.resolve();
+      }
+
+      return this._packageSize.then(packageSize => {
+        if (packageSize <= 0) {
           return Promise.resolve();
         }
 
-        return this._packageSize
-          .then(packageSize => {            
-            if (packageSize <= 0) {
-              return Promise.resolve();
-            }
-            
-            return fse.ensureDir(this.cacheDir)
-              .then(() => {
-                return pify(jag.unpack)(this._packagePath, this.cacheDir);
-              });
-          });
+        return fse.ensureDir(this.cacheDir).then(() => pify(jag.unpack)(this._packagePath, this.cacheDir));
       });
+    });
   }
-  
+
   /**
    * @returns {Promise}
    *

@@ -2,7 +2,7 @@
 
 const npmEvents = require('./npm/events');
 const CacheFactory = require('./cache/factory');
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
+const DependencyBasedComponent = require('./dependency-based-component');
 const Spinner = require('./helper/spinner');
 const cacheEvents = require('./cache/events');
 const prettyBytes = require('pretty-bytes');
@@ -11,7 +11,7 @@ const SequentialPromise = require('./helper/sequential-promise');
 /**
  * Cache component
  */
-class CacheComponent extends DependantConfigBasedComponent {
+class CacheComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */

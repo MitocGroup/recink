@@ -1,44 +1,58 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('recink/src/component/dependant-config-based-component');
-const emitEvents = require('recink/src/component/emit/events');
-const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const CacheFactory = require('recink/src/component/cache/factory');
-const Terraform = require('./terraform');
-const Reporter = require('./reporter');
 const fse = require('fs-extra');
-const path = require('path');
 const Diff = require('./diff');
-const { getFilesByPattern } = require('./helper/util');
+const path = require('path');
+const Reporter = require('./reporter');
+const Terraform = require('./terraform');
+const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const emitEvents = require('recink/src/component/emit/events');
+const UnitRunner = require('recink/src/component/test/unit-runner');
+const CacheFactory = require('recink/src/component/cache/factory');
+const SequentialPromise = require('recink/src/component/helper/sequential-promise');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
+const { getFilesByPattern } = require('recink/src/helper/util');
 
 /**
  * Terraform component
  */
-class TerraformComponent extends DependantConfigBasedComponent {
+class TerraformComponent extends DependencyBasedComponent {
   /**
    * @param {*} args 
    */
   constructor(...args) {
     super(...args);
 
+    /**
+     * _unit & _e2e formats
+     * @type {{
+     *  moduleName: {
+     *    enabled: true
+     *    assets: [],
+     *    runner: Runner
+     *  },
+     *  {...}
+     * }}
+     */
+    this._e2e = {};
+    this._unit = {};
     this._reporter = null;
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
   }
 
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return 'terraform';
   }
-  
+
   /**
-   * Add the components Terraform depends on
-   *
-   * @returns {string[]}
+   * Terraform component dependencies
+   * @returns {String[]}
    */
   get dependencies() {
     return [ 'emit' ];
@@ -47,7 +61,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {EmitModule} emitModule 
    *
-   * @returns {string}
+   * @returns {String}
    *
    * @private
    */
@@ -68,18 +82,29 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
   * @param {Emitter} emitter
-  *
   * @returns {Promise}
   */
   init(emitter) {
     this._reporter = new Reporter(emitter, this.logger);
+    this._setDefaults();
 
     return Promise.resolve();
+  }
+
+  /**
+   * Configure default values for terraform
+   * @private
+   */
+  _setDefaults() {
+    Object.keys(TerraformComponent.GLOBAL_DEFAULTS).forEach(key => {
+      if (!this.container.has(key)) {
+        this.container.set(key, TerraformComponent.GLOBAL_DEFAULTS[key]);
+      }
+    })
   }
   
   /**
    * @param {Emitter} emitter
-   *
    * @returns {Promise}
    */
   run(emitter) {
@@ -87,26 +112,20 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
     return new Promise((resolve, reject) => {
       emitter.onBlocking(emitEvents.module.process.start, emitModule => {
-        return this._isTerraformModule(emitModule)
-          .then(isTerraform => {
-            if (!isTerraform) {
-              return Promise.resolve();
-            }
-
-            terraformModules.push(emitModule);
-  
+        return this._isTerraformModule(emitModule).then(isTerraform => {
+          if (!isTerraform) {
             return Promise.resolve();
-          });
+          }
+
+          terraformModules.push(emitModule);
+          this._updateTestsList(emitModule);
+
+          return Promise.resolve();
+        });
       });
 
       emitter.on(emitEvents.modules.process.end, () => {
         this._diff.load()
-          .catch(error => {
-            this.logger.warn(
-              this.logger.emoji.cross,
-              `Failed to calculate git diff: ${ error }.`
-            );
-          })
           .then(() => this._initCaches(emitter, terraformModules))
           .then(() => {
             return Promise.all(
@@ -119,54 +138,53 @@ class TerraformComponent extends DependantConfigBasedComponent {
             );
           })
           .then(() => {
-            return SequentialPromise.all(
-              this._normalizedRunStack.map(item => {
-                const { emitModule, changed } = item;
-    
-                return () => {
-                  if (changed) {
-                    this.logger.info(this.logger.emoji.check, `Starting Terraform in module "${ emitModule.name }".`);
-    
-                    return this._dispatchModule(emitModule)
-                      .then(() => {
-                        return this._uploadCache(emitModule)
-                          .catch(error => {
-                            this.logger.warn(
-                              this.logger.emoji.cross,
-                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ error }.`
-                            );
+            return SequentialPromise.all(this._normalizedRunStack.map(item => {
+              const { emitModule, changed } = item;
 
-                            return Promise.resolve();
-                          });
-                      })
-                      .catch(error => {
+              return () => {
+                if (changed) {
+                  this.logger.info(this.logger.emoji.check, `Starting Terraform in module "${ emitModule.name }"`);
 
-                        // Upload caches even if apply failed
-                        return this._uploadCache(emitModule)
-                          .catch(cacheError => {
-                            this.logger.warn(
-                              this.logger.emoji.cross,
-                              `Failed to upload caches for Terraform module "${ emitModule.name }": ${ cacheError }.`
-                            );
+                  return this._dispatchModule(emitModule)
+                    .then(() => {
+                      return this._uploadCache(emitModule).catch(error => {
+                        this.logger.warn(
+                          this.logger.emoji.cross,
+                          `Failed to upload caches for Terraform module "${ emitModule.name }": ${ error }`
+                        );
 
-                            return Promise.reject(error);
-                          })
-                          .then(() => Promise.reject(error));
+                        return Promise.resolve();
                       });
-                  } else {
-                    this.logger.info(
-                      this.logger.emoji.cross,
-                      `Skip running Terraform in module "${ emitModule.name }". No changes Detected.`
-                    );
-    
-                    return Promise.resolve();
-                  }
-                };
-              })
-            );
+                    })
+                    .catch(error => {
+                      // Upload caches even if apply failed
+                      return this._uploadCache(emitModule)
+                        .catch(cacheError => {
+                          this.logger.warn(
+                            this.logger.emoji.cross,
+                            `Failed to upload caches for Terraform module "${ emitModule.name }": ${ cacheError }`
+                          );
+
+                          return Promise.reject(error);
+                        })
+                        .then(() => Promise.reject(error));
+                    });
+                } else {
+                  this.logger.info(
+                    this.logger.emoji.cross,
+                    `Skip running Terraform in module "${ emitModule.name }". No changes Detected`
+                  );
+
+                  return Promise.resolve();
+                }
+              };
+            }));
           })
           .then(() => resolve())
-          .catch(error => reject(error));
+          .catch(error => {
+            this.logger.warn(this.logger.emoji.cross, `Failed with error: ${ error }`);
+            return reject(error);
+          });
       });
     });
   }
@@ -174,28 +192,37 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Emitter} emitter
    * @param {EmitModule[]} terraformModules
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _initCaches(emitter, terraformModules) {
-    if (!this._cacheEnabled(emitter)) {
-      return Promise.resolve();
-    }
-
     terraformModules.forEach(emitModule => {
-      this._caches[emitModule.name] = this._cache(emitter, emitModule);
+      const isCacheEnabled = this._parameterFromConfig(emitModule, 'cache', true);
+
+      if (isCacheEnabled) {
+        const options = this._parameterFromConfig(emitModule, 'cache.options', []);
+        const modulePath = this._moduleRoot(emitModule);
+        const resource = this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE);
+
+        if (options.length >= 1) {
+          options[0] = `${ options[0] }/${ emitModule.name }`;
+        }
+
+        this._caches[emitModule.name] = CacheFactory.create(
+          's3-unpacked',
+          path.join(modulePath, resource),
+          path.dirname(this.configFileRealPath),
+          ...options
+        );
+      }
     });
 
     return Promise.resolve();
   }
 
   /**
-   * @param {EmitModule} emitModule 
-   *
+   * @param {EmitModule} emitModule
    * @returns {Promise}
-   *
    * @private
    */
   _loadCache(emitModule) {
@@ -203,10 +230,7 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return Promise.resolve();
     }
 
-    this.logger.info(
-      this.logger.emoji.check,
-      `Downloading caches for Terraform module "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.check, `Downloading caches for Terraform module "${ emitModule.name }"`);
 
     return this._caches[emitModule.name].download().then(debug => {
       this.logger.debug(JSON.stringify(debug));
@@ -215,10 +239,51 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
-   * @param {EmitModule} emitModule 
-   *
-   * @returns {Promise}
-   *
+   * Handle unit/e2e tests
+   * @param {EmitModule} emitModule
+   * @private
+   */
+  _updateTestsList(emitModule) {
+    const moduleName = emitModule.name;
+    const { plan, apply } = emitModule.container.get('terraform.test', {});
+    const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
+    const testcafePath = 'terraform.test.e2e.testcafe';
+    const testcafeOptions = {
+      browsers: emitModule.container.get(`${testcafePath}.browsers`, E2ERunner.DEFAULT_BROWSERS),
+      screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
+      takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
+    };
+
+    if (!this._unit.hasOwnProperty(moduleName)) {
+      this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
+    }
+
+    if (!this._e2e.hasOwnProperty(moduleName)) {
+      this._e2e[moduleName] = { assets: [], enabled: true, runner: new E2ERunner(testcafeOptions)};
+    }
+
+    let e2es = [];
+    let units = [];
+
+    if (plan) {
+      units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
+        ? [plan]
+        : getFilesByPattern(plan, /.*\.spec.\js/);
+    }
+
+    if (apply) {
+      e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
+        ? [apply]
+        : getFilesByPattern(apply, /.*\.e2e.\js/);
+    }
+
+    this._unit[moduleName].assets.push(...units);
+    this._e2e[moduleName].assets.push(...e2es);
+  }
+
+  /**
+   * @param {EmitModule} emitModule
+   * @returns {*}
    * @private
    */
   _uploadCache(emitModule) {
@@ -226,53 +291,9 @@ class TerraformComponent extends DependantConfigBasedComponent {
       return Promise.resolve();
     }
 
-    this.logger.info(
-      this.logger.emoji.check,
-      `Uploading caches for Terraform module "${ emitModule.name }".`
-    );
+    this.logger.info(this.logger.emoji.check, `Uploading caches for Terraform module "${ emitModule.name }"`);
 
     return this._caches[emitModule.name].upload();
-  }
-
-  /**
-   * @param {Emitter} emitter
-   * @param {EmitModule} emitModule 
-   *
-   * @returns {AbstractDriver|S3Driver}
-   *
-   * @private
-   */
-  _cache(emitter, emitModule) {
-    const rootPath = this._moduleRoot(emitModule);
-    const cacheComponent = emitter.component('cache');
-    const options = [].concat(cacheComponent.container.get('options', []));
-    const driverName = cacheComponent.container.get('driver');
-    const resource = emitModule.container.get('terraform.resource', Terraform.RESOURCE)
-      || this.container.get('resource', Terraform.RESOURCE);
-    const resourcePath = path.join(rootPath, resource);
-
-    // @todo abstract the way cache behavior hooked
-    if (driverName === 's3' && options.length >= 1) {
-      options[0] = `${ options[0] }/${ emitModule.name }`;
-    }
-
-    const driver = CacheFactory.create(driverName, resourcePath, ...options);
-
-    // @todo abstract the way cache behavior hooked
-    if (driverName === 's3') {
-      driver._includeNodeVersion = false;
-    }
-
-    return driver;
-  }
-
-  /**
-   * @param {Emitter} emitter
-   * @returns {Boolean}
-   * @private
-   */
-  _cacheEnabled(emitter) {
-    return this.container.get('use-cache', true) && !!emitter.component('cache');
   }
 
   /**
@@ -280,9 +301,11 @@ class TerraformComponent extends DependantConfigBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    this._planChanged = false;
+    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
+    this._unit = {};
+    this._e2e = {};
 
     return Promise.resolve();
   }
@@ -337,7 +360,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
 
   /**
    * @throws {Error}
-   *
    * @private
    */
   _validateRunStack() {
@@ -360,17 +382,13 @@ class TerraformComponent extends DependantConfigBasedComponent {
       });
       const extraneousInfo = extraneousVector.join('\n\t');
 
-      throw new Error(
-        `Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`
-      );
+      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
     }
   }
 
   /**
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _terraformate(emitModule) {
@@ -420,19 +438,21 @@ class TerraformComponent extends DependantConfigBasedComponent {
   _dispatchModule(emitModule) {
     const version = this._parameterFromConfig(emitModule, 'version', Terraform.VERSION);
     const terraform = new Terraform(
-      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'binary', Terraform.BINARY),
       this._parameterFromConfig(emitModule, 'resource', Terraform.RESOURCE),
+      this._parameterFromConfig(emitModule, 'vars', {}),
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
-    terraform.setLogger(this.logger);
-    this.logger.debug(`Terraform version - "${ version }".`);
+    this.logger.debug(`Terraform version - "${ version }"`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
+      .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
+      .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
+      .then(() => this._runTests(TerraformComponent.E2E, emitModule))
       .then(() => this._destroy(terraform, emitModule));
   }
 
@@ -460,11 +480,6 @@ class TerraformComponent extends DependantConfigBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform init" in "${ emitModule.name }".`
-    );
-
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
     }
@@ -475,18 +490,32 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
+   * @param {Terraform} terraform
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _workspace(terraform, emitModule) {
+    if (!terraform.isWorkspaceSupported) {
+      return this._handleSkip(emitModule, 'workspace', `'terraform workspace' requires version 0.11.0 (or higher)`);
+    }
+
+    const workspace = this._parameterFromConfig(emitModule, 'current-workspace', 'default');
+
+    return terraform
+      .workspace(this._moduleRoot(emitModule), workspace)
+      .catch(error => this._handleError(emitModule, 'workspace', error));
+  }
+
+  /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
    * @returns {Promise}
    * @private
    */
   _plan(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform plan" in "${ emitModule.name }".`
-    );
-
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
+      this._unit[emitModule.name].enabled = false;
       return this._handleSkip(emitModule, 'plan');
     }
 
@@ -497,23 +526,43 @@ class TerraformComponent extends DependantConfigBasedComponent {
   }
 
   /**
+   * Run test if configured
+   * @param {String} type
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _runTests(type, emitModule) {
+    return new Promise((resolve, reject) => {
+      const tests = type === TerraformComponent.UNIT ? this._unit : this._e2e;
+      const module = tests[emitModule.name];
+
+      if (!module || !module.enabled) {
+        return resolve();
+      }
+
+      if (module.assets.length <= 0) {
+        this.logger.info(this.logger.emoji.check, `No ${type}-test found for ${ emitModule.name } module`)
+        return resolve();
+      }
+
+      module.runner.run(module.assets)
+        .then(() => module.runner.cleanup())
+        .then(() => resolve())
+        .catch(err => reject(err));
+    });
+  }
+
+  /**
    * @param {Terraform} terraform 
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _apply(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform apply" in "${ emitModule.name }".`
-    );
-
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
+      this._e2e[emitModule.name].enabled = false;
       return this._handleSkip(emitModule, 'apply');
-    // } else if (!this._planChanged) {
-    //   return this._handleSkip(emitModule, 'apply', 'No Apply Changes Detected');
     }
 
     return terraform
@@ -525,37 +574,33 @@ class TerraformComponent extends DependantConfigBasedComponent {
   /**
    * @param {Terraform} terraform
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _destroy(terraform, emitModule) {
-    this.logger.info(
-      this.logger.emoji.magic,
-      `Running "terraform destroy" in "${ emitModule.name }".`
-    );
-
     if (!this._parameterFromConfig(emitModule, 'destroy', false)) {
       return this._handleSkip(emitModule, 'destroy');
     }
 
     return terraform
       .destroy(this._moduleRoot(emitModule))
-      .then(state => this._handleDestroy(terraform, emitModule, state))
+      .then(state => {
+        return Promise.resolve();
+        // return this._handleDestroy(terraform, emitModule, state)
+      })
       .catch(error => this._handleError(emitModule, 'destroy', error));
   }
 
   /**
    * @param {EmitModule} emitModule
-   * @param {string} command
+   * @param {String} command
    * @param {Error} error
    * @returns {Promise}
    * @private
    */
   _handleError(emitModule, command, error) {
     return this._reporter.report(`
-### \`${ emitModule.name }\` returned an error executing \`terraform ${ command }\`
+### '${ emitModule.name }' returned an error executing 'terraform ${ command }'
 
 \`\`\`
 ${ error.toString().trim() }
@@ -565,8 +610,8 @@ ${ error.toString().trim() }
 
   /**
    * @param {EmitModule} emitModule
-   * @param {string} command
-   * @param {string} reason
+   * @param {String} command
+   * @param {String} reason
    * @returns {Promise}
    * @private
    */
@@ -574,7 +619,7 @@ ${ error.toString().trim() }
     const reasonMsg = reason ? `Reason - "${ reason }" ...` : '';
 
     return this._reporter.report(`
-### \`${ emitModule.name }\` skipped executing \`terraform ${ command }\`
+### '${ emitModule.name }' skipped executing 'terraform ${ command }'
 
 ${ reasonMsg }
     `);
@@ -588,7 +633,7 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    this._planChanged = plan.changed;
+    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
@@ -598,9 +643,7 @@ ${ reasonMsg }
       }
 
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform plan\`
-
-${ plan.changed ? '' : 'No Plan Changes Detected' }
+### '${ emitModule.name }' returned below output while executing 'terraform plan'
 
 \`\`\`
 ${ output }
@@ -619,7 +662,7 @@ ${ output }
   _handleApply(terraform, emitModule, state) {
     return terraform.show(state).then(output => {
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform apply\`
+### '${ emitModule.name }' returned below output while executing 'terraform apply'
 
 \`\`\`
 ${ output }
@@ -638,13 +681,40 @@ ${ output }
   _handleDestroy(terraform, emitModule, state) {
     return terraform.show(state).then(output => {
       return this._reporter.report(`
-### \`${ emitModule.name }\` returned below output while executing \`terraform destroy\`
+### '${ emitModule.name }' returned below output while executing 'terraform destroy'
 
 \`\`\`
 ${ output }
 \`\`\`
       `);
     });
+  }
+
+  /**
+   * @returns {String}
+   * @constructor
+   */
+  static get UNIT() {
+    return 'unit';
+  }
+
+  /**
+   * @returns {String}
+   * @constructor
+   */
+  static get E2E() {
+    return 'e2e';
+  }
+
+  /**
+   * @returns {Object}
+   * @constructor
+   */
+  static get GLOBAL_DEFAULTS() {
+    return {
+      'version': Terraform.VERSION,
+      'current-workspace': 'default'
+    };
   }
 }
 

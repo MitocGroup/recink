@@ -1,22 +1,32 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
-const emitEvents = require('./emit/events');
-const events = require('./test/events');
 const print = require('print');
+const unitEvents = require('./test/events');
+const emitEvents = require('./emit/events');
+const UnitRunner = require('./test/unit-runner');
 const ContainerTransformer = require('./helper/container-transformer');
-const Mocha = require('mocha');
+const DependencyBasedComponent = require('./dependency-based-component');
 
 /**
  * Test component
  */
-class TestComponent extends DependantConfigBasedComponent {
+class TestComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */
   constructor(...args) {
     super(...args);
-    
+
+    /**
+     * _units format
+     * @type {{
+     *  moduleName: {
+     *    assets: [],
+     *    runner: UnitRunner
+     *  }
+     * }}
+     */
+    this._units = {};
     this._stats = {
       total: 0,
       processed: 0,
@@ -37,66 +47,70 @@ class TestComponent extends DependantConfigBasedComponent {
   get dependencies() {
     return [ 'emit' ];
   }
-  
+
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
-      const mochas = {};
       const mochaOptions = this.container.get('mocha.options', {});
-      
+
       emitter.onBlocking(emitEvents.module.emit.asset, payload => {
         if (!this._match(payload)) {
-          return emitter.emitBlocking(events.asset.test.skip, payload);
+          return emitter.emitBlocking(unitEvents.asset.test.skip, payload);
         }
-        
-        const { fileAbs, module } = payload;
 
-        mochas[module.name] = mochas[module.name] || new Mocha(mochaOptions);
+        return emitter.emitBlocking(unitEvents.asset.test.add, {}).then(() => {
+          const { fileAbs, module } = payload;
+          this.logger.info(this.logger.emoji.fist, `New test registered: ${ fileAbs }`);
 
-        return emitter.emitBlocking(events.asset.test.add, mochas[module.name])
-          .then(() => {
-            this.logger.info(this.logger.emoji.fist, `Test ${ fileAbs }`);
-            
-            mochas[module.name].addFile(fileAbs);
-            
-            return Promise.resolve();
-          });
+          if (!this._units.hasOwnProperty(module.name)) {
+            this._units[module.name] = {
+              assets: [],
+              runner: new UnitRunner(mochaOptions)
+            };
+          }
+
+          this._units[module.name].assets.push(fileAbs);
+
+          return Promise.resolve();
+        });
       }, TestComponent.DEFAULT_PRIORITY);
-      
+
       emitter.onBlocking(emitEvents.module.process.end, module => {
-        const mocha = mochas[module.name] || null;
-        
-        return emitter.emitBlocking(events.asset.tests.start, mocha, module)
-          .then(() => {
-            return mocha ? new Promise((resolve, reject) => {
-              mocha.run(failures => {
-                if (failures > 0) {
-                  return reject(new Error(
-                    `Tests failed in module ${ module.name } with ${ failures } failures`
-                  ));
-                }
-                
-                resolve();
-              });
-            }) : Promise.resolve();
-          })
-          .then(() => emitter.emitBlocking(events.asset.tests.end, mocha, module));
+        if (!this._units.hasOwnProperty(module.name)) {
+          return Promise.resolve();
+        }
+
+        const unitModule = this._units[module.name];
+        const unitRunner = unitModule.runner;
+        const mocha = unitRunner.getMocha();
+
+        return emitter.emitBlocking(unitEvents.asset.tests.start, mocha, module).then(() => {
+          if (unitModule.assets.length <= 0) {
+            return Promise.resolve();
+          }
+
+          return unitRunner.run(unitModule.assets).then(failures => {
+            if (failures > 0) {
+              return Promise.reject(
+                new Error(`Tests failed in module ${ module.name } with ${ failures } failures`)
+              );
+            }
+
+            return unitRunner.cleanup();
+          });
+        }).then(() => emitter.emitBlocking(unitEvents.asset.tests.end, mocha, module));
       }, TestComponent.DEFAULT_PRIORITY);
       
       emitter.on(emitEvents.modules.process.end, () => {
         this.waitProcessing()
-          .then(() => emitter.emitBlocking(events.assets.test.end, this))
+          .then(() => emitter.emitBlocking(unitEvents.assets.test.end, this))
           .then(() => {
-            this.logger.info(
-              this.logger.emoji.beer, 
-              `Finished processing ${ this.stats.processed } test assets`
-            );
+            this.logger.info(this.logger.emoji.beer, `Finished processing ${ this.stats.processed } test assets`);
             this.logger.debug(this.dumpStats());
-            
+
             resolve();
           })
           .catch(error => reject(error));
@@ -107,7 +121,6 @@ class TestComponent extends DependantConfigBasedComponent {
   /**
    * @param {*} config
    * @param {string} configFile
-   *
    * @returns {Container}
    */
   prepareConfig(config, configFile) {

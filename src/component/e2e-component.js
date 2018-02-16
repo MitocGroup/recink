@@ -1,21 +1,20 @@
 'use strict';
 
-const DependantConfigBasedComponent = require('./dependant-config-based-component');
-const emitEvents = require('./emit/events');
-const events = require('./e2e/events');
-const registerBrowsers = require('./e2e/testcafe/browsers-registrar');
 const print = require('print');
-const ContainerTransformer = require('./helper/container-transformer');
-const createTestCafe = require('testcafe');
-const Spinner = require('./helper/spinner');
-const urlExists = require('url-exists');
 const pify = require('pify');
 const path = require('path');
+const Spinner = require('./helper/spinner');
+const E2ERunner = require('./e2e/e2e-runner');
+const urlExists = require('url-exists');
+const e2eEvents = require('./e2e/events');
+const emitEvents = require('./emit/events');
+const ContainerTransformer = require('./helper/container-transformer');
+const DependencyBasedComponent = require('./dependency-based-component');
 
 /**
  * End2End component
  */
-class E2EComponent extends DependantConfigBasedComponent {
+class E2EComponent extends DependencyBasedComponent {
   /**
    * @param {*} args
    */
@@ -29,97 +28,70 @@ class E2EComponent extends DependantConfigBasedComponent {
       ignored: 0,
     };
   }
-  
+
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return 'e2e';
   }
-  
+
   /**
-   * @returns {string[]}
+   * @returns {String[]}
    */
   get dependencies() {
     return [ 'emit' ];
   }
-  
+
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
-   * 
    * @private
-   *
-   * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html
-   * @see http://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html
    */
   _run(emitter) {
+    const config = {
+      reporter: this.container.get('reporter', E2ERunner.DEFAULT_REPORTER),
+      browsers: this.container.get('browsers', E2ERunner.DEFAULT_BROWSERS),
+      screenshotsPath: path.resolve(this.container.get('screenshot.path', process.cwd())),
+      takeOnFail: this.container.get('screenshot.take-on-fail', false)
+    };
+    const e2eRunner = new E2ERunner(config);
+
     return this._waitUris()
+      .then(() => emitter.emitBlocking(e2eEvents.assets.e2e.start))
       .then(() => {
-        return createTestCafe(
-          E2EComponent.DEFAULT_SERVER_HOSTNAME, 
-          ...E2EComponent.DEFAULT_SERVER_PORTS
-        ).then(testcafe => {
-          registerBrowsers();
+        return e2eRunner.run(this._testAssets)
+          .then(() => Promise.resolve(0))
+          .catch(failed => Promise.resolve(failed));
+      })
+      .then(failedCount => {
 
-          const runner = testcafe.createRunner();
-          const reporter = this.container.get('reporter', E2EComponent.DEFAULT_REPORTER);
-          const browsers = this.container.get('browsers', E2EComponent.DEFAULT_BROWSERS);
-          
-          if (this.container.get('screenshot.enabled', false)) {
-            runner.screenshots(
-              path.resolve(this.container.get('screenshot.path', process.cwd())), 
-              this.container.get('screenshot.take-on-fail', false)
-            );
-          }
+        // @todo find a smarter way to indent the output (buffer it?)
+        process.stdout.write('\n\n');
 
-          return emitter.emitBlocking(
-            events.assets.e2e.start, 
-            testcafe, 
-            runner, 
-            browsers, 
-            reporter
-          ).then(() => {
-            return runner
-              .src(this._testAssets)
-              .browsers(browsers)
-              .reporter(reporter)
-              .run(E2EComponent.RUN_OPTIONS);
-          }).then(failedCount => {
-            
-            // @todo find a smarter way to indent the output (buffer it?)
-            process.stdout.write('\n\n');
-            
-            return testcafe.close()
-              .then(() => emitter.emitBlocking(events.assets.e2e.end, testcafe, failedCount))
-              .then(() => Promise.resolve(failedCount));
-          });
-        });
+        return e2eRunner.cleanup()
+          .then(() => emitter.emitBlocking(e2eEvents.assets.e2e.end))
+          .then(() => Promise.resolve(failedCount));
       });
   }
   
   /**
    * @returns {Promise}
-   *
    * @private
    */
   _waitUris() {
     const uris = this.container.get('wait.uri', []);
-    
+
     if (uris.length <= 0) {
       return Promise.resolve();
     }
+
+    const spinner = new Spinner(`Wait for the following URIs to be available: ${ uris.join(', ') }`);
     
-    const spinner = new Spinner(
-      `Wait for the following URIs to be available: ${ uris.join(', ') }`
-    );
-    
-    return spinner.then(
-      `All URIs are available:\n\t${ uris.join('\n\t') }`
-    ).catch(
-      `Some of the following URIs are not available:\n\t${ uris.join('\n\t') }`
-    ).promise(Promise.all(uris.map(uri => this._waitUri(uri))));
+    return spinner
+      .then(`All URIs are available:\n\t${ uris.join('\n\t') }`)
+      .catch(`Some of the following URIs are not available:\n\t${ uris.join('\n\t') }`)
+      .promise(Promise.all(uris.map(uri => this._waitUri(uri))));
   }
   
   /**
@@ -164,17 +136,16 @@ class E2EComponent extends DependantConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
    */
   run(emitter) {
     return new Promise((resolve, reject) => {
       emitter.onBlocking(emitEvents.module.emit.asset, payload => {          
         if (!this._match(payload)) {
-          return emitter.emitBlocking(events.asset.e2e.skip, payload);
+          return emitter.emitBlocking(e2eEvents.asset.e2e.skip, payload);
         }
         
-        return emitter.emitBlocking(events.asset.e2e.add, payload)
+        return emitter.emitBlocking(e2eEvents.asset.e2e.add, payload)
           .then(() => {
             const { fileAbs } = payload;
             
@@ -185,37 +156,27 @@ class E2EComponent extends DependantConfigBasedComponent {
       emitter.on(emitEvents.modules.process.end, () => {
         process.nextTick(() => {
           if (this._testAssets.length <= 0) {
-            this.logger.info(
-              this.logger.emoji.beer, 
-              `Finished processing ${ this.stats.processed } end-to-end test assets`
-            );
+            this.logger.info(this.logger.emoji.beer, `Finished processing ${ this.stats.processed } e2e test assets`);
             this.logger.debug(this.dumpStats());
             
             return resolve();
           }
           
-          this._run(emitter)
-            .then(failedCount => {
-              if (failedCount > 0) {
-                return Promise.reject(new Error(
-                  `There is/are ${ failedCount } end-to-end test case/s failed!`
-                ));
-              }
-              
-              this.logger.info(
-                this.logger.emoji.beer, 
-                `Finished processing ${ this.stats.processed } end-to-end test assets`
-              );
-              this.logger.debug(this.dumpStats());
-              
-              resolve();
-            })
-            .catch(error => reject(error));
+          this._run(emitter).then(failedCount => {
+            if (failedCount > 0) {
+              return Promise.reject(new Error(`There is/are ${ failedCount } end-to-end test case/s failed!`));
+            }
+
+            this.logger.info(this.logger.emoji.beer, `Finished processing ${ this.stats.processed } e2e test assets`);
+            this.logger.debug(this.dumpStats());
+
+            resolve();
+          }).catch(error => reject(error));
         });
       });
     });
   }
-  
+
   /**
    * @param {*} config
    * @param {string} configFile
@@ -290,61 +251,21 @@ class E2EComponent extends DependantConfigBasedComponent {
       sortProps: false,
     }).replace(/\t/g, '   ');
   }
-  
-  /**
-   * @returns {number[]}
-   */
-  static get DEFAULT_SERVER_PORTS() {
-    return [ 1337, 1338 ];
-  }
-  
-  /**
-   * @returns {*}
-   */
-  static get RUN_OPTIONS() {
-    return {
 
-      // @todo figure out options that really matters!
-      // skipJsErrors: true,
-      // quarantineMode: true,
-    };
-  }
-  
-  /**
-   * @returns {string[]}
-   */
-  static get DEFAULT_BROWSERS() {
-    return [ 'puppeteer' ];
-  }
-  
-  /**
-   * @returns {string}
-   */
-  static get DEFAULT_REPORTER() {
-    return 'spec';
-  }
-  
-  /**
-   * @returns {string}
-   */
-  static get DEFAULT_SERVER_HOSTNAME() {
-    return 'localhost';
-  }
-  
   /**
    * @returns {number}
    */
   static get DEFAULT_WAIT_INTERVAL() {
     return 200;
   }
-  
+
   /**
    * @returns {number}
    */
   static get DEFAULT_WAIT_TIMEOUT() {
     return 15000;
   }
-  
+
   /**
    * @returns {number}
    */
