@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/helper/util.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/recink.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/container.js~Container.html">Container</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/logger.js~Logger.html">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/recink.js~Recink.html">Recink</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/abstract-component.js~AbstractComponent.html">AbstractComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependency-based-component.js~DependencyBasedComponent.html">DependencyBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html">S3UnpackedDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e/e2e-runner.js~E2ERunner.html">E2ERunner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/module-compile.js~ModuleCompile.html">ModuleCompile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/npm</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/cache.js~Cache.html">Cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/npm-module.js~NpmModule.html">NpmModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/preprocess</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html">AbstractTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/eval-transformer.js~EvalTransformer.html">EvalTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test/unit-runner.js~UnitRunner.html">UnitRunner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">config</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/abstract-config.js~AbstractConfig.html">AbstractConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/helper/util.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const fs = require(&apos;fs&apos;);
+const path = require(&apos;path&apos;);
+
+/**
+ * Read directory recursively
+ * @param {String} dir
+ * @param {RegExp} filter
+ * @param {Function} callback
+ */
+function walkDir(dir, filter, callback) {
+  if (!fs.existsSync(dir)) {
+    return;
+  }
+
+  let files = fs.readdirSync(dir);
+
+  for (let i = 0; i &lt; files.length; i++) {
+    let filename = path.join(dir, files[i]);
+    let stat = fs.lstatSync(filename);
+
+    if (stat.isDirectory()) {
+      walkDir(filename, filter, callback);
+    } else if (filter.test(filename)) {
+      callback(filename);
+    }
+  }
+}
+
+exports.walkDir = walkDir;
+
+/**
+ * Get filenames from dir by RegExp pattern
+ * @param {String} dir
+ * @param {RegExp} regExp
+ * @return {Array}
+ */
+function getFilesByPattern(dir, regExp) {
+  let fileNames = [];
+  walkDir(dir, regExp, (fileName) =&gt; fileNames.push(fileName));
+
+  return fileNames;
+}
+
+exports.getFilesByPattern = getFilesByPattern;
+
+/**
+ * Remove all prefixes or suffixes from the given string
+ * @param {String} string
+ * @param {String} symbol
+ * @returns {String}
+ */
+function trimBoth(string, symbol = &apos;\s&apos;) {
+  const leading = new RegExp(`^${symbol}`);
+  const trailing = new RegExp(`${symbol}$`);
+
+  return string.replace(leading, &apos;&apos;).replace(trailing, &apos;&apos;);
+}
+
+exports.trimBoth = trimBoth;
+
+/**
+ * Fill string with symbols
+ * @param {String} str
+ * @param {Number} length
+ * @param {String} symbol
+ * @returns {String}
+ */
+function fillString(str, length, symbol = &apos;x&apos;) {
+  let result = str;
+
+  while (result.length &lt; length) {
+    result += symbol;
+  }
+
+  return result;
+}
+
+exports.fillString = fillString;
+
+/**
+ * Compare two software version
+ *  v1 == v2 =&gt; 0
+ *  v1 &lt; v2 =&gt; -1
+ *  v1 &gt; v2 =&gt; 1
+ * @param {String} v1
+ * @param {String} v2
+ * @returns {Number}
+ */
+function versionCompare(v1, v2) {
+  const fillTo = 10;
+  let ver1 = v1.split(&apos;.&apos;).map(x =&gt; fillString(x.trim().toLowerCase(), fillTo, &apos;#&apos;)).join(&apos;&apos;);
+  let ver2 = v2.split(&apos;.&apos;).map(x =&gt; fillString(x.trim().toLowerCase(), fillTo, &apos;#&apos;)).join(&apos;&apos;);
+  let maxLength = Math.max(ver1.length, ver2.length);
+
+  ver1 = fillString(ver1, maxLength, &apos;#&apos;);
+  ver2 = fillString(ver2, maxLength, &apos;#&apos;);
+
+  for (let i = 0; i &lt; maxLength; i++) {
+    let char1 = ver1.charCodeAt(i);
+    let char2 = ver2.charCodeAt(i);
+
+    if (char1 &gt; 96) {
+      char1 -=60;
+    }
+
+    if (char2 &gt; 96) {
+      char2 -=60;
+    }
+
+    if (char1 !== char2) {
+      return (char1 &gt; char2) ? 1 : -1;
+    }
+  }
+
+  return 0
+}
+
+// @todo remove after testing
+// /**
+//  * Compares two software version numbers (e.g. &quot;1.7.1&quot; or &quot;1.2b&quot;).
+//  *
+//  * @param {String} v1 The first version to be compared.
+//  * @param {String} v2 The second version to be compared.
+//  * @param {Object} [options] Optional flags that affect comparison behavior:
+//  *
+//  * lexicographical: true | compares each part of the version strings lexicographically
+//  * instead of naturally; this allows suffixes such as &quot;b&quot; or &quot;dev&quot; but will cause &quot;1.10&quot;
+//  * to be considered smaller than &quot;1.2&quot;.
+//  *
+//  * zeroExtend: true | changes the result if one version string has less parts than the other.
+//  * In this case the shorter string will be padded with &quot;zero&quot; parts instead of being considered smaller.
+//  *
+//  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format
+//  */
+// function versionCompare(v1, v2, options = {}) {
+//   let lexicographical = options &amp;&amp; options.lexicographical,
+//     zeroExtend = options &amp;&amp; options.zeroExtend,
+//     v1parts = v1.split(&apos;.&apos;),
+//     v2parts = v2.split(&apos;.&apos;);
+//
+//   /**
+//    * @param {String} x
+//    * @returns {Boolean}
+//    */
+//   function isValidPart(x) {
+//     return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+//   }
+//
+//   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+//     return NaN;
+//   }
+//
+//   if (zeroExtend) {
+//     while (v1parts.length &lt; v2parts.length) {
+//       v1parts.push(&apos;0&apos;);
+//     }
+//
+//     while (v2parts.length &lt; v1parts.length) {
+//       v2parts.push(&apos;0&apos;);
+//     }
+//   }
+//
+//   if (!lexicographical) {
+//     v1parts = v1parts.map(Number);
+//     v2parts = v2parts.map(Number);
+//   }
+//
+//   for (let i = 0; i &lt; v1parts.length; ++i) {
+//     if (v2parts.length === i) {
+//       return 1;
+//     }
+//
+//     if (v1parts[i] === v2parts[i]) {
+//       continue;
+//     } else if (v1parts[i] &gt; v2parts[i]) {
+//       return 1;
+//     } else {
+//       return -1;
+//     }
+//   }
+//
+//   if (v1parts.length !== v2parts.length) {
+//     return -1;
+//   }
+//
+//   return 0;
+// }
+
+exports.versionCompare = versionCompare;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

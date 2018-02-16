@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/component/npm/npm-module.js | REciNK - Rethink Continuous Integration for JavaScript Applications API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/MitocGroup/recink.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/container.js~Container.html">Container</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/emitter.js~Emitter.html">Emitter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/logger.js~Logger.html">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/recink.js~Recink.html">Recink</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/abstract-component.js~AbstractComponent.html">AbstractComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache-component.js~CacheComponent.html">CacheComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependency-based-component.js~DependencyBasedComponent.html">DependencyBasedComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess-component.js~PreprocessComponent.html">PreprocessComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test-component.js~TestComponent.html">TestComponent</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/cache</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver.html">S3UnpackedDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/cache/void-driver.js~VoidDriver.html">VoidDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/coverage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/abstract-driver.js~AbstractDriver.html">AbstractDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e/e2e-runner.js~E2ERunner.html">E2ERunner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/container-transformer.js~ContainerTransformer.html">ContainerTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/module-compile.js~ModuleCompile.html">ModuleCompile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/sequential-promise.js~SequentialPromise.html">SequentialPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/spinner.js~Spinner.html">Spinner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/transformer.js~Transformer.html">Transformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/npm</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/cache.js~Cache.html">Cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm/npm-module.js~NpmModule.html">NpmModule</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/preprocess</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/abstract-transformer.js~AbstractTransformer.html">AbstractTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/eval-transformer.js~EvalTransformer.html">EvalTransformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/test</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/test/unit-runner.js~UnitRunner.html">UnitRunner</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">config</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/abstract-config.js~AbstractConfig.html">AbstractConfig</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/component/npm/npm-module.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const packageHash = require(&apos;package-hash&apos;);
+const path = require(&apos;path&apos;);
+const fse = require(&apos;fs-extra&apos;);
+const Spinner = require(&apos;../helper/spinner&apos;);
+const { spawn } = require(&apos;child_process&apos;);
+const md5Hex = require(&apos;md5-hex&apos;);
+const SequentialPromise = require(&apos;../helper/sequential-promise&apos;);
+
+/**
+ * Abstraction over an NPM module
+ */
+class NpmModule {
+  /**
+   * @param {string} rootDir
+   * @param {Cache} cache
+   * @param {*} logger
+   */
+  constructor(rootDir, cache, logger) {
+    this._rootDir = rootDir;
+    this._cache = cache;
+    this._logger = logger;
+  }
+  
+  /**
+   * @returns {*}
+   */
+  get logger() {
+    return this._logger;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get rootDir() {
+    return this._rootDir;
+  }
+  
+  /**
+   * @param {Cache} cache
+   */
+  get cache() {
+    return this._cache;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get packageFileRelative() {
+    return path.relative(process.cwd(), this.packageFile);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get packageFile() {
+    return path.join(this.rootDir, NpmModule.PACKAGE_FILE);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get modulesDir() {
+    return path.join(this.rootDir, NpmModule.MODULES_DIR);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  get debugFile() {
+    return path.join(this.rootDir, NpmModule.NPM_DEBUG_FILE);
+  }
+  
+  /**
+   * @param {*} deps
+   * @param {array} scripts
+   *
+   * @returns {Promise}
+   */
+  install(deps = {}, scripts = []) {
+    let cacheKey;
+    const packageFile = this.packageFile;
+    const modulesDir = this.modulesDir;
+    
+    return fse.ensureDir(modulesDir)
+      .then(() =&gt; this._packageHash(packageFile, deps))
+      .then(hash =&gt; {
+        cacheKey = hash;
+        
+        return this.cache.has(hash);
+      })
+      .then(inCache =&gt; {
+        if (inCache) {
+          this.logger.debug(`Restore ${ this.rootDir } cache from #${ cacheKey }`);
+          
+          return this.cache.restore(cacheKey, modulesDir)
+            .then(() =&gt; this._runScripts(scripts));
+        }
+        
+        this.logger.debug(`Install dependencies in ${ this.rootDir }`);
+        
+        return this._install(packageFile, deps)
+          .then(() =&gt; this._runScripts(scripts))
+          .then(() =&gt; {
+            this.logger.debug(`Save ${ this.rootDir } cache to #${ cacheKey }`);
+            
+            return this.cache.flush()
+              .then(() =&gt; this.cache.save(cacheKey, modulesDir));
+          });
+      });
+  }
+  
+  /**
+   * @param {array} scripts
+   * 
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _runScripts(scripts) {
+    if (scripts.length &lt;= 0) {
+      return Promise.resolve();
+    }
+    
+    return SequentialPromise.all(scripts.map(script =&gt; {
+      return () =&gt; this._runScript(script);
+    }));
+  }
+  
+  /**
+   * @param {string} script
+   * 
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _runScript(script) {
+    return (new Spinner(
+      `Running ${ script } script in ${ this.rootDir }`
+    )).then(
+      `Script ${ script } execution succeed in ${ this.rootDir }`
+    ).catch(
+      `Script ${ script } execution failed in ${ this.rootDir }`
+    ).promise(new Promise((resolve, reject) =&gt; {
+      const options = {
+        cwd: this.rootDir, 
+        stdio: &apos;ignore&apos;,
+      };
+
+      const npmRunScript = spawn(&apos;npm&apos;, [ &apos;run&apos;, script ], options);
+      
+      npmRunScript.on(&apos;close&apos;, code =&gt; {
+        if (code !== 0) {          
+          return reject(new Error(
+            `Failed to run script ${ script } in ${ this.rootDir }.\n` +
+            `To open logs type: &apos;open ${ this.debugFile }&apos;`
+          ));
+        }
+        
+        resolve();
+      });
+    }));
+  }
+  
+  /**
+   * @param {string} packageFile
+   * @param {*} additionalDeps
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _install(packageFile, additionalDeps) {
+    return fse.pathExists(packageFile)
+      .then(hasPackageFile =&gt; {
+        return hasPackageFile ? this._doInstall() : Promise.resolve();
+      })
+      .then(() =&gt; {
+        const depsVector = Object.keys(additionalDeps)
+          .map(depName =&gt; {
+            return `${ depName }@${ additionalDeps[depName] }`;
+          });
+
+        return depsVector.length &gt; 0 
+          ? this._doInstall(depsVector) 
+          : Promise.resolve();
+      });
+  }
+  
+  /**
+   * @param {string} depsDebug
+   *
+   * @returns {string}
+   * 
+   * @private
+   */
+  _trimDepsDebugInfo(depsDebug) {
+    if (depsDebug.length &gt; 25) {
+      return depsDebug.substr(0, 25) + &apos;...&apos;;
+    }
+    
+    return depsDebug;
+  }
+  
+  /**
+   * @param {array} deps
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _doInstall(deps = []) {
+    const depsDebug = this._trimDepsDebugInfo(deps.length &gt; 0 ? deps.join(&apos;, &apos;) : &apos;MAIN&apos;);
+    
+    return (new Spinner(
+      `Installing dependencies in ${ this.rootDir } (${ depsDebug })`
+    )).then(
+      `Dependencies installation succeed in ${ this.rootDir } (${ depsDebug })`
+    ).catch(
+      `Dependencies installation failed in ${ this.rootDir } (${ depsDebug })`
+    ).promise(new Promise((resolve, reject) =&gt; {
+      const options = {
+        cwd: this.rootDir, 
+        stdio: &apos;ignore&apos;,
+      };
+      
+      // ignore running &apos;npm install&apos; scripts
+      if (deps.length &lt;= 0) {
+        deps = [ &apos;--ignore-scripts&apos; ];
+      }
+
+      const npmInstall = spawn(&apos;npm&apos;, [ &apos;install&apos;, &apos;--no-shrinkwrap&apos; ].concat(deps), options);
+      
+      npmInstall.on(&apos;close&apos;, code =&gt; {
+        if (code !== 0) {          
+          return reject(new Error(
+            `Failed to install dependencies in ${ this.rootDir }.\n` +
+            `To open logs type: &apos;open ${ this.debugFile }&apos;`
+          ));
+        }
+        
+        resolve();
+      });
+    }));
+  }
+  
+  /**
+   * @param {string} packageFile
+   * @param {*} deps
+   *
+   * @returns {Promise}
+   *
+   * @private
+   */
+  _packageHash(packageFile, deps) {
+    return fse.pathExists(packageFile)
+      .then(hasPackageFile =&gt; {
+        const depsHash = this._depsHash(deps);
+        const packageDebug = hasPackageFile ? &apos;exists&apos; : &apos;missing&apos;;
+        
+        this.logger.debug(
+          `File ${ NpmModule.PACKAGE_FILE } ${ packageDebug } in ${ this.rootDir }`
+        );
+        
+        if (!hasPackageFile) {
+          return Promise.resolve(`${ depsHash }-${ NpmModule.DEFAULT_HASH }`);
+        }
+        
+        return packageHash(packageFile)
+          .then(hash =&gt; {
+            return Promise.resolve(`${ depsHash }-${ hash }`);
+          });
+      });
+  }
+  
+  /**
+   * @param {*} deps
+   *
+   * @returns {string}
+   *
+   * @private
+   */
+  _depsHash(deps) {
+    const normalizedDeps = {};
+    
+    Object.keys(deps).sort().map(key =&gt; {
+      normalizedDeps[key] = deps[key];
+    });
+    
+    return md5Hex(JSON.stringify(normalizedDeps));
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get DEFAULT_HASH() {
+    return &apos;x&apos;.repeat(32);
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get NPM_DEBUG_FILE() {
+    return &apos;npm-debug.log&apos;;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get PACKAGE_FILE() {
+    return &apos;package.json&apos;;
+  }
+  
+  /**
+   * @returns {string}
+   */
+  static get MODULES_DIR() {
+    return &apos;node_modules&apos;;
+  }
+}
+
+module.exports = NpmModule;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
