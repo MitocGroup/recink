@@ -14,12 +14,12 @@ describe('Test EmitModule', () => {
   const logger = { warn: emptyCb, debug: emptyCb, emoji: {} };
   const emitter = new Emitter();
   const container = new Container({ root: '.' });
-  
+
   let pathExists = true;
   
   const stream = new PassThrough();
   const EmitModule = ModuleCompile.require(
-    path.join(__dirname, '../../../../../src/component/emit/emit-module'),
+    path.join(__dirname, '../../../../../src/component/emit/emit-module.js'),
     {
       'fs-extra': { pathExists () { return Promise.resolve(pathExists) } },
       'readdir-enhanced': { stream() { return stream } },
