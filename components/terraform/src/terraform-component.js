@@ -1,17 +1,17 @@
 'use strict';
 
 const fse = require('fs-extra');
-const Diff = require('./diff');
 const path = require('path');
+const Diff = require('./diff');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
-const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const E2ERunner = require('recink/components/e2e/src/e2e-runner');
 const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const { getFilesByPattern } = require('recink/src/helper/util');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 
 /**
  * Terraform component
@@ -60,9 +60,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {String}
-   *
    * @private
    */
   _moduleRoot(emitModule) {
@@ -312,7 +310,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @returns {Function[]}
-   *
    * @private
    */
   get _normalizedRunStack() {
