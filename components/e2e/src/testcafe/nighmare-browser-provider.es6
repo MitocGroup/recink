@@ -1,12 +1,11 @@
 'use strict';
 
-const Nightmare = require('nightmare');
-const debug = require('debug');
 const pify = require('pify');
+const debug = require('debug');
+const Nightmare = require('nightmare');
 
 /**
  * Nighmare browser provider
- * 
  * @deprecated
  */
 module.exports = {
@@ -32,8 +31,8 @@ module.exports = {
    * @private
    */
   _options: {
-    show: debug.enabled(),
-    openDevTools: debug.enabled(),
+    show: debug.enabled('nightmare'),
+    openDevTools: debug.enabled('nightmare'),
     waitTimeout: 60000,
     gotoTimeout: 60000,
     loadTimeout: 60000,
@@ -45,10 +44,8 @@ module.exports = {
 
   /**
    * Open new page in browser
-   * 
-   * @param {string} id 
-   * @param {string} pageUrl 
-   * 
+   * @param {String} id
+   * @param {String} pageUrl
    * @returns {Promise}
    */
   async openBrowser(id, pageUrl) {
@@ -61,9 +58,7 @@ module.exports = {
 
   /**
    * Close given page in browser
-   * 
-   * @param {string} id
-   * 
+   * @param {String} id
    * @returns {Promise}
    */
   async closeBrowser(id) {
@@ -76,7 +71,6 @@ module.exports = {
 
   /**
    * Init browser
-   * 
    * @returns {Promise}
    */
   async init() {
@@ -85,7 +79,6 @@ module.exports = {
 
   /**
    * Dispose browser
-   * 
    * @returns {Promise}
    */
   async dispose() {
@@ -93,11 +86,10 @@ module.exports = {
   },
 
   /**
-   * resize browser window to given size
-   * 
-   * @param {string} id 
-   * @param {number} width 
-   * @param {number} height 
+   * Resize browser window to given size
+   * @param {String} id
+   * @param {Number} width
+   * @param {Number} height
    * 
    * @returns {Promise}
    */

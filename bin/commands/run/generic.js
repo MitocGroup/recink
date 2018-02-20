@@ -29,7 +29,6 @@ module.exports = (args, options, logger) => {
   }
 
   switch (namespace.toLowerCase()) {
-    case 'e2e':
     case 'unit':
       namespace = namespace.toLowerCase();
       break;
