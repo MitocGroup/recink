@@ -19,7 +19,7 @@ matrix:
   include:
     - script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
-        - 'npm install && echo "AAAAAAAAAA"'
+        - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
         - 'cd ./components/codeclimate && npm install --no-optional --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
       before_install:
