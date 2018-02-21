@@ -1,5 +1,5 @@
 dist: trusty
-node_js: 8
+node_js: 6
 language: node_js
 git:
   depth: 1
@@ -15,7 +15,6 @@ branches:
     - stage
     - test
     - dev
-install: rm -rf node_modules/ && npm i --no-optional && npm dedupe && npm up
 matrix:
   include:
     - script: './bin/cli.js run unit -c ./components/codeclimate'
