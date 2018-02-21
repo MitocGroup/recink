@@ -18,10 +18,11 @@ branches:
 
 matrix:
   include:
-    - install: 'npm install --no-package-lock'
+    - install:
+        - 'npm install --no-package-lock'
+        - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
       script: './bin/cli.js run unit -c ./components/codeclimate'
       before_install:
-        - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
         - 'cd ./components/codeclimate && npm install --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
       before_install:
