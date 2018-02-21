@@ -15,9 +15,6 @@ branches:
     - stage
     - test
     - dev
-before_install:
-  - 'npm install --no-package-lock'
-  - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
 
 matrix:
   include:

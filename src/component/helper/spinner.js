@@ -7,7 +7,7 @@ const ora = require('ora');
  */
 class Spinner {
   /**
-   * @param {string} msg
+   * @param {String} msg
    */
   constructor(msg) {
     this._main = msg;
@@ -17,8 +17,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} text
-   *
+   * @param {String} text
    * @returns {ora}
    */
   prepend(text) {
@@ -28,8 +27,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} text
-   *
+   * @param {String} text
    * @returns {ora}
    */
   append(text) {
@@ -71,8 +69,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} msg
-   *
+   * @param {String} msg
    * @returns {Spinner}
    */
   then(msg) {
@@ -82,8 +79,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} msg
-   *
+   * @param {String} msg
    * @returns {Spinner}
    */
   catch(msg) {
@@ -93,24 +89,24 @@ class Spinner {
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get catchText() {
-    return this._catch + '\n';
+    return this._catch;
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get thenText() {
-    return this._then + '\n';
+    return this._then;
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get mainText() {
-    return this._main + '\n';
+    return this._main;
   }
 }
 

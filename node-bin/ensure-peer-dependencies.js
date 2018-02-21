@@ -12,10 +12,10 @@ const forceNoPeer = JSON.parse(
   (process.env.npm_config_argv || '{"original":[]}').trim()
 ).original.map(a => a.toLowerCase()).indexOf('--no-peer') !== -1;
 
-if (Env.isCI || forceNoPeer) {
-  console.log('Skip installation of peerDependencies whilst either in TravisCI or forced by --no-peer flag');
-  process.exit(0);
-}
+// if (Env.isCI || forceNoPeer) {
+//   console.log('Skip installation of peerDependencies whilst either in TravisCI or forced by --no-peer flag');
+//   process.exit(0);
+// }
 
 const dependenciesVector = [];
 
