@@ -2,15 +2,15 @@
 
 'use strict';
 
+const Env = require('../src/helper/env');
+const pkg = require('../package.json');
 const path = require('path');
 const prog = require('caporal');
-const pkg = require('../package.json');
-const Env = require('../src/helper/env');
 const logger = require('../src/logger');
 
 /**
- * @param {string} path
- * @returns {function}
+ * @param {String} path
+ * @returns {Function}
  */
 function cmd(path) {
   return (args, options, customLogger) => {
@@ -42,7 +42,7 @@ if (Env.isCI) {
 const commands = prog
   .version(pkg.version)
   .description(description)
-  .command('run', 'Run unit, e2e or an generic component') 
+  .command('run', 'Run generic component')
   .argument('[name]', 'Generic component name')
   .argument('[path]', 'Path to tests', /.+/, process.cwd())
   .option('--exclude-modules [modules]', 'List of modules to exclude', prog.LIST, [])
@@ -53,9 +53,9 @@ const commands = prog
   .option('--tf-vars', 'Terraform variables as environmental variables', prog.LIST, [])
   .option('--tf-varfiles', 'Terraform variables as tfvars files', prog.LIST, [])
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
-  .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'e2e', 'test', 'coverage' ])
-  .option('-c <component>', 'Use 3\'rd party component', prog.REPEATABLE)
-  .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'e2e', 'test', 'coverage' ])
+  .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'test', 'coverage' ])
+  .option('-c <component>', `Use 3'rd party component`, prog.REPEATABLE)
+  .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'test', 'coverage' ])
   .action(cmd('./commands/run/generic'))
   .command('component add', 'Add an REciNK component to the registry')
   .argument('[name...]', 'Component name', /^[a-z][a-z0-9_,-]+$/i)
