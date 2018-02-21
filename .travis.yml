@@ -15,7 +15,7 @@ branches:
     - stage
     - test
     - dev
-
+install: rm -rf node_modules/ && npm i --no-optional && npm dedupe && npm up
 matrix:
   include:
     - script: './bin/cli.js run unit -c ./components/codeclimate'
