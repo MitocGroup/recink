@@ -19,7 +19,7 @@ describe('Test EmitModule', () => {
   
   const stream = new PassThrough();
   const EmitModule = ModuleCompile.require(
-    path.join(__dirname, '../../../../../src/component/emit/emit-module.js'),
+    path.join(__dirname, '../../../../../src/component/emit/emit-module'),
     {
       'fs-extra': { pathExists () { return Promise.resolve(pathExists) } },
       'readdir-enhanced': { stream() { return stream } },

@@ -15,18 +15,16 @@ branches:
     - stage
     - test
     - dev
+before_install:
+  - 'npm install --no-package-lock'
+  - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
 
 matrix:
   include:
-    - install:
-        - 'npm install --no-package-lock'
-        - 'ls -la /home/travis/build/MitocGroup/recink/node_modules/'
-      script: './bin/cli.js run unit -c ./components/codeclimate'
-      before_install:
-        - 'cd ./components/codeclimate && npm install --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
+    - script: './bin/cli.js run unit -c ./components/codeclimate'
+      before_script: 'cd ./components/codeclimate && npm install --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
-      before_install:
-        - 'cd ./components/e2e && npm install -g --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
+      before_script: 'cd ./components/e2e && npm install -g --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
