@@ -26,7 +26,7 @@
     "url": "https://github.com/MitocGroup/recink.git"
   },
   "scripts": {
-    "postinstall": "npm run transpile",
+    "prepublishOnly": "npm run transpile",
     "transpile": "node `npm bin`/babel ./src -d ./src"
   },
   "dependencies": {
