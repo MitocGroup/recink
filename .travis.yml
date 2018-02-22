@@ -20,7 +20,7 @@ matrix:
     - script: './bin/cli.js run unit -c ./components/codeclimate'
       before_script: 'cd ./components/codeclimate && npm install --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
     - script: './bin/cli.js run e2e'
-      before_script: 'cd ./components/e2e && npm install -g --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
+      before_script: 'cd ./components/e2e && npm install --no-package-lock && cd "$TRAVIS_BUILD_DIR"'
 env:
   global:
     # CODECLIMATE_REPO_TOKEN=[secure]
