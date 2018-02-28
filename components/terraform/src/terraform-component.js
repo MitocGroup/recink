@@ -414,7 +414,8 @@ class TerraformComponent extends DependencyBasedComponent {
     switch ((defaultValue).constructor) {
       case String:
       case Boolean:
-        result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
+        const cfg = Object.assign({x: defaultValue}, {x: mainCfg}, {x: moduleCfg});
+        result = cfg.x;
         break;
       case Object:
         result = Object.assign({}, mainCfg, moduleCfg);
@@ -458,7 +459,7 @@ class TerraformComponent extends DependencyBasedComponent {
    *
    * @returns {Promise}
    *
-   * @private 
+   * @private
    */
   _hasChanges(emitModule) {
     const rootPath = this._moduleRoot(emitModule);
@@ -477,6 +478,12 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
+    console.log('plan', this._parameterFromConfig(emitModule, 'plan', false));
+    console.log('apply', this._parameterFromConfig(emitModule, 'apply', false));
+    console.log('destroy', this._parameterFromConfig(emitModule, 'destroy', false));
+
+    process.exit(1);
+
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
     }
