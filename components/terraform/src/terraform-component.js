@@ -37,7 +37,6 @@ class TerraformComponent extends DependencyBasedComponent {
     this._e2e = {};
     this._unit = {};
     this._reporter = null;
-    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
@@ -299,7 +298,6 @@ class TerraformComponent extends DependencyBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
     this._unit = {};
@@ -345,18 +343,14 @@ class TerraformComponent extends DependencyBasedComponent {
     }
 
     if (it >= maxIt) {
-      throw new Error(
-        `Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`
-      );
+      throw new Error(`Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`);
     }
 
-    return modulesNames.map(moduleName => {
-      return this._runStack[moduleName];
-    });
+    return modulesNames.map(moduleName => this._runStack[moduleName]);
   }
 
   /**
-   * @throws {Error}
+   * Validate terraform modules run-stack
    * @private
    */
   _validateRunStack() {
@@ -365,7 +359,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
     available.forEach(moduleName => {
       const { after } = this._runStack[moduleName];
-
       const extraneousModules = after.filter(m => !available.includes(m));
 
       if (extraneousModules.length > 0) {
@@ -375,11 +368,12 @@ class TerraformComponent extends DependencyBasedComponent {
 
     if (Object.keys(extraneous).length > 0) {
       const extraneousVector = Object.keys(extraneous).map(moduleName => {
-        return `<[${ moduleName }]> ${ extraneous[moduleName].join(', ') }`;
-      });
-      const extraneousInfo = extraneousVector.join('\n\t');
+        delete this._runStack[moduleName];
 
-      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
+        const deps = extraneous[moduleName];
+        const errMessage = `Skipping '${ moduleName }' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
+        this.logger.warn(this.logger.emoji.cross, errMessage);
+      });
     }
   }
 
@@ -630,7 +624,6 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
