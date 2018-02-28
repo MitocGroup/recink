@@ -294,6 +294,12 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
+    "recink/src/helper/util.js~fillstring",
+    "function/index.html#static-function-fillString",
+    "<span>fillString</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
+    "function"
+  ],
+  [
     "recink/src/helper/util.js~getfilesbypattern",
     "function/index.html#static-function-getFilesByPattern",
     "<span>getFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",

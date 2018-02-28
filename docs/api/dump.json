@@ -4621,7 +4621,7 @@
     "__docId__": 158,
     "kind": "file",
     "name": "src/component/coverage-component.js",
-    "content": "'use strict';\n\n/* eslint no-useless-call: 0 */\n\nconst DependencyBasedComponent = require('./dependency-based-component');\nconst istanbul = require('istanbul');\nconst testEvents = require('./test/events');\nconst events = require('./coverage/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst path = require('path');\nconst fs = require('fs');\nconst pify = require('pify');\nconst StorageFactory = require('./coverage/factory');\nconst ModuleCompile = require('./helper/module-compile');\n\n/**\n * Coverage component\n */\nclass CoverageComponent extends DependencyBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._storage = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'coverage';\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [ 'test' ];\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  get _comparatorStorage() {\n    if (this._storage) {\n      return this._storage;\n    }\n    \n    const driver = this.container.get('compare.storage.driver', 'volatile');\n    const options = this.container.get('compare.storage.options', []);\n    \n    this._storage = StorageFactory.create(driver, ...options);\n    \n    return this._storage;\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _doCompare(collector) {\n    const allowedDelta = Math.abs(parseFloat(\n      this.container.get('compare.negative-delta', 100)\n    ));\n    \n    if (!allowedDelta || allowedDelta >= 100) {\n      return Promise.resolve();\n    }\n    \n    const storage = this._comparatorStorage;\n    \n    if (storage.constructor.name === 'VolatileDriver') {\n      this.logger.debug(\n        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`\n      );\n    }\n    \n    return storage.read(CoverageComponent.COVERAGE_FILE)\n      .then(coverage => {\n        const newCoverage = collector.getFinalCoverage();\n        \n        if (!coverage) {\n          this.logger.info(\n            this.logger.emoji.bicycle,\n            'No previous coverage info saved...'\n          );\n          \n          return storage.write(\n            CoverageComponent.COVERAGE_FILE, \n            newCoverage\n          );\n        }\n        \n        const delta = this._calculateDelta(coverage, newCoverage);\n        \n        if (delta > allowedDelta) {          \n          return Promise.reject(new Error(\n            `Coverage delta decreased ${ delta.toFixed(2) } > ${ allowedDelta.toFixed(2) }`\n          ));\n        }\n        \n        this.logger.info(\n          this.logger.emoji.bicycle,\n          `Coverage delta checked ${ delta.toFixed(2) } >= ${ allowedDelta.toFixed(2) }`\n        );\n        \n        return storage.write(\n          CoverageComponent.COVERAGE_FILE, \n          newCoverage\n        );\n      });\n  }\n  \n  /**\n   * @param {*} coverage\n   * @param {*} newCoverage\n   *\n   * @returns {number}\n   *\n   * @private\n   */\n  _calculateDelta(coverage, newCoverage) {\n    const summary = this._summarizeCoverage(coverage);\n    const newSummary = this._summarizeCoverage(newCoverage);\n    \n    return CoverageComponent.COVERAGE_KEYS\n      .reduce((accumulator, key) => {\n        return accumulator + \n          parseFloat(summary[key]) - \n          parseFloat((newSummary[key] || 0));\n      }, 0) / CoverageComponent.COVERAGE_KEYS.length;\n  }\n  \n  /**\n   * @param {*} coverage\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _summarizeCoverage(coverage) {\n    const summary = {};\n    \n    const summaries = Object.keys(coverage)\n      .map(file => {\n        return istanbul.utils\n          .summarizeFileCoverage(coverage[file]);\n      });\n    \n    const summaryObj = istanbul.utils\n      .mergeSummaryObjects\n      .apply(null, summaries);\n    \n    Object.keys(summaryObj)\n      .map(key => {\n        summary[key] = summaryObj[key].pct;\n      });\n      \n    return summary;\n  }\n  \n  /**\n   * @param {*} assetsToInstrument\n   * @param {*} dispatchedAssets\n   * @param {EmitModule} module\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module) {\n    if (!assetsToInstrument[module.name]) {\n      return Promise.resolve();\n    }\n    \n    const coverageVariable = this._coverageVariable(module);\n    \n    return Promise.all(\n      assetsToInstrument[module.name]\n        .filter(asset => {\n          return (dispatchedAssets[module.name] || []).indexOf(asset) === -1;\n        })\n        .map(asset => {\n          return pify(fs.readFile)(asset)\n            .then(content => {\n              const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n\n              instrumenter.instrumentSync(\n                content.toString(), \n                asset\n              );\n              \n              global[coverageVariable] = global[coverageVariable] || {};\n              global[coverageVariable][asset] = instrumenter.lastFileCoverage();\n\n              return Promise.resolve();  \n            });\n        })\n    );\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   * '\n   * @todo split into several abstractions\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const collector = new istanbul.Collector();\n      const reporter = new istanbul.Reporter();\n      const reporters = this.container.get('reporters', {});\n      const coverageVariables = [];\n      const assetsToInstrument = {};\n      const dispatchedAssets = {};\n      \n      Object.keys(reporters).map(reporterName => {\n        const report = istanbul.Report.create(\n          reporterName, \n          reporters[reporterName] || {}\n        );\n        \n        reporter.reports[reporterName] = report;\n      });\n      \n      emitter.onBlocking(testEvents.asset.test.skip, payload => {\n        if (!this._match(payload.file)) {\n          return Promise.resolve();\n        }\n        \n        const { module, fileAbs } = payload;\n        \n        assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];\n        assetsToInstrument[module.name].push(fileAbs);\n        \n        return Promise.resolve();\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {\n        return this._persistModuleBlankCoverage(\n          assetsToInstrument,\n          dispatchedAssets,\n          module\n        ).then(() => {\n          delete assetsToInstrument[module.name];\n          delete dispatchedAssets[module.name];\n          \n          return Promise.resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {\n        return new Promise(resolve => {\n          const instrumenterCache = {};\n          const coverageVariable = this._coverageVariable(module);\n          const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n          \n          coverageVariables.push(coverageVariable);\n          \n          if (mocha) {\n            mocha.loadFiles = (fn => {\n              const self = this;\n              const moduleRoot = module.container.get('root');\n              const coverableAssets = assetsToInstrument[module.name] || [];\n\n              const preprocessor = (source, filename) => {\n                if (coverableAssets.indexOf(filename) !== -1\n                  && self._match(path.relative(moduleRoot, filename))) {\n\n                  if (instrumenterCache.hasOwnProperty(filename)) {\n                    return instrumenterCache[filename];\n                  }\n                  \n                  instrumenterCache[filename] = instrumenter.instrumentSync.call(instrumenter, source, filename);\n                  dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];\n                  dispatchedAssets[module.name].push(filename);\n                  \n                  return instrumenterCache[filename];\n                }\n                \n                return source;\n              };\n              \n              mocha.files.map(file => {\n                file = path.resolve(file);\n                \n                mocha.suite.emit('pre-require', global, file, mocha);\n                mocha.suite.emit(\n                  'require',\n                  ModuleCompile.require(file, {}, preprocessor),\n                  file,\n                  mocha\n                );\n                mocha.suite.emit('post-require', global, file, mocha);\n              });\n              \n              fn && fn();\n            });\n          }\n          \n          resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {        \n        coverageVariables.map(coverageVariable => {\n          collector.add(global[coverageVariable] || {});\n        });\n        \n        return emitter.emitBlocking(\n          events.coverage.report.create, \n          istanbul, \n          reporter, \n          collector\n        )\n          .then(() => this._dumpCoverageStats(collector, reporter))\n          .then(() => {\n            return emitter.emitBlocking(\n              events.coverage.report.compare, \n              istanbul, \n              reporter, \n              collector\n            );\n          })\n          .then(() => this._doCompare(collector));\n      });\n      \n      emitter.on(testEvents.assets.test.end, () => resolve());\n    });\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   * @param {istanbul.Reporter} reporter\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dumpCoverageStats(collector, reporter) {\n    return new Promise(resolve => {\n      reporter.write(collector, false, () => {\n        \n        // @todo find a smarter way to indent the output (buffer it?)\n        process.stdout.write('\\n\\n');\n        \n        resolve();\n      });\n    });\n  }\n  \n  /**\n   * @param {EmitModule} module\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _coverageVariable(module) {\n    const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');\n    \n    return `__recink_coverage__${ cleanModuleName }__`;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(file) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, file)).length > 0\n      && ignore.filter(i => this._test(i, file)).length <= 0;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  static get COVERAGE_KEYS() {\n    return [ 'lines', 'statements', 'functions', 'branches' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get COVERAGE_FILE() {\n    return 'coverage.json';\n  }\n}\n\nmodule.exports = CoverageComponent;\n",
+    "content": "'use strict';\n\n/* eslint no-useless-call: 0 */\n\nconst DependencyBasedComponent = require('./dependency-based-component');\nconst istanbul = require('istanbul');\nconst testEvents = require('./test/events');\nconst events = require('./coverage/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst path = require('path');\nconst fs = require('fs');\nconst pify = require('pify');\nconst StorageFactory = require('./coverage/factory');\nconst ModuleCompile = require('./helper/module-compile');\n\n/**\n * Coverage component\n */\nclass CoverageComponent extends DependencyBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._storage = null;\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'coverage';\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [ 'test' ];\n  }\n  \n  /**\n   * @returns {AbstractDriver}\n   *\n   * @private\n   */\n  get _comparatorStorage() {\n    if (this._storage) {\n      return this._storage;\n    }\n    \n    const driver = this.container.get('compare.storage.driver', 'volatile');\n    const options = this.container.get('compare.storage.options', []);\n    \n    this._storage = StorageFactory.create(driver, ...options);\n    \n    return this._storage;\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _doCompare(collector) {\n    const allowedDelta = Math.abs(parseFloat(\n      this.container.get('compare.negative-delta', 100)\n    ));\n    \n    if (!allowedDelta || allowedDelta >= 100) {\n      return Promise.resolve();\n    }\n    \n    const storage = this._comparatorStorage;\n    \n    if (storage.constructor.name === 'VolatileDriver') {\n      this.logger.debug(\n        `Coverage stored in ${ storage._storageFile(CoverageComponent.COVERAGE_FILE) }`\n      );\n    }\n    \n    return storage.read(CoverageComponent.COVERAGE_FILE)\n      .then(coverage => {\n        const newCoverage = collector.getFinalCoverage();\n        \n        if (!coverage) {\n          this.logger.info(\n            this.logger.emoji.bicycle,\n            'No previous coverage info saved...'\n          );\n          \n          return storage.write(\n            CoverageComponent.COVERAGE_FILE, \n            newCoverage\n          );\n        }\n        \n        const delta = this._calculateDelta(coverage, newCoverage);\n        \n        if (delta > allowedDelta) {          \n          return Promise.reject(new Error(\n            `Coverage delta decreased ${ delta.toFixed(2) } > ${ allowedDelta.toFixed(2) }`\n          ));\n        }\n        \n        this.logger.info(\n          this.logger.emoji.bicycle,\n          `Coverage delta checked ${ delta.toFixed(2) } >= ${ allowedDelta.toFixed(2) }`\n        );\n        \n        return storage.write(\n          CoverageComponent.COVERAGE_FILE, \n          newCoverage\n        );\n      });\n  }\n  \n  /**\n   * @param {*} coverage\n   * @param {*} newCoverage\n   *\n   * @returns {number}\n   *\n   * @private\n   */\n  _calculateDelta(coverage, newCoverage) {\n    const summary = this._summarizeCoverage(coverage);\n    const newSummary = this._summarizeCoverage(newCoverage);\n    \n    return CoverageComponent.COVERAGE_KEYS\n      .reduce((accumulator, key) => {\n        return accumulator + \n          parseFloat(summary[key]) - \n          parseFloat((newSummary[key] || 0));\n      }, 0) / CoverageComponent.COVERAGE_KEYS.length;\n  }\n  \n  /**\n   * @param {*} coverage\n   *\n   * @returns {*}\n   *\n   * @private\n   */\n  _summarizeCoverage(coverage) {\n    const summary = {};\n    \n    const summaries = Object.keys(coverage)\n      .map(file => {\n        return istanbul.utils\n          .summarizeFileCoverage(coverage[file]);\n      });\n    \n    const summaryObj = istanbul.utils\n      .mergeSummaryObjects\n      .apply(null, summaries);\n    \n    Object.keys(summaryObj)\n      .map(key => {\n        summary[key] = summaryObj[key].pct;\n      });\n      \n    return summary;\n  }\n  \n  /**\n   * @param {*} assetsToInstrument\n   * @param {*} dispatchedAssets\n   * @param {EmitModule} module\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module) {\n    if (!assetsToInstrument[module.name]) {\n      return Promise.resolve();\n    }\n    \n    const coverageVariable = this._coverageVariable(module);\n    \n    return Promise.all(\n      assetsToInstrument[module.name]\n        .filter(asset => {\n          return (dispatchedAssets[module.name] || []).indexOf(asset) === -1;\n        })\n        .map(asset => {\n          return pify(fs.readFile)(asset)\n            .then(content => {\n              const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n\n              instrumenter.instrumentSync(\n                content.toString(), \n                asset\n              );\n              \n              global[coverageVariable] = global[coverageVariable] || {};\n              global[coverageVariable][asset] = instrumenter.lastFileCoverage();\n\n              return Promise.resolve();  \n            });\n        })\n    );\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @returns {Promise}\n   * @todo split into several abstractions\n   */\n  run(emitter) {\n    return new Promise((resolve, reject) => {\n      const collector = new istanbul.Collector();\n      const reporter = new istanbul.Reporter();\n      const reporters = this.container.get('reporters', {});\n      const coverageVariables = [];\n      const assetsToInstrument = {};\n      const dispatchedAssets = {};\n      \n      Object.keys(reporters).map(reporterName => {\n        reporter.reports[reporterName] = istanbul.Report.create(reporterName, reporters[reporterName] || {});\n      });\n      \n      emitter.onBlocking(testEvents.asset.test.skip, payload => {\n        if (!this._match(payload.file)) {\n          return Promise.resolve();\n        }\n        \n        const { module, fileAbs } = payload;\n        \n        assetsToInstrument[module.name] = assetsToInstrument[module.name] || [];\n        assetsToInstrument[module.name].push(fileAbs);\n        \n        return Promise.resolve();\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) => {\n        return this._persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module).then(() => {\n          delete assetsToInstrument[module.name];\n          delete dispatchedAssets[module.name];\n          \n          return Promise.resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.asset.tests.start, (mocha, module) => {\n        return new Promise(resolve => {\n          const instrumenterCache = {};\n          const coverageVariable = this._coverageVariable(module);\n          const instrumenter = new istanbul.Instrumenter({ coverageVariable });\n          \n          coverageVariables.push(coverageVariable);\n          \n          if (mocha) {\n            mocha.loadFiles = (fn => {\n              const self = this;\n              const moduleRoot = module.container.get('root');\n              const coverableAssets = assetsToInstrument[module.name] || [];\n\n              const preprocessor = (source, filename) => {\n                if (coverableAssets.indexOf(filename) !== -1\n                  && self._match(path.relative(moduleRoot, filename))) {\n\n                  if (instrumenterCache.hasOwnProperty(filename)) {\n                    return instrumenterCache[filename];\n                  }\n                  \n                  instrumenterCache[filename] = instrumenter.instrumentSync.call(instrumenter, source, filename);\n                  dispatchedAssets[module.name] = dispatchedAssets[module.name] || [];\n                  dispatchedAssets[module.name].push(filename);\n                  \n                  return instrumenterCache[filename];\n                }\n                \n                return source;\n              };\n              \n              mocha.files.map(file => {\n                file = path.resolve(file);\n                \n                mocha.suite.emit('pre-require', global, file, mocha);\n                mocha.suite.emit('require', ModuleCompile.require(file, {}, preprocessor), file, mocha);\n                mocha.suite.emit('post-require', global, file, mocha);\n              });\n              \n              fn && fn();\n            });\n          }\n          \n          resolve();\n        });\n      });\n      \n      emitter.onBlocking(testEvents.assets.test.end, () => {        \n        coverageVariables.map(coverageVariable => {\n          collector.add(global[coverageVariable] || {});\n        });\n        \n        return emitter.emitBlocking(events.coverage.report.create, istanbul, reporter, collector)\n          .then(() => this._dumpCoverageStats(collector, reporter))\n          .then(() => emitter.emitBlocking(events.coverage.report.compare, istanbul, reporter, collector))\n          .then(() => this._doCompare(collector));\n      });\n      \n      emitter.on(testEvents.assets.test.end, () => resolve());\n    });\n  }\n  \n  /**\n   * @param {istanbul.Collector} collector\n   * @param {istanbul.Reporter} reporter\n   *\n   * @returns {Promise}\n   * \n   * @private\n   */\n  _dumpCoverageStats(collector, reporter) {\n    return new Promise(resolve => {\n      reporter.write(collector, false, () => {\n        \n        // @todo find a smarter way to indent the output (buffer it?)\n        process.stdout.write('\\n\\n');\n        \n        resolve();\n      });\n    });\n  }\n  \n  /**\n   * @param {EmitModule} module\n   *\n   * @returns {string}\n   *\n   * @private\n   */\n  _coverageVariable(module) {\n    const cleanModuleName = module.name.replace(/[^a-z0-9]/g, '_');\n    \n    return `__recink_coverage__${ cleanModuleName }__`;\n  }\n  \n  /**\n   * @param {string} file\n   *\n   * @returns {boolean}\n   * \n   * @private\n   */\n  _match(file) {\n    const pattern = this.container.get('pattern', []);\n    const ignore = this.container.get('ignore', []);\n\n    const result = pattern.filter(p => this._test(p, file)).length > 0\n      && ignore.filter(i => this._test(i, file)).length <= 0;\n      \n    return result;\n  }\n  \n  /**\n   * @param {string|RegExp} pattern\n   * @param {string} value\n   *\n   * @returns {boolean}\n   *\n   * @private\n   */\n  _test(pattern, value) {\n    if (!(pattern instanceof RegExp)) {\n      return value.indexOf(pattern.toString()) !== -1;\n    }\n    \n    return pattern.test(value);\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @returns {Array}\n   */\n  static get COVERAGE_KEYS() {\n    return [ 'lines', 'statements', 'functions', 'branches' ];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  static get COVERAGE_FILE() {\n    return 'coverage.json';\n  }\n}\n\nmodule.exports = CoverageComponent;\n",
     "static": true,
     "longname": "src/component/coverage-component.js",
     "access": null,
@@ -5010,14 +5010,14 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#run",
     "access": null,
     "description": "",
-    "lineNumber": 216,
+    "lineNumber": 214,
     "todo": [
       "split into several abstractions"
     ],
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{Promise}\n'"
+        "tagValue": "{Promise}"
       }
     ],
     "params": [
@@ -5038,7 +5038,7 @@
         "Promise"
       ],
       "spread": false,
-      "description": "'"
+      "description": ""
     }
   },
   {
@@ -5052,7 +5052,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#_dumpCoverageStats",
     "access": "private",
     "description": "",
-    "lineNumber": 348,
+    "lineNumber": 320,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5101,7 +5101,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#_coverageVariable",
     "access": "private",
     "description": "",
-    "lineNumber": 367,
+    "lineNumber": 339,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5140,7 +5140,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#_match",
     "access": "private",
     "description": "",
-    "lineNumber": 380,
+    "lineNumber": 352,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5179,7 +5179,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#_test",
     "access": "private",
     "description": "",
-    "lineNumber": 398,
+    "lineNumber": 370,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5229,7 +5229,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent#prepareConfig",
     "access": null,
     "description": "",
-    "lineNumber": 412,
+    "lineNumber": 384,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5278,7 +5278,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent.COVERAGE_KEYS",
     "access": null,
     "description": "",
-    "lineNumber": 425,
+    "lineNumber": 397,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5310,7 +5310,7 @@
     "longname": "src/component/coverage-component.js~CoverageComponent.COVERAGE_FILE",
     "access": null,
     "description": "",
-    "lineNumber": 432,
+    "lineNumber": 404,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5335,7 +5335,7 @@
     "__docId__": 178,
     "kind": "file",
     "name": "src/component/dependency-based-component.js",
-    "content": "'use strict';\n\nconst chalk = require('chalk');\nconst ConfigBasedComponent = require('./config-based-component');\n\n/**\n * Abstract dependency aware component\n */\nclass DependencyBasedComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [];\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter).then(container => {\n      if (container) {\n        if (this.dependencies.length <= 0) {\n          return Promise.resolve(container);\n        }\n\n        const waitComponents = this.dependencies.map(name => {\n          const component = emitter.component(name);\n\n          if (!component) {\n            return Promise.resolve({ name, isActive: false });\n          }\n\n          return component.ready().then(() => Promise.resolve(component));\n        });\n\n        return Promise.all(waitComponents).then(components => {\n          let failedComponents = [];\n\n          components.map(component => {\n            if (!component.isActive) {\n              failedComponents.push(component.name);\n            }\n          });\n\n          if (failedComponents.length > 0) {\n            const failedInfo = failedComponents.map(c => chalk.red(c)).join(', ');\n\n            this.setActive(false);\n            this.logger.info(`${ this.logger.emoji.fire } ${ this.name } ~ ${ failedInfo }`);\n          }\n\n          return Promise.resolve(failedComponents.length <= 0 ? container : null);\n        });\n      }\n\n      return Promise.resolve(null);\n    });\n  }\n}\n\nmodule.exports = DependencyBasedComponent;\n",
+    "content": "'use strict';\n\nconst chalk = require('chalk');\nconst ConfigBasedComponent = require('./config-based-component');\n\n/**\n * Abstract dependency aware component\n */\nclass DependencyBasedComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n  }\n  \n  /**\n   * @returns {string[]}\n   */\n  get dependencies() {\n    return [];\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter).then(container => {\n      if (container) {\n        if (this.dependencies.length <= 0) {\n          return Promise.resolve(container);\n        }\n\n        const waitComponents = this.dependencies.map(name => {\n          const component = emitter.component(name);\n\n          if (!component) {\n            return Promise.resolve({ name, isActive: false });\n          }\n\n          return component.ready().then(() => Promise.resolve(component));\n        });\n\n        return Promise.all(waitComponents).then(components => {\n          let failedComponents = [];\n\n          components.map(component => {\n            if (!component.isActive) {\n              failedComponents.push(component.name);\n            }\n          });\n\n          if (failedComponents.length > 0) {\n            const failedInfo = failedComponents.map(c => chalk.red(c)).join(', ');\n\n            this.setActive(false);\n            this.logger.info(`${ this.logger.emoji.fire } ${ this.name } ~ ${ failedInfo }`);\n          }\n\n          return Promise.resolve(failedComponents.length <= 0 ? container : null);\n        });\n      }\n\n      return Promise.resolve(null);\n    });\n  }\n}\n\nmodule.exports = DependencyBasedComponent;\n",
     "static": true,
     "longname": "src/component/dependency-based-component.js",
     "access": null,
@@ -5428,7 +5428,7 @@
     "longname": "src/component/dependency-based-component.js~DependencyBasedComponent#waitConfig",
     "access": null,
     "description": "",
-    "lineNumber": 29,
+    "lineNumber": 28,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5460,7 +5460,7 @@
     "__docId__": 183,
     "kind": "file",
     "name": "src/component/e2e/e2e-runner.js",
-    "content": "'use strict';\n\nconst createTestCafe = require('testcafe');\nconst registerBrowsers = require('./testcafe/browsers-registrar');\n\n/**\n * End2End test runner (build on top of TestCafe)\n * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html\n * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html\n */\nclass E2ERunner {\n  /**\n   * @param {String} hostName\n   * @param {Array} hostPorts\n   */\n  constructor(options = {}) {\n    const defaults = {\n      hostPorts: E2ERunner.DEFAULT_SERVER_PORTS,\n      hostName: E2ERunner.DEFAULT_SERVER_HOSTNAME,\n      reporter: E2ERunner.DEFAULT_REPORTER,\n      browsers: E2ERunner.DEFAULT_BROWSERS,\n      screenshotsPath: process.cwd(),\n      takeOnFail: false,\n    };\n\n    this._config = Object.assign({}, defaults, options);\n  }\n\n  /**\n   * Init testcafe runner\n   * @returns {Promise}\n   */\n  getTestCafe() {\n    if (this._testcafe) {\n      return Promise.resolve();\n    }\n\n    return createTestCafe(this._config.hostName, ...this._config.hostPorts).then(testcafe => {\n      registerBrowsers();\n      this._testcafe = testcafe;\n\n      return Promise.resolve();\n    });\n  }\n\n  /**\n   * Run tests\n   * @param {Array|String} tests\n   * @param {Object} options\n   * @returns {Promise}\n   */\n  run(tests) {\n    return this.getTestCafe().then(() => {\n      const runner = this._testcafe.createRunner().screenshots(this._config.screenshotsPath, this._config.takeOnFail);\n\n      return runner\n        .src(tests)\n        .browsers(this._config.browsers)\n        .reporter(this._config.reporter)\n        .run(E2ERunner.RUN_OPTIONS)\n        .then(failed => {\n          if (failed > 0) {\n            return Promise.reject(failed);\n          }\n\n          return Promise.resolve();\n        });\n    });\n  }\n\n  /**\n   * Terminate\n   * @returns {Promise}\n   */\n  cleanup() {\n    return this._testcafe.close();\n  }\n\n  /**\n   * @returns {String}\n   */\n  static get DEFAULT_SERVER_HOSTNAME() {\n    return 'localhost';\n  }\n\n  /**\n   * @returns {Number[]}\n   */\n  static get DEFAULT_SERVER_PORTS() {\n    return [ 1337, 1338 ];\n  }\n\n  /**\n   * @todo figure out options that really matters!\n   * @ex: skipJsErrors: true, quarantineMode: true\n   * @returns {*}\n   */\n  static get RUN_OPTIONS() {\n    return {};\n  }\n\n  /**\n   * @returns {String}\n   */\n  static get DEFAULT_REPORTER() {\n    return 'spec';\n  }\n\n  /**\n   * @returns {String[]}\n   */\n  static get DEFAULT_BROWSERS() {\n    return [ 'puppeteer' ];\n  }\n}\n\nmodule.exports = E2ERunner;\n",
+    "content": "'use strict';\n\nconst createTestCafe = require('testcafe');\nconst registerBrowsers = require('./testcafe/browsers-registrar');\n\n/**\n * End2End test runner (build on top of TestCafe)\n * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browser-support.html\n * @see https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/reporters.html\n */\nclass E2ERunner {\n  /**\n   * @param {Object} options\n   */\n  constructor(options = {}) {\n    const defaults = {\n      hostPorts: E2ERunner.DEFAULT_SERVER_PORTS,\n      hostName: E2ERunner.DEFAULT_SERVER_HOSTNAME,\n      reporter: E2ERunner.DEFAULT_REPORTER,\n      browsers: E2ERunner.DEFAULT_BROWSERS,\n      screenshotsPath: process.cwd(),\n      takeOnFail: false,\n    };\n\n    this._config = Object.assign({}, defaults, options);\n  }\n\n  /**\n   * Init testcafe runner\n   * @returns {Promise}\n   */\n  getTestCafe() {\n    if (this._testcafe) {\n      return Promise.resolve();\n    }\n\n    return createTestCafe(this._config.hostName, ...this._config.hostPorts).then(testcafe => {\n      registerBrowsers();\n      this._testcafe = testcafe;\n\n      return Promise.resolve();\n    });\n  }\n\n  /**\n   * Run tests\n   * @param {Array|String} tests\n   * @param {Object} options\n   * @returns {Promise}\n   */\n  run(tests) {\n    return this.getTestCafe().then(() => {\n      const runner = this._testcafe.createRunner().screenshots(this._config.screenshotsPath, this._config.takeOnFail);\n\n      return runner\n        .src(tests)\n        .browsers(this._config.browsers)\n        .reporter(this._config.reporter)\n        .run(E2ERunner.RUN_OPTIONS)\n        .then(failed => {\n          if (failed > 0) {\n            return Promise.reject(failed);\n          }\n\n          return Promise.resolve();\n        });\n    });\n  }\n\n  /**\n   * Terminate\n   * @returns {Promise}\n   */\n  cleanup() {\n    return this._testcafe.close();\n  }\n\n  /**\n   * @returns {String}\n   */\n  static get DEFAULT_SERVER_HOSTNAME() {\n    return 'localhost';\n  }\n\n  /**\n   * @returns {Number[]}\n   */\n  static get DEFAULT_SERVER_PORTS() {\n    return [ 1337, 1338 ];\n  }\n\n  /**\n   * @todo figure out options that really matters!\n   * @ex: skipJsErrors: true, quarantineMode: true\n   * @returns {*}\n   */\n  static get RUN_OPTIONS() {\n    return {};\n  }\n\n  /**\n   * @returns {String}\n   */\n  static get DEFAULT_REPORTER() {\n    return 'spec';\n  }\n\n  /**\n   * @returns {String[]}\n   */\n  static get DEFAULT_BROWSERS() {\n    return [ 'puppeteer' ];\n  }\n}\n\nmodule.exports = E2ERunner;\n",
     "static": true,
     "longname": "src/component/e2e/e2e-runner.js",
     "access": null,
@@ -5497,26 +5497,16 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#constructor",
     "access": null,
     "description": "",
-    "lineNumber": 16,
+    "lineNumber": 15,
     "params": [
       {
         "nullable": null,
         "types": [
-          "String"
+          "Object"
         ],
         "spread": false,
         "optional": false,
-        "name": "hostName",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Array"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "hostPorts",
+        "name": "options",
         "description": ""
       }
     ]
@@ -5530,7 +5520,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#_config",
     "access": null,
     "description": null,
-    "lineNumber": 26,
+    "lineNumber": 25,
     "undocument": true,
     "unknown": [
       {
@@ -5555,7 +5545,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#getTestCafe",
     "access": null,
     "description": "Init testcafe runner",
-    "lineNumber": 33,
+    "lineNumber": 32,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5581,7 +5571,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#_testcafe",
     "access": null,
     "description": null,
-    "lineNumber": 40,
+    "lineNumber": 39,
     "undocument": true,
     "unknown": [
       {
@@ -5606,7 +5596,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#run",
     "access": null,
     "description": "Run tests",
-    "lineNumber": 52,
+    "lineNumber": 51,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5656,7 +5646,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner#cleanup",
     "access": null,
     "description": "Terminate",
-    "lineNumber": 75,
+    "lineNumber": 74,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5684,7 +5674,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_HOSTNAME",
     "access": null,
     "description": "",
-    "lineNumber": 82,
+    "lineNumber": 81,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5716,7 +5706,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_PORTS",
     "access": null,
     "description": "",
-    "lineNumber": 89,
+    "lineNumber": 88,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5748,7 +5738,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner.RUN_OPTIONS",
     "access": null,
     "description": "",
-    "lineNumber": 98,
+    "lineNumber": 97,
     "todo": [
       "figure out options that really matters!\n@ex: skipJsErrors: true, quarantineMode: true"
     ],
@@ -5783,7 +5773,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_REPORTER",
     "access": null,
     "description": "",
-    "lineNumber": 105,
+    "lineNumber": 104,
     "unknown": [
       {
         "tagName": "@returns",
@@ -5815,7 +5805,7 @@
     "longname": "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_BROWSERS",
     "access": null,
     "description": "",
-    "lineNumber": 112,
+    "lineNumber": 111,
     "unknown": [
       {
         "tagName": "@returns",
@@ -14032,7 +14022,7 @@
     "__docId__": 472,
     "kind": "file",
     "name": "src/helper/util.js",
-    "content": "'use strict';\n\nconst fs = require('fs');\nconst path = require('path');\n\n/**\n * Read directory recursively\n * @param {String} dir\n * @param {String} filter\n * @param {Function} callback\n */\nfunction walkDir(dir, filter, callback) {\n  if (!fs.existsSync(dir)) {\n    return;\n  }\n\n  let files = fs.readdirSync(dir);\n\n  for (let i = 0; i < files.length; i++) {\n    let filename = path.join(dir, files[i]);\n    let stat = fs.lstatSync(filename);\n\n    if (stat.isDirectory()) {\n      walkDir(filename, filter, callback);\n    } else if (filter.test(filename)) {\n      callback(filename);\n    }\n  }\n}\n\nexports.walkDir = walkDir;\n\n/**\n * Get filenames from dir by RegExp pattern\n * @param {String} dir\n * @param {RegExp} regExp\n * @return {Array}\n */\nfunction getFilesByPattern(dir, regExp) {\n  let fileNames = [];\n  walkDir(dir, regExp, (fileName) => fileNames.push(fileName));\n\n  return fileNames;\n}\n\nexports.getFilesByPattern = getFilesByPattern;\n\n/**\n * Remove all prefixes or suffixes from the given string\n * @param {String} string\n * @param {String} symbol\n * @returns {String}\n */\nfunction trimBoth(string, symbol = '\\s') {\n  const leading = new RegExp(`^${symbol}`);\n  const trailing = new RegExp(`${symbol}$`);\n\n  return string.replace(leading, '').replace(trailing, '');\n}\n\nexports.trimBoth = trimBoth;\n\n/**\n * Compares two software version numbers (e.g. \"1.7.1\" or \"1.2b\").\n *\n * @param {String} v1 The first version to be compared.\n * @param {String} v2 The second version to be compared.\n * @param {Object} [options] Optional flags that affect comparison behavior:\n *\n * lexicographical: true | compares each part of the version strings lexicographically\n * instead of naturally; this allows suffixes such as \"b\" or \"dev\" but will cause \"1.10\"\n * to be considered smaller than \"1.2\".\n *\n * zeroExtend: true | changes the result if one version string has less parts than the other.\n * In this case the shorter string will be padded with \"zero\" parts instead of being considered smaller.\n *\n * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format\n */\nfunction versionCompare(v1, v2, options = {}) {\n  let lexicographical = options && options.lexicographical,\n    zeroExtend = options && options.zeroExtend,\n    v1parts = v1.split('.'),\n    v2parts = v2.split('.');\n\n  /**\n   * @param {String} x\n   * @returns {Boolean}\n   */\n  function isValidPart(x) {\n    return (lexicographical ? /^\\d+[A-Za-z]*$/ : /^\\d+$/).test(x);\n  }\n\n  if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {\n    return NaN;\n  }\n\n  if (zeroExtend) {\n    while (v1parts.length < v2parts.length) {\n      v1parts.push('0');\n    }\n\n    while (v2parts.length < v1parts.length) {\n      v2parts.push('0');\n    }\n  }\n\n  if (!lexicographical) {\n    v1parts = v1parts.map(Number);\n    v2parts = v2parts.map(Number);\n  }\n\n  for (let i = 0; i < v1parts.length; ++i) {\n    if (v2parts.length === i) {\n      return 1;\n    }\n\n    if (v1parts[i] === v2parts[i]) {\n      continue;\n    } else if (v1parts[i] > v2parts[i]) {\n      return 1;\n    } else {\n      return -1;\n    }\n  }\n\n  if (v1parts.length !== v2parts.length) {\n    return -1;\n  }\n\n  return 0;\n}\n\nexports.versionCompare = versionCompare;\n",
+    "content": "'use strict';\n\nconst fs = require('fs');\nconst path = require('path');\n\n/**\n * Read directory recursively\n * @param {String} dir\n * @param {RegExp} filter\n * @param {Function} callback\n */\nfunction walkDir(dir, filter, callback) {\n  if (!fs.existsSync(dir)) {\n    return;\n  }\n\n  let files = fs.readdirSync(dir);\n\n  for (let i = 0; i < files.length; i++) {\n    let filename = path.join(dir, files[i]);\n    let stat = fs.lstatSync(filename);\n\n    if (stat.isDirectory()) {\n      walkDir(filename, filter, callback);\n    } else if (filter.test(filename)) {\n      callback(filename);\n    }\n  }\n}\n\nexports.walkDir = walkDir;\n\n/**\n * Get filenames from dir by RegExp pattern\n * @param {String} dir\n * @param {RegExp} regExp\n * @return {Array}\n */\nfunction getFilesByPattern(dir, regExp) {\n  let fileNames = [];\n  walkDir(dir, regExp, (fileName) => fileNames.push(fileName));\n\n  return fileNames;\n}\n\nexports.getFilesByPattern = getFilesByPattern;\n\n/**\n * Remove all prefixes or suffixes from the given string\n * @param {String} string\n * @param {String} symbol\n * @returns {String}\n */\nfunction trimBoth(string, symbol = '\\s') {\n  const leading = new RegExp(`^${symbol}`);\n  const trailing = new RegExp(`${symbol}$`);\n\n  return string.replace(leading, '').replace(trailing, '');\n}\n\nexports.trimBoth = trimBoth;\n\n/**\n * Fill string with symbols\n * @param {String} str\n * @param {Number} length\n * @param {String} symbol\n * @returns {String}\n */\nfunction fillString(str, length, symbol = 'x') {\n  let result = str;\n\n  while (result.length < length) {\n    result += symbol;\n  }\n\n  return result;\n}\n\nexports.fillString = fillString;\n\n/**\n * Compare two software version\n *  v1 == v2 => 0\n *  v1 < v2 => -1\n *  v1 > v2 => 1\n * @param {String} v1\n * @param {String} v2\n * @returns {Number}\n */\nfunction versionCompare(v1, v2) {\n  const fillTo = 10;\n  let ver1 = v1.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let ver2 = v2.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let maxLength = Math.max(ver1.length, ver2.length);\n\n  ver1 = fillString(ver1, maxLength, '#');\n  ver2 = fillString(ver2, maxLength, '#');\n\n  for (let i = 0; i < maxLength; i++) {\n    let char1 = ver1.charCodeAt(i);\n    let char2 = ver2.charCodeAt(i);\n\n    if (char1 > 96) {\n      char1 -=60;\n    }\n\n    if (char2 > 96) {\n      char2 -=60;\n    }\n\n    if (char1 !== char2) {\n      return (char1 > char2) ? 1 : -1;\n    }\n  }\n\n  return 0\n}\n\n// @todo remove after testing\n// /**\n//  * Compares two software version numbers (e.g. \"1.7.1\" or \"1.2b\").\n//  *\n//  * @param {String} v1 The first version to be compared.\n//  * @param {String} v2 The second version to be compared.\n//  * @param {Object} [options] Optional flags that affect comparison behavior:\n//  *\n//  * lexicographical: true | compares each part of the version strings lexicographically\n//  * instead of naturally; this allows suffixes such as \"b\" or \"dev\" but will cause \"1.10\"\n//  * to be considered smaller than \"1.2\".\n//  *\n//  * zeroExtend: true | changes the result if one version string has less parts than the other.\n//  * In this case the shorter string will be padded with \"zero\" parts instead of being considered smaller.\n//  *\n//  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format\n//  */\n// function versionCompare(v1, v2, options = {}) {\n//   let lexicographical = options && options.lexicographical,\n//     zeroExtend = options && options.zeroExtend,\n//     v1parts = v1.split('.'),\n//     v2parts = v2.split('.');\n//\n//   /**\n//    * @param {String} x\n//    * @returns {Boolean}\n//    */\n//   function isValidPart(x) {\n//     return (lexicographical ? /^\\d+[A-Za-z]*$/ : /^\\d+$/).test(x);\n//   }\n//\n//   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {\n//     return NaN;\n//   }\n//\n//   if (zeroExtend) {\n//     while (v1parts.length < v2parts.length) {\n//       v1parts.push('0');\n//     }\n//\n//     while (v2parts.length < v1parts.length) {\n//       v2parts.push('0');\n//     }\n//   }\n//\n//   if (!lexicographical) {\n//     v1parts = v1parts.map(Number);\n//     v2parts = v2parts.map(Number);\n//   }\n//\n//   for (let i = 0; i < v1parts.length; ++i) {\n//     if (v2parts.length === i) {\n//       return 1;\n//     }\n//\n//     if (v1parts[i] === v2parts[i]) {\n//       continue;\n//     } else if (v1parts[i] > v2parts[i]) {\n//       return 1;\n//     } else {\n//       return -1;\n//     }\n//   }\n//\n//   if (v1parts.length !== v2parts.length) {\n//     return -1;\n//   }\n//\n//   return 0;\n// }\n\nexports.versionCompare = versionCompare;\n",
     "static": true,
     "longname": "src/helper/util.js",
     "access": null,
@@ -14068,7 +14058,7 @@
       {
         "nullable": null,
         "types": [
-          "String"
+          "RegExp"
         ],
         "spread": false,
         "optional": false,
@@ -14188,6 +14178,68 @@
   {
     "__docId__": 476,
     "kind": "function",
+    "name": "fillString",
+    "memberof": "src/helper/util.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/helper/util.js~fillString",
+    "access": null,
+    "export": true,
+    "importPath": "recink/src/helper/util.js",
+    "importStyle": "{fillString}",
+    "description": "Fill string with symbols",
+    "lineNumber": 70,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{String}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "str",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "length",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "symbol",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "String"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 477,
+    "kind": "function",
     "name": "versionCompare",
     "memberof": "src/helper/util.js",
     "generator": false,
@@ -14198,12 +14250,12 @@
     "export": true,
     "importPath": "recink/src/helper/util.js",
     "importStyle": "{versionCompare}",
-    "description": "Compares two software version numbers (e.g. \"1.7.1\" or \"1.2b\").",
-    "lineNumber": 79,
+    "description": "Compare two software version\n v1 == v2 => 0\n v1 < v2 => -1\n v1 > v2 => 1",
+    "lineNumber": 91,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format"
+        "tagValue": "{Number}"
       }
     ],
     "params": [
@@ -14215,7 +14267,7 @@
         "spread": false,
         "optional": false,
         "name": "v1",
-        "description": "The first version to be compared."
+        "description": ""
       },
       {
         "nullable": null,
@@ -14225,31 +14277,20 @@
         "spread": false,
         "optional": false,
         "name": "v2",
-        "description": "The second version to be compared."
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Object"
-        ],
-        "spread": false,
-        "optional": true,
-        "name": "options",
-        "description": "Optional flags that affect comparison behavior:\n\nlexicographical: true | compares each part of the version strings lexicographically\ninstead of naturally; this allows suffixes such as \"b\" or \"dev\" but will cause \"1.10\"\nto be considered smaller than \"1.2\".\n\nzeroExtend: true | changes the result if one version string has less parts than the other.\nIn this case the shorter string will be padded with \"zero\" parts instead of being considered smaller."
+        "description": ""
       }
     ],
     "return": {
       "nullable": null,
       "types": [
-        "Number",
-        "NaN"
+        "Number"
       ],
       "spread": false,
-      "description": "0 / equals; -1 / smaller; +1 / higher; NaN / wrong format"
+      "description": ""
     }
   },
   {
-    "__docId__": 477,
+    "__docId__": 478,
     "kind": "file",
     "name": "src/logger.js",
     "content": "'use strict';\n\nconst chalk = require('chalk');\n\n/**\n * Logger abstraction\n */\nclass Logger {\n  /**\n   * @returns {chalk} chalk\n   */\n  static get chalk() {\n    return chalk;\n  }\n  \n  /**\n   * @param {*} logger\n   *\n   * @returns {Logger}\n   */\n  static customLogger(logger) {\n    this._customLogger = logger;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static level(level) {\n    this._dbgLevel = level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {number} level\n   *\n   * @returns {Logger}\n   */\n  static addLevel(level) {\n    this._dbgLevel = this._level | level;\n    \n    return this;\n  }\n  \n  /**\n   * @param {*} args\n   * @returns {Logger}\n   */\n  static debug(...args) {\n    return this._exec('debug', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * @returns {Logger}\n   */\n  static log(...args) {\n    return this._exec('log', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * @returns {Logger}\n   */\n  static info(...args) {\n    return this._exec('info', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static warn(...args) {\n    return this._exec('warn', ...args);\n  }\n  \n  /**\n   * @param {*} args\n   * \n   * @returns {Logger}\n   */\n  static error(...args) {\n    return this._exec('error', ...args);\n  }\n  \n  /**\n   * @returns {*}\n   *\n   * @private\n   */\n  static get _logger() {\n    return this._customLogger || console;\n  }\n  \n  /**\n   * @returns {number}\n   *\n   * @private\n   */\n  static get _level() {\n    return this._dbgLevel || (this.WARN | this.ERROR);\n  }\n  \n  /**\n   * @param {string} method\n   * @param {*} args\n   *\n   * @returns {Logger}\n   * \n   * @private\n   */\n  static _exec(method, ...args) {\n    if (this._logger instanceof console.constructor) {\n      if (this._level & this[method.toUpperCase()]) {\n        if (method === 'debug') {\n          method = 'log';\n        }\n        \n        this._logger[method](\n          this._color(method).open,\n          ...args,\n          this._color(method).close\n        );\n      }\n    } else { // rely on winston compatible logger\n      this._logger[method](...args);\n    }\n    \n    return this;\n  }\n  \n  /**\n   * @param {string} method\n   * \n   * @returns {string}\n   *\n   * @private\n   */\n  static _color(method) {\n    let color;\n    \n    switch (method) {\n      case 'info':\n        color = 'green';\n        break;  \n      case 'warn':\n        color = 'yellow';\n        break;   \n      case 'error':\n        color = 'red';\n        break;    \n      case 'log':\n      default:\n        color = 'white';\n        break;\n    }\n    \n    return chalk.styles[color];\n  }\n  \n  /**\n   * @returns {*}\n   */\n  static get emoji() {\n    return {\n      bulb: '💡 ',\n      rocket: '🚀 ',\n      cross: '❌ ',\n      check: '✅ ',\n      banana: '🍌 ',\n      smiley: '😃 ',\n      fire: '🔥 ',\n      diamond: '💎 ',\n      gift: '🎁 ',\n      poop: '💩 ',\n      magic: '✨ ',\n      hat: '🎩 ',\n      new: '🆕 ',\n      fist: '👊 ',\n      beer: '🍺 ',\n      bicycle: '🚲 ',\n      star: '⭐️ ',\n      moon_full: '🌔 ',\n      moon_half: '🌓 ',\n      moon_empty: '🌘 ',\n    };\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ALL() {\n    return this.LOG | this.DEBUG | this.INFO | this.WARN | this.ERROR;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get LOG() {\n    return 1;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get DEBUG() {\n    return 2;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get INFO() {\n    return 4;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get WARN() {\n    return 8;\n  }\n  \n  /**\n   * @returns {number}\n   */\n  static get ERROR() {\n    return 16;\n  }\n}\n\nmodule.exports = Logger;\n",
@@ -14260,7 +14301,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 478,
+    "__docId__": 479,
     "kind": "class",
     "name": "Logger",
     "memberof": "src/logger.js",
@@ -14275,7 +14316,7 @@
     "interface": false
   },
   {
-    "__docId__": 479,
+    "__docId__": 480,
     "kind": "get",
     "name": "chalk",
     "memberof": "src/logger.js~Logger",
@@ -14307,7 +14348,7 @@
     }
   },
   {
-    "__docId__": 480,
+    "__docId__": 481,
     "kind": "method",
     "name": "customLogger",
     "memberof": "src/logger.js~Logger",
@@ -14346,7 +14387,7 @@
     }
   },
   {
-    "__docId__": 481,
+    "__docId__": 482,
     "kind": "member",
     "name": "_customLogger",
     "memberof": "src/logger.js~Logger",
@@ -14369,7 +14410,7 @@
     }
   },
   {
-    "__docId__": 482,
+    "__docId__": 483,
     "kind": "method",
     "name": "level",
     "memberof": "src/logger.js~Logger",
@@ -14408,7 +14449,7 @@
     }
   },
   {
-    "__docId__": 483,
+    "__docId__": 484,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -14431,7 +14472,7 @@
     }
   },
   {
-    "__docId__": 484,
+    "__docId__": 485,
     "kind": "method",
     "name": "addLevel",
     "memberof": "src/logger.js~Logger",
@@ -14470,7 +14511,7 @@
     }
   },
   {
-    "__docId__": 485,
+    "__docId__": 486,
     "kind": "member",
     "name": "_dbgLevel",
     "memberof": "src/logger.js~Logger",
@@ -14493,7 +14534,7 @@
     }
   },
   {
-    "__docId__": 486,
+    "__docId__": 487,
     "kind": "method",
     "name": "debug",
     "memberof": "src/logger.js~Logger",
@@ -14532,7 +14573,7 @@
     }
   },
   {
-    "__docId__": 487,
+    "__docId__": 488,
     "kind": "method",
     "name": "log",
     "memberof": "src/logger.js~Logger",
@@ -14571,7 +14612,7 @@
     }
   },
   {
-    "__docId__": 488,
+    "__docId__": 489,
     "kind": "method",
     "name": "info",
     "memberof": "src/logger.js~Logger",
@@ -14610,7 +14651,7 @@
     }
   },
   {
-    "__docId__": 489,
+    "__docId__": 490,
     "kind": "method",
     "name": "warn",
     "memberof": "src/logger.js~Logger",
@@ -14649,7 +14690,7 @@
     }
   },
   {
-    "__docId__": 490,
+    "__docId__": 491,
     "kind": "method",
     "name": "error",
     "memberof": "src/logger.js~Logger",
@@ -14688,7 +14729,7 @@
     }
   },
   {
-    "__docId__": 491,
+    "__docId__": 492,
     "kind": "get",
     "name": "_logger",
     "memberof": "src/logger.js~Logger",
@@ -14720,7 +14761,7 @@
     }
   },
   {
-    "__docId__": 492,
+    "__docId__": 493,
     "kind": "get",
     "name": "_level",
     "memberof": "src/logger.js~Logger",
@@ -14752,7 +14793,7 @@
     }
   },
   {
-    "__docId__": 493,
+    "__docId__": 494,
     "kind": "method",
     "name": "_exec",
     "memberof": "src/logger.js~Logger",
@@ -14801,7 +14842,7 @@
     }
   },
   {
-    "__docId__": 494,
+    "__docId__": 495,
     "kind": "method",
     "name": "_color",
     "memberof": "src/logger.js~Logger",
@@ -14840,7 +14881,7 @@
     }
   },
   {
-    "__docId__": 495,
+    "__docId__": 496,
     "kind": "get",
     "name": "emoji",
     "memberof": "src/logger.js~Logger",
@@ -14872,7 +14913,7 @@
     }
   },
   {
-    "__docId__": 496,
+    "__docId__": 497,
     "kind": "get",
     "name": "ALL",
     "memberof": "src/logger.js~Logger",
@@ -14904,7 +14945,7 @@
     }
   },
   {
-    "__docId__": 497,
+    "__docId__": 498,
     "kind": "get",
     "name": "LOG",
     "memberof": "src/logger.js~Logger",
@@ -14936,7 +14977,7 @@
     }
   },
   {
-    "__docId__": 498,
+    "__docId__": 499,
     "kind": "get",
     "name": "DEBUG",
     "memberof": "src/logger.js~Logger",
@@ -14968,7 +15009,7 @@
     }
   },
   {
-    "__docId__": 499,
+    "__docId__": 500,
     "kind": "get",
     "name": "INFO",
     "memberof": "src/logger.js~Logger",
@@ -15000,7 +15041,7 @@
     }
   },
   {
-    "__docId__": 500,
+    "__docId__": 501,
     "kind": "get",
     "name": "WARN",
     "memberof": "src/logger.js~Logger",
@@ -15032,7 +15073,7 @@
     }
   },
   {
-    "__docId__": 501,
+    "__docId__": 502,
     "kind": "get",
     "name": "ERROR",
     "memberof": "src/logger.js~Logger",
@@ -15064,7 +15105,7 @@
     }
   },
   {
-    "__docId__": 502,
+    "__docId__": 503,
     "kind": "file",
     "name": "src/recink.js",
     "content": "'use strict';\n\nconst path = require('path');\nconst merge = require('merge');\nconst Emitter = require('./emitter');\nconst events = require('./events');\nconst logger = require('./logger');\nconst Container = require('./container');\nconst configFactory = require('./config/factory');\nconst AbstractComponent = require('./component/abstract-component');\n\n/**\n * Recink entry point\n */\nclass Recink extends Emitter {\n  constructor() {\n    super();\n    \n    this._config = {};\n    this._components = [];\n    this._container = new Container();\n    this._registerDebugers();\n  }\n  \n  /**\n   * @private\n   */\n  _registerDebugers() {\n    this.on(events.config.load, (container, configFile) => {\n      logger.info(logger.emoji.smiley, `Load config from ${ configFile }`);\n      logger.debug(container.dump());\n    });\n    \n    this.on(events.components.load, (...components) => {\n      logger.debug(\n        'Loading components -', components.map(c => c.name).join(', ') || 'None'\n      );\n    });\n    \n    this.on(events.component.load, component => {\n      logger.debug(`Load component ${ component.name }`);\n    });\n    \n    this.on(events.component.subscribe, component => {\n      logger.debug(`Component ${ component.name } is subscribed`);\n    });\n    \n    this.on(events.component.ready, component => {\n      logger.debug(`Component ${ component.name } is ready`);\n    });\n    \n    this.on(events.components.run, (...components) => {\n      components.map(component => {\n        logger.info(\n          component.isActive ? logger.emoji.check : logger.emoji.cross,\n          `${ component.name.toUpperCase() } component`\n        );\n      });\n    });\n  }\n  \n  /**\n   * @returns {Promise}\n   */\n  run() {\n    this.emit(events.components.run, ...this._components);\n    \n    const activeComponents = this._components.filter(component => component.isActive);\n\n    if (activeComponents.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(activeComponents.map(component => {\n      this.emit(events.component.init, component);\n      \n      return component.init(this);\n    }))\n      .then(() => {\n        return Promise.all(activeComponents.map(component => {\n          this.emit(events.component.run, component);\n        \n          return component.run(this);\n        }));\n      })\n      .then(() => {\n        return Promise.all(this._components.map(component => {\n          this.emit(events.component.teardown, component);\n        \n          return component.teardown(this);\n        }));\n      });\n  }\n  \n  /**\n   * @param {Function} targetClass\n   * @returns {string|null}\n   * @private\n   */\n  _getBaseClass(targetClass) {\n    if (targetClass instanceof Function) {\n      let baseClass = targetClass;\n\n      while (baseClass) {\n        const newBaseClass = Object.getPrototypeOf(baseClass);\n\n        if (newBaseClass && newBaseClass !== Object && newBaseClass.name) {\n          baseClass = newBaseClass;\n        } else {\n          break;\n        }\n      }\n\n      return baseClass.name;\n    }\n    \n    return null;\n  }\n  \n  /**\n   * @param {AbstractComponent} components\n   * @returns {Promise}\n   */\n  components(...components) {\n    this.emit(events.components.load, ...components);\n\n    if (components.length <= 0) {\n      return Promise.resolve();\n    }\n\n    return Promise.all(components.map(component => {\n      if (!(component instanceof AbstractComponent)\n        && [ 'ConfigBasedComponent', 'AbstractComponent' ]\n          .indexOf(this._getBaseClass(component.constructor)) === -1) {\n        \n        return Promise.reject(new Error(\n          `Component ${ component.constructor.name } should be an instance of AbstractComponent`\n        ));\n      }\n\n      component.setLogger(logger);\n      this._components.push(component);\n      this.emit(events.component.load, component);\n\n      return component.subscribe(this)\n        .then(() => {\n          return this.emit(events.component.subscribe, component, this);\n        })\n        .then(() => component.ready())\n        .then(() => {\n          this.emit(events.component.ready, component);\n          return Promise.resolve(component);\n        });\n    }));\n  }\n  \n  /**\n   * @param {string} configFile\n   * @param {*} extendConfigs\n   * @returns {Promise}\n   */\n  configureExtend(configFile, ...extendConfigs) {\n    if (extendConfigs.length <= 0) {\n      return this.configure(configFile);\n    }\n    \n    const promises = extendConfigs\n      .concat([ configFile ])\n      .map(cfgFile => configFactory.guess(cfgFile).load());\n\n    return Promise.all(promises).then(configVectors => {\n      return Promise.resolve(merge.recursive(true, ...configVectors));\n    });\n  }\n\n  /**\n   * @param {string} configFile\n   * @returns {Promise}\n   */\n  configure(configFile = Recink.CONFIG_FILE) {\n    return configFactory.guess(configFile).load().then(config => Promise.resolve(config));\n  }\n\n  /**\n   * @param {Object} config\n   * @param {String} configFile\n   * @returns {Promise}\n   */\n  configLoad(config, configFile) {\n    return this.emitBlocking(events.config.preprocess, config).then(() => {\n      this._config = config;\n      this._container.reload(this._config);\n      this.emit(events.config.load, this.container, configFile);\n\n      return Promise.resolve(this._config);\n    });\n  }\n\n  /**\n   * @param {string} name\n   *\n   * @returns {AbstractComponent}\n   */\n  component(name) {\n    return this._components.filter(c => c.name === name)[0] || null;\n  }\n  \n  /**\n   * @returns {AbstractComponent[]}\n   */\n  listComponents() {\n    return this._components;\n  }\n\n  /**\n   * @returns {Container}\n   */\n  get container() {\n    return this._container;\n  }\n\n  /**\n   * @returns {AbstractConfig}\n   */\n  get config() {\n    return this._config;\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE() {\n    return path.resolve(process.cwd(), this.CONFIG_FILE_NAME);\n  }\n\n  /**\n   * @returns {string}\n   */\n  static get CONFIG_FILE_NAME() {\n    return '.recink.yml';\n  }\n}\n\nmodule.exports = Recink;\n",
@@ -15075,7 +15116,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 503,
+    "__docId__": 504,
     "kind": "class",
     "name": "Recink",
     "memberof": "src/recink.js",
@@ -15093,7 +15134,7 @@
     ]
   },
   {
-    "__docId__": 504,
+    "__docId__": 505,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/recink.js~Recink",
@@ -15114,7 +15155,7 @@
     "params": []
   },
   {
-    "__docId__": 505,
+    "__docId__": 506,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~Recink",
@@ -15137,7 +15178,7 @@
     }
   },
   {
-    "__docId__": 506,
+    "__docId__": 507,
     "kind": "member",
     "name": "_components",
     "memberof": "src/recink.js~Recink",
@@ -15160,7 +15201,7 @@
     }
   },
   {
-    "__docId__": 507,
+    "__docId__": 508,
     "kind": "member",
     "name": "_container",
     "memberof": "src/recink.js~Recink",
@@ -15183,7 +15224,7 @@
     }
   },
   {
-    "__docId__": 508,
+    "__docId__": 509,
     "kind": "method",
     "name": "_registerDebugers",
     "memberof": "src/recink.js~Recink",
@@ -15197,7 +15238,7 @@
     "params": []
   },
   {
-    "__docId__": 509,
+    "__docId__": 510,
     "kind": "method",
     "name": "run",
     "memberof": "src/recink.js~Recink",
@@ -15225,7 +15266,7 @@
     }
   },
   {
-    "__docId__": 510,
+    "__docId__": 511,
     "kind": "method",
     "name": "_getBaseClass",
     "memberof": "src/recink.js~Recink",
@@ -15265,7 +15306,7 @@
     }
   },
   {
-    "__docId__": 511,
+    "__docId__": 512,
     "kind": "method",
     "name": "components",
     "memberof": "src/recink.js~Recink",
@@ -15304,7 +15345,7 @@
     }
   },
   {
-    "__docId__": 512,
+    "__docId__": 513,
     "kind": "method",
     "name": "configureExtend",
     "memberof": "src/recink.js~Recink",
@@ -15353,7 +15394,7 @@
     }
   },
   {
-    "__docId__": 513,
+    "__docId__": 514,
     "kind": "method",
     "name": "configure",
     "memberof": "src/recink.js~Recink",
@@ -15392,7 +15433,7 @@
     }
   },
   {
-    "__docId__": 514,
+    "__docId__": 515,
     "kind": "method",
     "name": "configLoad",
     "memberof": "src/recink.js~Recink",
@@ -15441,7 +15482,7 @@
     }
   },
   {
-    "__docId__": 515,
+    "__docId__": 516,
     "kind": "member",
     "name": "_config",
     "memberof": "src/recink.js~Recink",
@@ -15464,7 +15505,7 @@
     }
   },
   {
-    "__docId__": 516,
+    "__docId__": 517,
     "kind": "method",
     "name": "component",
     "memberof": "src/recink.js~Recink",
@@ -15503,7 +15544,7 @@
     }
   },
   {
-    "__docId__": 517,
+    "__docId__": 518,
     "kind": "method",
     "name": "listComponents",
     "memberof": "src/recink.js~Recink",
@@ -15531,7 +15572,7 @@
     }
   },
   {
-    "__docId__": 518,
+    "__docId__": 519,
     "kind": "get",
     "name": "container",
     "memberof": "src/recink.js~Recink",
@@ -15563,7 +15604,7 @@
     }
   },
   {
-    "__docId__": 519,
+    "__docId__": 520,
     "kind": "get",
     "name": "config",
     "memberof": "src/recink.js~Recink",
@@ -15595,7 +15636,7 @@
     }
   },
   {
-    "__docId__": 520,
+    "__docId__": 521,
     "kind": "get",
     "name": "CONFIG_FILE",
     "memberof": "src/recink.js~Recink",
@@ -15627,7 +15668,7 @@
     }
   },
   {
-    "__docId__": 521,
+    "__docId__": 522,
     "kind": "get",
     "name": "CONFIG_FILE_NAME",
     "memberof": "src/recink.js~Recink",
@@ -15659,7 +15700,7 @@
     }
   },
   {
-    "__docId__": 523,
+    "__docId__": 524,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -15671,7 +15712,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 524,
+    "__docId__": 525,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -15683,7 +15724,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 525,
+    "__docId__": 526,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -15695,7 +15736,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 526,
+    "__docId__": 527,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -15707,7 +15748,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 527,
+    "__docId__": 528,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -15719,7 +15760,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 528,
+    "__docId__": 529,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -15731,7 +15772,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 529,
+    "__docId__": 530,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -15743,7 +15784,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 530,
+    "__docId__": 531,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -15755,7 +15796,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 531,
+    "__docId__": 532,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -15767,7 +15808,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 532,
+    "__docId__": 533,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -15779,7 +15820,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 533,
+    "__docId__": 534,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -15791,7 +15832,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 534,
+    "__docId__": 535,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -15803,7 +15844,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 535,
+    "__docId__": 536,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -15815,7 +15856,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 536,
+    "__docId__": 537,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -15827,7 +15868,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 537,
+    "__docId__": 538,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -15839,7 +15880,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 538,
+    "__docId__": 539,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -15851,7 +15892,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 539,
+    "__docId__": 540,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -15863,7 +15904,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 540,
+    "__docId__": 541,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -15875,7 +15916,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 541,
+    "__docId__": 542,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -15887,7 +15928,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 542,
+    "__docId__": 543,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -15899,7 +15940,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 543,
+    "__docId__": 544,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -15911,7 +15952,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 544,
+    "__docId__": 545,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -15923,7 +15964,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 545,
+    "__docId__": 546,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -15935,7 +15976,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 546,
+    "__docId__": 547,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -15947,7 +15988,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 547,
+    "__docId__": 548,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -15959,7 +16000,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 548,
+    "__docId__": 549,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -15971,7 +16012,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 549,
+    "__docId__": 550,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -15983,7 +16024,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 550,
+    "__docId__": 551,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -15995,7 +16036,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 551,
+    "__docId__": 552,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -16007,7 +16048,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 552,
+    "__docId__": 553,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -16019,7 +16060,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 553,
+    "__docId__": 554,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -16031,7 +16072,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 554,
+    "__docId__": 555,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -16043,7 +16084,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 555,
+    "__docId__": 556,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -16055,7 +16096,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 556,
+    "__docId__": 557,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -16067,7 +16108,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 557,
+    "__docId__": 558,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -16079,7 +16120,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 558,
+    "__docId__": 559,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -16091,7 +16132,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 559,
+    "__docId__": 560,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -16103,7 +16144,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 560,
+    "__docId__": 561,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -16115,7 +16156,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 561,
+    "__docId__": 562,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -16127,7 +16168,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 562,
+    "__docId__": 563,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -16139,7 +16180,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 563,
+    "__docId__": 564,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -16151,7 +16192,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 564,
+    "__docId__": 565,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -16163,7 +16204,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 565,
+    "__docId__": 566,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -16175,7 +16216,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 566,
+    "__docId__": 567,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -16187,7 +16228,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 567,
+    "__docId__": 568,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -16199,7 +16240,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 568,
+    "__docId__": 569,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -16211,7 +16252,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 569,
+    "__docId__": 570,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -16224,7 +16265,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 571,
+    "__docId__": 572,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -16236,7 +16277,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 572,
+    "__docId__": 573,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -16248,7 +16289,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 573,
+    "__docId__": 574,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -16260,7 +16301,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 574,
+    "__docId__": 575,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -16272,7 +16313,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 575,
+    "__docId__": 576,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -16284,7 +16325,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 576,
+    "__docId__": 577,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -16296,7 +16337,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 577,
+    "__docId__": 578,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -16308,7 +16349,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 578,
+    "__docId__": 579,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",

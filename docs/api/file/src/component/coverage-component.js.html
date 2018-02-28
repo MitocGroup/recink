@@ -83,6 +83,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
@@ -302,9 +303,7 @@ class CoverageComponent extends DependencyBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
-   * &apos;
    * @todo split into several abstractions
    */
   run(emitter) {
@@ -317,12 +316,7 @@ class CoverageComponent extends DependencyBasedComponent {
       const dispatchedAssets = {};
       
       Object.keys(reporters).map(reporterName =&gt; {
-        const report = istanbul.Report.create(
-          reporterName, 
-          reporters[reporterName] || {}
-        );
-        
-        reporter.reports[reporterName] = report;
+        reporter.reports[reporterName] = istanbul.Report.create(reporterName, reporters[reporterName] || {});
       });
       
       emitter.onBlocking(testEvents.asset.test.skip, payload =&gt; {
@@ -339,11 +333,7 @@ class CoverageComponent extends DependencyBasedComponent {
       });
       
       emitter.onBlocking(testEvents.asset.tests.end, (mocha, module) =&gt; {
-        return this._persistModuleBlankCoverage(
-          assetsToInstrument,
-          dispatchedAssets,
-          module
-        ).then(() =&gt; {
+        return this._persistModuleBlankCoverage(assetsToInstrument, dispatchedAssets, module).then(() =&gt; {
           delete assetsToInstrument[module.name];
           delete dispatchedAssets[module.name];
           
@@ -387,12 +377,7 @@ class CoverageComponent extends DependencyBasedComponent {
                 file = path.resolve(file);
                 
                 mocha.suite.emit(&apos;pre-require&apos;, global, file, mocha);
-                mocha.suite.emit(
-                  &apos;require&apos;,
-                  ModuleCompile.require(file, {}, preprocessor),
-                  file,
-                  mocha
-                );
+                mocha.suite.emit(&apos;require&apos;, ModuleCompile.require(file, {}, preprocessor), file, mocha);
                 mocha.suite.emit(&apos;post-require&apos;, global, file, mocha);
               });
               
@@ -409,21 +394,9 @@ class CoverageComponent extends DependencyBasedComponent {
           collector.add(global[coverageVariable] || {});
         });
         
-        return emitter.emitBlocking(
-          events.coverage.report.create, 
-          istanbul, 
-          reporter, 
-          collector
-        )
+        return emitter.emitBlocking(events.coverage.report.create, istanbul, reporter, collector)
           .then(() =&gt; this._dumpCoverageStats(collector, reporter))
-          .then(() =&gt; {
-            return emitter.emitBlocking(
-              events.coverage.report.compare, 
-              istanbul, 
-              reporter, 
-              collector
-            );
-          })
+          .then(() =&gt; emitter.emitBlocking(events.coverage.report.compare, istanbul, reporter, collector))
           .then(() =&gt; this._doCompare(collector));
       });
       
