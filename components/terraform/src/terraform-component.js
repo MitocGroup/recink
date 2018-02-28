@@ -401,21 +401,27 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _parameterFromConfig(module, parameter, defaultValue) {
+    let tree = [];
     let result = defaultValue;
     let mainCfg = this.container.get(parameter, defaultValue);
-    let moduleCfg = module.container.get(`terraform.${parameter}`, defaultValue);
+    let moduleCfg = module.container.get(`terraform.${parameter}`);
 
     switch ((defaultValue).constructor) {
       case String:
       case Boolean:
-        const cfg = Object.assign({x: defaultValue}, {x: mainCfg}, {x: moduleCfg});
-        result = cfg.x;
+        tree.push({x: mainCfg});
+        if (moduleCfg !== null) { tree.push({x: moduleCfg}); }
+
+        result = (Object.assign(...tree)).x;
         break;
       case Object:
-        result = Object.assign({}, mainCfg, moduleCfg);
+        tree.push(mainCfg);
+        if (moduleCfg !== null) { tree.push(moduleCfg); }
+
+        result = Object.assign(...tree);
         break;
       case Array:
-        result = moduleCfg.length ? moduleCfg : mainCfg;
+        result = (moduleCfg !== null) ? moduleCfg : mainCfg;
         break;
     }
 
@@ -436,7 +442,7 @@ class TerraformComponent extends DependencyBasedComponent {
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
-    this.logger.debug(`Terraform version - "${ version }"`);
+    this.logger.debug(`Terraform version - '${ version }'`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
