@@ -14,7 +14,7 @@ describe('Test EmitModule', () => {
   const logger = { warn: emptyCb, debug: emptyCb, emoji: {} };
   const emitter = new Emitter();
   const container = new Container({ root: '.' });
-  
+
   let pathExists = true;
   
   const stream = new PassThrough();

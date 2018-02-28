@@ -1,17 +1,17 @@
 'use strict';
 
 const fse = require('fs-extra');
-const Diff = require('./diff');
 const path = require('path');
+const Diff = require('./diff');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
-const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const E2ERunner = require('recink/components/e2e/src/e2e-runner');
 const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 const { getFilesByPattern } = require('recink/src/helper/util');
+const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 
 /**
  * Terraform component
@@ -37,7 +37,6 @@ class TerraformComponent extends DependencyBasedComponent {
     this._e2e = {};
     this._unit = {};
     this._reporter = null;
-    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
@@ -60,9 +59,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {String}
-   *
    * @private
    */
   _moduleRoot(emitModule) {
@@ -301,7 +298,6 @@ class TerraformComponent extends DependencyBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
     this._unit = {};
@@ -312,7 +308,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @returns {Function[]}
-   *
    * @private
    */
   get _normalizedRunStack() {
@@ -348,18 +343,14 @@ class TerraformComponent extends DependencyBasedComponent {
     }
 
     if (it >= maxIt) {
-      throw new Error(
-        `Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`
-      );
+      throw new Error(`Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`);
     }
 
-    return modulesNames.map(moduleName => {
-      return this._runStack[moduleName];
-    });
+    return modulesNames.map(moduleName => this._runStack[moduleName]);
   }
 
   /**
-   * @throws {Error}
+   * Validate terraform modules run-stack
    * @private
    */
   _validateRunStack() {
@@ -368,7 +359,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
     available.forEach(moduleName => {
       const { after } = this._runStack[moduleName];
-
       const extraneousModules = after.filter(m => !available.includes(m));
 
       if (extraneousModules.length > 0) {
@@ -378,11 +368,12 @@ class TerraformComponent extends DependencyBasedComponent {
 
     if (Object.keys(extraneous).length > 0) {
       const extraneousVector = Object.keys(extraneous).map(moduleName => {
-        return `<[${ moduleName }]> ${ extraneous[moduleName].join(', ') }`;
-      });
-      const extraneousInfo = extraneousVector.join('\n\t');
+        delete this._runStack[moduleName];
 
-      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
+        const deps = extraneous[moduleName];
+        const errMessage = `Skipping '${ moduleName }' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
+        this.logger.warn(this.logger.emoji.cross, errMessage);
+      });
     }
   }
 
@@ -410,20 +401,27 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _parameterFromConfig(module, parameter, defaultValue) {
+    let tree = [];
     let result = defaultValue;
     let mainCfg = this.container.get(parameter, defaultValue);
-    let moduleCfg = module.container.get(`terraform.${parameter}`, defaultValue);
+    let moduleCfg = module.container.get(`terraform.${parameter}`);
 
     switch ((defaultValue).constructor) {
       case String:
       case Boolean:
-        result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
+        tree.push({x: mainCfg});
+        if (moduleCfg !== null) { tree.push({x: moduleCfg}); }
+
+        result = (Object.assign(...tree)).x;
         break;
       case Object:
-        result = Object.assign({}, mainCfg, moduleCfg);
+        tree.push(mainCfg);
+        if (moduleCfg !== null) { tree.push(moduleCfg); }
+
+        result = Object.assign(...tree);
         break;
       case Array:
-        result = moduleCfg.length ? moduleCfg : mainCfg;
+        result = (moduleCfg !== null) ? moduleCfg : mainCfg;
         break;
     }
 
@@ -444,7 +442,7 @@ class TerraformComponent extends DependencyBasedComponent {
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
-    this.logger.debug(`Terraform version - "${ version }"`);
+    this.logger.debug(`Terraform version - '${ version }'`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
@@ -461,7 +459,7 @@ class TerraformComponent extends DependencyBasedComponent {
    *
    * @returns {Promise}
    *
-   * @private 
+   * @private
    */
   _hasChanges(emitModule) {
     const rootPath = this._moduleRoot(emitModule);
@@ -633,7 +631,6 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
