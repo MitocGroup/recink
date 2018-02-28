@@ -472,12 +472,6 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _init(terraform, emitModule) {
-    console.log('plan', this._parameterFromConfig(emitModule, 'plan', false));
-    console.log('apply', this._parameterFromConfig(emitModule, 'apply', false));
-    console.log('destroy', this._parameterFromConfig(emitModule, 'destroy', false));
-
-    process.exit(1);
-
     if (!this._parameterFromConfig(emitModule, 'init', true)) {
       return this._handleSkip(emitModule, 'init');
     }
