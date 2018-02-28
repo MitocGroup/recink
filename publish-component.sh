@@ -54,7 +54,7 @@ cd "components/$2"                                                              
 rm -rf node_modules                                                                                             || fail "Cleaning up recink-$2 node_modules"
 npm install --no-shrinkwrap                                                                                     || fail "Installing recink-$2 dependencies"
 npm version "$1" --no-git-tag-version                                                                           || fail "Updating $1 version of recink-$2 package"
-npm publish --tag beta                                                                                          || fail "Publishing recink-$2 package on npmjs.com"
+npm publish                                                                                                     || fail "Publishing recink-$2 package on npmjs.com"
 cd ../../
 (git diff-files --quiet --ignore-submodules -- || (git add . && git commit -a -m"Publish recink-$2 package on npmjs.com"))
 git push
