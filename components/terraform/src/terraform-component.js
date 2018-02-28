@@ -408,7 +408,8 @@ class TerraformComponent extends DependencyBasedComponent {
     switch ((defaultValue).constructor) {
       case String:
       case Boolean:
-        result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
+        const cfg = Object.assign({x: defaultValue}, {x: mainCfg}, {x: moduleCfg});
+        result = cfg.x;
         break;
       case Object:
         result = Object.assign({}, mainCfg, moduleCfg);
@@ -452,7 +453,7 @@ class TerraformComponent extends DependencyBasedComponent {
    *
    * @returns {Promise}
    *
-   * @private 
+   * @private
    */
   _hasChanges(emitModule) {
     const rootPath = this._moduleRoot(emitModule);
