@@ -371,7 +371,7 @@ class TerraformComponent extends DependencyBasedComponent {
         delete this._runStack[moduleName];
 
         const deps = extraneous[moduleName];
-        const errMessage = `Skipping '${ moduleName }' due to '${deps.join(', ')}' is(are) not configured or excluded`;
+        const errMessage = `Skipping '${ moduleName }' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
         this.logger.warn(this.logger.emoji.cross, errMessage);
       });
     }
