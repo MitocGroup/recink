@@ -9,7 +9,7 @@ const State = require('./terraform/state');
 const Downloader = require('./downloader');
 const SecureOutput = require('./secure-output');
 const Logger = require('recink/src/logger');
-const { getFilesByPattern, versionCompare } = require('recink/src/helper/util');
+const { findFilesByPattern, versionCompare } = require('recink/src/helper/util');
 
 /**
  * Terraform wrapper
@@ -354,7 +354,7 @@ class Terraform {
 
     if (this.logger) {
       this.logger.info(this.logger.emoji.magic, `Running ${this.getBinary} ${command} ${args.join(' ')} command`);
-      this.logger.debug(this.logger.emoji.fire, getFilesByPattern(cwd, /^((?!(node_modules)).)*$/));
+      this.logger.debug(this.logger.emoji.fire, findFilesByPattern(cwd, /^((?!(node_modules)).)*$/));
 
       childProcess.stdout.on('data', data => {
         let chunk = data.toString().replace(/\s*$/g, '');

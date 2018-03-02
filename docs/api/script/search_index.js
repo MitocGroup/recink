@@ -282,9 +282,9 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "recink/src/helper/util.js~getfilesbypattern",
-    "function/index.html#static-function-getFilesByPattern",
-    "<span>getFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
+    "recink/src/helper/util.js~findFilesByPattern",
+    "function/index.html#static-function-findFilesByPattern",
+    "<span>findFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [

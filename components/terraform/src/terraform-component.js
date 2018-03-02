@@ -10,7 +10,7 @@ const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
-const { getFilesByPattern } = require('recink/src/helper/util');
+const { findFilesByPattern } = require('recink/src/helper/util');
 const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 
 /**
@@ -72,7 +72,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _isTerraformModule(emitModule) {
-    let terraformFiles = getFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
+    let terraformFiles = findFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
 
     return Promise.resolve(terraformFiles.length > 0);
   }
@@ -265,13 +265,13 @@ class TerraformComponent extends DependencyBasedComponent {
     if (plan) {
       units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
         ? [plan]
-        : getFilesByPattern(plan, /.*\.spec.\js/);
+        : findFilesByPattern(plan, /.*\.spec.\js/);
     }
 
     if (apply) {
       e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
         ? [apply]
-        : getFilesByPattern(apply, /.*\.e2e.\js/);
+        : findFilesByPattern(apply, /.*\.e2e.\js/);
     }
 
     this._unit[moduleName].assets.push(...units);
