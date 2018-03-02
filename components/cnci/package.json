@@ -4,9 +4,9 @@
   "description": "REciNK Component for CNCI",
   "keywords": [
     "REciNK",
-    "CNCI",
+    "CNCI Integration",
     "Development",
-    "GitHub Integration"
+    "CI/CD"
   ],
   "homepage": "https://github.com/MitocGroup/recink",
   "bugs": {
@@ -24,6 +24,8 @@
     "url": "https://github.com/MitocGroup/recink.git"
   },
   "dependencies": {
+    "aws-sdk": "^2.198.0",
+    "jenkins": "^0.20.1",
     "recink": "^1.x.x"
   },
   "engines": {

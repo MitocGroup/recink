@@ -9,8 +9,8 @@ class AwsCredentials {
   /**
    * @param {Object} options
    */
-  constructor(options) {
-    this._options = options || {};
+  constructor(options = {}) {
+    this._options = options;
     this._providers = [
       new AWS.EnvironmentCredentials(
         this._options.hasOwnProperty('envPrefix') ? this._options.envPrefix : 'AWS'
