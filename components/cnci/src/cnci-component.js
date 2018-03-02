@@ -59,19 +59,12 @@ class CnciComponent extends DependencyBasedComponent {
         }
 
         return Promise.resolve();
-      }).then(() => {
-        const tfMetadata = this._getTerraformMetadata();
-
-        return Promise.all(
-          tfMetadata.map(item => {
-            return this._uploadToS3(item.key, item.body)
-          })
-        );
       });
     });
   }
 
   /**
+   * @todo remove if we do not come back to it
    * Find terraform infrastructure related metadata
    * @returns {Array}
    * @private

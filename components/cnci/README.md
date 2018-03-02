@@ -1,72 +1,52 @@
 REciNK Component for CNCI
 ====================================
 
-This is a [REciNK](https://github.com/MitocGroup/recink) component for Cnci.
+This is a [REciNK][1] component, which helps you integrate with [Cloud Native CI][2] (aka CNCI)
 
-# Prerequisites
+## Prerequisites
 
-- [x] Git >= v1.x
 - [x] Node.js >= v6.x
 - [x] NPM >= v3.x
-- [x] [REciNK](https://github.com/MitocGroup/recink#installation)
+- [x] [REciNK][1]
 
-> Use [nvm](https://github.com/creationix/nvm#installation) to install and
-manage different versions of Node.js; Ideally, use v8+ for faster performance
-
-
-# Installation
+## Installation
 
 - `npm install -g recink-cnci`
 
-> Note that the component is installed automatically when running `recink component add cnci`
+> Note that the component is installed automatically when running `recink component add recink-cnci`
 
+## Configuration
 
-# Configuration
-
-`.recink.yml` configuration:
+* `.recink.yml` configuration example:
 
 ```yaml
 $:
   preprocess:
-    '$.cnci.name': 'eval'
+    '$.cnci.token': 'eval'
+    '$.cnci.ci.options.user': 'eval'
+    '$.cnci.ci.options.token': 'eval'
+    '$.cnci.ci.options.jobName': 'eval'
+    '$.cnci.ci.options.buildNumber': 'eval'
+
   cnci:
-    name: 'process.env.CNCI'      # Name to output
+    token: process.env.CNCI_TOKEN               # Cloud Native CI API token
+    ci:                                         # CI configuration
+      provider: jenkins                         # CI provider [available: jenkins]
+      options:
+        user: process.env.JENKINS_USER          # User & token to call Jenkins API
+        token: process.env.JENKINS_TOKEN
+        domain: jenkins.mitocgroup.com          # Domain [optional, default = 127.0.0.1]
+        jobName: process.env.JOB_NAME           # Job name
+        buildNumber: process.env.BUILD_NUMBER   # Build number [optional]
 ```
-
-`.travis.yml` configuration:
-
-```yaml
-script: 'recink run unit -c cnci'  
-before_install:
-  # other before_install scripts...
-  - 'npm install -g recink-cnci'
-```
-
-Or using the registry: 
-
-```yaml
-before_install:
-  # other before_install scripts...
-  - 'recink component add cnci'
-```
-
-Add the `CNCI` to `.travis.yml`:
-
-```
-recink travis encrypt -x 'CNCI="John"'
-```
-
-> If you are using [Travis Pro](https://travis-ci.com/) [read this guide](https://github.com/MitocGroup/recink/blob/master/docs/guide.md#configuring-github-project) to properly encrypt the environment variable
-
 
 # Usage
 
-```
-CNCI="John" recink run unit -c cnci
+```bash
+recink run cnci
 ```
 
-Or the generic way:
+> This should be the last command in your CI job
 
-```
-CNCI="John" recink run cnci
-```
+[1]: https://github.com/MitocGroup/recink
+[1]: https://www.cloudnativeci.com
