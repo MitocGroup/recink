@@ -32,7 +32,6 @@ class Terraform {
     this._resource = resource;
     this._vars = vars;
     this._varFiles = varFiles;
-    this._logger = false;
     this._isRemoteState = false;
     this._isWorkspaceSupported = false;
   }
@@ -349,20 +348,14 @@ class Terraform {
   run(command, args = [], cwd = process.cwd()) {
     const { env } = this;
     const bin = path.resolve(this.getBinary);
-
     const childProcess = execa(bin, [command].concat(args), { env, cwd });
 
-    if (this.logger) {
-      this.logger.info(this.logger.emoji.magic, `Running ${this.getBinary} ${command} ${args.join(' ')} command`);
-      this.logger.debug(this.logger.emoji.fire, findFilesByPattern(cwd, /^((?!(node_modules)).)*$/));
+    childProcess.stdout.on('data', data => {
+      this.logger.info(SecureOutput.secure(data.toString() || ''));
+    });
 
-      childProcess.stdout.on('data', data => {
-        let chunk = data.toString().replace(/\s*$/g, '');
-        if (chunk) {
-          this.logger.info(SecureOutput.secure(chunk));
-        }
-      });
-    }
+    this.logger.info(this.logger.emoji.magic, `Running ${this.getBinary} ${command} ${args.join(' ')} command`);
+    this.logger.debug(this.logger.emoji.fire, findFilesByPattern(cwd, /^((?!(node_modules)).)*$/));
 
     return childProcess.then(({ stdout, code }) => Promise.resolve({ code, output: stdout }));
   }
