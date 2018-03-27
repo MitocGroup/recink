@@ -1,12 +1,12 @@
 --- 
 $:
   npm:
-#   # Scripts to run after installing dependencies
-#   scripts:
-#     - 'compile-travis'
-    # Dependencies to add/overwrite
-    dependencies:
-      chai: 'latest'
+#    # Scripts to run after installing dependencies
+#    scripts:
+#      - 'compile-travis'
+#      # Dependencies to add/overwrite
+#      dependencies:
+#        chai: 'latest'
 
   emit:
     # Files to include
@@ -28,93 +28,91 @@ $:
     # Files to exclude
     ignore: ~
 
-# coverage:
-#   # Istanbul reporters
-#   reporters:
-#     text-summary: ~
-#   # Files to include
-#   pattern:
-#     - /.+\.js$/i
-#   # Files to exclude
-#   ignore:
-#     - /.+\.spec\.js$/i
-#     - /.+\.e2e\.js$/i
-#     - /^(.*\/)?node_modules(\/?$)?/i
-#   # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
-#   compare:
-#     negative-delta: 3
-#     storage:
-#       # Available drivers: s3, volative
-#       driver: 's3'
-#       options:
-#         # S3 storage directory
-#         - 's3://travis-metadata/coverage/sample-repo'
-#         # S3 storage options
-#         -
-#           region: 'process.env.AWS_DEFAULT_REGION'
-#           accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-#           secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+#  coverage:
+#    # Istanbul reporters
+#    reporters:
+#      text-summary: ~
+#    # Files to include
+#    pattern:
+#      - /.+\.js$/i
+#    # Files to exclude
+#    ignore:
+#      - /.+\.spec\.js$/i
+#      - /.+\.e2e\.js$/i
+#      - /^(.*\/)?node_modules(\/?$)?/i
+#    # Compare coverage info and if negative delta is more than X fail (0.01-100.00)
+#    compare:
+#      negative-delta: 3
+#      storage:
+#        # Available drivers: s3, volative
+#        driver: 's3'
+#        options:
+#          # S3 storage directory
+#          - 's3://travis-metadata/coverage/sample-repo'
+#          # S3 storage options
+#          -
+#            region: 'process.env.AWS_DEFAULT_REGION'
+#            accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#            secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 
-# preprocess:
-#   # preprocessing of cache variables
-#   '$.cache.options.1.region': 'eval'
-#   '$.cache.options.1.accessKeyId': 'eval'
-#   '$.cache.options.1.secretAccessKey': 'eval'
-#   # preprocessing of coverage variables
-#   '$.coverage.compare.storage.options.1.region': 'eval'
-#   '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
-#   '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
+#  preprocess:
+#    # preprocessing of cache variables
+#    '$.cache.options.1.region': 'eval'
+#    '$.cache.options.1.accessKeyId': 'eval'
+#    '$.cache.options.1.secretAccessKey': 'eval'
+#    # preprocessing of coverage variables
+#    '$.coverage.compare.storage.options.1.region': 'eval'
+#    '$.coverage.compare.storage.options.1.accessKeyId': 'eval'
+#    '$.coverage.compare.storage.options.1.secretAccessKey': 'eval'
 
-# cache:
-#   # Additional paths to be cached
-#   paths: []
-#   # Cache NPM dependencies
-#   npm: true
-#   # Available drivers: void, s3
-#   driver: 's3'
-#   options:
-#     # S3 cache directory
-#     - 's3://travis-metadata/cache/sample-repo'
-#     # S3 client options
-#     -
-#       region: 'process.env.AWS_DEFAULT_REGION'
-#       accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
-#       secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
+#  cache:
+#    # Additional paths to be cached
+#    paths: []
+#    # Cache NPM dependencies
+#    npm: true
+#    # Available drivers: void, s3
+#    driver: 's3'
+#    options:
+#      # S3 cache directory
+#      - 's3://travis-metadata/cache/sample-repo'
+#      # S3 client options
+#      -
+#        region: 'process.env.AWS_DEFAULT_REGION'
+#        accessKeyId: 'process.env.AWS_ACCESS_KEY_ID'
+#        secretAccessKey: 'process.env.AWS_SECRET_ACCESS_KEY'
 
-# e2e:
-#   # TestCafe framework reporter
-#   reporter: ~
-#   # Files to include
-#   pattern:
-#     - /.+\.e2e\.js$/i
-#   # Files to exclude
-#   ignore: ~
-#   # TestCafe allows taking screenshots
-#   screenshot:
-#     enabled: false                  
-#     path: 'path/to/screenshots'
-#     take-on-fail: false
-#   # Browsers to run the tests against
-#   browsers:
-#     - puppeteer
-#     - nightmare
-#     - safari
-#     - chrome
-#     - firefox
-#   # Wait options for running uri checks
-#   wait:
-#     interval: 200
-#     timeout: 15000
-#     uri:
+#  e2e:
+#    # TestCafe framework reporter
+#    reporter: 'spec'
+#    # Files to include
+#    pattern:
+#      - /.+\.e2e\.js$/i
+#    # Files to exclude
+#    ignore: ~
+#    # TestCafe allows taking screenshots
+#    screenshot:
+#      enabled: false
+#      path: 'path/to/screenshots'
+#      take-on-fail: false
+#    # Browsers to run the tests against
+#    browsers:
+#     # - puppeteer
+#     # - nightmare
+#     # - safari
+#      - chrome
+#     # - firefox
+#    # Wait options for running uri checks
+#    wait:
+#      interval: 200
+#      timeout: 15000
+#      uri:
 #        - https://www.example.com
 
-# Main module definition
+# Modules definition
 #main:
 # # Root package directory (containing package.json and tests)
-# root: '.'
-#  # Scripts to run after installing dependencies (over $.npm.scripts config)
-#  scripts: []
-#  # Dependencies to add/overwrite (over $.npm.dependencies config)
-#  dependencies: []
-
-### Add other modules here...
+#  root: '.'
+#    # Scripts to run after installing dependencies (over $.npm.scripts config)
+#    scripts: []
+#    # Dependencies to add/overwrite (over $.npm.dependencies config)
+#    dependencies: []
