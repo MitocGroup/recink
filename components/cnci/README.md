@@ -40,13 +40,21 @@ $:
         buildNumber: process.env.BUILD_NUMBER   # Build number [optional]
 ```
 
-# Usage
+## Usage
+
+* To upload `.tfstate` and `.tfplan` files
 
 ```bash
-recink run cnci
+recink run terraform -c cnci
 ```
 
-> This should be the last command in your CI job
+* To upload CI metadata
+
+```bash
+recink run cnci --sync
+```
+
+> This should be run in a post-build step
 
 [1]: https://github.com/MitocGroup/recink
 [1]: https://www.cloudnativeci.com
