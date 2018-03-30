@@ -72,9 +72,9 @@ class CnciComponent extends DependencyBasedComponent {
       emitter.onBlocking(cnciEvents.cnci.upload.plan, plans => {
         return Promise.all(
           plans.map(plan => {
-            const planKey = this._getFullKey(plan.replace(projectDir, ''));
+            const planKey = this._getFullKey(plan.path.replace(projectDir, ''));
 
-            return this._uploadToS3(planKey, fs.readFileSync(plan));
+            return this._uploadToS3(planKey, plan.output);
           })
         );
       });
@@ -116,8 +116,6 @@ class CnciComponent extends DependencyBasedComponent {
     const ci = CiFactory.create(ciConfig);
 
     return Promise.all([ci.getJobMeta(), ci.getJobLog()]).then(([ meta, log ]) => {
-      meta.cnciToken = this._cnciToken;
-
       return Promise.resolve([
         { key: this._getFullKey('metadata.json'), body: JSON.stringify(meta, null, 2) },
         { key: this._getFullKey('log.txt'), body: log }
@@ -137,7 +135,10 @@ class CnciComponent extends DependencyBasedComponent {
       ACL: CnciComponent.DEFAULT_ACL,
       Body: body,
       Bucket: CnciComponent.METADATA_BUCKET,
-      Key: key
+      Key: key,
+      Metadata: {
+        'cnci-token': this._cnciToken,
+      }
     };
 
     return new Promise((resolve, reject) => {

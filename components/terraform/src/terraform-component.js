@@ -519,7 +519,7 @@ class TerraformComponent extends DependencyBasedComponent {
     return terraform
       .plan(this._moduleRoot(emitModule))
       .then(plan => {
-        return this._emitter.emitBlocking('cnci.upload.plan', [plan.path]).then(() => {
+        return this._emitter.emitBlocking('cnci.upload.plan', [plan]).then(() => {
           return Promise.resolve(plan);
         })
       })
