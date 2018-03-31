@@ -3,7 +3,7 @@
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 const CiFactory = require('./ci-factory');
-const { findFilesByPattern } = require('recink/src/helper/util');
+const cnciEvents = require('./events');
 const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
 
 /**
@@ -41,46 +41,62 @@ class CnciComponent extends DependencyBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
-    this._cnciToken = this.container.get('token', false);
+    return new Promise(resolve => {
+      const sync = this.container.get('sync', false);
+      this._cnciToken = this.container.get('token', false);
+      const projectDir = this.container.get('__dir');
 
-    if (!this._cnciToken) {
-      this.logger.error(this.logger.emoji.cross, 'CNCI token is required');
-      return Promise.resolve();
-    }
+      if (!this._cnciToken) {
+        this.logger.error(this.logger.emoji.cross, 'CNCI token is required');
+        return resolve();
+      }
 
-    return this._getBuildMetadata().then(results => {
-      return Promise.all(
-        results.map(item => {
-          return this._uploadToS3(item.key, item.body)
-        })
-      ).then(uploaded => {
-        if (uploaded.length > 0) {
-          this.logger.info(this.logger.emoji.check, 'Build metadata uploaded');
-        }
+      /**
+       * Listens 'cnci.upload.state' event
+       * @param {Array} states
+       */
+      emitter.onBlocking(cnciEvents.cnci.upload.state, states => {
+        return Promise.all(
+          states.map(state => {
+            const stateKey = this._getFullKey(state.replace(projectDir, ''));
 
-        return Promise.resolve();
+            return this._uploadToS3(stateKey, fs.readFileSync(state))
+          })
+        );
       });
-    });
-  }
 
-  /**
-   * @todo remove if we do not come back to it
-   * Find terraform infrastructure related metadata
-   * @returns {Array}
-   * @private
-   */
-  _getTerraformMetadata() {
-    const projectDir = this.container.get('__dir');
-    const artifacts = findFilesByPattern(projectDir, /.*\.(tfstate|tfplan)$/, /^node_modules$/);
+      /**
+       * Listens 'cnci.upload.plan' event
+       * @param {Array} plans
+       */
+      emitter.onBlocking(cnciEvents.cnci.upload.plan, plans => {
+        return Promise.all(
+          plans.map(plan => {
+            const planKey = this._getFullKey(plan.path.replace(projectDir, ''));
 
-    return artifacts.map(item => {
-      let type = /tfstate$/.test(item) ? 'state' : 'plan';
-      let file = item.replace(projectDir, '');
+            return this._uploadToS3(planKey, plan.output);
+          })
+        );
+      });
 
-      return {
-        key: `terraform/${this._timestamp}/${type}${file}`,
-        body: fs.readFileSync(item)
-      };
+      if (!sync) {
+        return resolve();
+      }
+
+      /**
+       * Upload build metadata if CI is configured and running as a post-build action
+       */
+      return this._getBuildMetadata().then(results => {
+        return Promise.all(
+          results.map(item => this._uploadToS3(item.key, item.body))
+        ).then(uploaded => {
+          if (uploaded.length > 0) {
+            this.logger.info(this.logger.emoji.check, 'Build metadata uploaded');
+          }
+
+          return Promise.resolve();
+        });
+      });
     });
   }
 
@@ -100,11 +116,9 @@ class CnciComponent extends DependencyBasedComponent {
     const ci = CiFactory.create(ciConfig);
 
     return Promise.all([ci.getJobMeta(), ci.getJobLog()]).then(([ meta, log ]) => {
-      meta.cnciToken = this._cnciToken;
-
       return Promise.resolve([
-        { key: `public-dev/build-metadata-${this._timestamp}.json`, body: JSON.stringify(meta, null, 2) },
-        { key: `public-dev/build-log-${this._timestamp}.txt`, body: log }
+        { key: this._getFullKey('metadata.json'), body: JSON.stringify(meta, null, 2) },
+        { key: this._getFullKey('log.txt'), body: log }
       ]);
     });
   }
@@ -121,7 +135,10 @@ class CnciComponent extends DependencyBasedComponent {
       ACL: CnciComponent.DEFAULT_ACL,
       Body: body,
       Bucket: CnciComponent.METADATA_BUCKET,
-      Key: key
+      Key: key,
+      Metadata: {
+        'cnci-token': this._cnciToken,
+      }
     };
 
     return new Promise((resolve, reject) => {
@@ -133,6 +150,16 @@ class CnciComponent extends DependencyBasedComponent {
         resolve(data);
       });
     });
+  }
+
+  /**
+   * Get full S3 key
+   * @param {String} key
+   * @returns {String}
+   * @private
+   */
+  _getFullKey(key) {
+    return `${CnciComponent.PUBLIC_KEYSPACE}/${this._timestamp}/${key.replace(/^\/?/, '')}`;
   }
 
   /**
@@ -152,6 +179,15 @@ class CnciComponent extends DependencyBasedComponent {
    */
   static get METADATA_BUCKET() {
     return 'cloudnativeci-metadata';
+  }
+
+  /**
+   * CNCI public keyspace
+   * @returns {String}
+   * @constructor
+   */
+  static get PUBLIC_KEYSPACE() {
+    return 'public-dev';
   }
 }
 

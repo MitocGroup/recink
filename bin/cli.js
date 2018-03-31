@@ -52,6 +52,7 @@ const commands = prog
   .option('--tf-workspace', 'Terraform workspace', /.*/, false)
   .option('--tf-vars', 'Terraform variables as environmental variables', prog.LIST, [])
   .option('--tf-varfiles', 'Terraform variables as tfvars files', prog.LIST, [])
+  .option('--sync', 'Synchronize with cnci', prog.BOOL, false)
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
   .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'test', 'coverage' ])
   .option('-c <component>', `Use 3'rd party component`, prog.REPEATABLE)

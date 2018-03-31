@@ -40,6 +40,7 @@ class TerraformComponent extends DependencyBasedComponent {
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
+    this._emitter = null;
   }
 
   /**
@@ -105,6 +106,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
+    this._emitter = emitter;
     const terraformModules = [];
 
     return new Promise((resolve, reject) => {
@@ -123,7 +125,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
       emitter.on(emitEvents.modules.process.end, () => {
         this._diff.load()
-          .then(() => this._initCaches(emitter, terraformModules))
+          .then(() => this._initCaches(terraformModules))
           .then(() => {
             return Promise.all(
               terraformModules.map(emitModule => {
@@ -187,12 +189,11 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @param {Emitter} emitter
    * @param {EmitModule[]} terraformModules
    * @returns {Promise}
    * @private
    */
-  _initCaches(emitter, terraformModules) {
+  _initCaches(terraformModules) {
     terraformModules.forEach(emitModule => {
       const isCacheEnabled = this._parameterFromConfig(emitModule, 'cache', true);
 
@@ -456,9 +457,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
    * @private
    */
   _hasChanges(emitModule) {
@@ -519,6 +518,11 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform
       .plan(this._moduleRoot(emitModule))
+      .then(plan => {
+        return this._emitter.emitBlocking('cnci.upload.plan', [plan]).then(() => {
+          return Promise.resolve(plan);
+        })
+      })
       .then(plan => this._handlePlan(terraform, emitModule, plan))
       .catch(error => this._handleError(emitModule, 'plan', error));
   }
@@ -565,6 +569,11 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform
       .apply(this._moduleRoot(emitModule))
+      .then(state => {
+        return this._emitter.emitBlocking('cnci.upload.state', [state.path]).then(() => {
+          return Promise.resolve(state);
+        })
+      })
       .then(state => this._handleApply(terraform, emitModule, state))
       .catch(error => this._handleError(emitModule, 'apply', error));
   }
