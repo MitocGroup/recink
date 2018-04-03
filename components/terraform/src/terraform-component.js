@@ -3,9 +3,9 @@
 const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
+const execa = require('execa');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
-const E2ERunner = require('recink/components/e2e/src/e2e-runner');
 const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
@@ -41,6 +41,8 @@ class TerraformComponent extends DependencyBasedComponent {
     this._diff = new Diff();
     this._caches = {};
     this._emitter = null;
+    this._e2eConfigured = false;
+    this._E2ERunner = null;
   }
 
   /**
@@ -74,6 +76,10 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _isTerraformModule(emitModule) {
     let terraformFiles = findFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
+
+    if (!this._e2eConfigured && emitModule.container.has('terraform.test.apply')) {
+      this._e2eConfigured = true;
+    }
 
     return Promise.resolve(terraformFiles.length > 0);
   }
@@ -117,9 +123,8 @@ class TerraformComponent extends DependencyBasedComponent {
           }
 
           terraformModules.push(emitModule);
-          this._updateTestsList(emitModule);
 
-          return Promise.resolve();
+          return this._updateTestsList(emitModule);
         });
       });
 
@@ -237,46 +242,78 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
+   * Check if dependencies are installed
+   * @returns {Promise}
+   * @private
+   */
+  _checkDependencies(emitModule) {
+    return new Promise(resolve => {
+      if (this._e2eConfigured) {
+        try {
+          require.resolve('recink-e2e');
+
+          return resolve();
+        } catch (e) {
+          this.logger.info(this.logger.emoji.check, 'Installing E2E component...');
+
+          return execa('npm', ['install', 'recink-e2e'], {
+            env: { CI: true },
+            cwd: process.cwd()
+          }).then(() => resolve());
+        }
+      }
+    }).then(() => {
+      this._E2ERunner = require('recink-e2e/src/e2e-runner');
+      return Promise.resolve();
+    });
+  }
+
+  /**
    * Handle unit/e2e tests
    * @param {EmitModule} emitModule
+   * @returns {Promise}
    * @private
    */
   _updateTestsList(emitModule) {
-    const moduleName = emitModule.name;
-    const { plan, apply } = emitModule.container.get('terraform.test', {});
-    const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
-    const testcafePath = 'terraform.test.e2e.testcafe';
-    const testcafeOptions = {
-      browsers: emitModule.container.get(`${testcafePath}.browsers`, E2ERunner.DEFAULT_BROWSERS),
-      screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
-      takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
-    };
+    return this._checkDependencies(emitModule).then(() => {
+      const moduleName = emitModule.name;
+      const { plan, apply } = emitModule.container.get('terraform.test', {});
+      const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
+      const testcafePath = 'terraform.test.e2e.testcafe';
+      const testcafeOptions = {
+        browsers: emitModule.container.get(`${testcafePath}.browsers`, ['puppeteer']),
+        screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
+        takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
+      };
 
-    if (!this._unit.hasOwnProperty(moduleName)) {
-      this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
-    }
+      if (!this._unit.hasOwnProperty(moduleName)) {
+        this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
+      }
 
-    if (!this._e2e.hasOwnProperty(moduleName)) {
-      this._e2e[moduleName] = { assets: [], enabled: true, runner: new E2ERunner(testcafeOptions)};
-    }
+      if (!this._e2e.hasOwnProperty(moduleName) && this._e2eConfigured) {
+        this._e2e[moduleName] = { assets: [], enabled: true, runner: new this._E2ERunner(testcafeOptions)};
+      }
 
-    let e2es = [];
-    let units = [];
+      let e2es = [];
+      let units = [];
 
-    if (plan) {
-      units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
-        ? [plan]
-        : findFilesByPattern(plan, /.*\.spec.\js/);
-    }
+      if (plan) {
+        units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
+          ? [plan]
+          : findFilesByPattern(plan, /.*\.spec.\js/);
+      }
 
-    if (apply) {
-      e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
-        ? [apply]
-        : findFilesByPattern(apply, /.*\.e2e.\js/);
-    }
+      if (apply) {
+        e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
+          ? [apply]
+          : findFilesByPattern(apply, /.*\.e2e.\js/);
+      }
 
-    this._unit[moduleName].assets.push(...units);
-    this._e2e[moduleName].assets.push(...e2es);
+      this._unit[moduleName].assets.push(...units);
+      this._e2e[moduleName].assets.push(...e2es);
+
+      return Promise.resolve();
+    });
   }
 
   /**
