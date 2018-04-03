@@ -27,7 +27,7 @@ class CnciComponent extends DependencyBasedComponent {
   get name() {
     return 'cnci';
   }
-  
+
   /**
    * CNCI component dependencies
    * @returns {String[]}
@@ -35,7 +35,7 @@ class CnciComponent extends DependencyBasedComponent {
   get dependencies() {
     return [];
   }
-  
+
   /**
    * @param {Emitter} emitter
    * @returns {Promise}
@@ -168,7 +168,6 @@ class CnciComponent extends DependencyBasedComponent {
    * @constructor
    */
   static get DEFAULT_ACL() {
-    // @todo use public-read-write instead of bucket-owner-full-control
     return 'bucket-owner-full-control';
   }
 
