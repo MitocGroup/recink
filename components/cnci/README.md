@@ -42,7 +42,7 @@ $:
 
 ## Usage
 
-* To upload `.tfstate` and `.tfplan` files
+* To parse & analyze `.tfstate` and `.tfplan` files
 
 ```bash
 recink run terraform -c cnci
@@ -57,4 +57,4 @@ recink run cnci --sync
 > This should be run in a post-build step
 
 [1]: https://github.com/MitocGroup/recink
-[1]: https://www.cloudnativeci.com
+[2]: https://www.cloudnativeci.com

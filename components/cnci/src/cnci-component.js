@@ -53,28 +53,26 @@ class CnciComponent extends DependencyBasedComponent {
 
       /**
        * Listens 'cnci.upload.state' event
-       * @param {Array} states
        */
-      emitter.onBlocking(cnciEvents.cnci.upload.state, states => {
+      emitter.onBlocking(cnciEvents.cnci.upload.state, (states, requestId) => {
         return Promise.all(
           states.map(state => {
             const stateKey = this._getFullKey(state.replace(projectDir, ''));
 
-            return this._uploadToS3(stateKey, fs.readFileSync(state))
+            return this._uploadToS3(stateKey, fs.readFileSync(state), requestId)
           })
         );
       });
 
       /**
        * Listens 'cnci.upload.plan' event
-       * @param {Array} plans
        */
-      emitter.onBlocking(cnciEvents.cnci.upload.plan, plans => {
+      emitter.onBlocking(cnciEvents.cnci.upload.plan, (plans, requestId) => {
         return Promise.all(
           plans.map(plan => {
             const planKey = this._getFullKey(plan.path.replace(projectDir, ''));
 
-            return this._uploadToS3(planKey, plan.output);
+            return this._uploadToS3(planKey, plan.output, requestId);
           })
         );
       });
@@ -127,10 +125,11 @@ class CnciComponent extends DependencyBasedComponent {
    * Put object to s3
    * @param {String} key
    * @param {Buffer|String} body
+   * @param {String} requestId
    * @returns {Promise}
    * @private
    */
-  _uploadToS3(key, body = '') {
+  _uploadToS3(key, body = '', requestId = this._timestamp) {
     const params = {
       ACL: CnciComponent.DEFAULT_ACL,
       Body: body,
@@ -138,6 +137,7 @@ class CnciComponent extends DependencyBasedComponent {
       Key: key,
       Metadata: {
         'cnci-token': this._cnciToken,
+        'request-id': requestId
       }
     };
 
