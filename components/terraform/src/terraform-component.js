@@ -3,7 +3,9 @@
 const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
+const https = require('https');
 const execa = require('execa');
+const uuidv1 = require('uuid/v1');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
 const emitEvents = require('recink/src/component/emit/events');
@@ -486,6 +488,7 @@ class TerraformComponent extends DependencyBasedComponent {
       .then(() => this._init(terraform, emitModule))
       .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
+      .then(requestId => this._getResources(requestId))
       .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
       .then(() => this._runTests(TerraformComponent.E2E, emitModule))
@@ -553,14 +556,17 @@ class TerraformComponent extends DependencyBasedComponent {
       return this._handleSkip(emitModule, 'plan');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .plan(this._moduleRoot(emitModule))
       .then(plan => {
-        return this._emitter.emitBlocking('cnci.upload.plan', [plan]).then(() => {
+        return this._emitter.emitBlocking('cnci.upload.plan', [plan], requestId).then(() => {
           return Promise.resolve(plan);
-        })
+        });
       })
       .then(plan => this._handlePlan(terraform, emitModule, plan))
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'plan', error));
   }
 
@@ -604,14 +610,17 @@ class TerraformComponent extends DependencyBasedComponent {
       return this._handleSkip(emitModule, 'apply');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .apply(this._moduleRoot(emitModule))
       .then(state => {
-        return this._emitter.emitBlocking('cnci.upload.state', [state.path]).then(() => {
+        return this._emitter.emitBlocking('cnci.upload.state', [state.path], requestId).then(() => {
           return Promise.resolve(state);
-        })
+        });
       })
       .then(state => this._handleApply(terraform, emitModule, state))
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'apply', error));
   }
 
@@ -628,11 +637,74 @@ class TerraformComponent extends DependencyBasedComponent {
 
     return terraform
       .destroy(this._moduleRoot(emitModule))
-      .then(state => {
-        return Promise.resolve();
-        // return this._handleDestroy(terraform, emitModule, state)
-      })
+      .then(state => Promise.resolve())
       .catch(error => this._handleError(emitModule, 'destroy', error));
+  }
+
+  /**
+   * Get parsed resources
+   * @param requestId
+   * @returns {Promise}
+   * @private
+   */
+  _getResources(requestId) {
+    const endpoint = `https://api-dev.cloudnativeci.com/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
+
+    return this._callApiWithRetry(endpoint, 3).then(resources => {
+      // @todo remove after debugging
+      this.logger.debug(this.logger.emoji.diamond, JSON.stringify(resources, null, 2));
+
+      return Promise.resolve();
+    });
+  }
+
+  /**
+   * Call API with retries
+   * @param {String} endpoint
+   * @param {Number} times
+   * @returns {Promise}
+   * @private
+   */
+  _callApiWithRetry(endpoint, times) {
+    if (times === 1) {
+      return this._callApi(endpoint);
+    } else {
+      return new Promise(resolve => {
+        this._callApi(endpoint).then(res => {
+          if (res.length < 1) {
+            throw new Error('No data found.')
+          }
+
+          resolve(res);
+        }).catch(err => {
+          setTimeout(() => {
+            console.log(`${err.message} Retrying...`);
+            resolve(this._callApiWithRetry(endpoint, times - 1));
+          }, TerraformComponent.RETRY_DELAY);
+        });
+      });
+    }
+  }
+
+  /**
+   * Call API
+   * @param {String} endpoint
+   * @returns {Promise}
+   */
+  _callApi(endpoint) {
+    return new Promise((resolve, reject) => {
+      https.get(endpoint, res => {
+        let buffers = [];
+        res.on('data', data => { buffers.push(data); });
+        res.on('end', () => {
+          let result = Buffer.concat(buffers).toString();
+
+          resolve(JSON.parse(result));
+        });
+      }).on('error', err => {
+        reject(err);
+      });
+    });
   }
 
   /**
@@ -758,6 +830,14 @@ ${ output }
       'version': Terraform.VERSION,
       'current-workspace': 'default'
     };
+  }
+
+  /**
+   * @returns {Number}
+   * @constructor
+   */
+  static get RETRY_DELAY() {
+    return 10000;
   }
 }
 
