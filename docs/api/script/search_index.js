@@ -282,7 +282,7 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "recink/src/helper/util.js~findFilesByPattern",
+    "recink/src/helper/util.js~findfilesbypattern",
     "function/index.html#static-function-findFilesByPattern",
     "<span>findFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
@@ -303,12 +303,6 @@ window.esdocSearchIndex = [
     "recink/src/helper/util.js~versioncompare",
     "function/index.html#static-function-versionCompare",
     "<span>versionCompare</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
-    "function"
-  ],
-  [
-    "recink/src/helper/util.js~walkdir",
-    "function/index.html#static-function-walkDir",
-    "<span>walkDir</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [

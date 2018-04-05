@@ -2094,7 +2094,7 @@
     "__docId__": 73,
     "kind": "file",
     "name": "src/component/cache/s3-unpacked-driver.js",
-    "content": "'use strict';\n\nconst fs = require('fs-extra');\nconst path = require('path');\nconst S3Driver = require('./s3-driver');\nconst { walkDir } = require('../../helper/util');\n\n/**\n * AWS S3 (unpacked) cache driver\n */\nclass S3UnpackedDriver extends S3Driver {\n  /**\n   * @param {String} cacheDir\n   * @param {String} baseDir\n   * @param {String} s3path\n   * @param {Object} s3options\n   */\n  constructor(cacheDir, baseDir, s3path, s3options) {\n    super(cacheDir, s3path, s3options, false);\n\n    this._baseDir = baseDir;\n  }\n\n  /**\n   * @returns {String}\n   */\n  get name() {\n    return 's3-unpacked';\n  }\n\n  /**\n   * @returns {String}\n   * @private\n   */\n  get _packagePath() {\n    return this.cacheDir;\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _download() {\n    const { Bucket, Key } = this._s3Location(this.path);\n\n    return this.client.then(S3 => {\n      return S3.listObjectsV2({ Bucket: Bucket, Prefix: Key }).promise();\n    }).then(listRes => {\n      let keys = listRes.Contents.filter(item => item.Size).map(item => item.Key);\n\n      return Promise.all(keys.map(key => {\n        return this._getAndSaveS3Object(key, key.replace(Key, this.cacheDir));\n      }));\n    });\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _unpack() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _pack() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _removePackageFile() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _upload() {\n    let { Bucket, Key } = this._s3Location(this.path);\n    let list = [];\n\n    walkDir(this.cacheDir, /.*/, item => list.push(item));\n\n    return Promise.all(\n      list.map(filePath => {\n        const stream = fs.createReadStream(filePath);\n        const tfResource = Key.split('/').pop();\n        const additionalKey = filePath.substring(filePath.lastIndexOf(tfResource) + tfResource.length);\n        const fullS3Key = path.normalize(`${Key}/${additionalKey}`);\n\n        return this.client.then(S3 => {\n          return S3.upload({ Bucket: Bucket, Key: fullS3Key, Body: stream }).promise();\n        });\n      })\n    );\n  }\n\n  /**\n   * Get S3 object and save it to local path\n   * @param {String} objectKey\n   * @param {String} pathToSave\n   * @returns {Promise}\n   */\n  _getAndSaveS3Object(objectKey, pathToSave) {\n    return this.client.then(S3 => {\n      const { Bucket } = this._s3Location(this.path);\n\n      return S3.getObject({ Bucket: Bucket, Key: objectKey }).promise().then(content => {\n        return fs.outputFile(pathToSave, content.Body);\n      });\n    });\n  }\n}\n\nmodule.exports = S3UnpackedDriver;\n",
+    "content": "'use strict';\n\nconst fs = require('fs-extra');\nconst path = require('path');\nconst S3Driver = require('./s3-driver');\nconst { findFilesByPattern } = require('../../helper/util');\n\n/**\n * AWS S3 (unpacked) cache driver\n */\nclass S3UnpackedDriver extends S3Driver {\n  /**\n   * @param {String} cacheDir\n   * @param {String} baseDir\n   * @param {String} s3path\n   * @param {Object} s3options\n   */\n  constructor(cacheDir, baseDir, s3path, s3options) {\n    super(cacheDir, s3path, s3options, false);\n\n    this._baseDir = baseDir;\n  }\n\n  /**\n   * @returns {String}\n   */\n  get name() {\n    return 's3-unpacked';\n  }\n\n  /**\n   * @returns {String}\n   * @private\n   */\n  get _packagePath() {\n    return this.cacheDir;\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _download() {\n    const { Bucket, Key } = this._s3Location(this.path);\n\n    return this.client.then(S3 => {\n      return S3.listObjectsV2({ Bucket: Bucket, Prefix: Key }).promise();\n    }).then(listRes => {\n      let keys = listRes.Contents.filter(item => item.Size).map(item => item.Key);\n\n      return Promise.all(keys.map(key => {\n        return this._getAndSaveS3Object(key, key.replace(Key, this.cacheDir));\n      }));\n    });\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _unpack() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _pack() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _removePackageFile() {\n    return Promise.resolve();\n  }\n\n  /**\n   * @returns {Promise}\n   * @private\n   */\n  _upload() {\n    const { Bucket, Key } = this._s3Location(this.path);\n    const list = findFilesByPattern(this.cacheDir, /.*/);\n\n    return Promise.all(\n      list.map(filePath => {\n        const stream = fs.createReadStream(filePath);\n        const tfResource = Key.split('/').pop();\n        const additionalKey = filePath.substring(filePath.lastIndexOf(tfResource) + tfResource.length);\n        const fullS3Key = path.normalize(`${Key}/${additionalKey}`);\n\n        return this.client.then(S3 => {\n          return S3.upload({ Bucket: Bucket, Key: fullS3Key, Body: stream }).promise();\n        });\n      })\n    );\n  }\n\n  /**\n   * Get S3 object and save it to local path\n   * @param {String} objectKey\n   * @param {String} pathToSave\n   * @returns {Promise}\n   */\n  _getAndSaveS3Object(objectKey, pathToSave) {\n    return this.client.then(S3 => {\n      const { Bucket } = this._s3Location(this.path);\n\n      return S3.getObject({ Bucket: Bucket, Key: objectKey }).promise().then(content => {\n        return fs.outputFile(pathToSave, content.Body);\n      });\n    });\n  }\n}\n\nmodule.exports = S3UnpackedDriver;\n",
     "static": true,
     "longname": "src/component/cache/s3-unpacked-driver.js",
     "access": null,
@@ -2412,7 +2412,7 @@
     "longname": "src/component/cache/s3-unpacked-driver.js~S3UnpackedDriver#_getAndSaveS3Object",
     "access": null,
     "description": "Get S3 object and save it to local path",
-    "lineNumber": 111,
+    "lineNumber": 109,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6104,7 +6104,7 @@
     "__docId__": 205,
     "kind": "file",
     "name": "src/component/emit-component.js",
-    "content": "'use strict';\n\nconst path = require('path');\nconst ConfigBasedComponent = require('./config-based-component');\nconst EmitModule = require('./emit/emit-module');\nconst events = require('./emit/events');\nconst ContainerTransformer = require('./helper/container-transformer');\nconst SequentialPromise = require('./helper/sequential-promise');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {string}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @returns {Promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   *\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n\n        if (moduleKeys.length <= 0 || !container) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {string} configFile\n   *\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   *\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * \n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      this.logger.info(\n        this.logger.emoji.diamond, \n        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      this.logger.info(\n        this.logger.emoji.magic, \n        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
+    "content": "'use strict';\n\nconst path = require('path');\nconst events = require('./emit/events');\nconst EmitModule = require('./emit/emit-module');\nconst SequentialPromise = require('./helper/sequential-promise');\nconst ConfigBasedComponent = require('./config-based-component');\nconst ContainerTransformer = require('./helper/container-transformer');\n\n/**\n * Emit component\n */\nclass EmitComponent extends ConfigBasedComponent {\n  /**\n   * @param {*} args\n   */\n  constructor(...args) {\n    super(...args);\n    \n    this._modules = [];\n  }\n  \n  /**\n   * @returns {String}\n   */\n  get name() {\n    return 'emit';\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @returns {Promise}\n   */\n  run(emitter) {\n    this._registerDebugers(emitter);\n    \n    emitter.emit(events.modules.process.start, this._modules, this.container);\n    \n    return SequentialPromise.all(this._modules.map(module => {\n      return () => {\n        return module.check()\n          .then(() => emitter.emitBlocking(events.module.process.start, module, this.container))\n          .then(() => module.process(this.container))\n          .then(() => emitter.emitBlocking(events.module.process.end, module));\n      };\n    })).then(() => {\n      emitter.emit(events.modules.process.end, this._modules, this.container);\n    });\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @returns {Promise}\n   */\n  waitConfig(emitter) {\n    return super.waitConfig(emitter)\n      .then(container => {\n        const moduleKeys = emitter.container.listKeys()\n          .filter(key => key !== ConfigBasedComponent.MAIN_CONFIG_KEY);\n\n        if (moduleKeys.length <= 0 || !container) {\n          return Promise.resolve(container);\n        }\n        \n        return Promise.all(moduleKeys.map(moduleKey => {\n          return this.prepareModuleConfig(\n            emitter.container.get(moduleKey),\n            container\n          ).then(moduleContainer => {\n            const emitModule = new EmitModule(\n              moduleKey, \n              moduleContainer,\n              emitter,\n              this.logger\n            );\n            \n            this._modules.push(emitModule);\n          });\n        })).then(() => {\n          this.logger.info(\n            this.logger.emoji.gift,\n            `Modules to emit - ${ moduleKeys.join(', ') }`\n          );\n          \n          return Promise.resolve(container);\n        });\n      });\n  }\n  \n  /**\n   * @param {*} config\n   * @param {String} configFile\n   * @returns {Container}\n   */\n  prepareConfig(config, configFile) {\n    return super.prepareConfig(config, configFile)\n      .then(container => {\n        return (new ContainerTransformer(container))\n          .addPattern('pattern')\n          .addPattern('ignore')\n          .transform();\n      });\n  }\n  \n  /**\n   * @param {*} moduleConfig\n   * @param {Container} mainContainer\n   * @returns {Container}\n   */\n  prepareModuleConfig(moduleConfig, mainContainer) {\n    const container = this.createContainer(moduleConfig);\n    \n    return (new ContainerTransformer(container))\n      .add({\n        path: 'root',\n        transformer: value => {\n          if (path.isAbsolute(value)) {\n            return Promise.resolve(value);\n          }\n          \n          return Promise.resolve(\n            path.join(mainContainer.get('__dir'), value)\n          );\n        },\n      })\n      .transform();\n  }\n  \n  /**\n   * @param {Emitter} emitter\n   * @private\n   */\n  _registerDebugers(emitter) {\n    emitter.on(events.modules.process.start, (modules, container) => {\n      const modulesStr = modules.map(m => m.name).join(', ');\n\n      this.logger.info(\n        this.logger.emoji.diamond,\n        `Start processing modules ${ modules.length ? '- ' + modulesStr : '' }`\n      );\n\n      this.logger.debug(container.dump());\n    });\n    \n    emitter.on(events.modules.process.end, modules => {\n      const modulesStr = modules.map(m => m.name).join(', ');\n\n      this.logger.info(\n        this.logger.emoji.magic,\n        `Finish processing modules ${ modules.length ? '- ' + modulesStr : '' }`\n      );\n    });\n    \n    emitter.on(events.module.process.start, module => {\n      this.logger.debug(`Start processing module ${ module.name }`);\n      this.logger.debug(module.container.dump());\n    });\n    \n    emitter.on(events.module.process.end, module => {\n      this.logger.debug(`Finish processing module ${ module.name }`);\n      this.logger.debug(module.dumpStats());\n    });\n  }\n}\n\nmodule.exports = EmitComponent;\n",
     "static": true,
     "longname": "src/component/emit-component.js",
     "access": null,
@@ -6192,13 +6192,13 @@
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{string}"
+        "tagValue": "{String}"
       }
     ],
     "return": {
       "nullable": null,
       "types": [
-        "string"
+        "String"
       ],
       "spread": false,
       "description": ""
@@ -6220,7 +6220,7 @@
     "longname": "src/component/emit-component.js~EmitComponent#run",
     "access": null,
     "description": "",
-    "lineNumber": 35,
+    "lineNumber": 34,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6259,7 +6259,7 @@
     "longname": "src/component/emit-component.js~EmitComponent#waitConfig",
     "access": null,
     "description": "",
-    "lineNumber": 57,
+    "lineNumber": 55,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6298,7 +6298,7 @@
     "longname": "src/component/emit-component.js~EmitComponent#prepareConfig",
     "access": null,
     "description": "",
-    "lineNumber": 98,
+    "lineNumber": 95,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6319,7 +6319,7 @@
       {
         "nullable": null,
         "types": [
-          "string"
+          "String"
         ],
         "spread": false,
         "optional": false,
@@ -6347,7 +6347,7 @@
     "longname": "src/component/emit-component.js~EmitComponent#prepareModuleConfig",
     "access": null,
     "description": "",
-    "lineNumber": 114,
+    "lineNumber": 110,
     "unknown": [
       {
         "tagName": "@returns",
@@ -6396,7 +6396,7 @@
     "longname": "src/component/emit-component.js~EmitComponent#_registerDebugers",
     "access": "private",
     "description": "",
-    "lineNumber": 138,
+    "lineNumber": 133,
     "params": [
       {
         "nullable": null,
@@ -6762,7 +6762,7 @@
     "__docId__": 225,
     "kind": "file",
     "name": "src/component/helper/aws-credentials.js",
-    "content": "'use strict';\n\nconst AWS = require('aws-sdk');\n\n/**\n * AWS security credentials\n */\nclass AwsCredentials {\n  /**\n   * @param {Object} options\n   */\n  constructor(options) {\n    this._options = options || {};\n    this._providers = [\n      new AWS.EnvironmentCredentials(\n        this._options.hasOwnProperty('envPrefix') ? this._options.envPrefix : 'AWS'\n      ),\n      new AWS.SharedIniFileCredentials({\n        profile: this._options.hasOwnProperty('profile') ? this._options.profile : 'default'\n      }),\n      AWS.ECSCredentials.prototype.isConfiguredForEcsCredentials()\n        ? new AWS.ECSCredentials() : new AWS.EC2MetadataCredentials()\n    ];\n\n    if (this._options.hasOwnProperty('accessKeyId') && this._options.hasOwnProperty('secretAccessKey')) {\n      this._providers.push(\n        new AWS.Credentials({\n          accessKeyId: this._options.accessKeyId,\n          secretAccessKey: this._options.secretAccessKey\n        })\n      );\n    }\n  }\n\n  /**\n   * Get AWS Configuration\n   * @return {Promise}\n   */\n  getConfig() {\n    return new AWS.CredentialProviderChain(this._providers).resolvePromise().then(credentials => {\n      let roleArn = this._getRoleArn();\n\n      AWS.config.credentials = roleArn\n        ? new AWS.TemporaryCredentials({ RoleArn: roleArn }, credentials)\n        : credentials;\n\n      if (this._options.hasOwnProperty('region')) {\n        AWS.config.update({ region: this._options.region });\n      }\n\n      return Promise.resolve(AWS);\n    });\n  }\n\n  /**\n   * Compose and validate Role ARN\n   * @return {boolean}\n   * @private\n   */\n  _getRoleArn() {\n    let roleArn = this._options.roleArn;\n\n    if (this._options.hasOwnProperty('accountId') && this._options.hasOwnProperty('roleName')) {\n      roleArn = `arn:aws:iam::${this._options.accountId}:role/${this._options.roleName}`\n    }\n\n    return /^arn:aws:iam::[0-9]{12}:role\\/[a-zA-Z0-9+=,.@\\-_]*$/.test(roleArn) ? roleArn : false;\n  }\n}\n\nmodule.exports = AwsCredentials;\n",
+    "content": "'use strict';\n\nconst AWS = require('aws-sdk');\n\n/**\n * AWS security credentials\n */\nclass AwsCredentials {\n  /**\n   * @param {Object} options\n   */\n  constructor(options = {}) {\n    this._options = options;\n    this._providers = [\n      new AWS.EnvironmentCredentials(\n        this._options.hasOwnProperty('envPrefix') ? this._options.envPrefix : 'AWS'\n      ),\n      new AWS.SharedIniFileCredentials({\n        profile: this._options.hasOwnProperty('profile') ? this._options.profile : 'default'\n      }),\n      AWS.ECSCredentials.prototype.isConfiguredForEcsCredentials()\n        ? new AWS.ECSCredentials() : new AWS.EC2MetadataCredentials()\n    ];\n\n    if (this._options.hasOwnProperty('accessKeyId') && this._options.hasOwnProperty('secretAccessKey')) {\n      this._providers.push(\n        new AWS.Credentials({\n          accessKeyId: this._options.accessKeyId,\n          secretAccessKey: this._options.secretAccessKey\n        })\n      );\n    }\n  }\n\n  /**\n   * Get AWS Configuration\n   * @return {Promise}\n   */\n  getConfig() {\n    return new AWS.CredentialProviderChain(this._providers).resolvePromise().then(credentials => {\n      let roleArn = this._getRoleArn();\n\n      AWS.config.credentials = roleArn\n        ? new AWS.TemporaryCredentials({ RoleArn: roleArn }, credentials)\n        : credentials;\n\n      if (this._options.hasOwnProperty('region')) {\n        AWS.config.update({ region: this._options.region });\n      }\n\n      return Promise.resolve(AWS);\n    });\n  }\n\n  /**\n   * Compose and validate Role ARN\n   * @return {boolean}\n   * @private\n   */\n  _getRoleArn() {\n    let roleArn = this._options.roleArn;\n\n    if (this._options.hasOwnProperty('accountId') && this._options.hasOwnProperty('roleName')) {\n      roleArn = `arn:aws:iam::${this._options.accountId}:role/${this._options.roleName}`\n    }\n\n    return /^arn:aws:iam::[0-9]{12}:role\\/[a-zA-Z0-9+=,.@\\-_]*$/.test(roleArn) ? roleArn : false;\n  }\n}\n\nmodule.exports = AwsCredentials;\n",
     "static": true,
     "longname": "src/component/helper/aws-credentials.js",
     "access": null,
@@ -12984,7 +12984,7 @@
     "__docId__": 436,
     "kind": "file",
     "name": "src/helper/util.js",
-    "content": "'use strict';\n\nconst fs = require('fs');\nconst path = require('path');\n\n/**\n * Read directory recursively\n * @param {String} dir\n * @param {RegExp} filter\n * @param {Function} callback\n */\nfunction walkDir(dir, filter, callback) {\n  if (!fs.existsSync(dir)) {\n    return;\n  }\n\n  let files = fs.readdirSync(dir);\n\n  for (let i = 0; i < files.length; i++) {\n    let filename = path.join(dir, files[i]);\n    let stat = fs.lstatSync(filename);\n\n    if (stat.isDirectory()) {\n      walkDir(filename, filter, callback);\n    } else if (filter.test(filename)) {\n      callback(filename);\n    }\n  }\n}\n\nexports.walkDir = walkDir;\n\n/**\n * Get filenames from dir by RegExp pattern\n * @param {String} dir\n * @param {RegExp} regExp\n * @return {Array}\n */\nfunction getFilesByPattern(dir, regExp) {\n  let fileNames = [];\n  walkDir(dir, regExp, (fileName) => fileNames.push(fileName));\n\n  return fileNames;\n}\n\nexports.getFilesByPattern = getFilesByPattern;\n\n/**\n * Remove all prefixes or suffixes from the given string\n * @param {String} string\n * @param {String} symbol\n * @returns {String}\n */\nfunction trimBoth(string, symbol = '\\s') {\n  const leading = new RegExp(`^${symbol}`);\n  const trailing = new RegExp(`${symbol}$`);\n\n  return string.replace(leading, '').replace(trailing, '');\n}\n\nexports.trimBoth = trimBoth;\n\n/**\n * Fill string with symbols\n * @param {String} str\n * @param {Number} length\n * @param {String} symbol\n * @returns {String}\n */\nfunction fillString(str, length, symbol = 'x') {\n  let result = str;\n\n  while (result.length < length) {\n    result += symbol;\n  }\n\n  return result;\n}\n\nexports.fillString = fillString;\n\n/**\n * Compare two software version\n *  v1 == v2 => 0\n *  v1 < v2 => -1\n *  v1 > v2 => 1\n * @param {String} v1\n * @param {String} v2\n * @returns {Number}\n */\nfunction versionCompare(v1, v2) {\n  const fillTo = 10;\n  let ver1 = v1.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let ver2 = v2.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let maxLength = Math.max(ver1.length, ver2.length);\n\n  ver1 = fillString(ver1, maxLength, '#');\n  ver2 = fillString(ver2, maxLength, '#');\n\n  for (let i = 0; i < maxLength; i++) {\n    let char1 = ver1.charCodeAt(i);\n    let char2 = ver2.charCodeAt(i);\n\n    if (char1 > 96) {\n      char1 -=60;\n    }\n\n    if (char2 > 96) {\n      char2 -=60;\n    }\n\n    if (char1 !== char2) {\n      return (char1 > char2) ? 1 : -1;\n    }\n  }\n\n  return 0\n}\n\n// @todo remove after testing\n// /**\n//  * Compares two software version numbers (e.g. \"1.7.1\" or \"1.2b\").\n//  *\n//  * @param {String} v1 The first version to be compared.\n//  * @param {String} v2 The second version to be compared.\n//  * @param {Object} [options] Optional flags that affect comparison behavior:\n//  *\n//  * lexicographical: true | compares each part of the version strings lexicographically\n//  * instead of naturally; this allows suffixes such as \"b\" or \"dev\" but will cause \"1.10\"\n//  * to be considered smaller than \"1.2\".\n//  *\n//  * zeroExtend: true | changes the result if one version string has less parts than the other.\n//  * In this case the shorter string will be padded with \"zero\" parts instead of being considered smaller.\n//  *\n//  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format\n//  */\n// function versionCompare(v1, v2, options = {}) {\n//   let lexicographical = options && options.lexicographical,\n//     zeroExtend = options && options.zeroExtend,\n//     v1parts = v1.split('.'),\n//     v2parts = v2.split('.');\n//\n//   /**\n//    * @param {String} x\n//    * @returns {Boolean}\n//    */\n//   function isValidPart(x) {\n//     return (lexicographical ? /^\\d+[A-Za-z]*$/ : /^\\d+$/).test(x);\n//   }\n//\n//   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {\n//     return NaN;\n//   }\n//\n//   if (zeroExtend) {\n//     while (v1parts.length < v2parts.length) {\n//       v1parts.push('0');\n//     }\n//\n//     while (v2parts.length < v1parts.length) {\n//       v2parts.push('0');\n//     }\n//   }\n//\n//   if (!lexicographical) {\n//     v1parts = v1parts.map(Number);\n//     v2parts = v2parts.map(Number);\n//   }\n//\n//   for (let i = 0; i < v1parts.length; ++i) {\n//     if (v2parts.length === i) {\n//       return 1;\n//     }\n//\n//     if (v1parts[i] === v2parts[i]) {\n//       continue;\n//     } else if (v1parts[i] > v2parts[i]) {\n//       return 1;\n//     } else {\n//       return -1;\n//     }\n//   }\n//\n//   if (v1parts.length !== v2parts.length) {\n//     return -1;\n//   }\n//\n//   return 0;\n// }\n\nexports.versionCompare = versionCompare;\n",
+    "content": "'use strict';\n\nconst fs = require('fs');\nconst path = require('path');\n\n/**\n * Read directory recursively\n * @param {String} dir Directory path\n * @param {RegExp} include Pattern to include files\n * @param {RegExp} exclude Pattern to exclude directories\n * @param {Function} callback\n * @private\n */\nfunction _walkDir(dir, include, exclude, callback) {\n  if (!fs.existsSync(dir)) {\n    return;\n  }\n\n  let files = fs.readdirSync(dir);\n\n  for (let i = 0; i < files.length; i++) {\n    let filename = path.join(dir, files[i]);\n    let stat = fs.lstatSync(filename);\n\n    if (stat.isDirectory()) {\n      let dirName = path.basename(filename);\n\n      if (exclude.test(dirName)) {\n        continue;\n      }\n\n      _walkDir(filename, include, exclude, callback);\n    } else if (include.test(filename)) {\n      callback(filename);\n    }\n  }\n}\n\n/**\n * Find files by RegExp pattern except dirs\n * @param {String} dir Directory to search\n * @param {RegExp} include Pattern to filter\n * @param {RegExp} exclude Pattern to exclude directories\n * @return {Array}\n */\nfunction findFilesByPattern(dir, include = /.*/, exclude = /^$/) {\n  let fileNames = [];\n  _walkDir(dir, include, exclude, (fileName) => fileNames.push(fileName));\n\n  return fileNames;\n}\n\nexports.findFilesByPattern = findFilesByPattern;\n\n/**\n * Remove all prefixes or suffixes from the given string\n * @param {String} string\n * @param {String} symbol\n * @returns {String}\n */\nfunction trimBoth(string, symbol = '\\s') {\n  const leading = new RegExp(`^${symbol}`);\n  const trailing = new RegExp(`${symbol}$`);\n\n  return string.replace(leading, '').replace(trailing, '');\n}\n\nexports.trimBoth = trimBoth;\n\n/**\n * Fill string with symbols\n * @param {String} str\n * @param {Number} length\n * @param {String} symbol\n * @returns {String}\n */\nfunction fillString(str, length, symbol = 'x') {\n  let result = str;\n\n  while (result.length < length) {\n    result += symbol;\n  }\n\n  return result;\n}\n\nexports.fillString = fillString;\n\n/**\n * Compare two software version\n *  v1 == v2 => 0\n *  v1 < v2 => -1\n *  v1 > v2 => 1\n * @param {String} v1\n * @param {String} v2\n * @returns {Number}\n */\nfunction versionCompare(v1, v2) {\n  const fillTo = 10;\n  let ver1 = v1.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let ver2 = v2.split('.').map(x => fillString(x.trim().toLowerCase(), fillTo, '#')).join('');\n  let maxLength = Math.max(ver1.length, ver2.length);\n\n  ver1 = fillString(ver1, maxLength, '#');\n  ver2 = fillString(ver2, maxLength, '#');\n\n  for (let i = 0; i < maxLength; i++) {\n    let char1 = ver1.charCodeAt(i);\n    let char2 = ver2.charCodeAt(i);\n\n    if (char1 > 96) {\n      char1 -= 60;\n    }\n\n    if (char2 > 96) {\n      char2 -= 60;\n    }\n\n    if (char1 !== char2) {\n      return (char1 > char2) ? 1 : -1;\n    }\n  }\n\n  return 0\n}\n\nexports.versionCompare = versionCompare;\n\n// @todo remove after testing\n// /**\n//  * Compares two software version numbers (e.g. \"1.7.1\" or \"1.2b\").\n//  *\n//  * @param {String} v1 The first version to be compared.\n//  * @param {String} v2 The second version to be compared.\n//  * @param {Object} [options] Optional flags that affect comparison behavior:\n//  *\n//  * lexicographical: true | compares each part of the version strings lexicographically\n//  * instead of naturally; this allows suffixes such as \"b\" or \"dev\" but will cause \"1.10\"\n//  * to be considered smaller than \"1.2\".\n//  *\n//  * zeroExtend: true | changes the result if one version string has less parts than the other.\n//  * In this case the shorter string will be padded with \"zero\" parts instead of being considered smaller.\n//  *\n//  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format\n//  */\n// function versionCompare(v1, v2, options = {}) {\n//   let lexicographical = options && options.lexicographical,\n//     zeroExtend = options && options.zeroExtend,\n//     v1parts = v1.split('.'),\n//     v2parts = v2.split('.');\n//\n//   /**\n//    * @param {String} x\n//    * @returns {Boolean}\n//    */\n//   function isValidPart(x) {\n//     return (lexicographical ? /^\\d+[A-Za-z]*$/ : /^\\d+$/).test(x);\n//   }\n//\n//   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {\n//     return NaN;\n//   }\n//\n//   if (zeroExtend) {\n//     while (v1parts.length < v2parts.length) {\n//       v1parts.push('0');\n//     }\n//\n//     while (v2parts.length < v1parts.length) {\n//       v2parts.push('0');\n//     }\n//   }\n//\n//   if (!lexicographical) {\n//     v1parts = v1parts.map(Number);\n//     v2parts = v2parts.map(Number);\n//   }\n//\n//   for (let i = 0; i < v1parts.length; ++i) {\n//     if (v2parts.length === i) {\n//       return 1;\n//     }\n//\n//     if (v1parts[i] === v2parts[i]) {\n//       continue;\n//     } else if (v1parts[i] > v2parts[i]) {\n//       return 1;\n//     } else {\n//       return -1;\n//     }\n//   }\n//\n//   if (v1parts.length !== v2parts.length) {\n//     return -1;\n//   }\n//\n//   return 0;\n// }\n",
     "static": true,
     "longname": "src/helper/util.js",
     "access": null,
@@ -12994,18 +12994,18 @@
   {
     "__docId__": 437,
     "kind": "function",
-    "name": "walkDir",
+    "name": "_walkDir",
     "memberof": "src/helper/util.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/helper/util.js~walkDir",
-    "access": null,
-    "export": true,
+    "longname": "src/helper/util.js~_walkDir",
+    "access": "private",
+    "export": false,
     "importPath": "recink/src/helper/util.js",
-    "importStyle": "{walkDir}",
+    "importStyle": null,
     "description": "Read directory recursively",
-    "lineNumber": 12,
+    "lineNumber": 14,
     "params": [
       {
         "nullable": null,
@@ -13015,7 +13015,7 @@
         "spread": false,
         "optional": false,
         "name": "dir",
-        "description": ""
+        "description": "Directory path"
       },
       {
         "nullable": null,
@@ -13024,8 +13024,18 @@
         ],
         "spread": false,
         "optional": false,
-        "name": "filter",
-        "description": ""
+        "name": "include",
+        "description": "Pattern to include files"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "RegExp"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "exclude",
+        "description": "Pattern to exclude directories"
       },
       {
         "nullable": null,
@@ -13042,18 +13052,18 @@
   {
     "__docId__": 438,
     "kind": "function",
-    "name": "getFilesByPattern",
+    "name": "findFilesByPattern",
     "memberof": "src/helper/util.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/helper/util.js~getFilesByPattern",
+    "longname": "src/helper/util.js~findFilesByPattern",
     "access": null,
     "export": true,
     "importPath": "recink/src/helper/util.js",
-    "importStyle": "{getFilesByPattern}",
-    "description": "Get filenames from dir by RegExp pattern",
-    "lineNumber": 39,
+    "importStyle": "{findFilesByPattern}",
+    "description": "Find files by RegExp pattern except dirs",
+    "lineNumber": 46,
     "params": [
       {
         "nullable": null,
@@ -13063,7 +13073,7 @@
         "spread": false,
         "optional": false,
         "name": "dir",
-        "description": ""
+        "description": "Directory to search"
       },
       {
         "nullable": null,
@@ -13072,8 +13082,18 @@
         ],
         "spread": false,
         "optional": false,
-        "name": "regExp",
-        "description": ""
+        "name": "include",
+        "description": "Pattern to filter"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "RegExp"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "exclude",
+        "description": "Pattern to exclude directories"
       }
     ],
     "return": {
@@ -13099,7 +13119,7 @@
     "importPath": "recink/src/helper/util.js",
     "importStyle": "{trimBoth}",
     "description": "Remove all prefixes or suffixes from the given string",
-    "lineNumber": 54,
+    "lineNumber": 61,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13151,7 +13171,7 @@
     "importPath": "recink/src/helper/util.js",
     "importStyle": "{fillString}",
     "description": "Fill string with symbols",
-    "lineNumber": 70,
+    "lineNumber": 77,
     "unknown": [
       {
         "tagName": "@returns",
@@ -13213,7 +13233,7 @@
     "importPath": "recink/src/helper/util.js",
     "importStyle": "{versionCompare}",
     "description": "Compare two software version\n v1 == v2 => 0\n v1 < v2 => -1\n v1 > v2 => 1",
-    "lineNumber": 91,
+    "lineNumber": 98,
     "unknown": [
       {
         "tagName": "@returns",
