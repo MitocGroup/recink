@@ -52,7 +52,7 @@ class CnciComponent extends DependencyBasedComponent {
       }
 
       /**
-       * Listens 'cnci.upload.state' event
+       * Listen 'cnci.upload.state' event
        */
       emitter.onBlocking(cnciEvents.cnci.upload.state, (states, requestId) => {
         return Promise.all(
@@ -65,7 +65,7 @@ class CnciComponent extends DependencyBasedComponent {
       });
 
       /**
-       * Listens 'cnci.upload.plan' event
+       * Listen 'cnci.upload.plan' event
        */
       emitter.onBlocking(cnciEvents.cnci.upload.plan, (plans, requestId) => {
         return Promise.all(
