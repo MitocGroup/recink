@@ -137,7 +137,7 @@ class CnciComponent extends DependencyBasedComponent {
       Key: key,
       Metadata: {
         'cnci-token': this._cnciToken,
-        'request-id': requestId
+        'request-id': requestId.toString()
       }
     };
 
