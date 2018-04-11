@@ -491,8 +491,10 @@ class TerraformComponent extends DependencyBasedComponent {
       .then(requestId => this._getResources(requestId))
       .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
+      .then(requestId => this._getResources(requestId))
       .then(() => this._runTests(TerraformComponent.E2E, emitModule))
-      .then(() => this._destroy(terraform, emitModule));
+      .then(() => this._destroy(terraform, emitModule))
+      .then(requestId => this._getResources(requestId));
   }
 
   /**
@@ -635,9 +637,17 @@ class TerraformComponent extends DependencyBasedComponent {
       return this._handleSkip(emitModule, 'destroy');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .destroy(this._moduleRoot(emitModule))
+      .then(state => {
+        return this._emitter.emitBlocking('cnci.upload.state', [state.path], requestId).then(() => {
+          return Promise.resolve(state);
+        });
+      })
       .then(state => Promise.resolve())
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'destroy', error));
   }
 
