@@ -563,9 +563,10 @@ class TerraformComponent extends DependencyBasedComponent {
     return terraform
       .plan(this._moduleRoot(emitModule))
       .then(plan => {
-        return this._emitter.emitBlocking('cnci.upload.plan', [plan], requestId).then(() => {
-          return Promise.resolve(plan);
-        });
+        return this._emitter
+          .emitBlocking('cnci.upload.plan', { plans: [plan], requestId: requestId, action: 'plan' })
+          .then(() => Promise.resolve(plan))
+        ;
       })
       .then(plan => this._handlePlan(terraform, emitModule, plan))
       .then(() => Promise.resolve(requestId))
@@ -617,9 +618,10 @@ class TerraformComponent extends DependencyBasedComponent {
     return terraform
       .apply(this._moduleRoot(emitModule))
       .then(state => {
-        return this._emitter.emitBlocking('cnci.upload.state', [state.path], requestId).then(() => {
-          return Promise.resolve(state);
-        });
+        return this._emitter
+          .emitBlocking('cnci.upload.state', { states: [state.path], requestId: requestId, action: 'apply' })
+          .then(() => Promise.resolve(state))
+        ;
       })
       .then(state => this._handleApply(terraform, emitModule, state))
       .then(() => Promise.resolve(requestId))
@@ -642,9 +644,10 @@ class TerraformComponent extends DependencyBasedComponent {
     return terraform
       .destroy(this._moduleRoot(emitModule))
       .then(state => {
-        return this._emitter.emitBlocking('cnci.upload.state', [state.path], requestId).then(() => {
-          return Promise.resolve(state);
-        });
+        return this._emitter
+          .emitBlocking('cnci.upload.state', { states: [state.path], requestId: requestId, action: 'destroy' })
+          .then(() => Promise.resolve(state))
+        ;
       })
       .then(state => Promise.resolve())
       .then(() => Promise.resolve(requestId))
