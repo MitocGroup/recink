@@ -45,7 +45,6 @@ class E2ERunner {
   /**
    * Run tests
    * @param {Array|String} tests
-   * @param {Object} options
    * @returns {Promise}
    */
   run(tests) {

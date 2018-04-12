@@ -43,7 +43,6 @@ class TerraformComponent extends DependencyBasedComponent {
     this._diff = new Diff();
     this._caches = {};
     this._emitter = null;
-    this._e2eConfigured = false;
     this._E2ERunner = null;
   }
 
@@ -78,10 +77,6 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _isTerraformModule(emitModule) {
     let terraformFiles = findFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
-
-    if (!this._e2eConfigured && emitModule.container.has('terraform.test.apply')) {
-      this._e2eConfigured = true;
-    }
 
     return Promise.resolve(terraformFiles.length > 0);
   }
@@ -249,20 +244,22 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _checkDependencies(emitModule) {
-    return new Promise(resolve => {
-      if (this._e2eConfigured) {
-        try {
-          require.resolve('recink-e2e');
+    return new Promise((resolve, reject) => {
+      if (!emitModule.container.has('terraform.test.apply')) {
+        return resolve();
+      }
 
-          return resolve();
-        } catch (e) {
-          this.logger.info(this.logger.emoji.check, 'Installing E2E component...');
+      try {
+        require.resolve('recink-e2e');
 
-          return execa('npm', ['install', 'recink-e2e'], {
-            env: { CI: true },
-            cwd: process.cwd()
-          }).then(() => resolve());
-        }
+        return resolve();
+      } catch (e) {
+        this.logger.info(this.logger.emoji.check, 'Installing E2E component...');
+
+        return execa('npm', ['install', 'recink-e2e'], {
+          env: { CI: true },
+          cwd: process.cwd()
+        }).then(() => resolve()).catch(err => reject(err));
       }
     }).then(() => {
       this._E2ERunner = require('recink-e2e/src/e2e-runner');
@@ -278,7 +275,6 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _updateTestsList(emitModule) {
     return this._checkDependencies(emitModule).then(() => {
-      const moduleName = emitModule.name;
       const { plan, apply } = emitModule.container.get('terraform.test', {});
       const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
       const testcafePath = 'terraform.test.e2e.testcafe';
@@ -288,31 +284,21 @@ class TerraformComponent extends DependencyBasedComponent {
         takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
       };
 
-      if (!this._unit.hasOwnProperty(moduleName)) {
-        this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
-      }
-
-      if (!this._e2e.hasOwnProperty(moduleName) && this._e2eConfigured) {
-        this._e2e[moduleName] = { assets: [], enabled: true, runner: new this._E2ERunner(testcafeOptions)};
-      }
-
-      let e2es = [];
-      let units = [];
-
       if (plan) {
-        units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
+        const units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
           ? [plan]
           : findFilesByPattern(plan, /.*\.spec.\js/);
+
+        this._unit[emitModule.name] = { assets: units, enabled: true, runner: new UnitRunner(mochaOptions)};
       }
 
       if (apply) {
-        e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
+        const e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
           ? [apply]
           : findFilesByPattern(apply, /.*\.e2e.\js/);
-      }
 
-      this._unit[moduleName].assets.push(...units);
-      this._e2e[moduleName].assets.push(...e2es);
+        this._e2e[emitModule.name] = { assets: e2es, enabled: true, runner: new this._E2ERunner(testcafeOptions)};
+      }
 
       return Promise.resolve();
     });
@@ -554,7 +540,10 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _plan(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
-      this._unit[emitModule.name].enabled = false;
+      if (this._unit.hasOwnProperty(emitModule.name)) {
+        this._unit[emitModule.name].enabled = false;
+      }
+
       return this._handleSkip(emitModule, 'plan');
     }
 
@@ -609,7 +598,10 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _apply(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
-      this._e2e[emitModule.name].enabled = false;
+      if (this._e2e.hasOwnProperty(emitModule.name)) {
+        this._e2e[emitModule.name].enabled = false;
+      }
+
       return this._handleSkip(emitModule, 'apply');
     }
 
@@ -691,7 +683,8 @@ class TerraformComponent extends DependencyBasedComponent {
           resolve(res);
         }).catch(err => {
           setTimeout(() => {
-            console.log(`${err.message} Retrying...`);
+            this.logger.debug(`${err.message} Retrying...`);
+
             resolve(this._callApiWithRetry(endpoint, times - 1));
           }, TerraformComponent.RETRY_DELAY);
         });
