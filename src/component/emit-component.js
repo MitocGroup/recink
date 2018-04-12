@@ -35,7 +35,7 @@ class EmitComponent extends ConfigBasedComponent {
     this._registerDebugers(emitter);
     
     emitter.emit(events.modules.process.start, this._modules, this.container);
-    
+
     return SequentialPromise.all(this._modules.map(module => {
       return () => {
         return module.check()

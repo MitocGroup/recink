@@ -54,12 +54,13 @@ class CnciComponent extends DependencyBasedComponent {
       /**
        * Listen 'cnci.upload.state' event
        */
-      emitter.onBlocking(cnciEvents.cnci.upload.state, (states, requestId) => {
+      emitter.onBlocking(cnciEvents.cnci.upload.state, params => {
         return Promise.all(
-          states.map(state => {
+          params.states.map(state => {
             const stateKey = this._getFullKey(state.replace(projectDir, ''));
+            const metadata = this._getMetadata(params.requestId, params.action);
 
-            return this._uploadToS3(stateKey, fs.readFileSync(state), requestId)
+            return this._uploadToS3(stateKey, fs.readFileSync(state), metadata);
           })
         );
       });
@@ -67,12 +68,13 @@ class CnciComponent extends DependencyBasedComponent {
       /**
        * Listen 'cnci.upload.plan' event
        */
-      emitter.onBlocking(cnciEvents.cnci.upload.plan, (plans, requestId) => {
+      emitter.onBlocking(cnciEvents.cnci.upload.plan, params => {
         return Promise.all(
-          plans.map(plan => {
+          params.plans.map(plan => {
             const planKey = this._getFullKey(plan.path.replace(projectDir, ''));
+            const metadata = this._getMetadata(params.requestId, params.action);
 
-            return this._uploadToS3(planKey, plan.output, requestId);
+            return this._uploadToS3(planKey, plan.output, metadata);
           })
         );
       });
@@ -125,20 +127,17 @@ class CnciComponent extends DependencyBasedComponent {
    * Put object to s3
    * @param {String} key
    * @param {Buffer|String} body
-   * @param {String} requestId
+   * @param {Object} metadata
    * @returns {Promise}
    * @private
    */
-  _uploadToS3(key, body = '', requestId = this._timestamp) {
+  _uploadToS3(key, body = '', metadata = {}) {
     const params = {
       ACL: CnciComponent.DEFAULT_ACL,
+      Key: key,
       Body: body,
       Bucket: CnciComponent.METADATA_BUCKET,
-      Key: key,
-      Metadata: {
-        'cnci-token': this._cnciToken,
-        'request-id': requestId.toString()
-      }
+      Metadata: metadata
     };
 
     return new Promise((resolve, reject) => {
@@ -153,13 +152,33 @@ class CnciComponent extends DependencyBasedComponent {
   }
 
   /**
-   * Get full S3 key
+   * Build full S3 key
    * @param {String} key
    * @returns {String}
    * @private
    */
   _getFullKey(key) {
     return `${CnciComponent.PUBLIC_KEYSPACE}/${this._timestamp}/${key.replace(/^\/?/, '')}`;
+  }
+
+  /**
+   * Build key metadata
+   * @param {String} requestId
+   * @param {String} action
+   * @returns {Object}
+   * @private
+   */
+  _getMetadata(requestId = this._timestamp, action = null) {
+    let metadata = {
+      'cnci-token': this._cnciToken,
+      'request-id': requestId.toString()
+    };
+
+    if (action) {
+      metadata['terraform-action'] = action;
+    }
+
+    return metadata;
   }
 
   /**
