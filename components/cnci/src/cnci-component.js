@@ -88,7 +88,7 @@ class CnciComponent extends DependencyBasedComponent {
        */
       return this._getBuildMetadata().then(results => {
         return Promise.all(
-          results.map(item => this._uploadToS3(item.key, item.body))
+          results.map(item => this._uploadToS3(item.key, item.body, this._getMetadata()))
         ).then(uploaded => {
           if (uploaded.length > 0) {
             this.logger.info(this.logger.emoji.check, 'Build metadata uploaded');
@@ -132,6 +132,8 @@ class CnciComponent extends DependencyBasedComponent {
    * @private
    */
   _uploadToS3(key, body = '', metadata = {}) {
+    console.log('metadata', metadata);
+
     const params = {
       ACL: CnciComponent.DEFAULT_ACL,
       Key: key,
