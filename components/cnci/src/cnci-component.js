@@ -132,8 +132,6 @@ class CnciComponent extends DependencyBasedComponent {
    * @private
    */
   _uploadToS3(key, body = '', metadata = {}) {
-    console.log('metadata', metadata);
-
     const params = {
       ACL: CnciComponent.DEFAULT_ACL,
       Key: key,
