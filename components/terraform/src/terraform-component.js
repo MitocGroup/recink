@@ -245,24 +245,28 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _checkDependencies(emitModule) {
     return new Promise((resolve, reject) => {
-      if (!emitModule.container.has('terraform.test.apply')) {
+      if (!this._parameterFromConfig(emitModule, 'test.apply', false)) {
         return resolve();
       }
 
       try {
         require.resolve('recink-e2e');
+        this._E2ERunner = require('recink-e2e/src/e2e-runner');
 
         return resolve();
       } catch (e) {
-        this.logger.info(this.logger.emoji.check, 'Installing E2E component...');
+        this.logger.info(this.logger.emoji.check, 'Installing e2e component...');
 
         return execa('npm', ['install', 'recink-e2e'], {
           env: { CI: true },
           cwd: process.cwd()
-        }).then(() => resolve()).catch(err => reject(err));
+        }).then(result => {
+          this._E2ERunner = require('recink-e2e/src/e2e-runner');
+
+          return resolve();
+        }).catch(err => reject(err));
       }
     }).then(() => {
-      this._E2ERunner = require('recink-e2e/src/e2e-runner');
       return Promise.resolve();
     });
   }
@@ -275,13 +279,13 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _updateTestsList(emitModule) {
     return this._checkDependencies(emitModule).then(() => {
-      const { plan, apply } = emitModule.container.get('terraform.test', {});
-      const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
-      const testcafePath = 'terraform.test.e2e.testcafe';
+      const { plan, apply } = this._parameterFromConfig(emitModule, 'test', {});
+      const mochaOptions = this._parameterFromConfig(emitModule, 'test.unit.mocha.options', {});
+      const testcafePath = 'test.e2e.testcafe';
       const testcafeOptions = {
-        browsers: emitModule.container.get(`${testcafePath}.browsers`, ['puppeteer']),
-        screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
-        takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
+        browsers: this._parameterFromConfig(emitModule, `${testcafePath}.browsers`, ['puppeteer']),
+        screenshotsPath: path.resolve(this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.path`, process.cwd())),
+        takeOnFail: this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.take-on-fail`, false)
       };
 
       if (plan) {
@@ -410,7 +414,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _terraformate(emitModule) {
     return this._hasChanges(emitModule).then(changed => {
-      const after = emitModule.container.get('terraform.run-after', []);
+      const after = this._parameterFromConfig(emitModule, 'run-after', []);
 
       this._runStack[emitModule.name] = { emitModule, after, changed };
 
@@ -490,7 +494,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _hasChanges(emitModule) {
     const rootPath = this._moduleRoot(emitModule);
-    const dependencies = emitModule.container.get('terraform.dependencies', [])
+    const dependencies = this._parameterFromConfig(emitModule, 'dependencies', [])
       .map(dep => path.isAbsolute(dep) ? dep : path.resolve(rootPath, dep));
 
     return Promise.resolve(
