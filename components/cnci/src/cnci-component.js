@@ -196,7 +196,7 @@ class CnciComponent extends DependencyBasedComponent {
    * @constructor
    */
   static get METADATA_BUCKET() {
-    return 'cloudnativeci-metadata';
+    return 'data-lake-terrahub-us-east-1';
   }
 
   /**
@@ -205,7 +205,7 @@ class CnciComponent extends DependencyBasedComponent {
    * @constructor
    */
   static get PUBLIC_KEYSPACE() {
-    return 'public-dev';
+    return 'public';
   }
 }
 
