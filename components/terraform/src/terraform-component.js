@@ -240,6 +240,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * Check if dependencies are installed
+   * @param {EmitModule} emitModule
    * @returns {Promise}
    * @private
    */
@@ -279,12 +280,13 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _updateTestsList(emitModule) {
     return this._checkDependencies(emitModule).then(() => {
-      const { plan, apply } = this._parameterFromConfig(emitModule, 'test', {});
-      const mochaOptions = this._parameterFromConfig(emitModule, 'test.unit.mocha.options', {});
       const testcafePath = 'test.e2e.testcafe';
+      const mochaOptions = this._parameterFromConfig(emitModule, 'test.unit.mocha.options', {});
+      const screenShotPath = this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.path`, process.cwd());
+      const { plan, apply } = this._parameterFromConfig(emitModule, 'test', {});
       const testcafeOptions = {
         browsers: this._parameterFromConfig(emitModule, `${testcafePath}.browsers`, ['puppeteer']),
-        screenshotsPath: path.resolve(this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.path`, process.cwd())),
+        screenshotsPath: path.resolve(screenShotPath),
         takeOnFail: this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.take-on-fail`, false)
       };
 
@@ -396,13 +398,15 @@ class TerraformComponent extends DependencyBasedComponent {
       }
     });
 
-    if (Object.keys(extraneous).length > 0) {
-      const extraneousVector = Object.keys(extraneous).map(moduleName => {
-        delete this._runStack[moduleName];
+    const extraneousModules = Object.keys(extraneous);
 
-        const deps = extraneous[moduleName];
-        const errMessage = `Skipping '${ moduleName }' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
-        this.logger.warn(this.logger.emoji.cross, errMessage);
+    if (extraneousModules.length > 0) {
+      extraneousModules.map(name => {
+        delete this._runStack[name];
+
+        const deps = extraneous[name];
+        const errMsg = `Skipping '${name}' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
+        this.logger.warn(this.logger.emoji.cross, errMsg);
       });
     }
   }
@@ -652,7 +656,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * Get parsed resources
-   * @param requestId
+   * @param {String|Number} requestId
    * @returns {Promise}
    * @private
    */
