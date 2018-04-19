@@ -128,6 +128,10 @@ module.exports = (args, options, logger) => {
   function transformConfig(config) {
     cfg = config;
 
+    if (options.sync) {
+      dot.str('$.cnci.sync', true, cfg);
+    }
+
     let { modules, filtered } = parseModules(cfg);
     let workspaceEnabled = false;
     let tfModules = modules.filter(module => typeof dot.pick(`${module}.terraform`, cfg) !== 'undefined');

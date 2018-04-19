@@ -80,10 +80,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findFilesByPattern">findFilesByPattern</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -94,7 +93,7 @@
 const fs = require(&apos;fs-extra&apos;);
 const path = require(&apos;path&apos;);
 const S3Driver = require(&apos;./s3-driver&apos;);
-const { walkDir } = require(&apos;../../helper/util&apos;);
+const { findFilesByPattern } = require(&apos;../../helper/util&apos;);
 
 /**
  * AWS S3 (unpacked) cache driver
@@ -174,10 +173,8 @@ class S3UnpackedDriver extends S3Driver {
    * @private
    */
   _upload() {
-    let { Bucket, Key } = this._s3Location(this.path);
-    let list = [];
-
-    walkDir(this.cacheDir, /.*/, item =&gt; list.push(item));
+    const { Bucket, Key } = this._s3Location(this.path);
+    const list = findFilesByPattern(this.cacheDir, /.*/);
 
     return Promise.all(
       list.map(filePath =&gt; {

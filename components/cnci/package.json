@@ -1,0 +1,36 @@
+{
+  "name": "recink-cnci",
+  "version": "0.0.6",
+  "description": "REciNK Component for CNCI",
+  "keywords": [
+    "REciNK",
+    "CNCI Integration",
+    "Development",
+    "CI/CD"
+  ],
+  "homepage": "https://github.com/MitocGroup/recink",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/recink/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "https://www.mitocgroup.com"
+  },
+  "main": "src/cnci-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/recink.git"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.198.0",
+    "jenkins": "^0.20.1",
+    "recink": "^1.x.x"
+  },
+  "engines": {
+    "node": ">=6.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

@@ -5,11 +5,13 @@ const path = require('path');
 
 /**
  * Read directory recursively
- * @param {String} dir
- * @param {RegExp} filter
+ * @param {String} dir Directory path
+ * @param {RegExp} include Pattern to include files
+ * @param {RegExp} exclude Pattern to exclude directories
  * @param {Function} callback
+ * @private
  */
-function walkDir(dir, filter, callback) {
+function _walkDir(dir, include, exclude, callback) {
   if (!fs.existsSync(dir)) {
     return;
   }
@@ -21,29 +23,34 @@ function walkDir(dir, filter, callback) {
     let stat = fs.lstatSync(filename);
 
     if (stat.isDirectory()) {
-      walkDir(filename, filter, callback);
-    } else if (filter.test(filename)) {
+      let dirName = path.basename(filename);
+
+      if (exclude.test(dirName)) {
+        continue;
+      }
+
+      _walkDir(filename, include, exclude, callback);
+    } else if (include.test(filename)) {
       callback(filename);
     }
   }
 }
 
-exports.walkDir = walkDir;
-
 /**
- * Get filenames from dir by RegExp pattern
- * @param {String} dir
- * @param {RegExp} regExp
+ * Find files by RegExp pattern except dirs
+ * @param {String} dir Directory to search
+ * @param {RegExp} include Pattern to filter
+ * @param {RegExp} exclude Pattern to exclude directories
  * @return {Array}
  */
-function getFilesByPattern(dir, regExp) {
+function findFilesByPattern(dir, include = /.*/, exclude = /^$/) {
   let fileNames = [];
-  walkDir(dir, regExp, (fileName) => fileNames.push(fileName));
+  _walkDir(dir, include, exclude, (fileName) => fileNames.push(fileName));
 
   return fileNames;
 }
 
-exports.getFilesByPattern = getFilesByPattern;
+exports.findFilesByPattern = findFilesByPattern;
 
 /**
  * Remove all prefixes or suffixes from the given string
@@ -102,11 +109,11 @@ function versionCompare(v1, v2) {
     let char2 = ver2.charCodeAt(i);
 
     if (char1 > 96) {
-      char1 -=60;
+      char1 -= 60;
     }
 
     if (char2 > 96) {
-      char2 -=60;
+      char2 -= 60;
     }
 
     if (char1 !== char2) {
@@ -116,6 +123,8 @@ function versionCompare(v1, v2) {
 
   return 0
 }
+
+exports.versionCompare = versionCompare;
 
 // @todo remove after testing
 // /**
@@ -187,5 +196,3 @@ function versionCompare(v1, v2) {
 //
 //   return 0;
 // }
-
-exports.versionCompare = versionCompare;
