@@ -1,5 +1,6 @@
 'use strict';
 
+const npm = require('npm-programmatic');
 const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
@@ -8,6 +9,7 @@ const execa = require('execa');
 const uuidv1 = require('uuid/v1');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
+const npmResolve = require('resolve');
 const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
@@ -247,28 +249,42 @@ class TerraformComponent extends DependencyBasedComponent {
   _checkDependencies(emitModule) {
     return new Promise((resolve, reject) => {
       if (!this._parameterFromConfig(emitModule, 'test.apply', false)) {
-        return resolve();
+        return resolve(false);
       }
 
-      try {
-        require.resolve('recink-e2e');
-        this._E2ERunner = require('recink-e2e/src/e2e-runner');
+      const moduleName = 'recink-e2e/src/e2e-runner';
 
-        return resolve();
-      } catch (e) {
-        this.logger.info(this.logger.emoji.check, 'Installing e2e component...');
-
-        return execa('npm', ['install', 'recink-e2e'], {
-          env: { CI: true },
-          cwd: process.cwd()
-        }).then(result => {
-          this._E2ERunner = require('recink-e2e/src/e2e-runner');
-
-          return resolve();
-        }).catch(err => reject(err));
+      this._resolvePackage(moduleName)
+        .then(e2eRunner => resolve(e2eRunner))
+        .catch(err => {
+          return npm.install(['recink-e2e'], { cwd: process.cwd(), save: false })
+            .then(() => this._resolvePackage(moduleName))
+            .then(e2eRunner => resolve(e2eRunner))
+            .catch(err => reject(err));
+        });
+    }).then(e2eRunner => {
+      if (e2eRunner) {
+        this._E2ERunner = require(e2eRunner);
       }
-    }).then(() => {
+
       return Promise.resolve();
+    });
+  }
+
+  /**
+   * @param {String} name
+   * @returns {Promise}
+   * @private
+   */
+  _resolvePackage(name) {
+    return new Promise((resolve, reject) => {
+      npmResolve(name, { basedir: process.cwd() }, (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(res);
+      });
     });
   }
 
@@ -293,7 +309,7 @@ class TerraformComponent extends DependencyBasedComponent {
       if (plan) {
         const units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
           ? [plan]
-          : findFilesByPattern(plan, /.*\.spec.\js/);
+          : findFilesByPattern(plan, /.*\.spec.\js/, /.*node_modules.*/);
 
         this._unit[emitModule.name] = { assets: units, enabled: true, runner: new UnitRunner(mochaOptions)};
       }
@@ -301,7 +317,7 @@ class TerraformComponent extends DependencyBasedComponent {
       if (apply) {
         const e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
           ? [apply]
-          : findFilesByPattern(apply, /.*\.e2e.\js/);
+          : findFilesByPattern(apply, /.*\.e2e.\js/, /.*node_modules.*/);
 
         this._e2e[emitModule.name] = { assets: e2es, enabled: true, runner: new this._E2ERunner(testcafeOptions)};
       }
@@ -661,7 +677,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _getResources(requestId) {
-    const endpoint = `https://api-dev.cloudnativeci.com/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
+    const endpoint = `https://api.terrahub.io/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
 
     return this._callApiWithRetry(endpoint, 3).then(resources => {
       // @todo remove after debugging
