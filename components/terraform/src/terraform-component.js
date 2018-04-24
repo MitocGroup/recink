@@ -5,7 +5,6 @@ const fse = require('fs-extra');
 const path = require('path');
 const Diff = require('./diff');
 const https = require('https');
-const execa = require('execa');
 const uuidv1 = require('uuid/v1');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
@@ -257,7 +256,7 @@ class TerraformComponent extends DependencyBasedComponent {
       this._resolvePackage(moduleName)
         .then(e2eRunner => resolve(e2eRunner))
         .catch(err => {
-          return npm.install(['recink-e2e'], { cwd: process.cwd(), save: false })
+          npm.install(['recink-e2e'], { cwd: process.cwd(), save: false })
             .then(() => this._resolvePackage(moduleName))
             .then(e2eRunner => resolve(e2eRunner))
             .catch(err => reject(err));
