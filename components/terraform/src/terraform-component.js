@@ -255,7 +255,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
       this._resolvePackage(moduleName)
         .then(e2eRunner => resolve(e2eRunner))
-        .catch(err => {
+        .catch(() => {
           npm.install(['recink-e2e'], { cwd: process.cwd(), save: false })
             .then(() => this._resolvePackage(moduleName))
             .then(e2eRunner => resolve(e2eRunner))
