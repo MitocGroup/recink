@@ -42,7 +42,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependency-based-component.js~DependencyBasedComponent.html">DependencyBasedComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
@@ -59,9 +58,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e/e2e-runner.js~E2ERunner.html">E2ERunner</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
@@ -84,10 +80,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findFilesByPattern">findFilesByPattern</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -102,7 +97,7 @@ const ora = require(&apos;ora&apos;);
  */
 class Spinner {
   /**
-   * @param {string} msg
+   * @param {String} msg
    */
   constructor(msg) {
     this._main = msg;
@@ -112,8 +107,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} text
-   *
+   * @param {String} text
    * @returns {ora}
    */
   prepend(text) {
@@ -123,8 +117,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} text
-   *
+   * @param {String} text
    * @returns {ora}
    */
   append(text) {
@@ -166,8 +159,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} msg
-   *
+   * @param {String} msg
    * @returns {Spinner}
    */
   then(msg) {
@@ -177,8 +169,7 @@ class Spinner {
   }
   
   /**
-   * @param {string} msg
-   *
+   * @param {String} msg
    * @returns {Spinner}
    */
   catch(msg) {
@@ -188,24 +179,24 @@ class Spinner {
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get catchText() {
-    return this._catch + &apos;\n&apos;;
+    return this._catch;
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get thenText() {
-    return this._then + &apos;\n&apos;;
+    return this._then;
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get mainText() {
-    return this._main + &apos;\n&apos;;
+    return this._main;
   }
 }
 

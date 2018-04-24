@@ -1,11 +1,11 @@
 'use strict';
 
 const path = require('path');
-const ConfigBasedComponent = require('./config-based-component');
-const EmitModule = require('./emit/emit-module');
 const events = require('./emit/events');
-const ContainerTransformer = require('./helper/container-transformer');
+const EmitModule = require('./emit/emit-module');
 const SequentialPromise = require('./helper/sequential-promise');
+const ConfigBasedComponent = require('./config-based-component');
+const ContainerTransformer = require('./helper/container-transformer');
 
 /**
  * Emit component
@@ -21,7 +21,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return 'emit';
@@ -29,14 +29,13 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
    */
   run(emitter) {
     this._registerDebugers(emitter);
     
     emitter.emit(events.modules.process.start, this._modules, this.container);
-    
+
     return SequentialPromise.all(this._modules.map(module => {
       return () => {
         return module.check()
@@ -51,7 +50,6 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   *
    * @returns {Promise}
    */
   waitConfig(emitter) {
@@ -91,8 +89,7 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {*} config
-   * @param {string} configFile
-   *
+   * @param {String} configFile
    * @returns {Container}
    */
   prepareConfig(config, configFile) {
@@ -108,7 +105,6 @@ class EmitComponent extends ConfigBasedComponent {
   /**
    * @param {*} moduleConfig
    * @param {Container} mainContainer
-   *
    * @returns {Container}
    */
   prepareModuleConfig(moduleConfig, mainContainer) {
@@ -132,23 +128,26 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @private
    */
   _registerDebugers(emitter) {
     emitter.on(events.modules.process.start, (modules, container) => {
+      const modulesStr = modules.map(m => m.name).join(', ');
+
       this.logger.info(
-        this.logger.emoji.diamond, 
-        `Start processing modules - ${ modules.map(m => m.name).join(', ') }`
+        this.logger.emoji.diamond,
+        `Start processing modules ${ modules.length ? '- ' + modulesStr : '' }`
       );
 
       this.logger.debug(container.dump());
     });
     
     emitter.on(events.modules.process.end, modules => {
+      const modulesStr = modules.map(m => m.name).join(', ');
+
       this.logger.info(
-        this.logger.emoji.magic, 
-        `Finish processing modules - ${ modules.map(m => m.name).join(', ') }`
+        this.logger.emoji.magic,
+        `Finish processing modules ${ modules.length ? '- ' + modulesStr : '' }`
       );
     });
     

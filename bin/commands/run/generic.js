@@ -29,7 +29,6 @@ module.exports = (args, options, logger) => {
   }
 
   switch (namespace.toLowerCase()) {
-    case 'e2e':
     case 'unit':
       namespace = namespace.toLowerCase();
       break;
@@ -128,6 +127,10 @@ module.exports = (args, options, logger) => {
    */
   function transformConfig(config) {
     cfg = config;
+
+    if (options.sync) {
+      dot.str('$.cnci.sync', true, cfg);
+    }
 
     let { modules, filtered } = parseModules(cfg);
     let workspaceEnabled = false;

@@ -1,17 +1,20 @@
 'use strict';
 
+const npm = require('npm-programmatic');
 const fse = require('fs-extra');
-const Diff = require('./diff');
 const path = require('path');
+const Diff = require('./diff');
+const https = require('https');
+const uuidv1 = require('uuid/v1');
 const Reporter = require('./reporter');
 const Terraform = require('./terraform');
-const E2ERunner = require('recink/src/component/e2e/e2e-runner');
+const npmResolve = require('resolve');
 const emitEvents = require('recink/src/component/emit/events');
 const UnitRunner = require('recink/src/component/test/unit-runner');
 const CacheFactory = require('recink/src/component/cache/factory');
 const SequentialPromise = require('recink/src/component/helper/sequential-promise');
+const { findFilesByPattern } = require('recink/src/helper/util');
 const DependencyBasedComponent = require('recink/src/component/dependency-based-component');
-const { getFilesByPattern } = require('recink/src/helper/util');
 
 /**
  * Terraform component
@@ -37,10 +40,11 @@ class TerraformComponent extends DependencyBasedComponent {
     this._e2e = {};
     this._unit = {};
     this._reporter = null;
-    // this._planChanged = false;
     this._runStack = {};
     this._diff = new Diff();
     this._caches = {};
+    this._emitter = null;
+    this._E2ERunner = null;
   }
 
   /**
@@ -60,9 +64,7 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @param {EmitModule} emitModule 
-   *
    * @returns {String}
-   *
    * @private
    */
   _moduleRoot(emitModule) {
@@ -75,7 +77,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _isTerraformModule(emitModule) {
-    let terraformFiles = getFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
+    let terraformFiles = findFilesByPattern(this._moduleRoot(emitModule), /.*\.tf$/);
 
     return Promise.resolve(terraformFiles.length > 0);
   }
@@ -108,6 +110,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
+    this._emitter = emitter;
     const terraformModules = [];
 
     return new Promise((resolve, reject) => {
@@ -118,15 +121,14 @@ class TerraformComponent extends DependencyBasedComponent {
           }
 
           terraformModules.push(emitModule);
-          this._updateTestsList(emitModule);
 
-          return Promise.resolve();
+          return this._updateTestsList(emitModule);
         });
       });
 
       emitter.on(emitEvents.modules.process.end, () => {
         this._diff.load()
-          .then(() => this._initCaches(emitter, terraformModules))
+          .then(() => this._initCaches(terraformModules))
           .then(() => {
             return Promise.all(
               terraformModules.map(emitModule => {
@@ -190,12 +192,11 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
-   * @param {Emitter} emitter
    * @param {EmitModule[]} terraformModules
    * @returns {Promise}
    * @private
    */
-  _initCaches(emitter, terraformModules) {
+  _initCaches(terraformModules) {
     terraformModules.forEach(emitModule => {
       const isCacheEnabled = this._parameterFromConfig(emitModule, 'cache', true);
 
@@ -239,46 +240,89 @@ class TerraformComponent extends DependencyBasedComponent {
   }
 
   /**
+   * Check if dependencies are installed
+   * @param {EmitModule} emitModule
+   * @returns {Promise}
+   * @private
+   */
+  _checkDependencies(emitModule) {
+    return new Promise((resolve, reject) => {
+      if (!this._parameterFromConfig(emitModule, 'test.apply', false)) {
+        return resolve(false);
+      }
+
+      const moduleName = 'recink-e2e/src/e2e-runner';
+
+      this._resolvePackage(moduleName)
+        .then(e2eRunner => resolve(e2eRunner))
+        .catch(() => {
+          npm.install(['recink-e2e'], { cwd: process.cwd(), save: false })
+            .then(() => this._resolvePackage(moduleName))
+            .then(e2eRunner => resolve(e2eRunner))
+            .catch(err => reject(err));
+        });
+    }).then(e2eRunner => {
+      if (e2eRunner) {
+        this._E2ERunner = require(e2eRunner);
+      }
+
+      return Promise.resolve();
+    });
+  }
+
+  /**
+   * @param {String} name
+   * @returns {Promise}
+   * @private
+   */
+  _resolvePackage(name) {
+    return new Promise((resolve, reject) => {
+      npmResolve(name, { basedir: process.cwd() }, (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(res);
+      });
+    });
+  }
+
+  /**
    * Handle unit/e2e tests
    * @param {EmitModule} emitModule
+   * @returns {Promise}
    * @private
    */
   _updateTestsList(emitModule) {
-    const moduleName = emitModule.name;
-    const { plan, apply } = emitModule.container.get('terraform.test', {});
-    const mochaOptions = emitModule.container.get('terraform.test.unit.mocha.options', {});
-    const testcafePath = 'terraform.test.e2e.testcafe';
-    const testcafeOptions = {
-      browsers: emitModule.container.get(`${testcafePath}.browsers`, E2ERunner.DEFAULT_BROWSERS),
-      screenshotsPath: path.resolve(emitModule.container.get(`${testcafePath}.screenshot.path`, process.cwd())),
-      takeOnFail: emitModule.container.get(`${testcafePath}.screenshot.take-on-fail`, false)
-    };
+    return this._checkDependencies(emitModule).then(() => {
+      const testcafePath = 'test.e2e.testcafe';
+      const mochaOptions = this._parameterFromConfig(emitModule, 'test.unit.mocha.options', {});
+      const screenShotPath = this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.path`, process.cwd());
+      const { plan, apply } = this._parameterFromConfig(emitModule, 'test', {});
+      const testcafeOptions = {
+        browsers: this._parameterFromConfig(emitModule, `${testcafePath}.browsers`, ['puppeteer']),
+        screenshotsPath: path.resolve(screenShotPath),
+        takeOnFail: this._parameterFromConfig(emitModule, `${testcafePath}.screenshot.take-on-fail`, false)
+      };
 
-    if (!this._unit.hasOwnProperty(moduleName)) {
-      this._unit[moduleName] = { assets: [], enabled: true, runner: new UnitRunner(mochaOptions)};
-    }
+      if (plan) {
+        const units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
+          ? [plan]
+          : findFilesByPattern(plan, /.*\.spec.\js/, /.*node_modules.*/);
 
-    if (!this._e2e.hasOwnProperty(moduleName)) {
-      this._e2e[moduleName] = { assets: [], enabled: true, runner: new E2ERunner(testcafeOptions)};
-    }
+        this._unit[emitModule.name] = { assets: units, enabled: true, runner: new UnitRunner(mochaOptions)};
+      }
 
-    let e2es = [];
-    let units = [];
+      if (apply) {
+        const e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
+          ? [apply]
+          : findFilesByPattern(apply, /.*\.e2e.\js/, /.*node_modules.*/);
 
-    if (plan) {
-      units = (fse.existsSync(plan) && fse.lstatSync(plan).isFile())
-        ? [plan]
-        : getFilesByPattern(plan, /.*\.spec.\js/);
-    }
+        this._e2e[emitModule.name] = { assets: e2es, enabled: true, runner: new this._E2ERunner(testcafeOptions)};
+      }
 
-    if (apply) {
-      e2es = (fse.existsSync(apply) && fse.lstatSync(apply).isFile())
-        ? [apply]
-        : getFilesByPattern(apply, /.*\.e2e.\js/);
-    }
-
-    this._unit[moduleName].assets.push(...units);
-    this._e2e[moduleName].assets.push(...e2es);
+      return Promise.resolve();
+    });
   }
 
   /**
@@ -301,7 +345,6 @@ class TerraformComponent extends DependencyBasedComponent {
   * @returns {Promise}
   */
   teardown(emitter) {
-    // this._planChanged = false;
     this._runStack = {};
     this._caches = {};
     this._unit = {};
@@ -312,7 +355,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
   /**
    * @returns {Function[]}
-   *
    * @private
    */
   get _normalizedRunStack() {
@@ -348,18 +390,14 @@ class TerraformComponent extends DependencyBasedComponent {
     }
 
     if (it >= maxIt) {
-      throw new Error(
-        `Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`
-      );
+      throw new Error(`Maximum stack of ${ maxIt } exceeded while normalizing Terraform dependencies vector`);
     }
 
-    return modulesNames.map(moduleName => {
-      return this._runStack[moduleName];
-    });
+    return modulesNames.map(moduleName => this._runStack[moduleName]);
   }
 
   /**
-   * @throws {Error}
+   * Validate terraform modules run-stack
    * @private
    */
   _validateRunStack() {
@@ -368,7 +406,6 @@ class TerraformComponent extends DependencyBasedComponent {
 
     available.forEach(moduleName => {
       const { after } = this._runStack[moduleName];
-
       const extraneousModules = after.filter(m => !available.includes(m));
 
       if (extraneousModules.length > 0) {
@@ -376,13 +413,16 @@ class TerraformComponent extends DependencyBasedComponent {
       }
     });
 
-    if (Object.keys(extraneous).length > 0) {
-      const extraneousVector = Object.keys(extraneous).map(moduleName => {
-        return `<[${ moduleName }]> ${ extraneous[moduleName].join(', ') }`;
-      });
-      const extraneousInfo = extraneousVector.join('\n\t');
+    const extraneousModules = Object.keys(extraneous);
 
-      throw new Error(`Terraform detected extraneous modules dependencies:\n\t${ extraneousInfo }`);
+    if (extraneousModules.length > 0) {
+      extraneousModules.map(name => {
+        delete this._runStack[name];
+
+        const deps = extraneous[name];
+        const errMsg = `Skipping '${name}' because '${deps.join(', ')}' is/are not configured or explicitly excluded`;
+        this.logger.warn(this.logger.emoji.cross, errMsg);
+      });
     }
   }
 
@@ -393,7 +433,7 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _terraformate(emitModule) {
     return this._hasChanges(emitModule).then(changed => {
-      const after = emitModule.container.get('terraform.run-after', []);
+      const after = this._parameterFromConfig(emitModule, 'run-after', []);
 
       this._runStack[emitModule.name] = { emitModule, after, changed };
 
@@ -410,20 +450,27 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _parameterFromConfig(module, parameter, defaultValue) {
+    let tree = [];
     let result = defaultValue;
     let mainCfg = this.container.get(parameter, defaultValue);
-    let moduleCfg = module.container.get(`terraform.${parameter}`, defaultValue);
+    let moduleCfg = module.container.get(`terraform.${parameter}`);
 
     switch ((defaultValue).constructor) {
       case String:
       case Boolean:
-        result = (moduleCfg === defaultValue) ? mainCfg : moduleCfg;
+        tree.push({x: mainCfg});
+        if (moduleCfg !== null) { tree.push({x: moduleCfg}); }
+
+        result = (Object.assign(...tree)).x;
         break;
       case Object:
-        result = Object.assign({}, mainCfg, moduleCfg);
+        tree.push(mainCfg);
+        if (moduleCfg !== null) { tree.push(moduleCfg); }
+
+        result = Object.assign(...tree);
         break;
       case Array:
-        result = moduleCfg.length ? moduleCfg : mainCfg;
+        result = (moduleCfg !== null) ? moduleCfg : mainCfg;
         break;
     }
 
@@ -444,28 +491,29 @@ class TerraformComponent extends DependencyBasedComponent {
       this._parameterFromConfig(emitModule, 'var-files', [])
     );
 
-    this.logger.debug(`Terraform version - "${ version }"`);
+    this.logger.debug(`Terraform version - '${ version }'`);
 
     return terraform.ensure(version)
       .then(() => this._init(terraform, emitModule))
       .then(() => this._workspace(terraform, emitModule))
       .then(() => this._plan(terraform, emitModule))
+      .then(requestId => this._getResources(requestId))
       .then(() => this._runTests(TerraformComponent.UNIT, emitModule))
       .then(() => this._apply(terraform, emitModule))
+      .then(requestId => this._getResources(requestId))
       .then(() => this._runTests(TerraformComponent.E2E, emitModule))
-      .then(() => this._destroy(terraform, emitModule));
+      .then(() => this._destroy(terraform, emitModule))
+      .then(requestId => this._getResources(requestId));
   }
 
   /**
    * @param {EmitModule} emitModule
-   *
    * @returns {Promise}
-   *
-   * @private 
+   * @private
    */
   _hasChanges(emitModule) {
     const rootPath = this._moduleRoot(emitModule);
-    const dependencies = emitModule.container.get('terraform.dependencies', [])
+    const dependencies = this._parameterFromConfig(emitModule, 'dependencies', [])
       .map(dep => path.isAbsolute(dep) ? dep : path.resolve(rootPath, dep));
 
     return Promise.resolve(
@@ -515,13 +563,25 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _plan(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'plan', true)) {
-      this._unit[emitModule.name].enabled = false;
+      if (this._unit.hasOwnProperty(emitModule.name)) {
+        this._unit[emitModule.name].enabled = false;
+      }
+
       return this._handleSkip(emitModule, 'plan');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .plan(this._moduleRoot(emitModule))
+      .then(plan => {
+        return this._emitter
+          .emitBlocking('cnci.upload.plan', { plans: [plan], requestId: requestId, action: 'plan' })
+          .then(() => Promise.resolve(plan))
+        ;
+      })
       .then(plan => this._handlePlan(terraform, emitModule, plan))
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'plan', error));
   }
 
@@ -561,13 +621,25 @@ class TerraformComponent extends DependencyBasedComponent {
    */
   _apply(terraform, emitModule) {
     if (!this._parameterFromConfig(emitModule, 'apply', false)) {
-      this._e2e[emitModule.name].enabled = false;
+      if (this._e2e.hasOwnProperty(emitModule.name)) {
+        this._e2e[emitModule.name].enabled = false;
+      }
+
       return this._handleSkip(emitModule, 'apply');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .apply(this._moduleRoot(emitModule))
+      .then(state => {
+        return this._emitter
+          .emitBlocking('cnci.upload.state', { states: [state.path], requestId: requestId, action: 'apply' })
+          .then(() => Promise.resolve(state))
+        ;
+      })
       .then(state => this._handleApply(terraform, emitModule, state))
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'apply', error));
   }
 
@@ -582,13 +654,86 @@ class TerraformComponent extends DependencyBasedComponent {
       return this._handleSkip(emitModule, 'destroy');
     }
 
+    const requestId = uuidv1();
+
     return terraform
       .destroy(this._moduleRoot(emitModule))
       .then(state => {
-        return Promise.resolve();
-        // return this._handleDestroy(terraform, emitModule, state)
+        return this._emitter
+          .emitBlocking('cnci.upload.state', { states: [state.path], requestId: requestId, action: 'destroy' })
+          .then(() => Promise.resolve(state))
+        ;
       })
+      .then(state => Promise.resolve())
+      .then(() => Promise.resolve(requestId))
       .catch(error => this._handleError(emitModule, 'destroy', error));
+  }
+
+  /**
+   * Get parsed resources
+   * @param {String|Number} requestId
+   * @returns {Promise}
+   * @private
+   */
+  _getResources(requestId) {
+    const endpoint = `https://api.terrahub.io/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
+
+    return this._callApiWithRetry(endpoint, 3).then(resources => {
+      // @todo remove after debugging
+      this.logger.debug(this.logger.emoji.diamond, JSON.stringify(resources, null, 2));
+
+      return Promise.resolve();
+    });
+  }
+
+  /**
+   * Call API with retries
+   * @param {String} endpoint
+   * @param {Number} times
+   * @returns {Promise}
+   * @private
+   */
+  _callApiWithRetry(endpoint, times) {
+    if (times === 1) {
+      return this._callApi(endpoint);
+    } else {
+      return new Promise(resolve => {
+        this._callApi(endpoint).then(res => {
+          if (res.length < 1) {
+            throw new Error('No data found.')
+          }
+
+          resolve(res);
+        }).catch(err => {
+          setTimeout(() => {
+            this.logger.debug(`${err.message} Retrying...`);
+
+            resolve(this._callApiWithRetry(endpoint, times - 1));
+          }, TerraformComponent.RETRY_DELAY);
+        });
+      });
+    }
+  }
+
+  /**
+   * Call API
+   * @param {String} endpoint
+   * @returns {Promise}
+   */
+  _callApi(endpoint) {
+    return new Promise((resolve, reject) => {
+      https.get(endpoint, res => {
+        let buffers = [];
+        res.on('data', data => { buffers.push(data); });
+        res.on('end', () => {
+          let result = Buffer.concat(buffers).toString();
+
+          resolve(JSON.parse(result));
+        });
+      }).on('error', err => {
+        reject(err);
+      });
+    });
   }
 
   /**
@@ -633,7 +778,6 @@ ${ reasonMsg }
    * @private
    */
   _handlePlan(terraform, emitModule, plan) {
-    // this._planChanged = plan.changed;
     const resourceFolder = this._parameterFromConfig(emitModule, 'resource', '');
     const saveShowOutput = this._parameterFromConfig(emitModule, 'save-show-output', '');
 
@@ -715,6 +859,14 @@ ${ output }
       'version': Terraform.VERSION,
       'current-workspace': 'default'
     };
+  }
+
+  /**
+   * @returns {Number}
+   * @constructor
+   */
+  static get RETRY_DELAY() {
+    return 10000;
   }
 }
 

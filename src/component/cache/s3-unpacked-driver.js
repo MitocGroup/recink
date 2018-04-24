@@ -3,7 +3,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const S3Driver = require('./s3-driver');
-const { walkDir } = require('../../helper/util');
+const { findFilesByPattern } = require('../../helper/util');
 
 /**
  * AWS S3 (unpacked) cache driver
@@ -83,10 +83,8 @@ class S3UnpackedDriver extends S3Driver {
    * @private
    */
   _upload() {
-    let { Bucket, Key } = this._s3Location(this.path);
-    let list = [];
-
-    walkDir(this.cacheDir, /.*/, item => list.push(item));
+    const { Bucket, Key } = this._s3Location(this.path);
+    const list = findFilesByPattern(this.cacheDir, /.*/);
 
     return Promise.all(
       list.map(filePath => {

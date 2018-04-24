@@ -149,6 +149,9 @@ as default browser, which provides native debugging capabilities
 <li>[x] Add support for End-to-End tests</li>
 <li>[x] Add component development guide</li>
 <li>[x] Add unit tests for critical functionality</li>
+<li>[x] Decouple e2e component</li>
+<li>[ ] Decouple unit component</li>
+<li>[ ] Decouple coverage component</li>
 <li>[ ] Add support for different CI platforms</li>
 <li>[ ] Craft a cool logo for the project :alien:</li>
 <li>[ ] Add unit tests to cover at least 80% of codebase</li>
@@ -160,23 +163,7 @@ as default browser, which provides native debugging capabilities
 <li><a href="https://www.adtechmedia.io">AdTechMedia</a></li>
 </ul>
 <h1 id="license">License</h1>
-<p>recink is released under the MIT license.</p>
-<p>Copyright (c) 2017 Mitoc Group Inc</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<p>REciNK is released under the <a href="https://github.com/MitocGroup/recink/blob/master/LICENSE.md">MIT license</a>.</p>
 </div>
 
   <p class="manual-badge" data-ice="manualBadge"><img src="./manual-badge.svg"></p>
@@ -568,62 +555,6 @@ SOFTWARE.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>End2End component</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/component/e2e/e2e-runner.js~E2ERunner.html">E2ERunner</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>End2End test runner (build on top of TestCafe)</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
           <span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span>
         </p>
       </div>
@@ -764,6 +695,34 @@ SOFTWARE.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Cache factory</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/component/coverage/factory.js~Factory.html">Factory</a></span></span>
         </p>
       </div>
@@ -820,34 +779,6 @@ SOFTWARE.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Transformer factory</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
           <span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span>
         </p>
       </div>
@@ -876,13 +807,13 @@ SOFTWARE.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/component/cache/factory.js~Factory.html">Factory</a></span></span>
+          <span data-ice="name"><span><a href="class/src/component/preprocess/factory.js~Factory.html">Factory</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Cache factory</p>
+        <div data-ice="description"><p>Transformer factory</p>
 </div>
       </div>
     </td>
@@ -1416,13 +1347,13 @@ SOFTWARE.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span><span data-ice="signature">(dir: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, regExp: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
+          <span data-ice="name"><span><a href="function/index.html#static-function-findFilesByPattern">findFilesByPattern</a></span></span><span data-ice="signature">(dir: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, include: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span>, exclude: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Get filenames from dir by RegExp pattern</p>
+        <div data-ice="description"><p>Find files by RegExp pattern except dirs</p>
 </div>
       </div>
     </td>
@@ -1445,33 +1376,6 @@ SOFTWARE.</p>
           
           
           <span data-ice="name"><span><a href="function/index.html#static-function-patterntransformer">patterntransformer</a></span></span><span data-ice="signature">(value: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span><span data-ice="signature">()</span>
         </p>
       </div>
       <div>
@@ -1544,34 +1448,6 @@ SOFTWARE.</p>
       
     </td>
   </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span><span data-ice="signature">(dir: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, filter: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>Read directory recursively</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
 </tbody>
 </table>
 </div>
@@ -1627,34 +1503,6 @@ SOFTWARE.</p>
         
         
         <div data-ice="description"><p>Coverage component events</p>
-</div>
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span><span data-ice="signature">: {}</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        <div data-ice="description"><p>End2End component events</p>
 </div>
       </div>
     </td>

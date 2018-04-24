@@ -78,18 +78,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "recink/src/component/e2e-component.js~e2ecomponent",
-    "class/src/component/e2e-component.js~E2EComponent.html",
-    "<span>E2EComponent</span> <span class=\"search-result-import-path\">recink/src/component/e2e-component.js</span>",
-    "class"
-  ],
-  [
-    "recink/src/component/e2e/e2e-runner.js~e2erunner",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html",
-    "<span>E2ERunner</span> <span class=\"search-result-import-path\">recink/src/component/e2e/e2e-runner.js</span>",
-    "class"
-  ],
-  [
     "recink/src/component/emit-component.js~emitcomponent",
     "class/src/component/emit-component.js~EmitComponent.html",
     "<span>EmitComponent</span> <span class=\"search-result-import-path\">recink/src/component/emit-component.js</span>",
@@ -264,12 +252,6 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
-    "recink/src/component/e2e/events.js~events",
-    "variable/index.html#static-variable-events",
-    "<span>events</span> <span class=\"search-result-import-path\">recink/src/component/e2e/events.js</span>",
-    "variable"
-  ],
-  [
     "recink/src/component/emit/events.js~events",
     "variable/index.html#static-variable-events",
     "<span>events</span> <span class=\"search-result-import-path\">recink/src/component/emit/events.js</span>",
@@ -300,21 +282,15 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "recink/src/helper/util.js~getfilesbypattern",
-    "function/index.html#static-function-getFilesByPattern",
-    "<span>getFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
+    "recink/src/helper/util.js~findfilesbypattern",
+    "function/index.html#static-function-findFilesByPattern",
+    "<span>findFilesByPattern</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [
     "recink/src/component/helper/pattern-transformer.js~patterntransformer",
     "function/index.html#static-function-patterntransformer",
     "<span>patterntransformer</span> <span class=\"search-result-import-path\">recink/src/component/helper/pattern-transformer.js</span>",
-    "function"
-  ],
-  [
-    "recink/src/component/e2e/testcafe/browsers-registrar.js~register",
-    "function/index.html#static-function-register",
-    "<span>register</span> <span class=\"search-result-import-path\">recink/src/component/e2e/testcafe/browsers-registrar.js</span>",
     "function"
   ],
   [
@@ -327,12 +303,6 @@ window.esdocSearchIndex = [
     "recink/src/helper/util.js~versioncompare",
     "function/index.html#static-function-versionCompare",
     "<span>versionCompare</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
-    "function"
-  ],
-  [
-    "recink/src/helper/util.js~walkdir",
-    "function/index.html#static-function-walkDir",
-    "<span>walkDir</span> <span class=\"search-result-import-path\">recink/src/helper/util.js</span>",
     "function"
   ],
   [
@@ -1186,144 +1156,6 @@ window.esdocSearchIndex = [
     "class/src/component/dependency-based-component.js~DependencyBasedComponent.html#instance-method-waitConfig",
     "src/component/dependency-based-component.js~DependencyBasedComponent#waitConfig",
     "method"
-  ],
-  [
-    "src/component/e2e-component.js",
-    "file/src/component/e2e-component.js.html",
-    "src/component/e2e-component.js",
-    "file"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#constructor",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-constructor-constructor",
-    "src/component/e2e-component.js~E2EComponent#constructor",
-    "method"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#dependencies",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-dependencies",
-    "src/component/e2e-component.js~E2EComponent#dependencies",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#dumpstats",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-dumpStats",
-    "src/component/e2e-component.js~E2EComponent#dumpStats",
-    "method"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#name",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-name",
-    "src/component/e2e-component.js~E2EComponent#name",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#prepareconfig",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-prepareConfig",
-    "src/component/e2e-component.js~E2EComponent#prepareConfig",
-    "method"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#run",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-method-run",
-    "src/component/e2e-component.js~E2EComponent#run",
-    "method"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent#stats",
-    "class/src/component/e2e-component.js~E2EComponent.html#instance-get-stats",
-    "src/component/e2e-component.js~E2EComponent#stats",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_priority",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_PRIORITY",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_PRIORITY",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_wait_interval",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_WAIT_INTERVAL",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_INTERVAL",
-    "member"
-  ],
-  [
-    "src/component/e2e-component.js~e2ecomponent.default_wait_timeout",
-    "class/src/component/e2e-component.js~E2EComponent.html#static-get-DEFAULT_WAIT_TIMEOUT",
-    "src/component/e2e-component.js~E2EComponent.DEFAULT_WAIT_TIMEOUT",
-    "member"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js",
-    "file/src/component/e2e/e2e-runner.js.html",
-    "src/component/e2e/e2e-runner.js",
-    "file"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner#cleanup",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-cleanup",
-    "src/component/e2e/e2e-runner.js~E2ERunner#cleanup",
-    "method"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner#constructor",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-constructor-constructor",
-    "src/component/e2e/e2e-runner.js~E2ERunner#constructor",
-    "method"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner#gettestcafe",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-getTestCafe",
-    "src/component/e2e/e2e-runner.js~E2ERunner#getTestCafe",
-    "method"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner#run",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#instance-method-run",
-    "src/component/e2e/e2e-runner.js~E2ERunner#run",
-    "method"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner.default_browsers",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_BROWSERS",
-    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_BROWSERS",
-    "member"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner.default_reporter",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_REPORTER",
-    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_REPORTER",
-    "member"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner.default_server_hostname",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_SERVER_HOSTNAME",
-    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_HOSTNAME",
-    "member"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner.default_server_ports",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-DEFAULT_SERVER_PORTS",
-    "src/component/e2e/e2e-runner.js~E2ERunner.DEFAULT_SERVER_PORTS",
-    "member"
-  ],
-  [
-    "src/component/e2e/e2e-runner.js~e2erunner.run_options",
-    "class/src/component/e2e/e2e-runner.js~E2ERunner.html#static-get-RUN_OPTIONS",
-    "src/component/e2e/e2e-runner.js~E2ERunner.RUN_OPTIONS",
-    "member"
-  ],
-  [
-    "src/component/e2e/events.js",
-    "file/src/component/e2e/events.js.html",
-    "src/component/e2e/events.js",
-    "file"
-  ],
-  [
-    "src/component/e2e/testcafe/browsers-registrar.js",
-    "file/src/component/e2e/testcafe/browsers-registrar.js.html",
-    "src/component/e2e/testcafe/browsers-registrar.js",
-    "file"
   ],
   [
     "src/component/emit-component.js",

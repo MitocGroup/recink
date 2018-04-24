@@ -1,0 +1,53 @@
+{
+  "name": "recink-e2e",
+  "version": "0.0.6",
+  "description": "REciNK Component for End2End Testing",
+  "keywords": [
+    "REciNK",
+    "Testing",
+    "e2e",
+    "Development",
+    "TestCafe",
+    "Tools"
+  ],
+  "homepage": "https://github.com/MitocGroup/recink",
+  "bugs": {
+    "url": "https://github.com/MitocGroup/recink/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mitoc Group",
+    "email": "hello@mitocgroup.com",
+    "url": "https://www.mitocgroup.com"
+  },
+  "main": "src/e2e-component.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MitocGroup/recink.git"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run transpile",
+    "transpile": "node `npm bin`/babel ./src -d ./src"
+  },
+  "dependencies": {
+    "debug": "^3.1.0",
+    "dot-object": "^1.7.0",
+    "nightmare": "^2.10.0",
+    "object.entries": "^1.0.4",
+    "pify": "^3.0.0",
+    "print": "^1.0.2",
+    "puppeteer": "^1.1.0",
+    "recink": "^1.x.x",
+    "testcafe": "^0.18.6",
+    "url-exists": "^1.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1"
+  },
+  "engines": {
+    "node": ">=6.0",
+    "npm": ">=3.0"
+  },
+  "preferGlobal": true
+}

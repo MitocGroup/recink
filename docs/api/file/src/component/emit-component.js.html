@@ -42,7 +42,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/config-based-component.js~ConfigBasedComponent.html">ConfigBasedComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage-component.js~CoverageComponent.html">CoverageComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/dependency-based-component.js~DependencyBasedComponent.html">DependencyBasedComponent</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e-component.js~E2EComponent.html">E2EComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit-component.js~EmitComponent.html">EmitComponent</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/factory.js~Factory.html">Factory</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/npm-component.js~NpmComponent.html">NpmComponent</a></span></span></li>
@@ -59,9 +58,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/s3-driver.js~S3Driver.html">S3Driver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/coverage/volatile-driver.js~VolatileDriver.html">VolatileDriver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/e2e/e2e-runner.js~E2ERunner.html">E2ERunner</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/e2e/testcafe</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-register">register</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/emit</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/emit/emit-module.js~EmitModule.html">EmitModule</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-events">events</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">component/helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/component/helper/aws-credentials.js~AwsCredentials.html">AwsCredentials</a></span></span></li>
@@ -84,10 +80,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/config/yaml-config.js~YamlConfig.html">YamlConfig</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">helper</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/helper/env.js~Env.html">Env</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-fillString">fillString</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFilesByPattern">getFilesByPattern</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findFilesByPattern">findFilesByPattern</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-trimBoth">trimBoth</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-versionCompare">versionCompare</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-walkDir">walkDir</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -96,11 +91,11 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
 const path = require(&apos;path&apos;);
-const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
-const EmitModule = require(&apos;./emit/emit-module&apos;);
 const events = require(&apos;./emit/events&apos;);
-const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
+const EmitModule = require(&apos;./emit/emit-module&apos;);
 const SequentialPromise = require(&apos;./helper/sequential-promise&apos;);
+const ConfigBasedComponent = require(&apos;./config-based-component&apos;);
+const ContainerTransformer = require(&apos;./helper/container-transformer&apos;);
 
 /**
  * Emit component
@@ -116,7 +111,7 @@ class EmitComponent extends ConfigBasedComponent {
   }
   
   /**
-   * @returns {string}
+   * @returns {String}
    */
   get name() {
     return &apos;emit&apos;;
@@ -124,14 +119,13 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @returns {Promise}
    */
   run(emitter) {
     this._registerDebugers(emitter);
     
     emitter.emit(events.modules.process.start, this._modules, this.container);
-    
+
     return SequentialPromise.all(this._modules.map(module =&gt; {
       return () =&gt; {
         return module.check()
@@ -146,7 +140,6 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   *
    * @returns {Promise}
    */
   waitConfig(emitter) {
@@ -186,8 +179,7 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {*} config
-   * @param {string} configFile
-   *
+   * @param {String} configFile
    * @returns {Container}
    */
   prepareConfig(config, configFile) {
@@ -203,7 +195,6 @@ class EmitComponent extends ConfigBasedComponent {
   /**
    * @param {*} moduleConfig
    * @param {Container} mainContainer
-   *
    * @returns {Container}
    */
   prepareModuleConfig(moduleConfig, mainContainer) {
@@ -227,23 +218,26 @@ class EmitComponent extends ConfigBasedComponent {
   
   /**
    * @param {Emitter} emitter
-   * 
    * @private
    */
   _registerDebugers(emitter) {
     emitter.on(events.modules.process.start, (modules, container) =&gt; {
+      const modulesStr = modules.map(m =&gt; m.name).join(&apos;, &apos;);
+
       this.logger.info(
-        this.logger.emoji.diamond, 
-        `Start processing modules - ${ modules.map(m =&gt; m.name).join(&apos;, &apos;) }`
+        this.logger.emoji.diamond,
+        `Start processing modules ${ modules.length ? &apos;- &apos; + modulesStr : &apos;&apos; }`
       );
 
       this.logger.debug(container.dump());
     });
     
     emitter.on(events.modules.process.end, modules =&gt; {
+      const modulesStr = modules.map(m =&gt; m.name).join(&apos;, &apos;);
+
       this.logger.info(
-        this.logger.emoji.magic, 
-        `Finish processing modules - ${ modules.map(m =&gt; m.name).join(&apos;, &apos;) }`
+        this.logger.emoji.magic,
+        `Finish processing modules ${ modules.length ? &apos;- &apos; + modulesStr : &apos;&apos; }`
       );
     });
     
