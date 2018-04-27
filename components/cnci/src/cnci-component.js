@@ -21,7 +21,7 @@ class CnciComponent extends DependencyBasedComponent {
      * @type {Boolean|String}
      * @private
      */
-    this._cnciEnv = false;
+    this._env = false;
 
     this._s3client = new S3({ region: 'us-east-1' });
     this._timestamp = Math.floor(Date.now() / 1000);
@@ -49,8 +49,8 @@ class CnciComponent extends DependencyBasedComponent {
    */
   run(emitter) {
     return new Promise(resolve => {
+      this._env = this.container.get('env', 'prod');
       const sync = this.container.get('sync', false);
-      this._cnciEnv = this.container.get('env', 'prod');
       this._cnciToken = this.container.get('token', false);
       const projectDir = this.container.get('__dir');
 
@@ -194,7 +194,7 @@ class CnciComponent extends DependencyBasedComponent {
    * @private
    */
   _getDestinationKeyspace() {
-    return this._cnciEnv !== 'dev' ? CnciComponent.PUBLIC_KEYSPACE : `${CnciComponent.PUBLIC_KEYSPACE}-dev`
+    return this._env !== 'dev' ? CnciComponent.PUBLIC_KEYSPACE : `${CnciComponent.PUBLIC_KEYSPACE}-dev`
   }
 
   /**
