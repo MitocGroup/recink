@@ -16,6 +16,13 @@ class CnciComponent extends DependencyBasedComponent {
   constructor() {
     super();
 
+    /**
+     * @node this is an undocumented feature, for developers only
+     * @type {Boolean|String}
+     * @private
+     */
+    this._env = false;
+
     this._s3client = new S3({ region: 'us-east-1' });
     this._timestamp = Math.floor(Date.now() / 1000);
     this._cnciToken = false;
@@ -42,6 +49,7 @@ class CnciComponent extends DependencyBasedComponent {
    */
   run(emitter) {
     return new Promise(resolve => {
+      this._env = this.container.get('env', 'prod');
       const sync = this.container.get('sync', false);
       this._cnciToken = this.container.get('token', false);
       const projectDir = this.container.get('__dir');
@@ -158,7 +166,7 @@ class CnciComponent extends DependencyBasedComponent {
    * @private
    */
   _getFullKey(key) {
-    return `${CnciComponent.PUBLIC_KEYSPACE}/${this._timestamp}/${key.replace(/^\/?/, '')}`;
+    return `${this._getDestinationKeyspace()}/${this._timestamp}/${key.replace(/^\/?/, '')}`;
   }
 
   /**
@@ -179,6 +187,14 @@ class CnciComponent extends DependencyBasedComponent {
     }
 
     return metadata;
+  }
+
+  /**
+   * @returns {String}
+   * @private
+   */
+  _getDestinationKeyspace() {
+    return this._env !== 'dev' ? CnciComponent.PUBLIC_KEYSPACE : `${CnciComponent.PUBLIC_KEYSPACE}-dev`
   }
 
   /**
