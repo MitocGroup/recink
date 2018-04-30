@@ -27,6 +27,13 @@ class TerraformComponent extends DependencyBasedComponent {
     super(...args);
 
     /**
+     * @node this is an undocumented feature, for developers only
+     * @type {Boolean|String}
+     * @private
+     */
+    this._env = false;
+
+    /**
      * _unit & _e2e formats
      * @type {{
      *  moduleName: {
@@ -110,6 +117,7 @@ class TerraformComponent extends DependencyBasedComponent {
    * @returns {Promise}
    */
   run(emitter) {
+    this._env = this.container.get('env', 'prod');
     this._emitter = emitter;
     const terraformModules = [];
 
@@ -676,10 +684,10 @@ class TerraformComponent extends DependencyBasedComponent {
    * @private
    */
   _getResources(requestId) {
-    const endpoint = `https://api.terrahub.io/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
+    const apiUrl = this._env !== 'dev' ? 'https://api.terrahub.io' : 'https://api-dev.terrahub.io' ;
+    const endpoint = `${apiUrl}/v1/cnci/terraform/resource-retrieve?RequestId=${requestId}`;
 
     return this._callApiWithRetry(endpoint, 3).then(resources => {
-      // @todo remove after debugging
       this.logger.debug(this.logger.emoji.diamond, JSON.stringify(resources, null, 2));
 
       return Promise.resolve();
