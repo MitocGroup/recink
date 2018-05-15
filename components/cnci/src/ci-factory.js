@@ -11,6 +11,8 @@ class CiFactory {
     switch (cfg.provider) {
       case 'jenkins':
         return new JenkinsCI(cfg.options);
+      case 'codepipeline':
+        return new CodePipelineCI(cfg.options);
       default:
         throw new Error(`${ cfg.provider } CI is not implemented`);
     }
