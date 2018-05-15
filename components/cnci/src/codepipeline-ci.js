@@ -57,7 +57,6 @@ class CodePipelineCI extends AbstractCI {
         stage.stageStates.forEach(state => {
           if (state.latestExecution.status === 'Failed') {
             pipelineStatus = 'Failed';
-            break;
           }
         });
 
