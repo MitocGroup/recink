@@ -19,32 +19,32 @@ class CodePipelineCI extends AbstractCI {
   }
   getCI() {
     if (!this._codepipeline) {
-      const _codepipeline = new AWS.CodePipeline({
+      this._codepipeline = new AWS.CodePipeline({
         region: this._region
       });
     }
 
-    return Promise.resolve(_codepipeline);
+    return Promise.resolve(this._codepipeline);
   }
 
   _getCWL() {
     if (!this._cloudwatchlogs) {
-      const _cloudwatchlogs = new AWS.CloudWatchLogs({
+      this._cloudwatchlogs = new AWS.CloudWatchLogs({
         region: this._region
       });
     }
 
-    return Promise.resolve(_cloudwatchlogs);
+    return Promise.resolve(this._cloudwatchlogs);
   }
 
   _getCB() {
     if (!this._codebuild) {
-      const _codebuild = new AWS.CodeBuild({
+      this._codebuild = new AWS.CodeBuild({
         region: this._region
       });
     }
 
-    return Promise.resolve(_codebuild);
+    return Promise.resolve(this._codebuild);
   }
 
   getJobMeta() {
@@ -87,7 +87,7 @@ class CodePipelineCI extends AbstractCI {
     };
 
     return this.getCI().then(codepipeline => {
-      codepipeline.getPipeline(params).promise();
+      return codepipeline.getPipeline(params).promise();
     });
   }
 
@@ -103,10 +103,19 @@ class CodePipelineCI extends AbstractCI {
     });
   }
 
+  _extractLogMessages(log) {
+    let result = [];
+
+    log.events.forEach(event => {
+      result += event.message;
+    });
+    return Promise.resolve(result);
+  }
+
   getJobLog() {
-    return this._getPipelineJson()
-      .then(pipelineJson => this._getCodebuildNames())
-      .then(codebuildNames => this._getLogParameters())
+    return this._getPipelineJson(this._projectName)
+      .then(pipelineJson => this._getCodebuildNames(pipelineJson))
+      .then(codebuildNames => this._getLogParameters(codebuildNames))
       .then(logParameters => {
         return Promise.all(logParameters.map(parameter => {
             let splittedParameter = parameter.split(':');
@@ -117,6 +126,7 @@ class CodePipelineCI extends AbstractCI {
 
             return this._getCWL().then(cloudwatchlogs => {
               return cloudwatchlogs.getLogEvents(params).promise()
+                .then(log => this._extractLogMessages(log));
             });
           }))
           .then(results => results.join('\n'));
