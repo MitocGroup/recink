@@ -18,7 +18,7 @@ class CodePipelineCI extends AbstractCI {
     this._executionIds = [];
   }
   getCI() {
-    if (!this._codepipeline) {     
+    if (!this._codepipeline) {
       this._codepipeline = new AWS.CodePipeline({
         region: this._region
       });
@@ -48,11 +48,11 @@ class CodePipelineCI extends AbstractCI {
   }
 
   getJobMeta() {
-    return this.getCI().then(codepipeline => {      
+    return this.getCI().then(codepipeline => {
       return codepipeline.getPipelineState({
         name: this._projectName
       }).promise().then(stage => {
-        let pipelineStatus = 'Succeeded';   
+        let pipelineStatus = 'Succeeded';
 
         stage.stageStates.forEach(state => {
           if (state.latestExecution.status === 'Failed') {
@@ -103,12 +103,12 @@ class CodePipelineCI extends AbstractCI {
     });
   }
 
-  _extractLogMessages(log){
+  _extractLogMessages(log) {
     let result = [];
 
-    log.events.forEach( event => {
+    log.events.forEach(event => {
       result += event.message;
-    });  
+    });
     return Promise.resolve(result);
   }
 
