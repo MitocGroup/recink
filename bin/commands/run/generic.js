@@ -39,7 +39,6 @@ module.exports = (args, options, logger) => {
 
   const availableComponents = require(`./${namespace}/components`);
   const componentRegistry = ComponentRegistry.create(
-    // ComponentRegistry.DEFAULT_STORAGE_PATH,
     options.registryPath,
     namespace.toLowerCase()
   );
