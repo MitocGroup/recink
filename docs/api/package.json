@@ -1,6 +1,6 @@
 {
   "name": "recink",
-  "version": "1.14.12",
+  "version": "1.15.0",
   "description": "Rethink CI for JavaScript applications",
   "keywords": [
     "REciNK",
@@ -75,7 +75,7 @@
   "peerDependencies": {
     "twig": "^1.10.5",
     "travis-lint": "^1.0.0",
-    "travis-encrypt": "MitocGroup/node-travis-encrypt",
+    "travis-encrypt": "git+https://github.com/MitocGroup/node-travis-encrypt.git",
     "github-slug": "^2.0.0",
     "parse-github-repo-url": "^1.4.0"
   },
