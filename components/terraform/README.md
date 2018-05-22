@@ -33,7 +33,7 @@ $:
     '$.comment.providers.github.0.token': 'eval'
   terraform:
     version: '0.11.0'                                                       # Terraform version that will be downloaded and installed locally (default "0.11.0")
-    cache: true                                                         # Enable state/plans/backups caching if cache component enabled (default "true")
+    cache: true                                                             # Enable state/plans/backups caching if cache component enabled (default "true")
     resource: '.resource'                                                   # Resource relative path to the module root directory (default ".resource")
     binary: './bin/terraform'                                               # Path to Terraform binary (default "./bin/terraform")
     init: true                                                              # Initialize Terraform setup (default "true")
