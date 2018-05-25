@@ -15,8 +15,8 @@ class CodePipelineCI extends AbstractCI {
     this._cloudwatchlogs = null;
     this._projectName = options.projectName;
     this._region = options.region;
-    this._executionIds = [];
   }
+  
   getCI() {
     if (!this._codepipeline) {
       this._codepipeline = new AWS.CodePipeline({
@@ -104,12 +104,7 @@ class CodePipelineCI extends AbstractCI {
   }
 
   _extractLogMessages(log) {
-    let result = [];
-
-    log.events.forEach(event => {
-      result += event.message;
-    });
-    return Promise.resolve(result);
+    return Promise.resolve(log.events.map(event => event.message).join(''));
   }
 
   getJobLog() {

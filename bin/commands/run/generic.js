@@ -242,6 +242,10 @@ module.exports = (args, options, logger) => {
           recink.configLoad(cfg, configFilePath)
         ]);
       })
-      .then(() => recink.run());
+      .then(() => recink.run())
+      .catch(error => {
+        logger.error(`An error ocurred: ${error.message}`);
+        logger.debug(error.stack);
+      });
   });
 };

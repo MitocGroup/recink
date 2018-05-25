@@ -1,6 +1,7 @@
 'use strict';
 
 const JenkinsCI = require('./jenkins-ci');
+const CodePipelineCI = require('./codepipeline-ci');
 
 class CiFactory {
   /**
