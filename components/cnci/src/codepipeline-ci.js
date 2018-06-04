@@ -15,6 +15,7 @@ class CodePipelineCI extends AbstractCI {
     this._cloudwatchlogs = null;
     this._projectName = options.projectName;
     this._region = options.region;
+    this._token = options.token;
   }
   
   getCI() {
@@ -52,15 +53,19 @@ class CodePipelineCI extends AbstractCI {
       return codepipeline.getPipelineState({
         name: this._projectName
       }).promise().then(stage => {
-        let pipelineStatus = 'Succeeded';
+        let pipelineStatus = 'SUCCESS';
+        let queueId = null;
 
         stage.stageStates.forEach(state => {
           if (state.latestExecution.status === 'Failed') {
-            pipelineStatus = 'Failed';
+            pipelineStatus = 'FAILURE';
+            queueId = state.latestExecution.pipelineExecutionId;
           }
         });
 
-        stage.pipelineStatus = pipelineStatus;
+        stage.result = pipelineStatus;
+        stage.queueId = queueId;
+        stage.displayName = queueId;
 
         return Promise.resolve(stage);
       });
