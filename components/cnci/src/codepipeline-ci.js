@@ -72,6 +72,9 @@ class CodePipelineCI extends AbstractCI {
     });
   }
 
+  /**
+   * @param {Object} pipelineJson 
+   */
   _getCodebuildNames(pipelineJson) {
     let result = [];
 
@@ -86,6 +89,9 @@ class CodePipelineCI extends AbstractCI {
     return Promise.resolve(result);
   }
 
+  /**
+   * @param {String} pipelineName 
+   */
   _getPipelineJson(pipelineName) {
     const params = {
       name: pipelineName
@@ -96,6 +102,9 @@ class CodePipelineCI extends AbstractCI {
     });
   }
 
+  /**
+   * @param {Array} namesArray 
+   */
   _getLogParameters(namesArray) {
     return this._getCB().then(codebuild => {
       return Promise.all(namesArray.map(codebuildName => {
@@ -108,6 +117,9 @@ class CodePipelineCI extends AbstractCI {
     });
   }
 
+  /**
+   * @param {String} log 
+   */
   _extractLogMessages(log) {
     return Promise.resolve(log.events.map(event => event.message).join(''));
   }
