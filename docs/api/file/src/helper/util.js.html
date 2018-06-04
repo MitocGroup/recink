@@ -211,81 +211,10 @@ function versionCompare(v1, v2) {
     }
   }
 
-  return 0
+  return 0;
 }
 
 exports.versionCompare = versionCompare;
-
-// @todo remove after testing
-// /**
-//  * Compares two software version numbers (e.g. &quot;1.7.1&quot; or &quot;1.2b&quot;).
-//  *
-//  * @param {String} v1 The first version to be compared.
-//  * @param {String} v2 The second version to be compared.
-//  * @param {Object} [options] Optional flags that affect comparison behavior:
-//  *
-//  * lexicographical: true | compares each part of the version strings lexicographically
-//  * instead of naturally; this allows suffixes such as &quot;b&quot; or &quot;dev&quot; but will cause &quot;1.10&quot;
-//  * to be considered smaller than &quot;1.2&quot;.
-//  *
-//  * zeroExtend: true | changes the result if one version string has less parts than the other.
-//  * In this case the shorter string will be padded with &quot;zero&quot; parts instead of being considered smaller.
-//  *
-//  * @returns {Number|NaN} 0 / equals; -1 / smaller; +1 / higher; NaN / wrong format
-//  */
-// function versionCompare(v1, v2, options = {}) {
-//   let lexicographical = options &amp;&amp; options.lexicographical,
-//     zeroExtend = options &amp;&amp; options.zeroExtend,
-//     v1parts = v1.split(&apos;.&apos;),
-//     v2parts = v2.split(&apos;.&apos;);
-//
-//   /**
-//    * @param {String} x
-//    * @returns {Boolean}
-//    */
-//   function isValidPart(x) {
-//     return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
-//   }
-//
-//   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
-//     return NaN;
-//   }
-//
-//   if (zeroExtend) {
-//     while (v1parts.length &lt; v2parts.length) {
-//       v1parts.push(&apos;0&apos;);
-//     }
-//
-//     while (v2parts.length &lt; v1parts.length) {
-//       v2parts.push(&apos;0&apos;);
-//     }
-//   }
-//
-//   if (!lexicographical) {
-//     v1parts = v1parts.map(Number);
-//     v2parts = v2parts.map(Number);
-//   }
-//
-//   for (let i = 0; i &lt; v1parts.length; ++i) {
-//     if (v2parts.length === i) {
-//       return 1;
-//     }
-//
-//     if (v1parts[i] === v2parts[i]) {
-//       continue;
-//     } else if (v1parts[i] &gt; v2parts[i]) {
-//       return 1;
-//     } else {
-//       return -1;
-//     }
-//   }
-//
-//   if (v1parts.length !== v2parts.length) {
-//     return -1;
-//   }
-//
-//   return 0;
-// }
 </code></pre>
 
 </div>
