@@ -65,7 +65,7 @@ class CodePipelineCI extends AbstractCI {
 
         stage.result = pipelineStatus;
         stage.queueId = queueId;
-        stage.displayName = queueId;
+        stage.displayName = queueId.split('-').shift();
 
         return Promise.resolve(stage);
       });
