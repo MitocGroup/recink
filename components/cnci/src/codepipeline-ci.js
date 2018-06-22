@@ -73,7 +73,8 @@ class CodePipelineCI extends AbstractCI {
   }
 
   /**
-   * @param {Object} pipelineJson 
+   * @param {Object} pipelineJson
+   * @returns {Object}
    */
   _getCodebuildNames(pipelineJson) {
     let result = [];
@@ -90,7 +91,8 @@ class CodePipelineCI extends AbstractCI {
   }
 
   /**
-   * @param {String} pipelineName 
+   * @param {String} pipelineName
+   * @returns {Object}
    */
   _getPipelineJson(pipelineName) {
     const params = {
@@ -103,7 +105,8 @@ class CodePipelineCI extends AbstractCI {
   }
 
   /**
-   * @param {Array} namesArray 
+   * @param {Array} namesArray
+   * @returns {Object}
    */
   _getLogParameters(namesArray) {
     return this._getCB().then(codebuild => {
@@ -118,7 +121,8 @@ class CodePipelineCI extends AbstractCI {
   }
 
   /**
-   * @param {String} log 
+   * @param {String} log
+   * @returns {Object}
    */
   _extractLogMessages(log) {
     return Promise.resolve(log.events.map(event => event.message).join(''));
@@ -130,18 +134,18 @@ class CodePipelineCI extends AbstractCI {
       .then(codebuildNames => this._getLogParameters(codebuildNames))
       .then(logParameters => {
         return Promise.all(logParameters.map(parameter => {
-            let splittedParameter = parameter.split(':');
-            let params = {
-              logGroupName: `/aws/codebuild/${splittedParameter.shift()}`,
-              logStreamName: splittedParameter.shift()
-            }
+          let splittedParameter = parameter.split(':');
+          let params = {
+            logGroupName: `/aws/codebuild/${splittedParameter.shift()}`,
+            logStreamName: splittedParameter.shift()
+          }
 
-            return this._getCWL().then(cloudwatchlogs => {
-              return cloudwatchlogs.getLogEvents(params).promise()
-                .then(log => this._extractLogMessages(log));
-            });
-          }))
-          .then(results => results.join('\n'));
+          return this._getCWL().then(cloudwatchlogs => {
+            return cloudwatchlogs.getLogEvents(params).promise()
+              .then(log => this._extractLogMessages(log));
+          });
+        }))
+        .then(results => results.join('\n'));
       });
   }
 }
