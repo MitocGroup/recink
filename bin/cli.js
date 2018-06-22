@@ -7,6 +7,7 @@ const pkg = require('../package.json');
 const path = require('path');
 const prog = require('caporal');
 const logger = require('../src/logger');
+const ComponentRegistry = require('./commands/component/registry/registry');
 
 /**
  * @param {String} path
@@ -54,6 +55,7 @@ const commands = prog
   .option('--tf-varfiles', 'Terraform variables as tfvars files', prog.LIST, [])
   .option('--sync', 'Synchronize with cnci', prog.BOOL, false)
   .option('-s <component>', 'Skip component', prog.REPEATABLE)
+  .option('--registry-path [path]', 'Custom path for .recink', /.+/, ComponentRegistry.DEFAULT_STORAGE_PATH)
   .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'test', 'coverage' ])
   .option('-c <component>', `Use 3'rd party component`, prog.REPEATABLE)
   .complete(() => [ 'preprocess', 'cache', 'emit', 'npm', 'test', 'coverage' ])
