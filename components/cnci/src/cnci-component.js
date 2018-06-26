@@ -194,7 +194,7 @@ class CnciComponent extends DependencyBasedComponent {
    * @private
    */
   _getDestinationKeyspace() {
-    return this._env !== 'dev' ? CnciComponent.PUBLIC_KEYSPACE : `${CnciComponent.PUBLIC_KEYSPACE}-dev`
+    return this._env === 'master' ? CnciComponent.PUBLIC_KEYSPACE : `${CnciComponent.PUBLIC_KEYSPACE}-${this._env}`
   }
 
   /**

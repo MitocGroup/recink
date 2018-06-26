@@ -10,14 +10,16 @@ class CodePipelineCI extends AbstractCI {
   constructor(options) {
     super();
 
-    this._codepipeline = null;
     this._codebuild = null;
+    this._codepipeline = null;
     this._cloudwatchlogs = null;
-    this._projectName = options.projectName;
     this._region = options.region;
-    this._token = options.token;
+    this._projectName = options.projectName;
   }
-  
+
+  /**
+   * @return {Promise}
+   */
   getCI() {
     if (!this._codepipeline) {
       this._codepipeline = new AWS.CodePipeline({
@@ -28,6 +30,10 @@ class CodePipelineCI extends AbstractCI {
     return Promise.resolve(this._codepipeline);
   }
 
+  /**
+   * @return {Promise}
+   * @private
+   */
   _getCWL() {
     if (!this._cloudwatchlogs) {
       this._cloudwatchlogs = new AWS.CloudWatchLogs({
@@ -38,6 +44,10 @@ class CodePipelineCI extends AbstractCI {
     return Promise.resolve(this._cloudwatchlogs);
   }
 
+  /**
+   * @return {Promise}
+   * @private
+   */
   _getCB() {
     if (!this._codebuild) {
       this._codebuild = new AWS.CodeBuild({
@@ -48,6 +58,9 @@ class CodePipelineCI extends AbstractCI {
     return Promise.resolve(this._codebuild);
   }
 
+  /**
+   * @return {Promise}
+   */
   getJobMeta() {
     return this.getCI().then(codepipeline => {
       return codepipeline.getPipelineState({
@@ -113,9 +126,9 @@ class CodePipelineCI extends AbstractCI {
       return Promise.all(namesArray.map(codebuildName => {
         let params = {
           projectName: codebuildName
-        }
-        return codebuild.listBuildsForProject(params).promise()
-          .then(result => result.ids.shift());
+        };
+
+        return codebuild.listBuildsForProject(params).promise().then(result => result.ids.shift());
       }));
     });
   }
@@ -128,6 +141,9 @@ class CodePipelineCI extends AbstractCI {
     return Promise.resolve(log.events.map(event => event.message).join(''));
   }
 
+  /**
+   * @return {*}
+   */
   getJobLog() {
     return this._getPipelineJson(this._projectName)
       .then(pipelineJson => this._getCodebuildNames(pipelineJson))
@@ -138,15 +154,14 @@ class CodePipelineCI extends AbstractCI {
           let params = {
             logGroupName: `/aws/codebuild/${splittedParameter.shift()}`,
             logStreamName: splittedParameter.shift()
-          }
+          };
 
           return this._getCWL().then(cloudwatchlogs => {
-            return cloudwatchlogs.getLogEvents(params).promise()
-              .then(log => this._extractLogMessages(log));
+            return cloudwatchlogs.getLogEvents(params).promise().then(log => this._extractLogMessages(log));
           });
-        }))
-        .then(results => results.join('\n'));
-      });
+        })).then(results => results.join('\n'));
+      })
+    ;
   }
 }
 
