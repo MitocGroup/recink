@@ -1,4 +1,4 @@
---- 
+---
 $:
   preprocess:
     '$.codeclimate.token': 'eval'
@@ -6,8 +6,8 @@ $:
     pattern:                                                  # Files to include
       - /.+\.js$/i
     ignore:                                                   # Files to ignore
-      - /^bin\//i   
-      - /^docs\//i     
+      - /^bin\//i
+      - /^docs\//i
       - /^node-bin\//i
       - /^(.*\/)?node_modules(\/?$)?/i
   npm:
@@ -15,7 +15,7 @@ $:
     dependencies:                                             # Dependencies to add/overwrite
       chai: 'latest'
       sinon: 'latest'
-  e2e: 
+  e2e:
     pattern:                                                  # Files to include
       - /.+\.e2e\.js$/i
     ignore: ~                                                 # Files to exclude
