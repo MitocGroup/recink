@@ -49,7 +49,7 @@ class CnciComponent extends DependencyBasedComponent {
    */
   run(emitter) {
     return new Promise(resolve => {
-      this._env = this.container.get('env', 'prod');
+      this._env = this.container.get('env', 'master');
       const sync = this.container.get('sync', false);
       this._cnciToken = this.container.get('token', false);
       const projectDir = this.container.get('__dir');
