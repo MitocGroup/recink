@@ -42,7 +42,9 @@
     "docs": "npm run docs:diagram && npm run docs:api",
     "docs:diagram": "node node_modules/.bin/dependo -f cjs src/ > docs/module-diagram.html",
     "docs:api": "rm -rf docs/api && node node_modules/.bin/esdoc",
-    "postinstall": "node node-bin/ensure-peer-dependencies.js"
+    "postinstall": "node node-bin/ensure-peer-dependencies.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "aws-sdk": "^2.198.0",
@@ -70,7 +72,8 @@
     "sandboxed-module": "git+https://github.com/MitocGroup/node-sandboxed-module.git#v2.0.5",
     "sinon": "git+https://github.com/MitocGroup/sinon.git",
     "yaml-js": "^0.1.5",
-    "yamljs": "^0.2.10"
+    "yamljs": "^0.2.10",
+    "snyk": "^1.316.1"
   },
   "peerDependencies": {
     "twig": "^1.10.5",
@@ -88,5 +91,6 @@
     "node": ">=6.0",
     "npm": ">=3.0"
   },
-  "preferGlobal": true
+  "preferGlobal": true,
+  "snyk": true
 }
